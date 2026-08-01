@@ -1,0 +1,47 @@
+const menuGroups = [
+  {
+    group: 'Dashboard',
+    items: [
+      { id: 'dashboard', label: 'Platform Overview', icon: 'layout-dashboard' }
+    ]
+  },
+  {
+    group: 'Business',
+    items: [
+
+      { id: 'hospital-onboarding', label: 'Hospital Onboarding', icon: 'user-plus' },
+      { id: 'hospitals', label: 'Hospitals', icon: 'building-2' },
+      { id: 'subscription-mgmt', label: 'Subscription Management', icon: 'credit-card' }
+    ]
+  },
+  {
+    group: 'Operations',
+    items: [
+      { id: 'customer-support', label: 'Customer Support', icon: 'headset' },
+      { id: 'broadcast-center', label: 'Broadcast Center', icon: 'megaphone' },
+      { id: 'finance', label: 'Finance', icon: 'wallet' }
+    ]
+  },
+  {
+    group: 'Company',
+    items: [
+      { id: 'employees', label: 'Employees', icon: 'user-cog' }
+    ]
+  },
+  {
+    group: 'Analytics',
+    items: [
+      { id: 'reports', label: 'Platform Reports', icon: 'bar-chart-3' }
+    ]
+  },
+  {
+    group: 'System',
+    items: [
+      { id: 'settings', label: 'Platform Control', icon: 'settings' }
+    ]
+  }
+];
+
+// INTERFACE STYLING
+const styles = {
+  container: { display: 'flex', flexDirection: 'column', height: '100vh', width: '100%

@@ -1,0 +1,305 @@
+[
+  {
+    "source": "Walk-In",
+    "_id": "6a31703fd00435b9c3d4725e",
+    "tenantId": "city_hospital",
+    "patientId": {
+      "_id": "6a303aa1f5993013a2f2a5da",
+      "name": "Curoxa Mrk",
+      "contact": "9980567432",
+      "email": "curoxatechnology@gmail.com"
+    },
+    "doctorId": "6a3026e5ef555233f5d8d9ca",
+    "date": "2026-06-16T00:00:00.000Z",
+    "time": "10:30 AM",
+    "status": "Completed",
+    "reason": "General Consultation",
+    "createdAt": "2026-06-16T15:48:15.469Z",
+    "updatedAt": "2026-06-17T13:42:07.952Z",
+    "__v": 0,
+    "diagnosis": "Acute Viral Fever",
+    "notes": ""
+  },
+  {
+    "source": "Walk-In",
+    "_id": "6a3408d7655816d8d37869f0",
+    "tenantId": "city_hospital",
+    "patientId": {
+      "_id": "6a3408d6655816d8d37869ef",
+      "name": "patient",
+      "contact": "7678511710",
+      "email": "patient@gmail.com"
+    },
+    "doctorId": "6a3026e5ef555233f5d8d9ca",
+    "date": "2026-06-18T15:03:51.556Z",
+    "time": "11:00 AM",
+    "status": "Completed",
+    "reason": "Headache",
+    "createdAt": "2026-06-18T15:03:51.795Z",
+    "updatedAt": "2026-06-18T15:06:43.509Z",
+    "__v": 0,
+    "diagnosis": "sb shi h",
+    "notes": "sb shi h"
+  },
+  {
+    "source": "Walk-In",
+    "_id": "6a341814655816d8d3786b4c",
+    "tenantId": "city_hospital",
+    "patientId": {
+      "_id": "6a3408d6655816d8d37869ef",
+      "name": "patient",
+      "contact": "7678511710",
+      "email": "patient@gmail.com"
+    },
+    "doctorId": "6a340d07655816d8d3786ae6",
+    "date": "2026-06-18T16:08:52.017Z",
+    "time": "10:30 AM",
+    "status": "Pending",
+    "reason": "Fatigue",
+    "createdAt": "2026-06-18T16:08:52.963Z",
+    "updatedAt": "2026-06-18T16:08:52.963Z",
+    "__v": 0
+  },
+  {
+    "source": "Walk-In",
+    "_id": "6a341f1d655816d8d3786cd3",
+    "tenantId": "city_hospital",
+    "patientId": {
+      "_id": "6a341f1d655816d8d3786cd2",
+      "name": "abhishek",
+      "contact": "9560364705",
+      "email": ""
+    },
+    "doctorId": "6a3026e5ef555233f5d8d9ca",
+    "date": "2026-06-18T16:38:53.697Z",
+    "time": "10:30 AM",
+    "status": "Completed",
+    "reason": "Headache",
+    "createdAt": "2026-06-18T16:38:53.962Z",
+    "updatedAt": "2026-06-18T16:42:46.457Z",
+    "__v": 0,
+    "diagnosis": "sb shi h",
+    "notes": "sb shi h"
+  },
+  {
+    "source": "Walk-In",
+    "_id": "6a352eb21616b2a9f97b3ef7",
+    "tenantId": "city_hospital",
+    "patientId": {
+      "_id": "6a303aa1f5993013a2f2a5da",
+      "name": "Curoxa Mrk",
+      "contact": "9980567432",
+      "email": "curoxatechnology@gmail.com"
+    },
+    "doctorId": "6a3026e5ef555233f5d8d9ca",
+    "date": "2026-06-19T11:57:38.411Z",
+    "time": "10:45 AM",
+    "status": "Completed",
+    "reason": "Fever, Headache",
+    "createdAt": "2026-06-19T11:57:38.425Z",
+    "updatedAt": "2026-06-19T11:59:52.235Z",
+    "__v": 0,
+    "diagnosis": "he had a mild fever",
+    "notes": "take rest and take medicine on time with light food and avoid cold food like yogart or butter milk"
+  },
+  {
+    "source": "Walk-In",
+    "_id": "6a3539551616b2a9f97b413b",
+    "tenantId": "city_hospital",
+    "patientId": {
+      "_id": "6a341f1d655816d8d3786cd2",
+      "name": "abhishek",
+      "contact": "9560364705",
+      "email": ""
+    },
+    "doctorId": "6a34efc1e67719fbef8360bb",
+    "date": "2026-06-19T12:43:00.997Z",
+    "time": "11:00 AM",
+    "status": "Completed",
+    "reason": "Headache",
+    "createdAt": "2026-06-19T12:43:01.071Z",
+    "updatedAt": "2026-06-19T18:54:31.884Z",
+    "__v": 0,
+    "diagnosis": "fever",
+    "notes": "he has fever\n"
+  },
+  {
+    "source": "Walk-In",
+    "_id": "6a359652b1ace56ac659b33c",
+    "tenantId": "city_hospital",
+    "patientId": {
+      "_id": "6a3408d6655816d8d37869ef",
+      "name": "patient",
+      "contact": "7678511710",
+      "email": "patient@gmail.com"
+    },
+    "doctorId": "6a3026e5ef555233f5d8d9ca",
+    "date": "2026-06-19T19:19:46.511Z",
+    "time": "10:30 AM",
+    "status": "Completed",
+    "reason": "Fever",
+    "createdAt": "2026-06-19T19:19:46.545Z",
+    "updatedAt": "2026-06-19T19:22:37.314Z",
+    "__v": 0,
+    "diagnosis": "Fever",
+    "notes": ""
+  },
+  {
+    "source": "Walk-In",
+    "_id": "6a3fc40b366c80e66489d6d9",
+    "tenantId": "city_hospital",
+    "patientId": {
+      "_id": "6a3fc40a366c80e66489d6d8",
+      "name": "Vikas",
+      "contact": "8676927231",
+      "email": "vikas@gmail.com"
+    },
+    "doctorId": "6a3fc34c366c80e66489d646",
+    "date": "2026-06-27T12:37:31.267Z",
+    "time": "10:00 AM",
+    "status": "Completed",
+    "reason": "Body Pain",
+    "createdAt": "2026-06-27T12:37:31.329Z",
+    "updatedAt": "2026-06-27T12:40:34.627Z",
+    "__v": 0,
+    "diagnosis": "Acute Viral Fever",
+    "notes": ""
+  },
+  {
+    "source": "Walk-In",
+    "_id": "6a43b548456ecba604b83cfa",
+    "tenantId": "city_hospital",
+    "patientId": {
+      "_id": "6a341f1d655816d8d3786cd2",
+      "name": "abhishek",
+      "contact": "9560364705",
+      "email": ""
+    },
+    "doctorId": "6a34efc1e67719fbef8360bb",
+    "date": "2026-06-30T12:23:33.229Z",
+    "time": "10:15 AM",
+    "status": "Cancelled",
+    "reason": "Body Pain",
+    "createdAt": "2026-06-30T12:23:36.106Z",
+    "updatedAt": "2026-07-03T07:52:42.981Z",
+    "__v": 0
+  },
+  {
+    "source": "Walk-In",
+    "_id": "6a4490154805673a8f98041b",
+    "tenantId": "city_hospital",
+    "patientId": {
+      "_id": "6a341f1d655816d8d3786cd2",
+      "name": "abhishek",
+      "contact": "9560364705",
+      "email": ""
+    },
+    "doctorId": "6a34efc1e67719fbef8360bb",
+    "date": "2026-07-01T03:57:08.090Z",
+    "time": "11:00 AM",
+    "status": "Completed",
+    "reason": "Headache",
+    "createdAt": "2026-07-01T03:57:09.248Z",
+    "updatedAt": "2026-07-01T07:04:48.899Z",
+    "__v": 0,
+    "diagnosis": "Migraine",
+    "notes": "Patient complains of throbbing headache. Advised rest and paracetamol."
+  },
+  {
+    "source": "Walk-In",
+    "_id": "6a44bd8d367a3dba09c93ab6",
+    "tenantId": "city_hospital",
+    "patientId": {
+      "_id": "6a341f1d655816d8d3786cd2",
+      "name": "abhishek",
+      "contact": "9560364705",
+      "email": ""
+    },
+    "doctorId": "6a34efc1e67719fbef8360bb",
+    "date": "2026-07-01T07:11:09.834Z",
+    "time": "10:30 AM",
+    "status": "Completed",
+    "reason": "Fever",
+    "createdAt": "2026-07-01T07:11:09.873Z",
+    "updatedAt": "2026-07-01T07:12:27.062Z",
+    "__v": 0,
+    "diagnosis": "Fever",
+    "notes": ""
+  },
+  {
+    "source": "Walk-In",
+    "_id": "6a4534530ad977ba943f6145",
+    "tenantId": "city_hospital",
+    "patientId": {
+      "_id": "6a341f1d655816d8d3786cd2",
+      "name": "abhishek",
+      "contact": "9560364705",
+      "email": ""
+    },
+    "doctorId": "6a34efc1e67719fbef8360bb",
+    "date": "2026-07-01T15:37:55.361Z",
+    "time": "10:30 AM",
+    "status": "Pending",
+    "reason": "Fever",
+    "createdAt": "2026-07-01T15:37:55.383Z",
+    "updatedAt": "2026-07-01T15:37:55.383Z",
+    "__v": 0
+  },
+  {
+    "source": "Walk-In",
+    "_id": "6a4768559c677e0074e6f982",
+    "tenantId": "city_hospital",
+    "patientId": {
+      "_id": "6a341f1d655816d8d3786cd2",
+      "name": "abhishek",
+      "contact": "9560364705",
+      "email": ""
+    },
+    "doctorId": "6a3026e5ef555233f5d8d9ca",
+    "date": "2026-07-03T07:44:18.892Z",
+    "time": "10:30 AM",
+    "status": "Cancelled",
+    "reason": "General Checkup",
+    "createdAt": "2026-07-03T07:44:21.055Z",
+    "updatedAt": "2026-07-03T07:53:32.136Z",
+    "__v": 0
+  },
+  {
+    "source": "Walk-In",
+    "_id": "6a476ae19c677e0074e6ff97",
+    "tenantId": "city_hospital",
+    "patientId": {
+      "_id": "6a3408d6655816d8d37869ef",
+      "name": "patient",
+      "contact": "7678511710",
+      "email": "patient@gmail.com"
+    },
+    "doctorId": "6a4761407be18c88f2c326fd",
+    "date": "2026-07-03T07:55:14.212Z",
+    "time": "10:00 AM",
+    "status": "Pending",
+    "reason": "Fever",
+    "createdAt": "2026-07-03T07:55:13.885Z",
+    "updatedAt": "2026-07-03T07:55:13.885Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a4a1ef0abc5857b0f74c3a3",
+    "tenantId": "city_hospital",
+    "patientId": {
+      "_id": "6a3127b7ea0a65438985e94a",
+      "name": "divesh singh",
+      "contact": "9560364705",
+      "email": "diveshsingh090@gmail.com"
+    },
+    "doctorId": "6a3026e5ef555233f5d8d9ca",
+    "date": "2026-07-10T00:00:00.000Z",
+    "time": "11:00 AM",
+    "status": "Paid",
+    "reason": "Regular checkup",
+    "createdAt": "2026-07-05T09:08:00.403Z",
+    "updatedAt": "2026-07-05T10:09:11.766Z",
+    "__v": 0,
+    "source": "Online"
+  }
+]

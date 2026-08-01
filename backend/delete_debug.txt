@@ -1,0 +1,4 @@
+[DELETE] Attempting delete for ID: 6a5cfd92f3b4db2a4ed0132b, tenantId: med-nirma-256
+[DELETE] Found user: kunal, role: doctor. Proceeding to delete...
+[DELETE] Successfully deleted user document from DB.
+[DELETE] Successfully logged audit trail.

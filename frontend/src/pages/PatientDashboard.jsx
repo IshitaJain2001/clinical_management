@@ -1,0 +1,4728 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import api from '../utils/api';
+
+// Safeguard React DOM reconciliation against external DOM mutations (e.g. Lucide CDN node replacement)
+if (typeof window !== 'undefined') {
+  const originalRemoveChild = Node.prototype.removeChild;
+  Node.prototype.removeChild = function(child) {
+    if (child.parentNode !== this) {
+      return child;
+    }
+    return originalRemoveChild.call(this, child);
+  };
+
+  const originalInsertBefore = Node.prototype.insertBefore;
+  Node.prototype.insertBefore = function(newNode, referenceNode) {
+    if (referenceNode && referenceNode.parentNode !== this) {
+      return originalInsertBefore.call(this, newNode, this.firstChild);
+    }
+    return originalInsertBefore.call(this, newNode, referenceNode);
+  };
+}
+
+const HOSPITALS = [
+  { 
+    id: 'city_hospital', 
+    name: 'City Hospital', 
+    facilityType: 'multispeciality',
+    facilityTypeLabel: 'Multispeciality Hospital',
+    location: 'London, Central Area', 
+    contact: '+44 20 7946 0192', 
+    description: 'Comprehensive acute care hospital offering multi-specialty clinical excellence.',
+    rating: '4.8',
+    reviews: '240 reviews',
+    hours: 'Open 24/7',
+    departments: ['Emergency', 'ICU', 'Cardiology', 'Pediatrics', 'Neurology'],
+    image: 'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?auto=format&fit=crop&q=80&w=400',
+    lat: 51.5074,
+    lon: -0.1278
+  },
+  { 
+    id: 'apex_dental_clinic', 
+    name: 'Apex Dental & Smile Implant Center', 
+    facilityType: 'dental',
+    facilityTypeLabel: 'Dental & Oral Care Clinic',
+    location: 'New York, 5th Avenue Suite 402', 
+    contact: '+1 212 555 8920', 
+    description: 'Premier specialized dental clinic offering digital smile design, painless Root Canal, Braces & Dental Chair Slot booking.',
+    rating: '4.9',
+    reviews: '315 reviews',
+    hours: '09:00 AM - 07:00 PM',
+    departments: ['Endodontics (RCT)', 'Orthodontics (Braces)', 'Teeth Scaling & Whitening', 'Oral Implantology'],
+    dentalProcedures: [
+      { name: 'Root Canal Treatment (RCT)', fee: 3500, duration: '45 mins', desc: 'Single-sitting painless RCT with digital X-Ray' },
+      { name: 'Braces & Orthodontic Consultation', fee: 5000, duration: '60 mins', desc: 'Metal/Ceramic Braces & Invisible Aligners fitting' },
+      { name: 'Teeth Scaling & Polishing', fee: 1500, duration: '30 mins', desc: 'Ultrasonic plaque removal & enamel shine' },
+      { name: 'Laser Teeth Whitening', fee: 2500, duration: '45 mins', desc: 'Instant 3-shade whitening procedure' },
+      { name: 'Simple Tooth Extraction', fee: 1200, duration: '30 mins', desc: 'Painless local anesthesia extraction' },
+      { name: 'Dental Implant Consultation', fee: 1000, duration: '30 mins', desc: '3D Scan evaluation & titanium implant setup' }
+    ],
+    image: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80&w=400',
+    lat: 40.7128,
+    lon: -74.0060
+  },
+  { 
+    id: 'metro_clinic', 
+    name: 'Metro Outpatient Center', 
+    facilityType: 'multispeciality',
+    facilityTypeLabel: 'Multispeciality Hospital',
+    location: 'New York, Manhattan', 
+    contact: '+1 212 555 0199', 
+    description: 'Modern outpatient care center specializing in rapid diagnostics and general physician therapies.',
+    rating: '4.7',
+    reviews: '180 reviews',
+    hours: '08:00 AM - 08:00 PM',
+    departments: ['General OPD', 'Dermatology', 'Diagnostics', 'Internal Medicine'],
+    image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=400',
+    lat: 40.7128,
+    lon: -74.0060
+  },
+  { 
+    id: 'smile_care_dental', 
+    name: 'SmileCare Orthodontic & Dental Suite', 
+    facilityType: 'dental',
+    facilityTypeLabel: 'Dental & Oral Care Clinic',
+    location: 'Chicago, North Michigan Ave', 
+    contact: '+1 312 555 0881', 
+    description: 'Dedicated oral care facility specialized in pediatric dentistry, braces aligners, and cosmetic smile restoration.',
+    rating: '4.9',
+    reviews: '195 reviews',
+    hours: '09:30 AM - 06:30 PM',
+    departments: ['Pediatric Dentistry', 'Cosmetic Veneers', 'Root Canal', 'Teeth Whitening'],
+    dentalProcedures: [
+      { name: 'Pediatric Dental Checkup', fee: 800, duration: '30 mins', desc: 'Gentle tooth inspection & cavity fluoride shield' },
+      { name: 'Root Canal Treatment (RCT)', fee: 3500, duration: '45 mins', desc: 'Painless molar RCT with bioceramic seal' },
+      { name: 'Invisible Clear Aligners Consult', fee: 4500, duration: '45 mins', desc: '3D Impression & aligner custom planning' },
+      { name: 'Teeth Deep Cleaning', fee: 1800, duration: '40 mins', desc: 'Subgingival scaling & stain removal' }
+    ],
+    image: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&q=80&w=400',
+    lat: 41.8781,
+    lon: -87.6298
+  },
+  { 
+    id: 'metropolis_lab', 
+    name: 'Metropolis Pathology & Diagnostic Center', 
+    facilityType: 'diagnostic',
+    facilityTypeLabel: 'Diagnostic & Pathology Lab',
+    location: 'Chicago, West Loop Medical District', 
+    contact: '+1 312 555 0999', 
+    description: 'NABL accredited diagnostic center offering automated blood pathology, Digital X-Ray, Ultrasound & Health Checkup packages.',
+    rating: '4.8',
+    reviews: '410 reviews',
+    hours: '07:00 AM - 09:00 PM',
+    departments: ['Phlebotomy', 'Hematology (CBC)', 'Biochemistry', 'Digital Radiography'],
+    image: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&q=80&w=400',
+    lat: 41.8781,
+    lon: -87.6298
+  },
+  { 
+    id: 'care_first', 
+    name: 'Care First Medical Center', 
+    facilityType: 'multispeciality',
+    facilityTypeLabel: 'Multispeciality Hospital',
+    location: 'San Francisco, Downtown', 
+    contact: '+1 415 555 0188', 
+    description: 'Leading integrated care provider offering preventive checkups and multi-department specialist consultations.',
+    rating: '4.9',
+    reviews: '310 reviews',
+    hours: '07:00 AM - 09:00 PM',
+    departments: ['Cardiology', 'Wellness', 'Neurology', 'Orthopedics'],
+    image: 'https://images.unsplash.com/photo-1512678080530-7760d81faba6?auto=format&fit=crop&q=80&w=400',
+    lat: 37.7749,
+    lon: -122.4194
+  }
+];
+
+const getHospitalDetails = (tenantId) => {
+  const match = HOSPITALS.find(h => h.id === tenantId);
+  return match || { 
+    name: tenantId ? tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'General Hospital',
+    location: 'Universal Network', 
+    contact: '+1 800 555 0100',
+    description: 'Affiliated clinic in the universal medical network.',
+    rating: '4.6',
+    reviews: '50 reviews',
+    hours: 'Open 24/7',
+    departments: ['General OPD'],
+    image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=400'
+  };
+};
+
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371; // Radius of the earth in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const d = R * c; // Distance in km
+  return d;
+};
+
+const DEFAULT_TIME_SLOTS = [
+  '09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM',
+  '12:00 PM', '12:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM',
+  '04:00 PM', '04:30 PM', '05:00 PM'
+];
+
+const PatientDashboard = () => {
+  const getLocalDateString = () => {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const [activeTab, setActiveTab] = useState('summary');
+  const [privacySlideIdx, setPrivacySlideIdx] = useState(0);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [showAppointmentModal, setShowAppointmentModal] = useState(false);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [appointmentDate, setAppointmentDate] = useState('');
+  const [appointmentTime, setAppointmentTime] = useState('10:30 AM');
+  const [appointmentReason, setAppointmentReason] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('UPI');
+  const [loading, setLoading] = useState(false);
+  const [bookedSlots, setBookedSlots] = useState([]);
+  const [doctorAvailability, setDoctorAvailability] = useState({ available: true, slots: DEFAULT_TIME_SLOTS, reason: null });
+  
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [prescriptionModalOpen, setPrescriptionModalOpen] = useState(false);
+  const [selectedPrescription, setSelectedPrescription] = useState(null);
+
+  const [rescheduleAvailability, setRescheduleAvailability] = useState({ available: true, slots: [], reason: null });
+  const [rescheduleBookedSlots, setRescheduleBookedSlots] = useState([]);
+
+  useEffect(() => {
+    const fetchRescheduleData = async () => {
+      if (!detailsModalOpen || !selectedAppointment) return;
+      const docId = selectedAppointment.doctorId?._id || selectedAppointment.doctorId;
+      if (!docId || !selectedAppointment.date) return;
+      
+      let dStr;
+      try {
+        dStr = new Date(selectedAppointment.date).toISOString().split('T')[0];
+      } catch (e) {
+        return;
+      }
+      
+      try {
+        const availRes = await api.get(`/hr/doctor-availability/${docId}?date=${dStr}`);
+        setRescheduleAvailability(availRes.data);
+      } catch (err) {
+        console.error("Failed to fetch reschedule doctor availability:", err);
+        const docSlots = selectedAppointment.doctorId?.doctorSlots?.length > 0 ? selectedAppointment.doctorId.doctorSlots : DEFAULT_TIME_SLOTS;
+        setRescheduleAvailability({ available: true, slots: docSlots, reason: null });
+      }
+
+      try {
+        const bookedRes = await api.get(`/appointments?doctorId=${docId}`);
+        setRescheduleBookedSlots(bookedRes.data);
+      } catch (err) {
+        console.error("Failed to fetch reschedule booked slots:", err);
+        setRescheduleBookedSlots([]);
+      }
+    };
+
+    fetchRescheduleData();
+  }, [detailsModalOpen, selectedAppointment?.date, selectedAppointment?.doctorId]);
+
+  const [selectedAppointmentDetails, setSelectedAppointmentDetails] = useState({ prescriptions: [], labs: [] });
+
+  useEffect(() => {
+    const fetchAppointmentDetails = async () => {
+      if (!detailsModalOpen || !selectedAppointment) return;
+      const appId = selectedAppointment._id;
+      
+      try {
+        // Fetch prescriptions and filter by appointmentId
+        const pRes = await api.get('/prescriptions');
+        const matchingPrescriptions = (pRes.data || []).filter(p => {
+          const pAppId = p.appointmentId?._id || p.appointmentId;
+          return String(pAppId) === String(appId);
+        });
+
+        // Fetch lab tests and filter by appointmentId
+        const lRes = await api.get('/labs');
+        const matchingLabs = (lRes.data || []).filter(l => {
+          const lAppId = l.appointmentId?._id || l.appointmentId;
+          return String(lAppId) === String(appId);
+        });
+
+        setSelectedAppointmentDetails({
+          prescriptions: matchingPrescriptions,
+          labs: matchingLabs
+        });
+      } catch (err) {
+        console.error("Error fetching appointment details:", err);
+        setSelectedAppointmentDetails({ prescriptions: [], labs: [] });
+      }
+    };
+
+    fetchAppointmentDetails();
+  }, [detailsModalOpen, selectedAppointment?._id]);
+
+  // Universal Discovery Portal States
+  const [discoveryTab, setDiscoveryTab] = useState('hospitals'); // 'hospitals' or 'doctors'
+  const [discoverySearch, setDiscoverySearch] = useState('');
+  const [selectedHospitalId, setSelectedHospitalId] = useState(null);
+  const [facilityTypeFilter, setFacilityTypeFilter] = useState('all'); // 'all', 'multispeciality', 'dental', 'diagnostic'
+  const [selectedDentalProcedure, setSelectedDentalProcedure] = useState(null);
+  
+  // Location detection & detailed clinic page states
+  const [detectingLocation, setDetectingLocation] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
+  const [hospitalDistances, setHospitalDistances] = useState({});
+  const [selectedHospitalDetails, setSelectedHospitalDetails] = useState(null);
+  const [selectedSpecialtyFilter, setSelectedSpecialtyFilter] = useState(null);
+
+  // Premium Custom Toast Notifications
+  const [notification, setNotification] = useState(null); // { message: '', type: 'success' | 'error' }
+  const showToast = (message, type = 'success') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  const openDetailsModal = (app) => {
+    setSelectedAppointment({ ...app });
+    setDetailsModalOpen(true);
+    setTimeout(() => window.lucide && window.lucide.createIcons(), 100);
+  };
+
+  const handleUpdateAppointment = async (app) => {
+    try {
+      await api.put(`/appointments/${app._id}`, { status: app.status, time: app.time, date: app.date });
+      showToast("Appointment updated successfully", "success");
+      setDetailsModalOpen(false);
+      fetchData();
+    } catch (error) {
+      console.error(error);
+      showToast("Failed to update appointment", "error");
+    }
+  };
+
+  const [deleteApptConfirmId, setDeleteApptConfirmId] = useState(null);
+
+  const handleDeleteAppointment = (id) => {
+    setDeleteApptConfirmId(id);
+  };
+
+  const confirmDeleteAppointment = async () => {
+    if (!deleteApptConfirmId) return;
+    const id = deleteApptConfirmId;
+    setDeleteApptConfirmId(null);
+    try {
+      await api.delete(`/appointments/${id}`);
+      showToast("Appointment deleted successfully", "success");
+      setDetailsModalOpen(false);
+      fetchData();
+    } catch (error) {
+      console.error(error);
+      showToast("Failed to delete appointment", "error");
+    }
+  };
+  const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState(() => JSON.parse(localStorage.getItem('user') || '{}'));
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => localStorage.getItem('curoxa_sidebar_collapsed') === 'true');
+
+  // Notifications states
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const notificationRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setShowNotifications(false);
+      }
+      if (!event.target.closest('.sidebar-user') && !event.target.closest('.sidebar-profile-card') && !event.target.closest('.sidebar-profile')) {
+        setShowProfileMenu(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside, true);
+    return () => {
+      document.removeEventListener('click', handleClickOutside, true);
+    };
+  }, []);
+
+  const [doctors, setDoctors] = useState([]);
+  const [appointments, setAppointments] = useState([]);
+  const activeAppt = appointments.find(app => ['Pending', 'In Progress', 'Paid'].includes(app.status));
+  const [prescriptions, setPrescriptions] = useState([]);
+  const [patientProfile, setPatientProfile] = useState(null);
+
+  const [editProfileData, setEditProfileData] = useState({ name: '', age: '', gender: '', contact: '', address: '', bloodGroup: '', allergies: '', medicalHistory: '' });
+  const [passwordData, setPasswordData] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  const [profileMsg, setProfileMsg] = useState({ type: '', text: '' });
+  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+
+  // EMR and DPDP Consent States
+  const [visits, setVisits] = useState([]);
+  const [vitals, setVitals] = useState([]);
+  const [clinicalNotes, setClinicalNotes] = useState([]);
+  const [procedures, setProcedures] = useState([]);
+  const [clinicalDocs, setClinicalDocs] = useState([]);
+  const [consent, setConsent] = useState({ purposes: { treatment: true, insurance: true, research: false }, status: 'Active', dpdpRequests: [], signature: '' });
+  const [auditLogs, setAuditLogs] = useState([]);
+  
+  // Modals and inputs
+  const [showPrivacyOverlay, setShowPrivacyOverlay] = useState(() => localStorage.getItem('curoxa_dpdp_intro_seen') !== 'true');
+  const [showAadhaarModal, setShowAadhaarModal] = useState(false);
+  const [showAbhaModal, setShowAbhaModal] = useState(false);
+  const [aadhaarInput, setAadhaarInput] = useState('');
+  const [abhaInput, setAbhaInput] = useState('');
+  const [verifyingAadhaar, setVerifyingAadhaar] = useState(false);
+  const [verifyingAbha, setVerifyingAbha] = useState(false);
+
+  // DPDP Requests Center states
+  const [dpdpRequestType, setDpdpRequestType] = useState('Correction');
+  const [dpdpRequestDetails, setDpdpRequestDetails] = useState('');
+  const [submittingDpdp, setSubmittingDpdp] = useState(false);
+
+  // Timeline Search
+  const [timelineSearch, setTimelineSearch] = useState('');
+  const [timelineFilter, setTimelineFilter] = useState('All');
+
+  const detectLocation = () => {
+    setDetectingLocation(true);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          setUserLocation({ lat, lon, name: "Current Location" });
+          
+          const newDistances = {};
+          let minDistance = Infinity;
+          HOSPITALS.forEach(h => {
+            const dist = calculateDistance(lat, lon, h.lat, h.lon);
+            newDistances[h.id] = dist;
+            if (dist < minDistance) minDistance = dist;
+          });
+
+          if (minDistance > 150) {
+            setHospitalDistances({
+              city_hospital: '1.2 km',
+              metro_clinic: '2.5 km',
+              county_general: '4.8 km',
+              care_first: '7.1 km'
+            });
+          } else {
+            const formatted = {};
+            HOSPITALS.forEach(h => {
+              formatted[h.id] = `${newDistances[h.id].toFixed(1)} km`;
+            });
+            setHospitalDistances(formatted);
+          }
+          setDetectingLocation(false);
+          showToast("Location successfully detected!", "success");
+        },
+        (error) => {
+          console.warn("Location permission denied/failed", error);
+          setUserLocation({ lat: 51.5074, lon: -0.1278, name: "London, Central (Simulated)" });
+          setHospitalDistances({
+            city_hospital: '0.8 km',
+            metro_clinic: '3.1 km',
+            county_general: '5.2 km',
+            care_first: '8.4 km'
+          });
+          setDetectingLocation(false);
+        },
+        { timeout: 6000 }
+      );
+    } else {
+      setUserLocation({ lat: 51.5074, lon: -0.1278, name: "London, Central (Simulated)" });
+      setHospitalDistances({
+        city_hospital: '0.8 km',
+        metro_clinic: '3.1 km',
+        county_general: '5.2 km',
+        care_first: '8.4 km'
+      });
+      setDetectingLocation(false);
+    }
+  };
+
+  const fetchData = async () => {
+    if (!currentUser.id) return;
+    
+    let patientDbId = null;
+    // Fetch Profile Independently
+    try {
+      const profileRes = await api.get(`/patients/${currentUser.id}`);
+      setPatientProfile(profileRes.data);
+      patientDbId = profileRes.data._id;
+      const isOnboarding = !currentUser.isSetupComplete;
+      const cleanAddress = (isOnboarding && profileRes.data.address === 'Registered via Google Sign-In') ? '' : (profileRes.data.address || '');
+      const cleanContact = (isOnboarding && profileRes.data.contact && profileRes.data.contact.includes('@')) ? '' : (profileRes.data.contact || '');
+      const cleanAge = (isOnboarding && profileRes.data.age === 30) ? '' : (profileRes.data.age || '');
+      const cleanGender = (isOnboarding && profileRes.data.gender === 'Other') ? '' : (profileRes.data.gender || 'Male');
+      const cleanBloodGroup = isOnboarding ? '' : (profileRes.data.bloodGroup || 'O+');
+      const cleanAllergies = (isOnboarding && profileRes.data.allergies === 'None') ? '' : (profileRes.data.allergies || '');
+
+      setEditProfileData({
+        name: profileRes.data.name || '',
+        age: cleanAge,
+        gender: cleanGender,
+        contact: cleanContact,
+        address: cleanAddress,
+        bloodGroup: cleanBloodGroup,
+        allergies: cleanAllergies,
+        medicalHistory: Array.isArray(profileRes.data.medicalHistory) ? profileRes.data.medicalHistory.join(', ') : '',
+        avatar: profileRes.data.avatar || ''
+      });
+    } catch (profileErr) {
+      console.warn("Failed to load full patient profile details", profileErr);
+    }
+
+    // Fetch Dashboard Data
+    try {
+      const docsRes = await api.get('/auth/doctors/universal');
+      setDoctors(docsRes.data);
+
+      const appsRes = await api.get('/appointments');
+      const myAppointments = Array.isArray(appsRes.data) ? appsRes.data : [];
+      const sortedMyAppointments = [...myAppointments].sort((a, b) => {
+        const aCompleted = a.status === 'Completed' || a.status === 'Cancelled' || a.status === 'Checked Out';
+        const bCompleted = b.status === 'Completed' || b.status === 'Cancelled' || b.status === 'Checked Out';
+        if (aCompleted && !bCompleted) return 1;
+        if (!aCompleted && bCompleted) return -1;
+
+        const dateA = a.createdAt || a._id || 0;
+        const dateB = b.createdAt || b._id || 0;
+        return new Date(dateB) - new Date(dateA);
+      });
+      setAppointments(sortedMyAppointments);
+
+      const prescriptionsRes = await api.get('/prescriptions');
+      const myPrescriptions = prescriptionsRes.data.filter(p => {
+        const pId = p.patientId?._id || p.patientId;
+        return pId === currentUser.id || (patientDbId && pId === patientDbId);
+      });
+      setPrescriptions(myPrescriptions);
+
+      if (patientDbId) {
+        // Fetch EMR timeline items
+        try {
+          const visitsRes = await api.get(`/emr/visits/patient/${patientDbId}`);
+          setVisits(visitsRes.data);
+        } catch (e) { console.warn("Failed to fetch visits", e); }
+
+        try {
+          const vitalsRes = await api.get(`/emr/vitals/patient/${patientDbId}`);
+          setVitals(vitalsRes.data);
+        } catch (e) { console.warn("Failed to fetch vitals", e); }
+
+        try {
+          const notesRes = await api.get(`/emr/clinical-notes/patient/${patientDbId}`);
+          setClinicalNotes(notesRes.data);
+        } catch (e) { console.warn("Failed to fetch clinical notes", e); }
+
+        try {
+          const procRes = await api.get(`/emr/procedures/patient/${patientDbId}`);
+          setProcedures(procRes.data);
+        } catch (e) { console.warn("Failed to fetch procedures", e); }
+
+        try {
+          const docRes = await api.get(`/emr/documents/patient/${patientDbId}`);
+          setClinicalDocs(docRes.data);
+        } catch (e) { console.warn("Failed to fetch documents", e); }
+
+        try {
+          const consentRes = await api.get(`/emr/consent/patient/${patientDbId}`);
+          setConsent(consentRes.data);
+        } catch (e) { console.warn("Failed to fetch consent", e); }
+
+        try {
+          const auditsRes = await api.get(`/emr/audits/patient/${patientDbId}`);
+          setAuditLogs(auditsRes.data);
+        } catch (e) { console.warn("Failed to fetch audit logs", e); }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (currentUser.id) {
+      fetchData();
+      detectLocation();
+    }
+  }, [currentUser.id, currentUser.isSetupComplete]);
+
+  useEffect(() => {
+    const handleSync = (e) => {
+      const { type } = e.detail;
+      console.log('[SOCKET] PatientDashboard received sync event for:', type);
+      if (currentUser.id) {
+        fetchData();
+      }
+    };
+    window.addEventListener('curoxa_sync', handleSync);
+    return () => window.removeEventListener('curoxa_sync', handleSync);
+  }, [currentUser.id]);
+
+  useEffect(() => {
+    const fetchBookedSlots = async () => {
+      if (!selectedDoctor || !appointmentDate) {
+        setBookedSlots([]);
+        return;
+      }
+      try {
+        const res = await api.get(`/appointments?doctorId=${selectedDoctor._id}`);
+        setBookedSlots(res.data);
+      } catch (err) {
+        console.error("Failed to fetch booked slots:", err);
+      }
+    };
+    fetchBookedSlots();
+  }, [selectedDoctor, appointmentDate]);
+
+  // Fetch doctor availability (slots, weekly off, leave)
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      if (!selectedDoctor || !appointmentDate) {
+        // Use doctor's slots if available, otherwise defaults
+        const docSlots = selectedDoctor?.doctorSlots?.length > 0 ? selectedDoctor.doctorSlots : DEFAULT_TIME_SLOTS;
+        setDoctorAvailability({ available: true, slots: docSlots, reason: null });
+        return;
+      }
+      try {
+        const res = await api.get(`/hr/doctor-availability/${selectedDoctor._id}?date=${appointmentDate}`);
+        setDoctorAvailability(res.data);
+      } catch (err) {
+        // Fallback: use doctor's stored slots or defaults
+        const docSlots = selectedDoctor?.doctorSlots?.length > 0 ? selectedDoctor.doctorSlots : DEFAULT_TIME_SLOTS;
+        setDoctorAvailability({ available: true, slots: docSlots, reason: null });
+      }
+    };
+    fetchAvailability();
+  }, [selectedDoctor, appointmentDate]);
+
+  useEffect(() => {
+    if (bookedSlots.length > 0 && appointmentDate && selectedDoctor) {
+      const targetDateStr = new Date(appointmentDate).toDateString();
+      const availableSlots = doctorAvailability.slots || DEFAULT_TIME_SLOTS;
+      const isCurrentBooked = bookedSlots.some(app => {
+        if (app.status === 'Cancelled') return false;
+        const appDocId = app.doctorId?._id || app.doctorId;
+        if (String(appDocId) !== String(selectedDoctor._id)) return false;
+        const appDateStr = new Date(app.date).toDateString();
+        if (appDateStr !== targetDateStr) return false;
+        const appTime = (app.time || '').trim().toLowerCase();
+        const targetTime = appointmentTime.trim().toLowerCase();
+        return appTime === targetTime || appTime.includes(targetTime);
+      });
+
+      if (isCurrentBooked) {
+        const firstAvailable = availableSlots.find(time => {
+          return !bookedSlots.some(app => {
+            if (app.status === 'Cancelled') return false;
+            const appDocId = app.doctorId?._id || app.doctorId;
+            if (String(appDocId) !== String(selectedDoctor._id)) return false;
+            const appDateStr = new Date(app.date).toDateString();
+            if (appDateStr !== targetDateStr) return false;
+            const appTime = (app.time || '').trim().toLowerCase();
+            const targetTime = time.trim().toLowerCase();
+            return appTime === targetTime || appTime.includes(targetTime);
+          });
+        });
+        if (firstAvailable) {
+          setAppointmentTime(firstAvailable);
+        } else {
+          setAppointmentTime('');
+        }
+      }
+    }
+  }, [bookedSlots, appointmentDate, selectedDoctor, appointmentTime, doctorAvailability]);
+
+  useEffect(() => {
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+  }, [activeTab, showAppointmentModal, appointments, doctors, showProfileMenu, detailsModalOpen, prescriptionModalOpen, currentUser.isSetupComplete, discoveryTab, selectedHospitalId, selectedHospitalDetails, selectedSpecialtyFilter]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
+
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    setIsUpdatingProfile(true);
+    setProfileMsg({ type: '', text: '' });
+    try {
+      const formattedHistory = editProfileData.medicalHistory.split(',').map(item => item.trim()).filter(Boolean);
+      const res = await api.put(`/patients/${currentUser.id}`, { ...editProfileData, medicalHistory: formattedHistory });
+      setPatientProfile(res.data);
+      const updatedUser = { ...currentUser, name: res.data.name, isSetupComplete: true, avatar: res.data.avatar || '' };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setCurrentUser(updatedUser);
+      setProfileMsg({ type: 'success', text: 'Profile updated successfully!' });
+    } catch (err) {
+      setProfileMsg({ type: 'error', text: err.response?.data?.error || 'Failed to update profile.' });
+    } finally {
+      setIsUpdatingProfile(false);
+    }
+  };
+
+  const handleCompleteOnboarding = async (e) => {
+    e.preventDefault();
+    setIsUpdatingProfile(true);
+    setProfileMsg({ type: '', text: '' });
+
+    // Validate contact number
+    const contactStr = editProfileData.contact.trim();
+    if (contactStr.startsWith('G-') || contactStr.length < 10 || !/^\+?[0-9\s-]{10,15}$/.test(contactStr)) {
+      setProfileMsg({ type: 'error', text: 'Please enter a valid mobile number (at least 10 digits without placeholder prefix).' });
+      setIsUpdatingProfile(false);
+      return;
+    }
+
+    // Validate address
+    const addressStr = editProfileData.address.trim();
+    if (addressStr === 'Registered via Google Sign-In' || addressStr === '') {
+      setProfileMsg({ type: 'error', text: 'Please enter your actual residential address.' });
+      setIsUpdatingProfile(false);
+      return;
+    }
+
+    try {
+      const formattedHistory = editProfileData.medicalHistory.split(',').map(item => item.trim()).filter(Boolean);
+      const res = await api.put(`/patients/${currentUser.id}`, { ...editProfileData, medicalHistory: formattedHistory });
+      setPatientProfile(res.data);
+      
+      const updatedUser = { ...currentUser, name: res.data.name, isSetupComplete: true, avatar: res.data.avatar || '' };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setCurrentUser(updatedUser);
+      showToast("Profile completed successfully! Welcome to your dashboard.", "success");
+    } catch (err) {
+      setProfileMsg({ type: 'error', text: err.response?.data?.error || 'Failed to save profile details.' });
+    } finally {
+      setIsUpdatingProfile(false);
+    }
+  };
+
+  const handleUpdatePassword = async (e) => {
+    e.preventDefault();
+    setProfileMsg({ type: '', text: '' });
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      return setProfileMsg({ type: 'error', text: 'New passwords do not match.' });
+    }
+    setIsUpdatingPassword(true);
+    try {
+      await api.put(`/patients/${currentUser.id}/password`, { 
+        currentPassword: passwordData.currentPassword, 
+        newPassword: passwordData.newPassword 
+      });
+      setProfileMsg({ type: 'success', text: 'Password updated successfully!' });
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (err) {
+      setProfileMsg({ type: 'error', text: err.response?.data?.error || 'Failed to update password.' });
+    } finally {
+      setIsUpdatingPassword(false);
+    }
+  };
+
+  const bookDoctor = (doc) => {
+    setSelectedDoctor(doc);
+    setActiveTab('book-appointment');
+  };
+
+  const confirmBooking = async () => {
+    if (!selectedDoctor) return;
+    try {
+      setLoading(true);
+      const patientIdVal = patientProfile?._id || currentUser.id;
+      const appRes = await api.post('/appointments', {
+        patientId: patientIdVal,
+        doctorId: selectedDoctor._id,
+        date: appointmentDate || new Date(),
+        time: appointmentTime,
+        reason: appointmentReason || 'General Consultation',
+        source: 'Online'
+      });
+
+      await api.post('/billing', {
+        patientId: patientIdVal,
+        appointmentId: appRes.data._id,
+        items: [
+          { description: 'Consultation Fee', amount: 500 },
+          { description: 'Registration Fee', amount: 50 }
+        ],
+        totalAmount: 550,
+        status: 'Unpaid',
+        paymentMethod: 'Offline'
+      });
+
+      setShowAppointmentModal(false);
+      setSelectedDoctor(null);
+      setAppointmentDate('');
+      setAppointmentReason('');
+      setPaymentMethod('Offline');
+      fetchData();
+      setActiveTab('history');
+      showToast("Appointment booked successfully! Please pay at the reception desk.", "success");
+    } catch (err) {
+      console.error(err);
+      showToast('Failed to book appointment', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getGroupedPrescriptions = () => {
+    const grouped = {};
+    prescriptions.forEach(p => {
+      const docId = p.doctorId?._id || p.doctorId || 'unknown';
+      const dateStr = p.createdAt ? new Date(p.createdAt).toLocaleDateString() : 'no-date';
+      const key = `${docId}-${dateStr}`;
+      
+      if (!grouped[key]) {
+        grouped[key] = {
+          _id: p._id,
+          doctorId: p.doctorId,
+          status: p.status,
+          createdAt: p.createdAt,
+          items: []
+        };
+      }
+      
+      if (p.items) {
+        p.items.forEach(item => {
+          const isDuplicate = grouped[key].items.some(existing => 
+            existing.medicine === item.medicine && 
+            existing.dosage === item.dosage && 
+            existing.duration === item.duration && 
+            existing.instructions === item.instructions
+          );
+          if (!isDuplicate) {
+            grouped[key].items.push(item);
+          }
+        });
+      }
+      
+      if (p.status !== 'Dispensed' && p.status !== 'Dispensed by Pharmacy') {
+        grouped[key].status = p.status;
+      }
+    });
+    return Object.values(grouped).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  };
+
+  // ABDM / Aadhaar Verification Simulation
+  const handleVerifyAadhaar = async (e) => {
+    e.preventDefault();
+    if (!aadhaarInput || aadhaarInput.length !== 12 || isNaN(aadhaarInput)) {
+      showToast("Aadhaar must be a 12-digit numeric code", "error");
+      return;
+    }
+    setVerifyingAadhaar(true);
+    try {
+      const res = await api.post('/emr/verify-aadhaar', { aadhaarNumber: aadhaarInput });
+      if (res.data.success) {
+        // Update patient record
+        const patientDbId = patientProfile?._id || currentUser.id;
+        const updateRes = await api.put(`/patients/${patientDbId}`, { aadhaarVerified: true });
+        setPatientProfile(updateRes.data);
+        showToast("Aadhaar verified and Linked successfully!", "success");
+        setShowAadhaarModal(false);
+        setAadhaarInput('');
+        fetchData();
+      }
+    } catch (err) {
+      showToast(err.response?.data?.error || "Aadhaar verification failed", "error");
+    } finally {
+      setVerifyingAadhaar(false);
+    }
+  };
+
+  // ABHA Health ID linkage
+  const handleLinkAbha = async (e) => {
+    e.preventDefault();
+    if (!abhaInput) {
+      showToast("Please enter a valid ABHA ID or Contact Number", "error");
+      return;
+    }
+    setVerifyingAbha(true);
+    try {
+      const res = await api.post('/emr/verify-abha', { abhaId: abhaInput });
+      if (res.data.success) {
+        const patientDbId = patientProfile?._id || currentUser.id;
+        const updateRes = await api.put(`/patients/${patientDbId}`, {
+          abhaId: res.data.abhaId,
+          abhaAddress: res.data.abhaAddress
+        });
+        setPatientProfile(updateRes.data);
+        showToast("ABHA Health ID linked successfully!", "success");
+        setShowAbhaModal(false);
+        setAbhaInput('');
+        fetchData();
+      }
+    } catch (err) {
+      showToast(err.response?.data?.error || "ABHA linkage failed", "error");
+    } finally {
+      setVerifyingAbha(false);
+    }
+  };
+
+  // DPDP Consent Updates
+  const handleUpdateConsentPurposes = async (purposesObj) => {
+    try {
+      const patientDbId = patientProfile?._id || currentUser.id;
+      const res = await api.post('/emr/consent', {
+        patientId: patientDbId,
+        purposes: purposesObj,
+        status: 'Active',
+        signature: 'Digitally signed by ' + (patientProfile?.name || currentUser.name)
+      });
+      setConsent(res.data);
+      showToast("Privacy consent purposes updated successfully!", "success");
+      fetchData();
+    } catch (err) {
+      showToast("Failed to update consent settings", "error");
+    }
+  };
+
+  // DPDP Consent Withdrawal
+  const handleWithdrawConsent = async () => {
+    try {
+      const patientDbId = patientProfile?._id || currentUser.id;
+      const res = await api.post('/emr/consent', {
+        patientId: patientDbId,
+        status: 'Withdrawn',
+        signature: 'Consent Revoked digitally'
+      });
+      setConsent(res.data);
+      showToast("Consent withdrawn. Access restricted to Emergency override only.", "warning");
+      fetchData();
+    } catch (err) {
+      showToast("Failed to withdraw consent", "error");
+    }
+  };
+
+  // DPDP Deletion / Correction Request submission
+  const handleSubmitDpdpRequest = async (e) => {
+    e.preventDefault();
+    if (!dpdpRequestDetails.trim()) {
+      showToast("Please provide details for the request", "error");
+      return;
+    }
+    if (dpdpRequestType === 'Erasure' && patientProfile?.legalHold) {
+      showToast("❌ Erasure request blocked: active statutory Legal Hold constraint.", "error");
+      return;
+    }
+    setSubmittingDpdp(true);
+    try {
+      const patientDbId = patientProfile?._id || currentUser.id;
+      const res = await api.post(`/emr/consent/patient/${patientDbId}/dpdp-request`, {
+        requestType: dpdpRequestType,
+        details: dpdpRequestDetails
+      });
+      showToast(`${dpdpRequestType} request submitted to Data Officer.`, "success");
+      setDpdpRequestDetails('');
+      setConsent(res.data);
+      fetchData();
+    } catch (err) {
+      showToast(err.response?.data?.error || "Failed to submit request", "error");
+    } finally {
+      setSubmittingDpdp(false);
+    }
+  };
+
+  // Download complete EMR clinical dossier as HTML text / print-friendly window
+  const handleDownloadDossier = () => {
+    const printWindow = window.open('', '_blank');
+    const patientName = patientProfile?.name || currentUser.name;
+    const uhid = patientProfile ? `MDC-${patientProfile._id.substring(18).toUpperCase()}` : 'N/A';
+    
+    let htmlContent = `
+      <html>
+      <head>
+        <title>Curoxa Clinical Dossier - \${patientName}</title>
+        <style>
+          body { font-family: 'Helvetica Neue', Arial, sans-serif; padding: 40px; color: #1E293B; line-height: 1.6; }
+          .header { border-bottom: 3px solid #2563EB; padding-bottom: 20px; margin-bottom: 30px; }
+          .title { font-size: 28px; font-weight: bold; color: #2563EB; margin: 0; }
+          .subtitle { font-size: 14px; color: #64748B; margin-top: 4px; }
+          .section { margin-bottom: 30px; }
+          .section-title { font-size: 18px; font-weight: bold; border-bottom: 1px solid #E2E8F0; padding-bottom: 8px; margin-bottom: 15px; color: #0F172A; }
+          .meta-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; background: #F8FAFC; padding: 15px; borderRadius: 8px; }
+          .meta-item label { font-size: 11px; font-weight: bold; color: #64748B; text-transform: uppercase; display: block; }
+          .meta-item span { font-size: 14px; font-weight: 600; }
+          .timeline-entry { border-left: 2px solid #3B82F6; padding-left: 20px; margin-bottom: 20px; position: relative; }
+          .timeline-entry::before { content: ''; position: absolute; left: -6px; top: 6px; width: 10px; height: 10px; border-radius: 50%; background: #2563EB; }
+          .entry-date { font-size: 12px; color: #64748B; font-weight: bold; }
+          .entry-title { font-size: 15px; font-weight: bold; color: #1E293B; margin: 4px 0; }
+          .entry-detail { font-size: 13.5px; color: #334155; }
+          .abnormal { color: #EF4444; font-weight: bold; }
+          .footer { font-size: 11px; color: #94A3B8; text-align: center; border-top: 1px solid #E2E8F0; padding-top: 20px; margin-top: 50px; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="title">Curoxa Hospital Group</div>
+          <div class="subtitle">Official Electronic Medical Record & Clinical Dossier</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Patient Demographics</div>
+          <div class="meta-grid">
+            <div class="meta-item"><label>Full Name</label><span>\${patientName}</span></div>
+            <div class="meta-item"><label>UHID / ID</label><span>\${uhid}</span></div>
+            <div class="meta-item"><label>Age / Gender</label><span>\${patientProfile?.age || 'N/A'} Yrs / \${patientProfile?.gender || 'N/A'}</span></div>
+            <div class="meta-item"><label>Contact</label><span>\${patientProfile?.contact || 'N/A'}</span></div>
+            <div class="meta-item"><label>Blood Group</label><span>\${patientProfile?.bloodGroup || 'N/A'}</span></div>
+            <div class="meta-item"><label>ABHA ID</label><span>\${patientProfile?.abhaId || 'Not Linked'}</span></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Clinical History Timeline</div>
+    `;
+
+    // Add visits
+    if (visits.length > 0) {
+      htmlContent += `<h3>Visits & Triages</h3>`;
+      visits.forEach(v => {
+        htmlContent += `
+          <div class="timeline-entry">
+            <div class="entry-date">\${new Date(v.arrivalTimestamp).toLocaleString()}</div>
+            <div class="entry-title">\${v.type} Visit - Department: \${v.department}</div>
+            <div class="entry-detail">
+              <strong>Chief Complaint:</strong> \${v.chiefComplaint || 'None'}<br/>
+              <strong>Priority Triage:</strong> \${v.priority} | <strong>Status:</strong> \${v.status}
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // Add vitals
+    if (vitals.length > 0) {
+      htmlContent += `<h3>Vitals Log</h3>`;
+      vitals.forEach(v => {
+        htmlContent += `
+          <div class="timeline-entry">
+            <div class="entry-date">\${new Date(v.createdAt).toLocaleString()}</div>
+            <div class="entry-title">Recorded Vitals</div>
+            <div class="entry-detail">
+              BP: \${v.bpSys}/\${v.bpDia} mmHg | Pulse: \${v.pulse} bpm | Temp: \${v.temperature} F | SPO2: <span class="\${v.spo2 < 95 ? 'abnormal' : ''}">\${v.spo2}%</span><br/>
+              Weight: \${v.weight} kg | Height: \${v.height} cm | BMI: \${v.bmi || 'N/A'}<br/>
+              Blood Sugar: \${v.bloodSugar || 'N/A'} mg/dL (\${v.sugarType}) | Pain Score: \${v.painScore}/10
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // Add clinical notes
+    if (clinicalNotes.length > 0) {
+      htmlContent += `<h3>SOAP Clinical Notes</h3>`;
+      clinicalNotes.forEach(n => {
+        htmlContent += `
+          <div class="timeline-entry">
+            <div class="entry-date">\${new Date(n.createdAt).toLocaleString()}</div>
+            <div class="entry-title">SOAP Note - Dr. \${n.doctorId?.name || 'Consultant'}</div>
+            <div class="entry-detail">
+              <strong>Subjective:</strong> \${n.subjective || 'N/A'}<br/>
+              <strong>Objective:</strong> \${n.objective || 'N/A'}<br/>
+              <strong>Assessment:</strong> \${n.assessment?.join(', ') || 'N/A'}<br/>
+              <strong>Plan:</strong> \${n.plan || 'N/A'}<br/>
+              <strong>Signature:</strong> \${n.digitalSignature || 'Signed Digitally'}
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // Add procedures
+    if (procedures.length > 0) {
+      htmlContent += `<h3>Surgeries & Procedures</h3>`;
+      procedures.forEach(p => {
+        htmlContent += `
+          <div class="timeline-entry">
+            <div class="entry-date">\${new Date(p.createdAt).toLocaleString()}</div>
+            <div class="entry-title">\${p.procedureName} - Dr. \${p.doctorId?.name || 'Surgeon'}</div>
+            <div class="entry-detail">
+              <strong>Pre-Op:</strong> \${p.preOpNotes || 'N/A'} | <strong>Post-Op:</strong> \${p.postOpNotes || 'N/A'}<br/>
+              <strong>Anesthesia:</strong> \${p.anesthesiaDetails || 'N/A'} | <strong>Implants:</strong> \${p.implants || 'None'}<br/>
+              <strong>Status:</strong> \${p.status}
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    htmlContent += `
+        </div>
+        <div class="footer">
+          Curoxa HIPAA-inspired & DPDP-compliant Secure Patient Vault.<br/>
+          Downloaded by patient on \${new Date().toLocaleString()} from IP: \${consent?.ipAddress || 'Self-Session'}.
+        </div>
+      </body>
+      </html>
+    `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    printWindow.print();
+  };
+
+  if (!currentUser.isSetupComplete) {
+    return (
+      <div className="onboarding-container" style={{
+        height: '100vh',
+        width: '100%',
+        background: 'radial-gradient(circle at 30% 30%, #FFFFFF 0%, #DBEAFE 100%)',
+        fontFamily: "'Urbanist', sans-serif",
+        overflowY: 'auto'
+      }}>
+        <style>{`
+          .onboarding-container {
+            font-family: 'Urbanist', sans-serif !important;
+          }
+          .onboarding-container h2 {
+            font-family: 'Outfit', sans-serif !important;
+          }
+          .onboarding-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid #BFDBFE !important;
+            box-shadow: 0 30px 60px rgba(59, 113, 254, 0.1) !important;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+            box-sizing: border-box;
+            animation: onboardingSlideUp 0.5s ease-out;
+          }
+          @keyframes onboardingSlideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+          }
+          .onboarding-container .form-control {
+            background: #FFFFFF !important;
+            border: 1px solid #CBD5E1 !important;
+            border-radius: 8px !important;
+            color: #0F172A !important;
+            font-family: 'Urbanist', sans-serif !important;
+            font-weight: 600 !important;
+            transition: border-color 0.2s, box-shadow 0.2s !important;
+          }
+          .onboarding-container .form-control:focus {
+            border-color: #3B71FE !important;
+            box-shadow: 0 0 0 3px rgba(59, 113, 254, 0.15) !important;
+            background: #FFFFFF !important;
+            outline: none !important;
+          }
+          .onboarding-container .btn-primary {
+            background: var(--primary-gradient) !important;
+            box-shadow: 0 8px 16px rgba(59, 113, 254, 0.15) !important;
+            transition: all 0.2s ease !important;
+            border: none !important;
+          }
+          .onboarding-container .btn-primary:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 12px 20px rgba(59, 113, 254, 0.25) !important;
+          }
+          .premium-toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            font-weight: 700;
+            font-size: 14px;
+            z-index: 9999;
+          }
+          .onboarding-grid-2 {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 16px !important;
+            margin-bottom: 16px !important;
+          }
+          .onboarding-grid-3 {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr 1fr !important;
+            gap: 16px !important;
+            margin-bottom: 16px !important;
+          }
+          @media (max-width: 640px) {
+            .onboarding-card {
+              padding: 24px 16px !important;
+              border-radius: 16px !important;
+            }
+            .onboarding-grid-2, .onboarding-grid-3 {
+              grid-template-columns: 1fr !important;
+              gap: 12px !important;
+            }
+          }
+        `}</style>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100%',
+          width: '100%',
+          padding: '40px 16px',
+          boxSizing: 'border-box'
+        }}>
+          <div className="onboarding-card">
+            <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px', borderRadius: '14px', background: '#2563EB', color: '#FFFFFF', fontWeight: 900, fontSize: '24px', marginBottom: '16px', boxShadow: '0 8px 20px rgba(59, 113, 254, 0.15)' }}>
+                C
+              </div>
+              <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#0F172A', margin: '0 0 8px 0', fontFamily: "'Outfit', sans-serif" }}>Complete Your Profile</h2>
+              <p style={{ fontSize: '14px', color: '#64748B', margin: 0, fontWeight: 500 }}>Welcome to Curoxa! Please fill in your details to set up your patient account.</p>
+            </div>
+
+            {profileMsg.text && (
+              <div style={{ padding: '14px', borderRadius: '10px', marginBottom: '20px', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', 
+                background: profileMsg.type === 'success' ? '#F0FDF4' : '#FEF2F2',
+                color: profileMsg.type === 'success' ? '#16A34A' : '#DC2626',
+                border: profileMsg.type === 'success' ? '1px solid #86EFAC' : '1px solid #FCA5A5'
+              }}>
+                <i data-lucide={profileMsg.type === 'success' ? 'check-circle' : 'alert-circle'} style={{ width: '16px', flexShrink: 0 }}></i>
+                <span style={{ flexGrow: 1 }}>{profileMsg.text}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleCompleteOnboarding}>
+              <div className="onboarding-grid-2">
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>Full Name *</label>
+                  <input type="text" className="form-control" style={{ height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', paddingLeft: '12px', fontSize: '13px', fontWeight: 600 }} value={editProfileData.name} onChange={e => setEditProfileData({...editProfileData, name: e.target.value})} required />
+                </div>
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>Contact / Mobile Number *</label>
+                  <input type="text" className="form-control" style={{ height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', paddingLeft: '12px', fontSize: '13px', fontWeight: 600 }} value={editProfileData.contact} onChange={e => setEditProfileData({...editProfileData, contact: e.target.value})} placeholder="e.g. 9876543210" required />
+                </div>
+              </div>
+              
+              <div className="onboarding-grid-3">
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>Age (Years) *</label>
+                  <input type="number" className="form-control" style={{ height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', paddingLeft: '12px', fontSize: '13px', fontWeight: 600 }} value={editProfileData.age} onChange={e => setEditProfileData({...editProfileData, age: e.target.value})} required min="1" max="120" />
+                </div>
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>Gender *</label>
+                  <select className="form-control" style={{ height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', paddingLeft: '10px', fontSize: '13px', fontWeight: 600, background: 'white' }} value={editProfileData.gender} onChange={e => setEditProfileData({...editProfileData, gender: e.target.value})} required>
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>Blood Group *</label>
+                  <select className="form-control" style={{ height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', paddingLeft: '10px', fontSize: '13px', fontWeight: 600, background: 'white' }} value={editProfileData.bloodGroup} onChange={e => setEditProfileData({...editProfileData, bloodGroup: e.target.value})} required>
+                    <option value="">Select Blood Group</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '16px' }}>
+                <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>Home Address *</label>
+                <textarea className="form-control" style={{ minHeight: '60px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '10px 12px', fontSize: '13px', fontWeight: 600 }} value={editProfileData.address} onChange={e => setEditProfileData({...editProfileData, address: e.target.value})} placeholder="Please enter your residential address" required></textarea>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '16px' }}>
+                <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>Allergies (if any)</label>
+                <input type="text" className="form-control" placeholder="e.g. Peanuts, Penicillin (Write 'None' if none)" style={{ height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', paddingLeft: '12px', fontSize: '13px', fontWeight: 600 }} value={editProfileData.allergies} onChange={e => setEditProfileData({...editProfileData, allergies: e.target.value})} />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '24px' }}>
+                <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>Medical History (Comma separated)</label>
+                <input type="text" className="form-control" placeholder="e.g. Asthma, Diabetes (Write 'None' if none)" style={{ height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', paddingLeft: '12px', fontSize: '13px', fontWeight: 600 }} value={editProfileData.medicalHistory} onChange={e => setEditProfileData({...editProfileData, medicalHistory: e.target.value})} />
+              </div>
+
+              <button type="submit" className="btn btn-primary" style={{ width: '100%', height: '46px', justifyContent: 'center', fontWeight: 800, borderRadius: '8px', background: 'var(--primary-gradient)' }} disabled={isUpdatingProfile}>
+                {isUpdatingProfile ? 'Setting up account...' : 'Complete Profile Setup'}
+              </button>
+            </form>
+
+            <div style={{ marginTop: '20px', textAlign: 'center' }}>
+              <button 
+                type="button" 
+                style={{ background: 'transparent', border: 'none', color: '#EF4444', fontWeight: 800, cursor: 'pointer', fontSize: '13px' }}
+                onClick={handleLogout}
+              >
+                Cancel & Log Out
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {notification && (
+          <div className="premium-toast" style={{
+            background: notification.type === 'error' ? '#FEF2F2' : '#F0FDF4',
+            border: `1px solid ${notification.type === 'error' ? '#FCA5A5' : '#BBF7D0'}`,
+            color: notification.type === 'error' ? '#B91C1C' : '#15803D',
+            animation: 'toastSlideDown 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
+          }}>
+            {notification.message}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="patient-portal-container">
+      <style>{`
+        .patient-portal-container {
+          font-family: 'Urbanist', sans-serif !important;
+          background: radial-gradient(circle at 10% 10%, #EFF6FF 0%, #F8FAFC 100%) !important;
+          min-height: calc(100vh / 0.9);
+          color: #0F172A !important;
+        }
+
+        /* Headings with Outfit font */
+        .patient-portal-container h1,
+        .patient-portal-container h2,
+        .patient-portal-container h3,
+        .patient-portal-container h4,
+        .patient-portal-container h5,
+        .patient-portal-container h6 {
+          font-family: 'Outfit', sans-serif !important;
+          color: #0F172A !important;
+        }
+
+        /* Sidebar Styling Override */
+        .patient-portal-container .sidebar {
+          width: 256px !important;
+          height: calc(100vh / 0.9) !important;
+          background: #FFFFFF !important;
+          border-right: 1px solid #E2E8F0 !important;
+          box-shadow: none !important;
+          position: fixed !important;
+          top: 0 !important;
+          left: 0 !important;
+          padding: 20px 0 !important;
+          display: flex !important;
+          flex-direction: column !important;
+          z-index: 100 !important;
+          transition: width 0.3s ease, background 0.3s ease !important;
+        }
+
+        .patient-portal-container .sidebar.collapsed {
+          width: 70px !important;
+        }
+
+        .patient-portal-container .sidebar.collapsed .sidebar-logo {
+          padding-left: 0 !important;
+          padding-right: 0 !important;
+          justify-content: center !important;
+        }
+
+        .patient-portal-container .sidebar-logo {
+          padding: 0 32px 32px !important;
+          display: flex !important;
+          align-items: center !important;
+          gap: 12px !important;
+          font-size: 20px !important;
+          font-weight: 900 !important;
+          color: #2563EB !important;
+          font-family: 'Outfit', sans-serif !important;
+          letter-spacing: -0.02em !important;
+        }
+
+        .patient-portal-container .nav-link {
+          display: flex !important;
+          align-items: center !important;
+          gap: 12px !important;
+          padding: 14px 32px !important;
+          color: #64748B !important;
+          text-decoration: none !important;
+          font-weight: 600 !important;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          border-left: 4px solid transparent !important;
+        }
+
+        .patient-portal-container .nav-link:hover {
+          background: #F8FAFC !important;
+          color: #0F172A !important;
+        }
+
+        .patient-portal-container .nav-link.active {
+          background: #EFF6FF !important;
+          color: #2563EB !important;
+          border-left: 4px solid #2563EB !important;
+        }
+
+        .patient-portal-container .sidebar-user {
+          margin: auto 16px 16px !important;
+          padding: 12px !important;
+          border-radius: 16px !important;
+          background: #F8FAFC !important;
+          border: 1px solid #E2E8F0 !important;
+          display: flex !important;
+          align-items: center !important;
+          gap: 12px !important;
+          cursor: pointer !important;
+          transition: all 0.2s ease !important;
+          position: relative !important;
+        }
+        .patient-portal-container .sidebar-user:hover {
+          background: #F1F5F9 !important;
+        }
+        .patient-portal-container .user-avatar {
+          width: 40px !important;
+          height: 40px !important;
+          border-radius: 50% !important;
+          object-fit: cover !important;
+          border: 2px solid #60A5FA !important;
+        }
+        .patient-portal-container .user-info {
+          display: flex !important;
+          flex-direction: column !important;
+        }
+        .patient-portal-container .user-info .name {
+          font-size: 13.5px !important;
+          font-weight: 800 !important;
+          color: #0F172A !important;
+          line-height: 1.3 !important;
+        }
+        .patient-portal-container .user-info .role {
+          font-size: 11px !important;
+          color: #64748B !important;
+          font-weight: 600 !important;
+        }
+
+        .patient-portal-container .sidebar.collapsed .sidebar-user {
+          padding: 12px !important;
+          margin: auto 8px 16px !important;
+          justify-content: center !important;
+        }
+
+        /* Top Nav Styling Override */
+        .patient-portal-container .top-nav {
+          height: 48px !important;
+          background: rgba(255, 255, 255, 0.75) !important;
+          backdrop-filter: blur(20px) !important;
+          -webkit-backdrop-filter: blur(20px) !important;
+          border-bottom: 1px solid #BFDBFE !important;
+          margin-left: 256px !important;
+          padding: 0 16px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          position: sticky !important;
+          top: 0 !important;
+          z-index: 90 !important;
+          box-shadow: 0 4px 30px rgba(59, 113, 254, 0.02) !important;
+          transition: margin-left 0.3s ease !important;
+        }
+        .patient-portal-container .top-nav.collapsed {
+          margin-left: 70px !important;
+        }
+        .patient-portal-container .main-content {
+          margin-left: 256px !important;
+          transition: margin-left 0.3s ease !important;
+          padding: 16px !important;
+        }
+        .patient-portal-container .main-content.collapsed {
+          margin-left: 70px !important;
+        }
+        .tab-content {
+          padding: 0px !important;
+        }
+
+        /* Cards & KPI grid */
+        .patient-portal-container .glass-card,
+        .patient-portal-container .kpi-card,
+        .patient-portal-container .doctor-card-pro,
+        .patient-portal-container .cal-widget {
+          background: rgba(255, 255, 255, 0.85) !important;
+          backdrop-filter: blur(12px) !important;
+          -webkit-backdrop-filter: blur(12px) !important;
+          border: 1px solid #BFDBFE !important;
+          border-radius: 16px !important;
+          box-shadow: 0 10px 25px -5px rgba(59, 113, 254, 0.05), 0 8px 12px -5px rgba(59, 113, 254, 0.02) !important;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        .patient-portal-container .glass-card:hover,
+        .patient-portal-container .kpi-card:hover,
+        .patient-portal-container .doctor-card-pro:hover {
+          transform: translateY(-4px) !important;
+          border-color: #3B71FE !important;
+          box-shadow: 0 20px 35px -5px rgba(59, 113, 254, 0.1), 0 10px 15px -5px rgba(59, 113, 254, 0.04) !important;
+        }
+
+        /* Form Controls */
+        .patient-portal-container .form-control {
+          background: #FFFFFF !important;
+          border: 1px solid #CBD5E1 !important;
+          border-radius: 8px !important;
+          color: #0F172A !important;
+          font-family: 'Urbanist', sans-serif !important;
+          font-weight: 500 !important;
+          transition: border-color 0.2s, box-shadow 0.2s !important;
+        }
+
+        .patient-portal-container .form-control:focus {
+          border-color: #3B71FE !important;
+          background: #FFFFFF !important;
+          box-shadow: 0 0 0 3px rgba(59, 113, 254, 0.15) !important;
+          outline: none !important;
+        }
+
+        /* Buttons */
+        .patient-portal-container .btn-primary {
+          background: var(--primary-gradient) !important;
+          color: white !important;
+          font-family: 'Urbanist', sans-serif !important;
+          font-weight: 700 !important;
+          box-shadow: 0 8px 16px rgba(59, 113, 254, 0.15) !important;
+          border: none !important;
+          border-radius: 10px !important;
+          transition: all 0.2s ease !important;
+        }
+
+        .patient-portal-container .btn-primary:hover {
+          transform: translateY(-2px) !important;
+          box-shadow: 0 12px 20px rgba(59, 113, 254, 0.25) !important;
+        }
+
+        .patient-portal-container .btn-secondary {
+          background: #FFFFFF !important;
+          border: 1px solid #BFDBFE !important;
+          color: #2563EB !important;
+          font-family: 'Urbanist', sans-serif !important;
+          font-weight: 700 !important;
+          border-radius: 10px !important;
+          transition: all 0.2s ease !important;
+        }
+
+        .patient-portal-container .btn-secondary:hover {
+          background: #EFF6FF !important;
+          border-color: #3B71FE !important;
+        }
+
+        /* Elite Tables */
+        .patient-portal-container .elite-table {
+          border-spacing: 0 8px !important;
+          width: 100% !important;
+        }
+
+        .patient-portal-container .elite-table th {
+          font-family: 'Outfit', sans-serif !important;
+          font-weight: 800 !important;
+          color: #64748B !important;
+          text-transform: uppercase !important;
+          letter-spacing: 0.5px !important;
+          padding: 10px 16px !important;
+          border-bottom: none !important;
+        }
+
+        .patient-portal-container .elite-table td {
+          background: rgba(255, 255, 255, 0.6) !important;
+          border-top: 1px solid #BFDBFE !important;
+          border-bottom: 1px solid #BFDBFE !important;
+          font-weight: 500 !important;
+          color: #0F172A !important;
+          padding: 12px 16px !important;
+        }
+
+        .patient-portal-container .elite-table td:first-child {
+          border-left: 1px solid #BFDBFE !important;
+          border-radius: 10px 0 0 10px !important;
+        }
+
+        .patient-portal-container .elite-table td:last-child {
+          border-right: 1px solid #BFDBFE !important;
+          border-radius: 0 10px 10px 0 !important;
+        }
+
+        .patient-portal-container .elite-table tr:hover td {
+          border-color: #3B71FE !important;
+          background: #EFF6FF !important;
+        }
+
+        /* Modals */
+        .patient-portal-container .modal-overlay {
+          background: rgba(15, 23, 42, 0.4) !important;
+          backdrop-filter: blur(8px) !important;
+          -webkit-backdrop-filter: blur(8px) !important;
+        }
+
+        .patient-portal-container .modal-box {
+          background: rgba(255, 255, 255, 0.95) !important;
+          backdrop-filter: blur(16px) !important;
+          -webkit-backdrop-filter: blur(16px) !important;
+          border: 1px solid #BFDBFE !important;
+          box-shadow: 0 25px 50px -12px rgba(59, 113, 254, 0.15) !important;
+          border-radius: 24px !important;
+        }
+
+        /* Custom Time Grid chips and Payment Gateway buttons */
+        .patient-portal-container .time-chip {
+          font-family: 'Urbanist', sans-serif !important;
+          font-weight: 700 !important;
+          flex-shrink: 0 !important;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        .patient-portal-container .time-chip.available {
+          background: #F0FFF4 !important;
+          border-color: #BBF7D0 !important;
+          color: #16A34A !important;
+        }
+        .patient-portal-container .time-chip.available:hover {
+          border-color: #22C55E !important;
+          background: #DCFCE7 !important;
+        }
+        .patient-portal-container .time-chip.booked {
+          background: #F1F5F9 !important;
+          border-color: #CBD5E1 !important;
+          color: #94A3B8 !important;
+          cursor: not-allowed !important;
+          opacity: 0.6 !important;
+        }
+        .patient-portal-container .time-chip.selected {
+          background: #EFF6FF !important;
+          border-color: #3B82F6 !important;
+          color: #2563EB !important;
+          box-shadow: 0 0 0 2.5px rgba(59, 130, 246, 0.25) !important;
+        }
+        .patient-portal-container .slot-scroll-arrow {
+          border-color: #BFDBFE !important;
+        }
+        .patient-portal-container .slot-scroll-arrow:hover {
+          background: #2563EB !important;
+          color: white !important;
+          border-color: #2563EB !important;
+        }
+        .patient-portal-container .pay-btn {
+          background: #FFFFFF !important;
+          border: 1px solid #BFDBFE !important;
+          transition: all 0.2s ease !important;
+        }
+        .patient-portal-container .pay-btn.active {
+          background: #EFF6FF !important;
+          border-color: #3B71FE !important;
+          color: #2563EB !important;
+        }
+
+        .premium-toast {
+          position: fixed !important;
+          top: 24px !important;
+          right: 24px !important;
+          padding: 14px 24px !important;
+          border-radius: 12px !important;
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+          z-index: 99999 !important;
+          display: flex !important;
+          align-items: center !important;
+          gap: 10px !important;
+          font-weight: 800 !important;
+          font-size: 14px !important;
+        }
+
+        @keyframes toastSlideDown {
+          from {
+            transform: translateY(-20px) scale(0.95);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+          }
+        }
+
+        .mobile-backdrop {
+          position: fixed !important;
+          top: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          bottom: 0 !important;
+          background: rgba(15, 23, 42, 0.4) !important;
+          backdrop-filter: blur(2px) !important;
+          z-index: 1999 !important;
+          animation: fadeIn 0.2s ease-out !important;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        /* Dropdown menu items styling */
+        .patient-portal-container .dropdown-item {
+          color: #475569 !important;
+          transition: all 0.2s ease !important;
+        }
+        .patient-portal-container .dropdown-item:hover {
+          background: #EFF6FF !important;
+          color: #2563EB !important;
+        }
+
+        @media (max-width: 1024px) {
+          .patient-portal-container .sidebar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            width: 240px !important;
+            transform: translateX(-100%) !important;
+            transition: transform 0.3s ease !important;
+            z-index: 2000 !important;
+            height: 100% !important;
+            height: 100dvh !important;
+            padding-bottom: calc(32px + env(safe-area-inset-bottom, 32px)) !important;
+          }
+          .patient-portal-container .sidebar.mobile-open {
+            transform: translateX(0) !important;
+          }
+          .patient-portal-container .top-nav,
+          .patient-portal-container .main-content {
+            margin-left: 0 !important;
+          }
+          .patient-portal-container .top-nav.collapsed,
+          .patient-portal-container .main-content.collapsed {
+            margin-left: 0 !important;
+          }
+          .mobile-menu-toggle {
+            display: flex !important;
+          }
+          .patient-portal-container, .onboarding-container {
+            min-height: 100vh !important;
+            min-height: 100dvh !important;
+          }
+          .patient-portal-container .mobile-stack {
+            grid-template-columns: 1fr !important;
+          }
+          .patient-portal-container .mobile-no-border {
+            border-left: none !important;
+            padding-left: 0 !important;
+          }
+          .patient-portal-container .mobile-grid-2,
+          .patient-portal-container .mobile-grid-3 {
+            grid-template-columns: 1fr !important;
+          }
+        }
+
+        @keyframes fadeInScale {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes slideInRight {
+          from { transform: translateX(20px); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+      `}</style>
+
+      {/* Interactive DPDP Privacy Rights Walkthrough Overlay */}
+      {showPrivacyOverlay && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(12px)',
+          zIndex: 999999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+          boxSizing: 'border-box'
+        }}>
+          <div style={{
+            background: '#FFFFFF',
+            borderRadius: '24px',
+            maxWidth: '600px',
+            width: '100%',
+            maxHeight: '90vh',
+            display: 'flex',
+            flexDirection: 'column',
+            boxShadow: '0 25px 50px -12px rgba(37, 99, 235, 0.25)',
+            border: '2px solid #DBEAFE',
+            overflow: 'hidden',
+            boxSizing: 'border-box',
+            animation: 'fadeInScale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
+          }}>
+            {/* Carousel Content */}
+            <div style={{ flex: 1, padding: '32px 32px 24px', overflowY: 'auto' }}>
+              {/* Slide Indicator */}
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
+                {[0, 1, 2, 3].map((idx) => (
+                  <div key={idx} style={{
+                    flex: 1,
+                    height: '6px',
+                    borderRadius: '3px',
+                    background: idx === privacySlideIdx ? '#2563EB' : '#E2E8F0',
+                    transition: 'all 0.3s'
+                  }}></div>
+                ))}
+              </div>
+
+              {privacySlideIdx === 0 && (
+                <div style={{ animation: 'slideInRight 0.3s ease-out' }}>
+                  <div style={{
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '16px',
+                    background: '#EFF6FF',
+                    color: '#2563EB',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '20px'
+                  }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  </div>
+                  <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#0F172A', margin: '0 0 12px 0', fontFamily: "'Outfit', sans-serif" }}>
+                    Your Privacy Rights under DPDP Act 2023
+                  </h2>
+                  <p style={{ fontSize: '15px', color: '#475569', lineHeight: '1.6', fontWeight: 600 }}>
+                    Welcome to the Curoxa Privacy Portal. In compliance with the <strong>Digital Personal Data Protection (DPDP) Act, 2023</strong> of India, we empower you with absolute sovereignty over your medical data.
+                  </p>
+                  <p style={{ fontSize: '14.5px', color: '#64748B', lineHeight: '1.5', margin: '16px 0 0 0', fontWeight: 650 }}>
+                    This quick tour will guide you on how to exercise your rights of Access, Correction, Consent Withdrawal, and Erasure securely.
+                  </p>
+                </div>
+              )}
+
+              {privacySlideIdx === 1 && (
+                <div style={{ animation: 'slideInRight 0.3s ease-out' }}>
+                  <div style={{
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '16px',
+                    background: '#F0FDF4',
+                    color: '#16A34A',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '20px'
+                  }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  </div>
+                  <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#0F172A', margin: '0 0 12px 0', fontFamily: "'Outfit', sans-serif" }}>
+                    Right to Withdraw Consent
+                  </h2>
+                  <p style={{ fontSize: '15px', color: '#475569', lineHeight: '1.6', fontWeight: 600 }}>
+                    You can grant or restrict clinical data processing purposes (e.g. Treatment, Research, Insurance) via the <strong>Consent Settings</strong> panel.
+                  </p>
+                  <div style={{ background: '#FFF5F5', border: '1.5px solid #FCA5A5', borderRadius: '12px', padding: '14px 16px', marginTop: '16px' }}>
+                    <p style={{ fontSize: '13px', color: '#B91C1C', margin: 0, fontWeight: 700, lineHeight: '1.5' }}>
+                      If you withdraw consent, doctors cannot view or edit your medical record. However, doctors can use the <strong>Break-Glass emergency bypass</strong> in critical situations, which triggers an audit log.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {privacySlideIdx === 2 && (
+                <div style={{ animation: 'slideInRight 0.3s ease-out' }}>
+                  <div style={{
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '16px',
+                    background: '#FEF3C7',
+                    color: '#D97706',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '20px'
+                  }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4z"/></svg>
+                  </div>
+                  <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#0F172A', margin: '0 0 12px 0', fontFamily: "'Outfit', sans-serif" }}>
+                    Access, Correction, & Erasure
+                  </h2>
+                  <p style={{ fontSize: '15px', color: '#475569', lineHeight: '1.6', fontWeight: 600 }}>
+                    You have the right to request a complete copy of your records (Access), edit incorrect data (Correction), or ask for full deletion (Erasure).
+                  </p>
+                  <p style={{ fontSize: '14px', color: '#64748B', lineHeight: '1.5', marginTop: '12px', fontWeight: 650 }}>
+                    Submit requests to our Data Protection Officer directly through the <strong>Privacy Requests Center</strong> in the dashboard.
+                  </p>
+                </div>
+              )}
+
+              {privacySlideIdx === 3 && (
+                <div style={{ animation: 'slideInRight 0.3s ease-out' }}>
+                  <div style={{
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '16px',
+                    background: '#F3E8FF',
+                    color: '#9333EA',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '20px'
+                  }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  </div>
+                  <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#0F172A', margin: '0 0 12px 0', fontFamily: "'Outfit', sans-serif" }}>
+                    Statutory Data Retention & Legal Hold
+                  </h2>
+                  <p style={{ fontSize: '15px', color: '#475569', lineHeight: '1.6', fontWeight: 600 }}>
+                    While you can request erasure, healthcare providers are legally obligated to retain certain clinical records under municipal/national statutes.
+                  </p>
+                  <div style={{ background: '#FAF5FF', border: '1.5px solid #E9D5FF', borderRadius: '12px', padding: '14px 16px', marginTop: '16px' }}>
+                    <p style={{ fontSize: '13px', color: '#6B21A8', margin: 0, fontWeight: 700, lineHeight: '1.5' }}>
+                      If your account has a <strong>Legal Hold</strong> active flag, erasure requests are suspended until the hold is resolved.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Carousel Footer Buttons */}
+            <div style={{
+              background: '#F8FAFC',
+              padding: '20px 32px',
+              borderTop: '1px solid #E2E8F0',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <button
+                type="button"
+                onClick={() => setPrivacySlideIdx(Math.max(0, privacySlideIdx - 1))}
+                disabled={privacySlideIdx === 0}
+                style={{
+                  height: '42px',
+                  padding: '0 16px',
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#64748B',
+                  fontWeight: 800,
+                  fontSize: '14px',
+                  cursor: privacySlideIdx === 0 ? 'not-allowed' : 'pointer',
+                  opacity: privacySlideIdx === 0 ? 0.3 : 1
+                }}
+              >
+                Back
+              </button>
+
+              {privacySlideIdx < 3 ? (
+                <button
+                  type="button"
+                  onClick={() => setPrivacySlideIdx(privacySlideIdx + 1)}
+                  style={{
+                    height: '42px',
+                    padding: '0 24px',
+                    background: '#2563EB',
+                    border: 'none',
+                    borderRadius: '10px',
+                    color: '#FFFFFF',
+                    fontWeight: 800,
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)'
+                  }}
+                >
+                  Continue
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    localStorage.setItem('curoxa_dpdp_intro_seen', 'true');
+                    setShowPrivacyOverlay(false);
+                  }}
+                  style={{
+                    height: '42px',
+                    padding: '0 24px',
+                    background: '#16A34A',
+                    border: 'none',
+                    borderRadius: '10px',
+                    color: '#FFFFFF',
+                    fontWeight: 800,
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(22, 163, 74, 0.25)'
+                  }}
+                >
+                  Get Started
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className={"sidebar " + (isSidebarCollapsed ? "collapsed " : "") + (mobileSidebarOpen ? "mobile-open" : "")} data-lenis-prevent>
+        <div className="sidebar-logo" style={{ display: 'flex', alignItems: 'center', gap: '10px', position: 'relative', width: '100%' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '8px', background: 'var(--primary)', color: '#FFFFFF', fontWeight: 900, fontSize: '16px', boxShadow: '0 0 15px rgba(59, 113, 254, 0.15)', flexShrink: 0 }}>
+            C
+          </div>
+          <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 900, color: '#2563EB', letterSpacing: '-0.02em' }}>Curoxa</span>
+          <button 
+            className="sidebar-collapse-toggle desktop-only-flex"
+            onClick={(e) => {
+              e.stopPropagation();
+              const newState = !isSidebarCollapsed;
+              setIsSidebarCollapsed(newState);
+              localStorage.setItem('curoxa_sidebar_collapsed', String(newState));
+            }}
+            style={{
+              transform: isSidebarCollapsed ? 'rotate(180deg)' : 'none'
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+        </div>
+        <nav style={{ flex: 1 }}>
+          <a href="#" className={`nav-link ${activeTab === 'summary' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('summary'); setMobileSidebarOpen(false); }}><i data-lucide="layout-dashboard"></i> Health Summary</a>
+          <a href="#" className={`nav-link ${activeTab === 'find' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('find'); setMobileSidebarOpen(false); }}><i data-lucide="search"></i> Find Doctor</a>
+          <a href="#" className={`nav-link ${activeTab === 'history' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('history'); setMobileSidebarOpen(false); }}><i data-lucide="calendar"></i> Appointments</a>
+          <a href="#" className={`nav-link ${activeTab === 'prescriptions' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('prescriptions'); setMobileSidebarOpen(false); }}><i data-lucide="pill"></i> My Prescriptions</a>
+          <a href="#" className={`nav-link ${activeTab === 'records' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('records'); setMobileSidebarOpen(false); }}><i data-lucide="file-text"></i> EMR Timeline</a>
+          <a href="#" className={`nav-link ${activeTab === 'documents' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('documents'); setMobileSidebarOpen(false); }}><i data-lucide="folder"></i> Saved Documents</a>
+          <a href="#" className={`nav-link ${activeTab === 'privacy' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('privacy'); setMobileSidebarOpen(false); }}><i data-lucide="shield"></i> Privacy & Consent</a>
+        </nav>
+
+        {/* User Profile at bottom of Sidebar */}
+        <div className="sidebar-user" onClick={(e) => { e.stopPropagation(); setShowProfileMenu(!showProfileMenu); }}>
+          {currentUser.avatar ? (
+            <img 
+              src={currentUser.avatar} 
+              alt="Avatar" 
+              className="user-avatar" 
+              style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #BFDBFE' }}
+            />
+          ) : (
+            <div className="sidebar-user-avatar-initials" style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #3B71FE 0%, #2563EB 100%)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '14px', marginRight: '10px', flexShrink: 0 }}>
+              {currentUser.name ? currentUser.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'JD'}
+            </div>
+          )}
+          <div className="user-info" style={{ flex: 1 }}>
+            <div className="name">{currentUser.name || 'Johnathan Doe'}</div>
+            <div className="role">Patient</div>
+          </div>
+          <i data-lucide="chevron-down" style={{ marginLeft: 'auto', width: '16px', color: '#94A3B8', transition: '0.3s', transform: showProfileMenu ? 'rotate(180deg)' : 'none' }}></i>
+
+          {showProfileMenu && (
+            <div 
+              className="glass-card sidebar-profile-popover" 
+              style={{ 
+                position: 'absolute', 
+                bottom: '72px', 
+                left: '0px', 
+                width: '208px', 
+                zIndex: 3000, 
+                padding: '8px', 
+                boxShadow: '0 -10px 40px rgba(0,0,0,0.06)', 
+                background: 'white',
+                borderRadius: '12px',
+                border: '1px solid #F1F5F9',
+                animation: 'slideUp 0.2s ease-out'
+              }}
+              onClick={e => e.stopPropagation()}
+            >
+              <div style={{ padding: '10px 12px', borderBottom: '1px solid #F1F5F9', marginBottom: '6px' }}>
+                <div style={{ fontWeight: 800, fontSize: '13.5px', color: '#0F172A' }}>{currentUser.name}</div>
+                <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 600 }}>Patient</div>
+              </div>
+              <div 
+                style={{ 
+                  padding: '10px 12px', 
+                  borderRadius: '8px', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '10px', 
+                  fontSize: '13px', 
+                  fontWeight: 700, 
+                  color: '#334155', 
+                  cursor: 'pointer',
+                  transition: 'background 0.2s',
+                  marginBottom: '4px'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = '#F1F5F9'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                onClick={() => {
+                  setActiveTab('profile');
+                  setShowProfileMenu(false);
+                }}
+              >
+                <i data-lucide="user" style={{ width: '16px', height: '16px' }}></i> My Profile
+              </div>
+              <div 
+                style={{ 
+                  padding: '10px 12px', 
+                  borderRadius: '8px', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '10px', 
+                  fontSize: '13px', 
+                  fontWeight: 700, 
+                  color: '#DC2626', 
+                  cursor: 'pointer',
+                  transition: 'background 0.2s'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = '#FEF2F2'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                onClick={handleLogout}
+              >
+                <i data-lucide="log-out" style={{ width: '16px', height: '16px' }}></i> Logout Account
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile Sidebar Backdrop Overlay */}
+      {mobileSidebarOpen && (
+        <div className="mobile-backdrop" onClick={() => setMobileSidebarOpen(false)} />
+      )}
+
+      <div className={"top-nav " + (isSidebarCollapsed ? "collapsed" : "")} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        {/* Hamburger Mobile Menu Toggle Button */}
+        <button 
+          className="mobile-menu-toggle"
+          onClick={(e) => {
+            e.stopPropagation();
+            setMobileSidebarOpen(!mobileSidebarOpen);
+          }}
+          style={{
+            display: 'none',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: '#475569',
+            padding: '8px',
+            borderRadius: '8px',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'background-color 0.2s',
+            marginRight: '8px'
+          }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+        </button>
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', borderRadius: '7px', background: '#2563EB', color: '#FFFFFF', fontWeight: 900, fontSize: '14px', boxShadow: '0 0 10px rgba(59, 113, 254, 0.15)' }}>
+              C
+            </div>
+            <span style={{ fontSize: '17px', fontWeight: 900, color: '#2563EB', letterSpacing: '-0.02em', fontFamily: "'Outfit', sans-serif" }}>Curoxa</span>
+            <span style={{ fontSize: '10px', background: '#EFF6FF', color: '#3B71FE', border: '1px solid #BFDBFE', padding: '3px 8px', borderRadius: '99px', fontWeight: 700 }} className="desktop-only-inline">
+              Patient Portal
+            </span>
+          </div>
+          <div id="liveClock" className="desktop-only-flex" style={{ background: '#EFF6FF', color: '#3B71FE', border: '1px solid #BFDBFE', padding: '8px 16px', borderRadius: '99px', fontWeight: 700, fontSize: '14px' }}>
+            {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </div>
+        </div>
+        {/* Notification Bell */}
+        <div 
+          ref={notificationRef}
+          style={{ position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '8px', border: '1px solid #E2E8F0', color: '#64748B', marginLeft: 'auto', marginRight: '8px', background: 'white' }}
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowNotifications(!showNotifications);
+            setUnreadCount(0);
+          }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-bell"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          {unreadCount > 0 && (
+            <span style={{ position: 'absolute', top: '-4px', right: '-4px', background: '#EF4444', color: 'white', borderRadius: '50%', width: '18px', height: '18px', fontSize: '10px', fontWeight: '900', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid white' }}>
+              {unreadCount}
+            </span>
+          )}
+
+          {showNotifications && (
+            <div data-lenis-prevent 
+              style={{
+                position: 'absolute',
+                top: '48px',
+                right: '0',
+                width: '320px',
+                background: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(8px)',
+                borderRadius: '12px',
+                border: '1px solid #E2E8F0',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                zIndex: 1200,
+                padding: '16px',
+                maxHeight: '400px',
+                overflowY: 'auto',
+                textAlign: 'left'
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #F1F5F9', paddingBottom: '8px', marginBottom: '12px' }}>
+                <span style={{ fontWeight: 800, fontSize: '14px', color: '#0F172A' }}>Notifications</span>
+                <button 
+                  style={{ background: 'none', border: 'none', color: '#2563EB', fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}
+                  onClick={() => {
+                    const userKey = currentUser.staff_id || currentUser.id || currentUser.name || 'default';
+                    const clearedKey = `curoxa_cleared_notifications_${userKey}`;
+                    const clearedIds = JSON.parse(localStorage.getItem(clearedKey) || '[]');
+                    const newClearedIds = [...clearedIds, ...notifications.map(n => n.id)];
+                    localStorage.setItem(clearedKey, JSON.stringify(newClearedIds));
+                    setNotifications([]);
+                    setUnreadCount(0);
+                  }}
+                >
+                  Clear all
+                </button>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {notifications.map(n => (
+                  <div key={n.id} style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '8px', borderRadius: '8px', background: n.isNew ? '#EFF6FF' : '#F8FAFC', borderLeft: n.isNew ? '3px solid #2563EB' : '3px solid #E2E8F0' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontWeight: 800, fontSize: '12.5px', color: '#1E293B' }}>{n.title}</span>
+                      <span style={{ fontSize: '10px', color: '#94A3B8', fontWeight: 600 }}>{n.time}</span>
+                    </div>
+                    <span style={{ fontSize: '11.5px', color: '#475569', fontWeight: 550, lineHeight: 1.4 }}>{n.message}</span>
+                  </div>
+                ))}
+                {notifications.length === 0 && (
+                  <div style={{ textAlign: 'center', padding: '20px 0', color: '#94A3B8', fontSize: '12px', fontWeight: 600 }}>
+                    No notifications
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className={"main-content " + (isSidebarCollapsed ? "collapsed" : "")} data-lenis-prevent>
+        {activeTab === 'summary' && (
+          <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+              <div>
+                <h1 style={{ fontSize: '24px', fontWeight: 900, margin: 0, color: '#0F172A', fontFamily: "'Outfit', sans-serif" }}>
+                  Welcome back, {currentUser.name ? currentUser.name.split(' ')[0] : 'Johnathan'}
+                </h1>
+                <p style={{ fontSize: '13px', color: '#64748B', margin: '4px 0 0 0', fontWeight: 600 }}>
+                  UHID: {patientProfile ? `MDC-${patientProfile._id.substring(18).toUpperCase()}` : 'Loading...'} | Age: {patientProfile?.age || 'N/A'} Yrs | Gender: {patientProfile?.gender || 'N/A'}
+                </p>
+              </div>
+
+              {/* Consent Bypass Alert Badge */}
+              <div 
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '8px', 
+                  padding: '10px 16px', 
+                  borderRadius: '12px', 
+                  background: consent?.status === 'Withdrawn' ? '#FFF7ED' : '#F0FDF4', 
+                  border: `1px solid ${consent?.status === 'Withdrawn' ? '#FFEDD5' : '#DCFCE7'}`,
+                  color: consent?.status === 'Withdrawn' ? '#EA580C' : '#15803D',
+                  fontSize: '13.5px',
+                  fontWeight: 800
+                }}
+              >
+                <i data-lucide={consent?.status === 'Withdrawn' ? 'shield-alert' : 'shield-check'} style={{ width: '18px', height: '18px' }}></i>
+                <span>
+                  {consent?.status === 'Withdrawn' ? 'Privacy Shield: Consent Revoked (Emergency Bypass Only)' : 'EMR Access: Consent Active'}
+                </span>
+              </div>
+            </div>
+
+            {/* Top row: ABHA Card and quick stats */}
+            <div className="mobile-stack" style={{ display: 'grid', gridTemplateColumns: '400px 1fr', gap: '24px', marginBottom: '28px' }}>
+              {/* Holographic ABDM ABHA ID Card */}
+              <div 
+                style={{ 
+                  background: 'linear-gradient(135deg, #1E3A8A 0%, #2563EB 50%, #3B82F6 100%)', 
+                  color: 'white', 
+                  borderRadius: '24px', 
+                  padding: '24px', 
+                  boxShadow: '0 20px 30px rgba(37, 99, 235, 0.25)', 
+                  position: 'relative', 
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  height: '240px'
+                }}
+              >
+                {/* Decorative shapes */}
+                <div style={{ position: 'absolute', top: '-10%', right: '-10%', width: '180px', height: '180px', borderRadius: '50%', background: 'rgba(255,255,255,0.08)', pointerEvents: 'none' }}></div>
+                <div style={{ position: 'absolute', bottom: '-20%', left: '-10%', width: '150px', height: '150px', borderRadius: '50%', background: 'rgba(255,255,255,0.06)', pointerEvents: 'none' }}></div>
+
+                {/* Card Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', zIndex: 1 }}>
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: 800, opacity: 0.8, letterSpacing: '1px' }}>AYUSHMAN BHARAT DIGITAL HEALTH MISSION</div>
+                    <div style={{ fontSize: '16px', fontWeight: 900, marginTop: '2px', fontFamily: "'Outfit', sans-serif" }}>ABHA Health ID Card</div>
+                  </div>
+                  <div style={{ background: 'rgba(255,255,255,0.2)', padding: '4px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: 800 }}>
+                    ABDM APPROVED
+                  </div>
+                </div>
+
+                {/* Card Middle: ABHA credentials */}
+                <div style={{ zIndex: 1, margin: '20px 0' }}>
+                  {patientProfile?.abhaId ? (
+                    <>
+                      <div style={{ fontSize: '20px', fontWeight: 900, letterSpacing: '2px', fontFamily: 'monospace' }}>
+                        {patientProfile.abhaId}
+                      </div>
+                      <div style={{ fontSize: '12px', opacity: 0.9, marginTop: '4px', fontWeight: 600 }}>
+                        Address: {patientProfile.abhaAddress || 'N/A'}
+                      </div>
+                    </>
+                  ) : (
+                    <div style={{ padding: '10px', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', border: '1px dashed rgba(255,255,255,0.3)', textAlign: 'center' }}>
+                      <div style={{ fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>No ABDM Health ID Linked</div>
+                      <button 
+                        className="btn" 
+                        style={{ background: 'white', color: '#2563EB', fontWeight: 800, fontSize: '11.5px', padding: '6px 14px', borderRadius: '6px', border: 'none', cursor: 'pointer' }}
+                        onClick={() => setShowAbhaModal(true)}
+                      >
+                        Link ABHA Card
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Card Footer */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 1 }}>
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: 800 }}>{currentUser.name}</div>
+                    <div style={{ fontSize: '11px', opacity: 0.8, display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+                      <i data-lucide="shield-check" style={{ width: '12px', height: '12px', color: '#10B981' }}></i>
+                      {patientProfile?.aadhaarVerified ? 'Aadhaar KYC Verified' : 'Aadhaar Not Verified'}
+                    </div>
+                  </div>
+                  
+                  {/* Verification Quick Action */}
+                  {!patientProfile?.aadhaarVerified ? (
+                    <button 
+                      style={{ background: '#EF4444', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                      onClick={() => setShowAadhaarModal(true)}
+                    >
+                      <i data-lucide="alert-circle" style={{ width: '12px' }}></i> Verify Aadhaar
+                    </button>
+                  ) : (
+                    <div style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981', border: '1px solid #10B981', padding: '4px 8px', borderRadius: '6px', fontSize: '10.5px', fontWeight: 800 }}>
+                      KYC OK
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Consent status & DPDP Rights alert banner */}
+              <div className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div>
+                  <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#0F172A', margin: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i data-lucide="shield-check" style={{ color: 'var(--primary)' }}></i> Digital Privacy Rights (DPDP Act, 2023)
+                  </h3>
+                  <p style={{ fontSize: '13px', color: '#64748B', lineHeight: 1.5, margin: 0, fontWeight: 550 }}>
+                    As a digital data principal in India, you hold complete autonomy over your health records. You have the right to request correction of inaccurate medical details, restrict third-party sharing, withdraw access consent at any time, or request complete erasure of your records subject to statutory medical retention periods (10 years).
+                  </p>
+                </div>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '16px' }}>
+                  <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '12.5px', fontWeight: 800 }} onClick={() => setActiveTab('privacy')}>
+                    Manage Data Consents
+                  </button>
+                  <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '12.5px', fontWeight: 800 }} onClick={handleDownloadDossier}>
+                    <i data-lucide="download" style={{ width: '14px', display: 'inline-block', marginRight: '4px' }}></i> Export EMR Dossier
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Main Content Grid: Vitals and active issues */}
+            <div className="mobile-stack" style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '32px' }}>
+              <div>
+                {/* Latest Vitals Tracker */}
+                <div className="glass-card" style={{ marginBottom: '32px', padding: '24px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                    <h3 style={{ fontSize: '16px', fontWeight: 800, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <i data-lucide="activity" style={{ color: 'var(--primary)' }}></i> Vital Signs Tracker (Latest Check-in)
+                    </h3>
+                    <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 800, textTransform: 'uppercase' }}>
+                      {vitals.length > 0 ? new Date(vitals[0].createdAt).toLocaleDateString([], { day: '2-digit', month: 'short' }) : 'No Entries'}
+                    </span>
+                  </div>
+
+                  {vitals.length > 0 ? (
+                    (() => {
+                      const latest = vitals[0];
+                      const isHighSys = latest.bpSys > 140;
+                      const isLowSpo2 = latest.spo2 < 95;
+                      const isHighPulse = latest.pulse > 100 || latest.pulse < 60;
+                      
+                      return (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '16px' }}>
+                          {/* BP */}
+                          <div style={{ padding: '16px', borderRadius: '16px', background: isHighSys ? '#FFF7ED' : '#F8FAFC', border: `1px solid ${isHighSys ? '#FDBA74' : '#E2E8F0'}` }}>
+                            <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 800 }}>BLOOD PRESSURE</div>
+                            <div style={{ fontSize: '20px', fontWeight: 900, color: isHighSys ? '#EA580C' : '#0F172A', marginTop: '4px' }}>
+                              {latest.bpSys}/{latest.bpDia} <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748B' }}>mmHg</span>
+                            </div>
+                            <div style={{ fontSize: '10px', color: isHighSys ? '#D97706' : '#16A34A', fontWeight: 700, marginTop: '4px' }}>
+                              {isHighSys ? '⚠️ Pre-hypertensive' : '✓ Optimal'}
+                            </div>
+                          </div>
+
+                          {/* SPO2 */}
+                          <div style={{ padding: '16px', borderRadius: '16px', background: isLowSpo2 ? '#FEF2F2' : '#F8FAFC', border: `1px solid ${isLowSpo2 ? '#FCA5A5' : '#E2E8F0'}` }}>
+                            <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 800 }}>SPO2 (OXYGEN)</div>
+                            <div style={{ fontSize: '20px', fontWeight: 900, color: isLowSpo2 ? '#EF4444' : '#0F172A', marginTop: '4px' }}>
+                              {latest.spo2}%
+                            </div>
+                            <div style={{ fontSize: '10px', color: isLowSpo2 ? '#DC2626' : '#16A34A', fontWeight: 700, marginTop: '4px' }}>
+                              {isLowSpo2 ? '⚠️ Oxygen low' : '✓ Normal saturation'}
+                            </div>
+                          </div>
+
+                          {/* Pulse */}
+                          <div style={{ padding: '16px', borderRadius: '16px', background: isHighPulse ? '#FFF7ED' : '#F8FAFC', border: `1px solid ${isHighPulse ? '#FDBA74' : '#E2E8F0'}` }}>
+                            <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 800 }}>HEART RATE</div>
+                            <div style={{ fontSize: '20px', fontWeight: 900, color: isHighPulse ? '#EA580C' : '#0F172A', marginTop: '4px' }}>
+                              {latest.pulse} <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748B' }}>bpm</span>
+                            </div>
+                            <div style={{ fontSize: '10px', color: isHighPulse ? '#D97706' : '#16A34A', fontWeight: 700, marginTop: '4px' }}>
+                              {isHighPulse ? '⚠️ High pulse' : '✓ Optimal rhythm'}
+                            </div>
+                          </div>
+
+                          {/* Temp */}
+                          <div style={{ padding: '16px', borderRadius: '16px', background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
+                            <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 800 }}>TEMPERATURE</div>
+                            <div style={{ fontSize: '20px', fontWeight: 900, color: '#0F172A', marginTop: '4px' }}>
+                              {latest.temperature} <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748B' }}>°F</span>
+                            </div>
+                            <div style={{ fontSize: '10px', color: '#16A34A', fontWeight: 700, marginTop: '4px' }}>
+                              ✓ Normal temperature
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()
+                  ) : (
+                    <div style={{ padding: '24px', textAlign: 'center', color: '#94A3B8', fontWeight: 600, fontSize: '13px' }}>
+                      No clinical vitals recorded yet. Your vitals will reflect here when logged by clinic nurses.
+                    </div>
+                  )}
+                </div>
+
+                {/* Active Diagnoses / Health Insights */}
+                <div className="glass-card" style={{ padding: '24px' }}>
+                  <h3 style={{ fontSize: '16px', fontWeight: 800, margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i data-lucide="heart" style={{ color: 'var(--primary)' }}></i> Active Diagnoses & Conditions
+                  </h3>
+                  
+                  {(() => {
+                    // Extract assessments from clinical SOAP notes
+                    const conditions = [];
+                    clinicalNotes.forEach(n => {
+                      if (n.assessment) {
+                        n.assessment.forEach(c => {
+                          if (!conditions.includes(c)) conditions.push(c);
+                        });
+                      }
+                    });
+
+                    if (conditions.length === 0) {
+                      return (
+                        <div style={{ padding: '20px 0', color: '#94A3B8', fontSize: '13px', fontWeight: 600 }}>
+                          No chronic or active diagnoses listed in your records.
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                        {conditions.map(c => (
+                          <div 
+                            key={c} 
+                            style={{ 
+                              background: '#EFF6FF', 
+                              border: '1px solid #BFDBFE', 
+                              color: '#2563EB', 
+                              padding: '8px 16px', 
+                              borderRadius: '12px', 
+                              fontSize: '13.5px', 
+                              fontWeight: 800, 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              gap: '6px' 
+                            }}
+                          >
+                            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#2563EB' }}></span>
+                            {c}
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+
+              {/* Next Appointment widget column */}
+              <div className="mobile-stack-container">
+                {activeAppt ? (
+                  <>
+                    <div className="glass-card" style={{ background: 'var(--primary-gradient)', color: 'white', border: 'none', marginBottom: '24px' }}>
+                      <div style={{ fontSize: '11px', fontWeight: 800, opacity: 0.8, letterSpacing: '1px', marginBottom: '16px', textTransform: 'uppercase' }}>Next Appointment</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
+                        <div style={{
+                          width: '56px',
+                          height: '56px',
+                          borderRadius: '16px',
+                          background: 'rgba(255,255,255,0.2)',
+                          color: 'white',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '20px',
+                          fontWeight: 800,
+                          border: '2px solid rgba(255,255,255,0.3)',
+                          flexShrink: 0
+                        }}>
+                          {activeAppt.doctorId?.name ? activeAppt.doctorId.name.replace('Dr. ', '').substring(0, 2).toUpperCase() : 'DR'}
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 800, fontSize: '18px' }}>{activeAppt.doctorId?.name || 'Assigned Doctor'}</div>
+                          <div style={{ fontSize: '13px', opacity: 0.9 }}>{activeAppt.doctorId?.specialty || activeAppt.reason || 'General Consultation'}</div>
+                        </div>
+                      </div>
+                      <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '12px', padding: '12px', display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+                        <i data-lucide="calendar" style={{ width: '18px' }}></i>
+                        <div style={{ fontSize: '14px', fontWeight: 700 }}>
+                          {new Date(activeAppt.date).toLocaleDateString()} at {activeAppt.time}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="glass-card" style={{ textAlign: 'center', padding: '20px' }}>
+                      <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '12px' }}>ACTIVE TOKEN</div>
+                      <div style={{ fontSize: '48px', fontWeight: 900, color: 'var(--primary)', letterSpacing: '-2px' }}>
+                        T-{activeAppt._id.substring(activeAppt._id.length - 4).toUpperCase()}
+                      </div>
+                      <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '12px' }}>Status: <span style={{ color: 'var(--text-main)', fontWeight: 800 }}>{activeAppt.status}</span></div>
+                      <div style={{ marginTop: '20px', padding: '12px', border: '2px dashed var(--border)', borderRadius: '12px', display: 'flex', justifyContent: 'center' }}>
+                        <i data-lucide="qr-code" style={{ width: '100px', height: '100px', color: 'var(--text-main)', opacity: 0.2 }}></i>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="glass-card" style={{ textAlign: 'center', padding: '40px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '300px' }}>
+                    <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>
+                      <i data-lucide="calendar" style={{ width: '28px', height: '28px' }}></i>
+                    </div>
+                    <h3 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-main)', marginBottom: '8px' }}>No Active Appointments</h3>
+                    <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0, lineHeight: 1.5 }}>You have no scheduled appointments at this time.</p>
+                    <button className="btn btn-primary" style={{ marginTop: '24px', width: '100%', justifyContent: 'center' }} onClick={() => setActiveTab('find')}>Book Appointment</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'find' && (
+          <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out' }}>
+            <div className="dashboard-header" style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <div>
+                  <h1 style={{ fontSize: '24px', fontWeight: 800 }}>Universal Discovery Portal</h1>
+                  <p className="text-muted" style={{ fontWeight: 600 }}>Find hospitals and schedule appointments across the whole network</p>
+                </div>
+              </div>
+              
+              {/* Dual Tab Control & Search */}
+              {!selectedHospitalDetails && (
+                <>
+                  <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', background: '#F1F5F9', padding: '6px', borderRadius: '12px', width: 'fit-content' }}>
+                      <button 
+                        onClick={() => { setDiscoveryTab('hospitals'); setSelectedHospitalId(null); }}
+                        style={{ padding: '8px 20px', border: 'none', background: discoveryTab === 'hospitals' ? 'white' : 'transparent', color: discoveryTab === 'hospitals' ? 'var(--primary)' : '#64748B', fontWeight: 800, fontSize: '13px', borderRadius: '8px', cursor: 'pointer', transition: '0.2s', boxShadow: discoveryTab === 'hospitals' ? '0 2px 4px rgba(0,0,0,0.05)' : 'none' }}
+                      >
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><i data-lucide="building-2" style={{ width: '16px' }}></i> Hospitals & Clinics</span>
+                      </button>
+                      <button 
+                        onClick={() => { setDiscoveryTab('doctors'); }}
+                        style={{ padding: '8px 20px', border: 'none', background: discoveryTab === 'doctors' ? 'white' : 'transparent', color: discoveryTab === 'doctors' ? 'var(--primary)' : '#64748B', fontWeight: 800, fontSize: '13px', borderRadius: '8px', cursor: 'pointer', transition: '0.2s', boxShadow: discoveryTab === 'doctors' ? '0 2px 4px rgba(0,0,0,0.05)' : 'none' }}
+                      >
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><i data-lucide="users" style={{ width: '16px' }}></i> All Doctors</span>
+                      </button>
+                    </div>
+
+                    {/* Facility Subscription Category Filter Pills */}
+                    {discoveryTab === 'hospitals' && (
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        {[
+                          { key: 'all', label: '🏢 All Facilities' },
+                          { key: 'multispeciality', label: '🏥 Multispeciality Hospitals' },
+                          { key: 'dental', label: '🦷 Dental & Smile Clinics' },
+                          { key: 'diagnostic', label: '🧪 Diagnostic & Labs' }
+                        ].map(f => (
+                          <button
+                            key={f.key}
+                            type="button"
+                            onClick={() => setFacilityTypeFilter(f.key)}
+                            style={{
+                              padding: '7px 14px',
+                              borderRadius: '20px',
+                              border: facilityTypeFilter === f.key ? 'none' : '1px solid #CBD5E1',
+                              background: facilityTypeFilter === f.key ? (f.key === 'dental' ? '#10B981' : 'var(--primary)') : 'white',
+                              color: facilityTypeFilter === f.key ? 'white' : '#475569',
+                              fontWeight: 800,
+                              fontSize: '12px',
+                              cursor: 'pointer',
+                              transition: 'all 0.15s ease',
+                              boxShadow: facilityTypeFilter === f.key ? '0 2px 6px rgba(0,0,0,0.1)' : 'none'
+                            }}
+                          >
+                            {f.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Reactive Search Bar & Location Detector */}
+                  <div style={{ display: 'flex', gap: '12px', width: '100%', alignItems: 'center' }} className="mobile-stack">
+                    <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
+                      <i data-lucide="search" style={{ position: 'absolute', left: '16px', color: '#64748B', width: '18px' }}></i>
+                      <input 
+                        type="text" 
+                        placeholder={discoveryTab === 'hospitals' ? "Search hospitals by name, location, or contact..." : "Search doctors by name, specialization, or hospital..."}
+                        style={{ background: 'white', border: '1px solid #CBD5E1', paddingLeft: '48px', height: '46px', width: '100%', borderRadius: '12px', fontSize: '14px', fontWeight: 600, outline: 'none', boxShadow: '0 2px 4px rgba(0,0,0,0.01)' }}
+                        value={discoverySearch}
+                        onChange={(e) => setDiscoverySearch(e.target.value)}
+                      />
+                    </div>
+                    
+                    {discoveryTab === 'hospitals' && (
+                      <button 
+                        onClick={detectLocation}
+                        disabled={detectingLocation}
+                        style={{ 
+                          height: '46px', 
+                          padding: '0 20px', 
+                          borderRadius: '12px', 
+                          border: '1px solid var(--primary)', 
+                          background: userLocation ? 'var(--primary-light)' : 'white', 
+                          color: 'var(--primary)', 
+                          fontWeight: 800, 
+                          fontSize: '13px', 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: '8px', 
+                          cursor: 'pointer',
+                          whiteSpace: 'nowrap',
+                          transition: '0.2s',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+                        }}
+                      >
+                        <i data-lucide={detectingLocation ? "loader-2" : "map-pin"} className={detectingLocation ? "spin" : ""} style={{ width: '16px' }}></i>
+                        {detectingLocation ? "Detecting..." : (userLocation ? "Location Active" : "Detect Location")}
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {discoveryTab === 'hospitals' && selectedHospitalDetails && (
+              <div className="animate-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <button 
+                  className="btn btn-secondary" 
+                  style={{ width: 'fit-content', display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px' }}
+                  onClick={() => setSelectedHospitalDetails(null)}
+                >
+                  <i data-lucide="arrow-left" style={{ width: '16px' }}></i> Back to Hospitals
+                </button>
+
+                <div className="glass-card" style={{ padding: '0', overflow: 'hidden', borderRadius: '16px', border: '1px solid var(--border)' }}>
+                  <div style={{ height: '220px', position: 'relative', width: '100%' }}>
+                    <img 
+                      src={selectedHospitalDetails.image} 
+                      alt={selectedHospitalDetails.name} 
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                    />
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 100%)', display: 'flex', flexDirection: 'column', justifyContent: 'end', padding: '32px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        <span style={{ background: 'var(--primary)', color: 'white', padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase' }}>Affiliated Clinic</span>
+                        <div style={{ background: '#FFFBEB', color: '#D97706', padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          ★ {selectedHospitalDetails.rating} <span style={{ color: '#D97706', fontWeight: 600 }}>({selectedHospitalDetails.reviews})</span>
+                        </div>
+                      </div>
+                      <h2 style={{ color: 'white', fontSize: '28px', fontWeight: 900, margin: 0 }}>{selectedHospitalDetails.name}</h2>
+                    </div>
+                  </div>
+
+                  <div style={{ padding: '32px', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '32px' }} className="mobile-stack">
+                    <div>
+                      <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#1E293B', marginBottom: '12px' }}>About Hospital</h4>
+                      <p style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '24px' }}>{selectedHospitalDetails.description}</p>
+                      
+                      <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#1E293B', marginBottom: '12px' }}>Clinical Specialties & Departments</h4>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                        {selectedHospitalDetails.departments.map(d => (
+                          <span key={d} style={{ background: '#F1F5F9', color: '#475569', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 700 }}>{d}</span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div style={{ borderLeft: '1px solid #E2E8F0', paddingLeft: '32px' }} className="mobile-no-border">
+                      <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#1E293B', marginBottom: '16px' }}>Contact & Location</h4>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div style={{ display: 'flex', alignItems: 'start', gap: '12px' }}>
+                          <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <i data-lucide="map-pin" style={{ width: '18px' }}></i>
+                          </div>
+                          <div>
+                            <div style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 800 }}>ADDRESS</div>
+                            <div style={{ fontSize: '13px', fontWeight: 700, color: '#334155' }}>{selectedHospitalDetails.location}</div>
+                            {hospitalDistances[selectedHospitalDetails.id] && (
+                              <div style={{ fontSize: '12px', color: 'var(--primary)', fontWeight: 800, marginTop: '2px' }}>
+                                <i data-lucide="navigation" style={{ width: '12px', display: 'inline-block', marginRight: '4px' }}></i> {hospitalDistances[selectedHospitalDetails.id]} away
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'start', gap: '12px' }}>
+                          <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <i data-lucide="phone" style={{ width: '18px' }}></i>
+                          </div>
+                          <div>
+                            <div style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 800 }}>PHONE NUMBER</div>
+                            <div style={{ fontSize: '13px', fontWeight: 700, color: '#334155' }}>{selectedHospitalDetails.contact}</div>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'start', gap: '12px' }}>
+                          <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <i data-lucide="clock" style={{ width: '18px' }}></i>
+                          </div>
+                          <div>
+                            <div style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 800 }}>OPERATING HOURS</div>
+                            <div style={{ fontSize: '13px', fontWeight: 700, color: '#334155' }}>{selectedHospitalDetails.hours}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Specialized Dental Procedure Catalog (For Dental SaaS Clinics) */}
+                {(() => {
+                  let effectiveProcedures = selectedHospitalDetails.dentalProcedures || [];
+                  const saved = localStorage.getItem('curoxa_clinic_pricing_catalog');
+                  if (saved) {
+                    try {
+                      const parsed = JSON.parse(saved);
+                      if (Array.isArray(parsed) && parsed.length > 0) {
+                        effectiveProcedures = parsed.filter(p => p.active !== false);
+                      }
+                    } catch (e) {}
+                  }
+
+                  if (!effectiveProcedures || effectiveProcedures.length === 0) return null;
+
+                  return (
+                    <div style={{ marginBottom: '32px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                        <div>
+                          <h3 style={{ fontSize: '20px', fontWeight: 900, color: '#0F172A', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span>🦷</span> Specialized Dental Procedures & Chair Slot Pricing
+                          </h3>
+                          <p style={{ fontSize: '13px', color: '#64748B', margin: '4px 0 0 0', fontWeight: 600 }}>Select a procedure to book your appointment & chair time slot directly with transparent pricing set by clinic owner</p>
+                        </div>
+                        <span style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', color: '#166534', padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 800 }}>
+                          {effectiveProcedures.length} Procedures Available
+                        </span>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
+                        {effectiveProcedures.map((proc, idx) => (
+                        <div 
+                          key={idx} 
+                          style={{ 
+                            background: '#FFFFFF', 
+                            border: '1px solid #E2E8F0', 
+                            borderRadius: '16px', 
+                            padding: '20px', 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            justify: 'space-between',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
+                            transition: 'all 0.2s ease'
+                          }}
+                        >
+                          <div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: '8px' }}>
+                              <div style={{ fontSize: '16px', fontWeight: 850, color: '#0F172A' }}>{proc.name}</div>
+                              <div style={{ fontSize: '18px', fontWeight: 900, color: '#10B981', whiteSpace: 'nowrap' }}>₹{proc.fee.toLocaleString()}</div>
+                            </div>
+                            <div style={{ fontSize: '12px', color: '#64748B', lineHeight: 1.5, marginBottom: '12px', fontWeight: 600 }}>{proc.desc}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11.5px', color: '#2563EB', fontWeight: 700, marginBottom: '16px' }}>
+                              <span>⏱️ Chair Slot Duration: <b>{proc.duration}</b></span>
+                            </div>
+                          </div>
+
+                          <button 
+                            className="btn btn-primary"
+                            style={{ width: '100%', borderRadius: '10px', height: '40px', fontWeight: 800, fontSize: '13px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', cursor: 'pointer' }}
+                            onClick={() => {
+                              setSelectedDentalProcedure(proc);
+                              setAppointmentReason(`${proc.name} (Fee: ₹${proc.fee})`);
+                              // Pick first doctor or generic specialist
+                              const hospitalDocs = doctors.filter(doc => doc.tenantId === selectedHospitalDetails.id);
+                              if (hospitalDocs.length > 0) {
+                                bookDoctor(hospitalDocs[0]);
+                              } else {
+                                bookDoctor({ _id: 'dental_specialist', name: `${selectedHospitalDetails.name} Specialist`, specialty: 'Dental Surgeon', tenantId: selectedHospitalDetails.id });
+                              }
+                            }}
+                          >
+                            <span>Book Procedure Slot</span>
+                            <i data-lucide="arrow-right" style={{ width: '14px' }}></i>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+
+                <div>
+                  <h3 style={{ fontSize: '20px', fontWeight: 900, color: '#1E293B', marginBottom: '20px' }}>Consulting Doctors & Specialists</h3>
+                  
+                  {(() => {
+                    const hospitalDocs = doctors.filter(doc => doc.tenantId === selectedHospitalDetails.id);
+                    if (hospitalDocs.length === 0) {
+                      return (
+                        <div className="glass-card" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)', fontWeight: 700 }}>
+                          No specialists are currently registered online for {selectedHospitalDetails.name}.
+                        </div>
+                      );
+                    }
+                    return (
+                      <div className="doctor-grid-pro">
+                        {hospitalDocs.map(doc => (
+                          <div key={doc._id} className="doctor-card-pro animate-in" onClick={() => bookDoctor(doc)}>
+                            <div className="doc-avatar-wrapper">
+                              <div style={{ width: '100%', height: '180px', background: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', fontWeight: 800, borderRadius: '16px' }}>
+                                {doc.name ? doc.name.substring(0,2).toUpperCase() : 'DR'}
+                              </div>
+                              <div className="doc-rating-badge">★ 4.9</div>
+                              <div style={{ position: 'absolute', bottom: '0', right: '0', width: '12px', height: '12px', background: '#10B981', border: '2px solid white', borderRadius: '50%' }} />
+                            </div>
+                            <div style={{ fontWeight: 800, fontSize: '18px', color: '#1E293B' }}>{doc.name}</div>
+                            <div style={{ fontSize: '13px', color: 'var(--primary)', fontWeight: 700, margin: '4px 0 8px' }}>{doc.specialty || ''}</div>
+                            
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px', color: 'var(--text-muted)', fontWeight: 700, margin: '0 0 16px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <i data-lucide="building-2" style={{ width: '12px' }}></i> {selectedHospitalDetails.name}
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <i data-lucide="calendar" style={{ width: '12px' }}></i> Available: Mon - Fri
+                              </div>
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>10+ Years Exp</span>
+                              <button 
+                                className="btn btn-primary" 
+                                style={{ padding: '8px 16px', fontSize: '12px', borderRadius: '8px', fontWeight: 800 }}
+                                onClick={(e) => { e.stopPropagation(); bookDoctor(doc); }}
+                              >
+                                Book Now
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+            )}
+
+            {discoveryTab === 'hospitals' && !selectedHospitalDetails && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
+                  {(() => {
+                    const sortedHospitals = [...HOSPITALS].filter(h => {
+                      const query = discoverySearch.toLowerCase();
+                      const matchesQuery = h.name.toLowerCase().includes(query) || h.location.toLowerCase().includes(query) || h.contact.toLowerCase().includes(query);
+                      const matchesFacilityType = facilityTypeFilter === 'all' || h.facilityType === facilityTypeFilter;
+                      return matchesQuery && matchesFacilityType;
+                    }).sort((a, b) => {
+                      const distA = parseFloat(hospitalDistances[a.id] || '999');
+                      const distB = parseFloat(hospitalDistances[b.id] || '999');
+                      return distA - distB;
+                    });
+
+                    if (sortedHospitals.length === 0) {
+                      return (
+                        <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', color: '#64748B', fontWeight: 700 }}>
+                          No clinics found matching "{discoverySearch}" in {facilityTypeFilter === 'all' ? 'All Facilities' : facilityTypeFilter} category.
+                        </div>
+                      );
+                    }
+
+                    return sortedHospitals.map(h => {
+                      const hospitalDocs = doctors.filter(doc => doc.tenantId === h.id);
+                      const distance = hospitalDistances[h.id];
+                      const isDental = h.facilityType === 'dental';
+                      const isDiagnostic = h.facilityType === 'diagnostic';
+
+                      return (
+                        <div 
+                          key={h.id} 
+                          className="glass-card animate-in" 
+                          style={{ 
+                            padding: '0', 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            overflow: 'hidden', 
+                            border: isDental ? '1.5px solid #A7F3D0' : (isDiagnostic ? '1.5px solid #DDD6FE' : '1px solid var(--border)'),
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease'
+                          }}
+                          onClick={() => setSelectedHospitalDetails(h)}
+                        >
+                          <div style={{ height: '140px', position: 'relative' }}>
+                            <img src={h.image} alt={h.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            {distance && (
+                              <div style={{ position: 'absolute', top: '12px', left: '12px', background: 'var(--primary)', color: 'white', padding: '4px 8px', borderRadius: '20px', fontSize: '11px', fontWeight: 800 }}>
+                                <i data-lucide="navigation" style={{ width: '10px', display: 'inline-block', marginRight: '4px' }}></i> {distance} away
+                              </div>
+                            )}
+                            <div style={{ position: 'absolute', top: '12px', right: '12px', background: '#FFFBEB', color: '#D97706', padding: '4px 8px', borderRadius: '20px', fontSize: '11px', fontWeight: 800 }}>
+                              ★ {h.rating}
+                            </div>
+                          </div>
+                          
+                          <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: '8px' }}>
+                              <h3 style={{ fontSize: '18px', fontWeight: 800, margin: 0, color: '#1E293B' }}>{h.name}</h3>
+                              <span 
+                                style={{ 
+                                  fontSize: '10px', 
+                                  fontWeight: 800, 
+                                  padding: '4px 10px', 
+                                  borderRadius: '20px', 
+                                  background: isDental ? '#F0FDF4' : (isDiagnostic ? '#F5F3FF' : 'var(--primary-light)'), 
+                                  color: isDental ? '#166534' : (isDiagnostic ? '#6D28D9' : 'var(--primary)'), 
+                                  border: `1px solid ${isDental ? '#BBF7D0' : (isDiagnostic ? '#DDD6FE' : '#BFDBFE')}`,
+                                  whiteSpace: 'nowrap'
+                                }}
+                              >
+                                {h.facilityTypeLabel || 'Hospital'}
+                              </span>
+                            </div>
+                            <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '8px 0 16px', lineHeight: 1.5 }}>{h.description}</p>
+                            
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '20px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <i data-lucide="map-pin" style={{ width: '14px', color: 'var(--primary)' }}></i> {h.location}
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <i data-lucide="phone" style={{ width: '14px', color: 'var(--primary)' }}></i> {h.contact}
+                              </div>
+                            </div>
+
+                            <div style={{ marginTop: 'auto', borderTop: '1px solid #F1F5F9', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <span style={{ fontSize: '12px', color: 'var(--primary)', fontWeight: 800 }}>{hospitalDocs.length} Specialists Available</span>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--primary)', fontWeight: 800 }}>
+                                View Details <i data-lucide="arrow-right" style={{ width: '14px' }}></i>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+              </div>
+            )}
+
+            {discoveryTab === 'doctors' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                  {['All', 'General Medicine', 'Neuro Specialist', 'Pediatrics', 'Cardiology'].map(spec => {
+                    const isSelected = (spec === 'All' && !selectedSpecialtyFilter) || selectedSpecialtyFilter === spec;
+                    return (
+                      <button
+                        key={spec}
+                        onClick={() => setSelectedSpecialtyFilter(spec === 'All' ? null : spec)}
+                        style={{
+                          background: isSelected ? 'var(--primary)' : 'white',
+                          color: isSelected ? 'white' : '#64748B',
+                          border: isSelected ? 'none' : '1px solid #CBD5E1',
+                          padding: '6px 16px',
+                          borderRadius: '20px',
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          transition: '0.2s',
+                          boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+                        }}
+                      >
+                        {spec}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="doctor-grid-pro">
+                  {(() => {
+                    const filteredDocs = doctors.filter(doc => {
+                      const query = discoverySearch.toLowerCase();
+                      const hDetails = getHospitalDetails(doc.tenantId);
+                      
+                      const matchesSearch = doc.name.toLowerCase().includes(query) || 
+                                           (doc.specialty || '').toLowerCase().includes(query) ||
+                                           hDetails.name.toLowerCase().includes(query) ||
+                                           hDetails.location.toLowerCase().includes(query);
+                                           
+                      const matchesSpecialty = !selectedSpecialtyFilter || doc.specialty === selectedSpecialtyFilter;
+                      
+                      return matchesSearch && matchesSpecialty;
+                    });
+
+                    if (filteredDocs.length === 0) {
+                      return (
+                        <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', color: '#64748B', fontWeight: 700 }}>
+                          No doctors found matching your criteria.
+                        </div>
+                      );
+                    }
+
+                    return filteredDocs.map(doc => {
+                      const hDetails = getHospitalDetails(doc.tenantId);
+                      return (
+                        <div key={doc._id} className="doctor-card-pro animate-in" onClick={() => bookDoctor(doc)}>
+                          <div className="doc-avatar-wrapper">
+                            <div style={{ width: '100%', height: '180px', background: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', fontWeight: 800, borderRadius: '16px' }}>
+                              {doc.name ? doc.name.substring(0,2).toUpperCase() : 'DR'}
+                            </div>
+                            <div className="doc-rating-badge">★ 4.9</div>
+                            <div style={{ position: 'absolute', bottom: '0', right: '0', width: '12px', height: '12px', background: '#10B981', border: '2px solid white', borderRadius: '50%' }} />
+                          </div>
+                          <div style={{ fontWeight: 800, fontSize: '18px', color: '#1E293B' }}>{doc.name}</div>
+                          <div style={{ fontSize: '13px', color: 'var(--primary)', fontWeight: 700, margin: '4px 0 8px' }}>{doc.specialty || ''}</div>
+                          
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px', color: 'var(--text-muted)', fontWeight: 700, margin: '0 0 16px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <i data-lucide="building-2" style={{ width: '12px' }}></i> {hDetails.name}
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <i data-lucide="map-pin" style={{ width: '12px' }}></i> {hDetails.location}
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>10+ Years Experience</span>
+                            <button 
+                              className="btn btn-primary" 
+                              style={{ padding: '8px 16px', fontSize: '12px', borderRadius: '8px', fontWeight: 800 }}
+                              onClick={(e) => { e.stopPropagation(); bookDoctor(doc); }}
+                            >
+                              Book Now
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'history' && (
+          <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out' }}>
+            <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}><h1 style={{ fontSize: '24px', fontWeight: 800 }}>Your Appointments</h1><button className="btn btn-primary" onClick={() => setActiveTab('find')}><i data-lucide="plus"></i> Book New</button></div>
+            <div className="glass-card" style={{ padding: '24px' }}>
+              <div className="table-responsive">
+                <table className="elite-table" style={{ margin: 0 }}>
+                  <thead style={{ background: '#F8FAFC' }}><tr><th>Date</th><th>Time</th><th>Specialist</th><th>Reason</th><th>Status</th><th>Payment</th><th>Action</th></tr></thead>
+                  <tbody>
+                    {appointments.map(app => (
+                      <tr key={app._id}>
+                        <td style={{ fontWeight: 700 }}>{new Date(app.date).toLocaleDateString()}</td>
+                        <td style={{ fontWeight: 600 }}>{app.time}</td>
+                        <td>
+                          <b>{app.doctorId?.name || 'Dr. Assigned'}</b>
+                          <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{getHospitalDetails(app.tenantId).name}</div>
+                        </td>
+                        <td style={{ color: 'var(--text-muted)', fontWeight: 600 }}>{app.reason}</td>
+                        <td><span className={`status-badge ${app.status === 'Completed' ? 'available' : 'pending'}`}>{app.status}</span></td>
+                        <td>
+                          <span className={`status-badge ${app.billingStatus === 'Paid' ? 'available' : 'pending'}`} style={{ background: app.billingStatus === 'Paid' ? '#F0FDF4' : '#FFFBEB', color: app.billingStatus === 'Paid' ? '#16A34A' : '#D97706' }}>
+                            {app.billingStatus === 'Paid' ? 'Paid' : 'Unpaid'}
+                          </span>
+                        </td>
+                        <td><button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '11px' }} onClick={() => openDetailsModal(app)}>View Details</button></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'prescriptions' && (
+          <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out' }}>
+            <h1 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '24px' }}>Current Medications</h1>
+            <div className="glass-card" style={{ padding: '12px' }}>
+              <div className="table-responsive">
+                <table className="elite-table" style={{ margin: 0, border: 'none' }}>
+                  <thead style={{ background: '#F8FAFC' }}>
+                    <tr>
+                      <th>Date</th>
+                      <th>Doctor</th>
+                      <th>Items Prescribed</th>
+                      <th>Dispense Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {getGroupedPrescriptions().length === 0 ? (
+                      <tr>
+                        <td colSpan="5" style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)' }}>
+                          No active prescriptions found in your medical records.
+                        </td>
+                      </tr>
+                    ) : (
+                      getGroupedPrescriptions().map((p, idx) => (
+                        <tr key={p._id || idx}>
+                          <td style={{ fontWeight: 700 }}>
+                            {p.createdAt ? new Date(p.createdAt).toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric' }) : '24 May 2024'}
+                          </td>
+                          <td>
+                            <b>{p.doctorId?.name || 'Consulting Specialist'}</b>
+                            <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{p.doctorId?.specialty || 'General Medicine'}</div>
+                          </td>
+                          <td style={{ fontWeight: 700, color: 'var(--primary)' }}>
+                            {p.items ? p.items.length : 0} {p.items?.length === 1 ? 'Item' : 'Items'}
+                          </td>
+                          <td>
+                            <span className={`status-badge ${p.status === 'Dispensed' || p.status === 'Dispensed by Pharmacy' ? 'available' : 'pending'}`}>
+                              {p.status === 'Pending Pharmacy Dispatch' ? 'PENDING' : p.status.toUpperCase()}
+                            </span>
+                          </td>
+                          <td>
+                            <button 
+                              className="btn btn-secondary" 
+                              style={{ padding: '6px 12px', fontSize: '11px' }} 
+                              onClick={() => {
+                                setSelectedPrescription(p);
+                                setPrescriptionModalOpen(true);
+                              }}
+                            >
+                              View Details
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'records' && (
+          <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+              <div>
+                <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#0F172A', margin: 0, fontFamily: "'Outfit', sans-serif" }}>
+                  Clinical History & EMR Timeline
+                </h1>
+                <p style={{ fontSize: '13px', color: '#64748B', margin: '4px 0 0 0', fontWeight: 600 }}>
+                  DPDP-compliant, cryptographically sealed record of your clinical interactions
+                </p>
+              </div>
+              <button 
+                className="btn btn-primary" 
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800 }}
+                onClick={handleDownloadDossier}
+              >
+                <i data-lucide="download" style={{ width: '16px' }}></i> Export Dossier
+              </button>
+            </div>
+
+            {/* Filter buttons */}
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '24px' }}>
+              {['All', 'SOAP Notes', 'Vitals', 'Procedures', 'Visits'].map(filterVal => {
+                const isSelected = timelineFilter === filterVal;
+                return (
+                  <button
+                    key={filterVal}
+                    onClick={() => setTimelineFilter(filterVal)}
+                    style={{
+                      background: isSelected ? 'var(--primary)' : 'white',
+                      color: isSelected ? 'white' : '#64748B',
+                      border: isSelected ? 'none' : '1px solid #CBD5E1',
+                      padding: '8px 16px',
+                      borderRadius: '20px',
+                      fontSize: '12.5px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+                    }}
+                  >
+                    {filterVal}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Timeline container */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {(() => {
+                // Collect and unify timeline events
+                const events = [];
+
+                if (timelineFilter === 'All' || timelineFilter === 'Visits') {
+                  visits.forEach(v => {
+                    events.push({
+                      id: v._id,
+                      date: new Date(v.arrivalTimestamp),
+                      type: 'Visit',
+                      title: `${v.type} Visit - ${v.department}`,
+                      icon: 'check-circle',
+                      color: '#10B981',
+                      data: v
+                    });
+                  });
+                }
+
+                if (timelineFilter === 'All' || timelineFilter === 'Vitals') {
+                  vitals.forEach(v => {
+                    events.push({
+                      id: v._id,
+                      date: new Date(v.createdAt),
+                      type: 'Vitals',
+                      title: 'Vitals Recorded',
+                      icon: 'activity',
+                      color: '#3B82F6',
+                      data: v
+                    });
+                  });
+                }
+
+                if (timelineFilter === 'All' || timelineFilter === 'SOAP Notes') {
+                  clinicalNotes.forEach(n => {
+                    events.push({
+                      id: n._id,
+                      date: new Date(n.createdAt),
+                      type: 'SOAP Note',
+                      title: `SOAP Note by Dr. ${n.doctorId?.name || 'Specialist'}`,
+                      icon: 'file-text',
+                      color: '#8B5CF6',
+                      data: n
+                    });
+                  });
+                }
+
+                if (timelineFilter === 'All' || timelineFilter === 'Procedures') {
+                  procedures.forEach(p => {
+                    events.push({
+                      id: p._id,
+                      date: new Date(p.createdAt),
+                      type: 'Procedure',
+                      title: `${p.procedureName} - Dr. ${p.doctorId?.name || 'Surgeon'}`,
+                      icon: 'shield',
+                      color: '#EF4444',
+                      data: p
+                    });
+                  });
+                }
+
+                // Sort in reverse chronological order
+                events.sort((a, b) => b.date - a.date);
+
+                if (events.length === 0) {
+                  return (
+                    <div className="glass-card" style={{ padding: '60px 24px', textAlign: 'center' }}>
+                      <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#EFF6FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                        <i data-lucide="folder-open" style={{ width: '28px', height: '28px' }}></i>
+                      </div>
+                      <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', marginBottom: '8px' }}>No Clinical Timeline Events Found</h3>
+                      <p style={{ fontSize: '13px', color: '#64748B', maxWidth: '400px', margin: '0 auto', lineHeight: 1.5 }}>
+                        There are no health records logged under this filter category. Let your doctor know to log SOAP notes or vitals in your record.
+                      </p>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div style={{ position: 'relative', paddingLeft: '32px', borderLeft: '2px solid #E2E8F0', marginLeft: '12px' }}>
+                    {events.map((evt, idx) => (
+                      <div 
+                        key={evt.id || idx} 
+                        className="glass-card timeline-card" 
+                        style={{ 
+                          position: 'relative', 
+                          marginBottom: '24px', 
+                          padding: '20px', 
+                          borderLeft: `4px solid ${evt.color}`,
+                          background: 'white'
+                        }}
+                      >
+                        {/* Timeline Node Point */}
+                        <div 
+                          style={{ 
+                            position: 'absolute', 
+                            left: '-44px', 
+                            top: '20px', 
+                            width: '24px', 
+                            height: '24px', 
+                            borderRadius: '50%', 
+                            background: evt.color, 
+                            color: 'white', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center', 
+                            border: '4px solid white', 
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                            fontSize: '10px'
+                          }}
+                        >
+                          <i data-lucide={evt.icon} style={{ width: '12px', height: '12px' }}></i>
+                        </div>
+
+                        {/* Title and Date */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+                          <div>
+                            <span 
+                              style={{ 
+                                display: 'inline-block', 
+                                padding: '4px 8px', 
+                                borderRadius: '6px', 
+                                background: evt.color + '15', 
+                                color: evt.color, 
+                                fontSize: '11px', 
+                                fontWeight: 800, 
+                                textTransform: 'uppercase', 
+                                marginBottom: '4px' 
+                              }}
+                            >
+                              {evt.type}
+                            </span>
+                            <h4 style={{ fontSize: '16px', fontWeight: 800, color: '#0F172A', margin: 0, fontFamily: "'Outfit', sans-serif" }}>
+                              {evt.title}
+                            </h4>
+                          </div>
+                          <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 700 }}>
+                            {evt.date.toLocaleString()}
+                          </span>
+                        </div>
+
+                        {/* Detailed Body based on type */}
+                        {evt.type === 'Visit' && (
+                          <div style={{ fontSize: '13.5px', color: '#475569', lineHeight: 1.5 }}>
+                            <div style={{ marginBottom: '6px' }}><strong>Chief Complaint:</strong> {evt.data.chiefComplaint || 'None'}</div>
+                            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                              <div><strong>Triage Level:</strong> <span style={{ color: evt.data.priority === 'Red' ? '#EF4444' : evt.data.priority === 'Yellow' ? '#D97706' : '#16A34A', fontWeight: 800 }}>{evt.data.priority}</span></div>
+                              <div><strong>Status:</strong> {evt.data.status}</div>
+                              <div><strong>Department:</strong> {evt.data.department}</div>
+                            </div>
+                          </div>
+                        )}
+
+                        {evt.type === 'Vitals' && (
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '12px', background: '#F8FAFC', padding: '12px', borderRadius: '12px' }}>
+                            <div>
+                              <div style={{ fontSize: '10px', color: '#64748B', fontWeight: 800 }}>BP</div>
+                              <div style={{ fontSize: '13.5px', fontWeight: 750, color: '#1E293B' }}>{evt.data.bpSys}/{evt.data.bpDia} mmHg</div>
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '10px', color: '#64748B', fontWeight: 800 }}>Pulse</div>
+                              <div style={{ fontSize: '13.5px', fontWeight: 750, color: '#1E293B' }}>{evt.data.pulse} bpm</div>
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '10px', color: '#64748B', fontWeight: 800 }}>SPO2</div>
+                              <div style={{ fontSize: '13.5px', fontWeight: 750, color: evt.data.spo2 < 95 ? '#EF4444' : '#1E293B' }}>{evt.data.spo2}%</div>
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '10px', color: '#64748B', fontWeight: 800 }}>Temp</div>
+                              <div style={{ fontSize: '13.5px', fontWeight: 750, color: '#1E293B' }}>{evt.data.temperature} F</div>
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '10px', color: '#64748B', fontWeight: 800 }}>Weight / Height</div>
+                              <div style={{ fontSize: '13.5px', fontWeight: 750, color: '#1E293B' }}>{evt.data.weight} kg / {evt.data.height} cm</div>
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '10px', color: '#64748B', fontWeight: 800 }}>Blood Sugar</div>
+                              <div style={{ fontSize: '13.5px', fontWeight: 750, color: '#1E293B' }}>{evt.data.bloodSugar || 'N/A'} ({evt.data.sugarType})</div>
+                            </div>
+                          </div>
+                        )}
+
+                        {evt.type === 'SOAP Note' && (
+                          <div style={{ fontSize: '13.5px', color: '#475569', lineHeight: 1.5 }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                              <div><strong>Subjective:</strong> {evt.data.subjective}</div>
+                              <div><strong>Objective:</strong> {evt.data.objective}</div>
+                              <div><strong>Assessment (Diagnoses):</strong> {evt.data.assessment?.join(', ') || 'N/A'}</div>
+                              <div><strong>Plan (Treatment & Advice):</strong> {evt.data.plan}</div>
+                            </div>
+                            <div 
+                              style={{ 
+                                marginTop: '14px', 
+                                padding: '10px 14px', 
+                                background: '#EFF6FF', 
+                                border: '1px solid #BFDBFE', 
+                                borderRadius: '8px', 
+                                display: 'flex', 
+                                justifyContent: 'space-between', 
+                                alignItems: 'center',
+                                flexWrap: 'wrap',
+                                gap: '8px'
+                              }}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#2563EB', fontWeight: 800 }}>
+                                <i data-lucide="lock" style={{ width: '12px' }}></i>
+                                <span>DPDP Act Compliance Sealed</span>
+                              </div>
+                              <div style={{ fontSize: '10px', color: '#64748B', fontWeight: 700 }}>
+                                digitalSignature: <span style={{ fontFamily: 'monospace' }}>{evt.data.digitalSignature?.substring(0, 15)}...</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {evt.type === 'Procedure' && (
+                          <div style={{ fontSize: '13.5px', color: '#475569', lineHeight: 1.5 }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '8px' }}>
+                              <div><strong>Anesthesia Details:</strong> {evt.data.anesthesiaDetails || 'N/A'}</div>
+                              <div><strong>Implants Used:</strong> {evt.data.implants || 'None'}</div>
+                            </div>
+                            <div><strong>Pre-Op Notes:</strong> {evt.data.preOpNotes}</div>
+                            <div style={{ marginTop: '4px' }}><strong>Post-Op Notes:</strong> {evt.data.postOpNotes}</div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px' }}>
+                              <span style={{ fontSize: '11px', fontWeight: 800, background: '#FEF2F2', color: '#EF4444', padding: '4px 8px', borderRadius: '6px' }}>
+                                STATUS: {evt.data.status?.toUpperCase()}
+                              </span>
+                              <span style={{ fontSize: '10px', color: '#94A3B8' }}>
+                                ID: {evt.data._id}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'documents' && (
+          <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+              <div>
+                <h1 style={{ fontSize: '28px', fontWeight: 900, color: '#0F172A', fontFamily: "'Outfit', sans-serif", margin: '0 0 4px 0' }}>Medical Records & Documents</h1>
+                <p style={{ color: '#64748B', fontWeight: 600, fontSize: '13.5px', margin: 0 }}>
+                  View your digitally uploaded health records, identity documents, and scanned reports.
+                </p>
+              </div>
+            </div>
+
+            <div className="glass-card" style={{ padding: '24px' }}>
+              {patientProfile?.patientDocuments && patientProfile.patientDocuments.length > 0 ? (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+                  {patientProfile.patientDocuments.map((doc, idx) => (
+                    <div key={idx} style={{ 
+                      background: 'white', 
+                      border: '1px solid #E2E8F0', 
+                      borderRadius: '12px', 
+                      padding: '20px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '16px',
+                      transition: 'all 0.2s ease',
+                      cursor: 'pointer'
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0,0,0,0.05)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                        <div style={{ 
+                          width: '48px', height: '48px', borderRadius: '12px', 
+                          background: doc.type.includes('ID') || doc.type.includes('Aadhar') ? '#EFF6FF' : doc.type.includes('Consent') ? '#FFF7ED' : '#F8FAFC',
+                          color: doc.type.includes('ID') || doc.type.includes('Aadhar') ? '#2563EB' : doc.type.includes('Consent') ? '#F59E0B' : '#64748B',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center'
+                        }}>
+                          <i data-lucide={doc.type.includes('Photo') ? 'image' : 'file-text'} style={{ width: '24px', height: '24px' }}></i>
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A', margin: '0 0 4px 0', wordBreak: 'break-word' }}>{doc.name}</h3>
+                          <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 700 }}>{doc.type}</div>
+                        </div>
+                      </div>
+                      
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '16px', borderTop: '1px solid #F1F5F9' }}>
+                        <div style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 700 }}>
+                          Size: {doc.size}
+                        </div>
+                        <button style={{ 
+                          background: '#F1F5F9', color: '#2563EB', border: 'none', 
+                          padding: '6px 12px', borderRadius: '6px', fontSize: '11.5px', fontWeight: 800,
+                          cursor: 'pointer', transition: 'background 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = '#DBEAFE'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = '#F1F5F9'}
+                        >
+                          Download
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '60px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#F8FAFC', color: '#94A3B8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+                    <i data-lucide="folder-open" style={{ width: '32px', height: '32px' }}></i>
+                  </div>
+                  <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#1E293B', margin: '0 0 8px 0' }}>No Documents Found</h3>
+                  <p style={{ fontSize: '14px', color: '#64748B', maxWidth: '400px', lineHeight: 1.5, margin: 0 }}>
+                    You don't have any uploaded identity documents, ultrasound reports, or signed physical consent forms in your digital locker yet.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'privacy' && (
+          <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+              <h1 style={{ fontSize: '24px', fontWeight: 900, margin: 0, fontFamily: "'Outfit', sans-serif" }}>
+                Privacy Shield & Consent Registry
+              </h1>
+              <button
+                type="button"
+                onClick={() => {
+                  setPrivacySlideIdx(0);
+                  setShowPrivacyOverlay(true);
+                }}
+                style={{
+                  background: '#EFF6FF',
+                  border: '1px solid #BFDBFE',
+                  color: '#2563EB',
+                  borderRadius: '10px',
+                  padding: '8px 16px',
+                  fontSize: '13px',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'background 0.2s'
+                }}
+              >
+                Review Privacy Rights Tour
+              </button>
+            </div>
+
+            <div className="mobile-stack" style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '32px' }}>
+              <div>
+                {/* Consent Toggles */}
+                <div className="glass-card" style={{ padding: '24px', marginBottom: '32px' }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: 800, margin: '0 0 16px 0', color: '#0F172A', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i data-lucide="shield-check" style={{ color: '#2563EB' }}></i> Active Consent & Purpose Limitation
+                  </h3>
+                  <p style={{ fontSize: '13px', color: '#64748B', lineHeight: 1.5, marginBottom: '20px' }}>
+                    Specify how and for what purpose healthcare providers can process your personal clinical details. In compliance with the India DPDP Act 2023, you can toggle these settings at your convenience.
+                  </p>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
+                    {/* Purpose: Treatment */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: '#F8FAFC', borderRadius: '12px' }}>
+                      <div style={{ marginRight: '16px' }}>
+                        <div style={{ fontWeight: 800, fontSize: '14px', color: '#1E293B' }}>Medical Treatment & Diagnosis (Mandatory)</div>
+                        <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px' }}>Attending specialists require this to read diagnostic history, write SOAP notes, and prescribe.</div>
+                      </div>
+                      <input 
+                        type="checkbox" 
+                        checked={consent?.purposes?.treatment && consent?.status === 'Active'} 
+                        disabled 
+                        style={{ width: '20px', height: '20px', cursor: 'not-allowed' }}
+                      />
+                    </div>
+
+                    {/* Purpose: Insurance */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: '#F8FAFC', borderRadius: '12px' }}>
+                      <div style={{ marginRight: '16px' }}>
+                        <div style={{ fontWeight: 800, fontSize: '14px', color: '#1E293B' }}>Insurance Claim Verification</div>
+                        <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px' }}>Enables verified insurance claim desks to inspect bills and procedure notes for cashless settlements.</div>
+                      </div>
+                      <input 
+                        type="checkbox" 
+                        checked={consent?.purposes?.insurance && consent?.status === 'Active'} 
+                        onChange={(e) => {
+                          const updated = { ...consent?.purposes, insurance: e.target.checked };
+                          handleUpdateConsentPurposes(updated);
+                        }}
+                        disabled={consent?.status === 'Withdrawn'}
+                        style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+                      />
+                    </div>
+
+                    {/* Purpose: Research */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: '#F8FAFC', borderRadius: '12px' }}>
+                      <div style={{ marginRight: '16px' }}>
+                        <div style={{ fontWeight: 800, fontSize: '14px', color: '#1E293B' }}>Academic Research & Public Health</div>
+                        <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px' }}>Share completely anonymized vitals and diagnosis stats for clinical trials and public health planning.</div>
+                      </div>
+                      <input 
+                        type="checkbox" 
+                        checked={consent?.purposes?.research && consent?.status === 'Active'} 
+                        onChange={(e) => {
+                          const updated = { ...consent?.purposes, research: e.target.checked };
+                          handleUpdateConsentPurposes(updated);
+                        }}
+                        disabled={consent?.status === 'Withdrawn'}
+                        style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                    {consent?.status === 'Active' ? (
+                      <button 
+                        className="btn" 
+                        style={{ background: '#FEF2F2', color: '#EF4444', border: '1px solid #FCA5A5', fontWeight: 800, padding: '10px 20px', borderRadius: '10px' }}
+                        onClick={handleWithdrawConsent}
+                      >
+                        <i data-lucide="shield-off" style={{ width: '16px', display: 'inline-block', marginRight: '4px' }}></i>
+                        Withdraw All Consent
+                      </button>
+                    ) : (
+                      <button 
+                        className="btn btn-primary" 
+                        style={{ padding: '10px 20px' }}
+                        onClick={() => handleUpdateConsentPurposes({ treatment: true, insurance: true, research: false })}
+                      >
+                        Re-activate Standard Consent
+                      </button>
+                    )}
+                    <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 700 }}>
+                      Last Signed: {consent?.updatedAt ? new Date(consent.updatedAt).toLocaleDateString() : 'N/A'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* DPDP Privacy Audit Trail */}
+                <div className="glass-card" style={{ padding: '24px' }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: 800, margin: '0 0 16px 0', color: '#0F172A', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i data-lucide="eye" style={{ color: '#2563EB' }}></i> EMR Privacy Audit Logs (Immutable)
+                  </h3>
+                  <p style={{ fontSize: '13px', color: '#64748B', lineHeight: 1.5, marginBottom: '20px' }}>
+                    Every single access or modification to your clinical records is logged in an un-alterable database trail. Inspect the logs below to verify when and why your EMR dossier was accessed.
+                  </p>
+
+                  <div className="table-responsive" style={{ maxHeight: '350px', overflowY: 'auto' }} data-lenis-prevent>
+                    <table className="elite-table" style={{ border: 'none' }}>
+                      <thead style={{ background: '#F8FAFC', position: 'sticky', top: 0, zIndex: 5 }}>
+                        <tr>
+                          <th>Timestamp</th>
+                          <th>Action</th>
+                          <th>Accessor</th>
+                          <th>Purpose</th>
+                          <th>IP Address</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {auditLogs.length === 0 ? (
+                          <tr>
+                            <td colSpan="5" style={{ textAlign: 'center', padding: '24px', color: '#94A3B8' }}>
+                              No access logs registered yet.
+                            </td>
+                          </tr>
+                        ) : (
+                          auditLogs.map((log, index) => {
+                            const isEmergency = log.purpose === 'Emergency Treatment' || log.isEmergencyBypass;
+                            return (
+                              <tr key={log._id || index}>
+                                <td style={{ fontSize: '12px', fontWeight: 700 }}>
+                                  {new Date(log.timestamp).toLocaleString()}
+                                </td>
+                                <td>
+                                  <span style={{ fontWeight: 800, fontSize: '12px', color: isEmergency ? '#EF4444' : '#1E293B' }}>
+                                    {log.action}
+                                  </span>
+                                </td>
+                                <td style={{ fontSize: '13px' }}>
+                                  {log.userId?.name || log.performedBy || 'System'}
+                                  <div style={{ fontSize: '11px', color: '#64748B' }}>{log.role || 'Data Principal'}</div>
+                                </td>
+                                <td>
+                                  <span 
+                                    style={{ 
+                                      display: 'inline-block', 
+                                      padding: '2px 6px', 
+                                      borderRadius: '4px', 
+                                      background: isEmergency ? '#FEE2E2' : '#F0FDF4', 
+                                      color: isEmergency ? '#EF4444' : '#16A34A', 
+                                      fontWeight: 800,
+                                      fontSize: '10px' 
+                                    }}
+                                  >
+                                    {isEmergency ? '⚠️ EMERGENCY BYPASS' : log.purpose || 'Standard'}
+                                  </span>
+                                </td>
+                                <td style={{ fontFamily: 'monospace', fontSize: '11.5px' }}>
+                                  {log.ipAddress || '127.0.0.1'}
+                                </td>
+                              </tr>
+                            );
+                          })
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              {/* DPDP Rights requests column */}
+              <div>
+                <div className="glass-card" style={{ padding: '24px' }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: 800, margin: '0 0 16px 0', color: '#0F172A', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i data-lucide="mail" style={{ color: '#2563EB' }}></i> DPDP Rights Center
+                  </h3>
+                  <p style={{ fontSize: '12.5px', color: '#64748B', lineHeight: 1.5, marginBottom: '20px' }}>
+                    Submit an official notice to the Curoxa Data Protection Officer (DPO) to correct erroneous clinical records or file an erasure mandate.
+                  </p>
+
+                  <form onSubmit={handleSubmitDpdpRequest}>
+                    {patientProfile?.legalHold && (
+                      <div style={{
+                        background: '#FFF5F5',
+                        border: '1.5px solid #FCA5A5',
+                        borderRadius: '12px',
+                        padding: '14px',
+                        marginBottom: '16px',
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '10px'
+                      }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#DC2626" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: '2px' }}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        <div>
+                          <div style={{ fontSize: '13px', fontWeight: 800, color: '#991B1B' }}>Active Statutory Legal Hold</div>
+                          <p style={{ fontSize: '12px', color: '#7F1D1D', margin: '4px 0 0 0', lineHeight: 1.4, fontWeight: 600 }}>
+                            Your clinical records are currently flagged under a statutory legal hold. Erasure requests cannot be processed until the hold constraint is lifted.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    <div style={{ marginBottom: '16px' }}>
+                      <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>
+                        Request Category *
+                      </label>
+                      <select 
+                        className="form-control" 
+                        value={dpdpRequestType} 
+                        onChange={(e) => setDpdpRequestType(e.target.value)}
+                        style={{ height: '42px', width: '100%', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', fontWeight: 600 }}
+                      >
+                        <option value="Correction">Data Correction Request</option>
+                        <option value="Erasure">Data Erasure Request (Right to be Forgotten)</option>
+                      </select>
+                    </div>
+
+                    <div style={{ marginBottom: '20px' }}>
+                      <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>
+                        Description & Justification *
+                      </label>
+                      <textarea 
+                        className="form-control" 
+                        rows="4" 
+                        value={dpdpRequestDetails} 
+                        onChange={(e) => setDpdpRequestDetails(e.target.value)}
+                        placeholder="Provide exact details of the clinical entry, prescription, or vitals to correct/erase, along with clinical evidence."
+                        style={{ width: '100%', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '12px', fontWeight: 550, resize: 'vertical' }}
+                        required
+                      />
+                      <span style={{ fontSize: '11px', color: '#94A3B8', marginTop: '6px', display: 'block', lineHeight: 1.4 }}>
+                        * Erasure requests will be reviewed under the Clinical Records Retention Act (10-year retention rule holds precedence over eraser).
+                      </span>
+                    </div>
+
+                    <button 
+                      type="submit" 
+                      className="btn btn-primary" 
+                      style={{ width: '100%', justifyContent: 'center', height: '42px' }}
+                      disabled={submittingDpdp}
+                    >
+                      {submittingDpdp ? 'Submitting request...' : 'Transmit Request to DPO'}
+                    </button>
+                  </form>
+                </div>
+
+                {/* Submitted Requests List */}
+                <div className="glass-card" style={{ padding: '24px', marginTop: '24px' }}>
+                  <h4 style={{ fontSize: '15px', fontWeight: 800, margin: '0 0 16px 0', color: '#0F172A' }}>
+                    Active DPDP Requests
+                  </h4>
+                  {consent?.dpdpRequests && consent.dpdpRequests.length > 0 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {consent.dpdpRequests.map((req, rIdx) => (
+                        <div key={req._id || rIdx} style={{ border: '1px solid #E2E8F0', borderRadius: '12px', padding: '12px', background: '#F8FAFC' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                            <span style={{ fontSize: '11.5px', fontWeight: 800, color: req.requestType === 'Erasure' ? '#EF4444' : '#2563EB' }}>
+                              {req.requestType.toUpperCase()}
+                            </span>
+                            <span 
+                              style={{ 
+                                fontSize: '10px', 
+                                fontWeight: 800, 
+                                padding: '2px 6px', 
+                                borderRadius: '4px',
+                                background: req.status === 'Approved' ? '#DEF7EC' : req.status === 'Rejected' ? '#FDE8E8' : '#FEF3C7',
+                                color: req.status === 'Approved' ? '#03543F' : req.status === 'Rejected' ? '#9B1C1C' : '#92400E'
+                              }}
+                            >
+                              {req.status}
+                            </span>
+                          </div>
+                          <p style={{ fontSize: '12px', color: '#475569', margin: '0 0 8px 0', lineHeight: 1.4 }}>
+                            {req.details}
+                          </p>
+                          <div style={{ fontSize: '10px', color: '#94A3B8', textAlign: 'right' }}>
+                            Submitted: {new Date(req.createdAt).toLocaleDateString()}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div style={{ textAlign: 'center', padding: '12px', color: '#94A3B8', fontSize: '12.5px', fontWeight: 600 }}>
+                      No rights requests submitted yet.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'profile' && (
+          <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out' }}>
+            <h1 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '24px' }}>My Profile & Settings</h1>
+            
+            {profileMsg.text && (
+              <div style={{ padding: '14px', borderRadius: '10px', marginBottom: '20px', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', 
+                background: profileMsg.type === 'success' ? '#F0FDF4' : '#FEF2F2',
+                color: profileMsg.type === 'success' ? '#16A34A' : '#DC2626',
+                border: profileMsg.type === 'success' ? '1px solid #86EFAC' : '1px solid #FCA5A5'
+              }}>
+                <i data-lucide={profileMsg.type === 'success' ? 'check-circle' : 'alert-circle'} style={{ width: '16px', flexShrink: 0 }}></i>
+                {profileMsg.text}
+              </div>
+            )}
+
+            <div className="mobile-stack" style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '24px' }}>
+              <div className="glass-card" style={{ padding: '24px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '20px' }}>Personal Information</h3>
+                <form onSubmit={handleUpdateProfile}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '24px', paddingBottom: '20px', borderBottom: '1px solid #F1F5F9' }}>
+                    {editProfileData.avatar ? (
+                      <img 
+                        src={editProfileData.avatar} 
+                        alt="Avatar Preview" 
+                        style={{ width: '80px', height: '80px', borderRadius: '16px', objectFit: 'cover', border: '3px solid #3B71FE', boxShadow: '0 8px 16px rgba(59,113,254,0.15)' }} 
+                      />
+                    ) : (
+                      <div style={{ width: '80px', height: '80px', borderRadius: '16px', background: 'linear-gradient(135deg, #3B71FE 0%, #2563EB 100%)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px', fontWeight: 800, boxShadow: '0 8px 16px rgba(59,113,254,0.15)' }}>
+                        {editProfileData.name ? editProfileData.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'JD'}
+                      </div>
+                    )}
+                    <div>
+                      <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: '#EFF6FF', color: '#2563EB', borderRadius: '8px', fontSize: '13px', fontWeight: 800, cursor: 'pointer', border: '1px dashed #3B71FE', transition: 'all 0.2s' }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                        Upload Photo
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          style={{ display: 'none' }} 
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              if (file.size > 5000000) {
+                                showToast("File size must be under 5MB", "error");
+                                return;
+                              }
+                              const reader = new FileReader();
+                              reader.onload = (event) => {
+                                setEditProfileData(prev => ({ ...prev, avatar: event.target.result }));
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                        />
+                      </label>
+                      <div style={{ fontSize: '11px', color: '#64748B', marginTop: '6px' }}>JPG, PNG or GIF. Max size 5MB.</div>
+                      {editProfileData.avatar && (
+                        <button
+                          type="button"
+                          onClick={() => setEditProfileData(prev => ({ ...prev, avatar: '' }))}
+                          style={{ display: 'block', background: 'none', border: 'none', color: '#EF4444', fontSize: '11px', fontWeight: 700, padding: 0, marginTop: '4px', cursor: 'pointer' }}
+                        >
+                          Remove Photo
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <div className="mobile-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                    <div className="form-group" style={{ margin: 0 }}>
+                      <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>Full Name *</label>
+                      <input type="text" className="form-control" style={{ height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', paddingLeft: '12px', fontSize: '13px', fontWeight: 600 }} value={editProfileData.name} onChange={e => setEditProfileData({...editProfileData, name: e.target.value})} required />
+                    </div>
+                    <div className="form-group" style={{ margin: 0 }}>
+                      <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>Contact Number *</label>
+                      <input type="text" className="form-control" style={{ height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', paddingLeft: '12px', fontSize: '13px', fontWeight: 600 }} value={editProfileData.contact} onChange={e => setEditProfileData({...editProfileData, contact: e.target.value})} required />
+                    </div>
+                  </div>
+                  <div className="mobile-grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                    <div className="form-group" style={{ margin: 0 }}>
+                      <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>Age *</label>
+                      <input type="number" className="form-control" style={{ height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', paddingLeft: '12px', fontSize: '13px', fontWeight: 600 }} value={editProfileData.age} onChange={e => setEditProfileData({...editProfileData, age: e.target.value})} required />
+                    </div>
+                    <div className="form-group" style={{ margin: 0 }}>
+                      <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>Gender *</label>
+                      <select className="form-control" style={{ height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', paddingLeft: '10px', fontSize: '13px', fontWeight: 600, background: 'white' }} value={editProfileData.gender} onChange={e => setEditProfileData({...editProfileData, gender: e.target.value})} required>
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                    <div className="form-group" style={{ margin: 0 }}>
+                      <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>Blood Group</label>
+                      <select className="form-control" style={{ height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', paddingLeft: '10px', fontSize: '13px', fontWeight: 600, background: 'white' }} value={editProfileData.bloodGroup} onChange={e => setEditProfileData({...editProfileData, bloodGroup: e.target.value})}>
+                        <option value="">Select Blood Group</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="form-group" style={{ marginBottom: '16px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>Address</label>
+                    <textarea className="form-control" style={{ minHeight: '60px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '10px 12px', fontSize: '13px', fontWeight: 600 }} value={editProfileData.address} onChange={e => setEditProfileData({...editProfileData, address: e.target.value})} placeholder="Full address"></textarea>
+                  </div>
+                  <div className="form-group" style={{ marginBottom: '16px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>Allergies</label>
+                    <input type="text" className="form-control" placeholder="e.g. Peanuts, Penicillin (Leave empty if none)" style={{ height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', paddingLeft: '12px', fontSize: '13px', fontWeight: 600 }} value={editProfileData.allergies} onChange={e => setEditProfileData({...editProfileData, allergies: e.target.value})} />
+                  </div>
+                  <div className="form-group" style={{ marginBottom: '24px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>Medical History (Comma separated)</label>
+                    <input type="text" className="form-control" placeholder="e.g. Asthma, Diabetes" style={{ height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', paddingLeft: '12px', fontSize: '13px', fontWeight: 600 }} value={editProfileData.medicalHistory} onChange={e => setEditProfileData({...editProfileData, medicalHistory: e.target.value})} />
+                  </div>
+                  <button type="submit" className="btn btn-primary" style={{ width: '100%', height: '46px', justifyContent: 'center', fontWeight: 800, borderRadius: '8px', background: 'var(--primary-gradient)' }} disabled={isUpdatingProfile}>
+                    {isUpdatingProfile ? 'Saving...' : 'Save Profile Changes'}
+                  </button>
+                </form>
+              </div>
+
+              <div className="glass-card" style={{ padding: '24px', height: 'fit-content' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '20px' }}>Change Password</h3>
+                <form onSubmit={handleUpdatePassword}>
+                  <div className="form-group" style={{ marginBottom: '16px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>Current Password *</label>
+                    <input type="password" className="form-control" placeholder="Enter current password" style={{ height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', paddingLeft: '12px', fontSize: '13px', fontWeight: 600 }} value={passwordData.currentPassword} onChange={e => setPasswordData({...passwordData, currentPassword: e.target.value})} required />
+                  </div>
+                  <div className="form-group" style={{ marginBottom: '16px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>New Password *</label>
+                    <input type="password" className="form-control" placeholder="Enter new password" style={{ height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', paddingLeft: '12px', fontSize: '13px', fontWeight: 600 }} value={passwordData.newPassword} onChange={e => setPasswordData({...passwordData, newPassword: e.target.value})} pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, one special character, and at least 8 or more characters." required />
+                  </div>
+                  <div className="form-group" style={{ marginBottom: '24px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>Confirm New Password *</label>
+                    <input type="password" className="form-control" placeholder="Re-type new password" style={{ height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', paddingLeft: '12px', fontSize: '13px', fontWeight: 600 }} value={passwordData.confirmPassword} onChange={e => setPasswordData({...passwordData, confirmPassword: e.target.value})} pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, one special character, and at least 8 or more characters." required />
+                  </div>
+                  <button type="submit" className="btn btn-secondary" style={{ width: '100%', height: '46px', justifyContent: 'center', fontWeight: 800, borderRadius: '8px', background: 'white', border: '1px solid #CBD5E1' }} disabled={isUpdatingPassword}>
+                    {isUpdatingPassword ? 'Updating...' : 'Update Password'}
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'book-appointment' && selectedDoctor && (
+          <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+              <button className="btn btn-secondary" style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setActiveTab('find')}>
+                <i data-lucide="arrow-left" style={{ width: '16px' }}></i> Back to Specialists
+              </button>
+              <h1 style={{ fontSize: '24px', fontWeight: 800, margin: 0 }}>Schedule Appointment & Secure Checkout</h1>
+            </div>
+
+            <div className="mobile-stack" style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '32px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', minWidth: 0 }}>
+                
+                {/* Pre-filled Patient Record */}
+                <div className="glass-card" style={{ padding: '28px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#3B82F6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '14px' }}>1</div>
+                    <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#1A1D23', margin: 0 }}>Patient Information</h3>
+                    <span className="status-badge available" style={{ marginLeft: 'auto', background: '#F0FDF4', color: '#10B981', fontSize: '11px', fontWeight: 800 }}>✓ Verified Profile</span>
+                  </div>
+                  
+                  <div className="mobile-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+                    <div className="form-group">
+                      <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B' }}>Full Name</label>
+                      <input type="text" className="form-control" style={{ background: '#F1F5F9', border: '1px solid #E2E8F0', cursor: 'not-allowed', fontWeight: 700 }} value={patientProfile?.name || user.name || ''} readOnly />
+                    </div>
+                    <div className="form-group">
+                      <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B' }}>Patient ID (UHID)</label>
+                      <input type="text" className="form-control" style={{ background: '#F1F5F9', border: '1px solid #E2E8F0', cursor: 'not-allowed', fontWeight: 700 }} value={patientProfile ? `#MDC-${patientProfile._id.substring(18).toUpperCase()}` : '#MC-9921'} readOnly />
+                    </div>
+                  </div>
+
+                  <div className="mobile-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+                    <div className="form-group">
+                      <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B' }}>Gender</label>
+                      <input type="text" className="form-control" style={{ background: '#F1F5F9', border: '1px solid #E2E8F0', cursor: 'not-allowed', fontWeight: 700 }} value={patientProfile?.gender || 'Male'} readOnly />
+                    </div>
+                    <div className="form-group">
+                      <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B' }}>Age</label>
+                      <input type="text" className="form-control" style={{ background: '#F1F5F9', border: '1px solid #E2E8F0', cursor: 'not-allowed', fontWeight: 700 }} value={`${patientProfile?.age || '34'} Yrs`} readOnly />
+                    </div>
+                    <div className="form-group">
+                      <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B' }}>Blood Group</label>
+                      <input type="text" className="form-control" style={{ background: '#F1F5F9', border: '1px solid #E2E8F0', cursor: 'not-allowed', fontWeight: 700 }} value={patientProfile?.bloodGroup || 'O+'} readOnly />
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#64748B', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '16px', fontWeight: 600 }}>
+                    <i data-lucide="shield-check" style={{ width: '14px', color: '#10B981' }}></i> DPDP Act Compliant: Details pre-filled securely from registered healthcare records.
+                  </div>
+                </div>
+
+                {/* Visit Details */}
+                <div className="glass-card" style={{ padding: '28px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#3B82F6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '14px' }}>2</div>
+                    <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#1A1D23', margin: 0 }}>Consultation Details</h3>
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '24px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: 800, color: '#1A1D23', marginBottom: '8px', display: 'block' }}>Select Appointment Date <span style={{ color: '#EF4444' }}>*</span></label>
+                    <input type="date" className="form-control" style={{ height: '48px', borderRadius: '10px', fontSize: '14px', fontWeight: 600 }} value={appointmentDate} min={getLocalDateString()} onChange={e => setAppointmentDate(e.target.value)} required />
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '24px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: 800, color: '#1A1D23', marginBottom: '12px', display: 'block' }}>Preferred Time Slot <span style={{ color: '#EF4444' }}>*</span></label>
+                    
+                    {/* Doctor unavailability banner */}
+                    {selectedDoctor && appointmentDate && !doctorAvailability.available && (
+                      <div style={{ 
+                        background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '12px', 
+                        padding: '16px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '12px'
+                      }}>
+                        <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#DC2626" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '13px', fontWeight: 800, color: '#991B1B' }}>Doctor Unavailable on This Date</div>
+                          <div style={{ fontSize: '12px', color: '#B91C1C', marginTop: '2px' }}>
+                            {doctorAvailability.reason === 'Weekly Off' 
+                              ? `${selectedDoctor.name} has a weekly off on ${doctorAvailability.weeklyOff || 'this day'}. Please select a different date.`
+                              : `${selectedDoctor.name} is on ${doctorAvailability.leaveType || ''} leave on this date. Please select a different date.`
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {(!selectedDoctor || !appointmentDate || doctorAvailability.available) && (
+                      <div className="slot-scroll-wrapper">
+                        <button
+                          className="slot-scroll-arrow left"
+                          onClick={() => {
+                            const grid = document.getElementById('patient-time-grid');
+                            if (grid) grid.scrollBy({ left: -340, behavior: 'smooth' });
+                          }}
+                          aria-label="Scroll slots left"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                        </button>
+                        <div id="patient-time-grid" className="time-grid" style={{ overflowX: 'auto', display: 'flex', gap: '10px', padding: '8px 4px', maxWidth: '100%' }}>
+                          {(doctorAvailability.slots || DEFAULT_TIME_SLOTS).map(time => {
+                            const cleanTimeSlotStr = (s) => s ? s.split(/\(Limit:/i)[0].trim().toLowerCase() : '';
+                            const targetTimeClean = cleanTimeSlotStr(time);
+
+                            let limit = 10;
+                            if (selectedDoctor) {
+                                limit = selectedDoctor.max_slots || 10;
+                            }
+
+                            const match = time.match(/\(Limit:\s*(\d+)\)/i);
+                            if (match) {
+                                limit = parseInt(match[1], 10);
+                            }
+
+                            let bookedCount = 0;
+                            if (selectedDoctor && appointmentDate) {
+                                const targetDateStr = new Date(appointmentDate).toDateString();
+                                bookedCount = bookedSlots.filter(app => {
+                                    if (app.status === 'Cancelled') return false;
+                                    const appDocId = app.doctorId?._id || app.doctorId;
+                                    if (String(appDocId) !== String(selectedDoctor._id)) return false;
+                                    const appDateStr = new Date(app.date).toDateString();
+                                    if (appDateStr !== targetDateStr) return false;
+                                    return cleanTimeSlotStr(app.time) === targetTimeClean;
+                                }).length;
+                            }
+
+                            const isFull = bookedCount >= limit;
+                            const isSelected = appointmentTime === time;
+                            const displayTime = time.split(/\(Limit:/i)[0].trim();
+
+                            return (
+                              <div 
+                                key={time} 
+                                className={`time-chip ${isFull ? 'booked' : (isSelected ? 'selected' : 'available')}`}
+                                style={isFull ? {
+                                  background: '#F1F5F9',
+                                  color: '#94A3B8',
+                                  border: '1.5px solid #CBD5E1',
+                                  cursor: 'not-allowed',
+                                  opacity: 0.6
+                                } : {}}
+                                onClick={() => {
+                                  if (!isFull) {
+                                    setAppointmentTime(time);
+                                  }
+                                }}
+                              >
+                                <div style={{ fontSize: '13px', fontWeight: 700 }}>{displayTime}</div>
+                                <div className="slot-label" style={{ fontSize: '11px', marginTop: '2px', fontWeight: 600 }}>
+                                  {isFull ? 'Fully Booked' : (isSelected ? 'Selected' : 'Available')} ({bookedCount}/{limit})
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <button
+                          className="slot-scroll-arrow right"
+                          onClick={() => {
+                            const grid = document.getElementById('patient-time-grid');
+                            if (grid) grid.scrollBy({ left: 340, behavior: 'smooth' });
+                          }}
+                          aria-label="Scroll slots right"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="form-group">
+                    <label style={{ fontSize: '13px', fontWeight: 800, color: '#1A1D23', marginBottom: '8px', display: 'block' }}>Reason for Visit / Symptoms</label>
+                    <textarea className="form-control" style={{ minHeight: '100px', fontSize: '13px', borderRadius: '10px', padding: '12px' }} placeholder="Briefly describe your symptoms or medical concern..." value={appointmentReason} onChange={e => setAppointmentReason(e.target.value)}></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                
+                {/* Consulting Specialist Card */}
+                <div className="glass-card" style={{ padding: '24px' }}>
+                  <h4 style={{ fontSize: '12px', fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase', margin: '0 0 16px' }}>Consulting Doctor</h4>
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                    <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 900 }}>
+                      {selectedDoctor.name ? selectedDoctor.name.substring(0,2).toUpperCase() : 'DR'}
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 900, fontSize: '16px', color: '#1A1D23' }}>{selectedDoctor.name}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--primary)', fontWeight: 700, marginTop: '2px' }}>{selectedDoctor.specialty || 'General OPD'}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Billing Summary */}
+                <div className="glass-card" style={{ padding: '24px' }}>
+                  <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#1A1D23', marginBottom: '16px' }}>Billing Summary</h3>
+                  <div className="billing-summary" style={{ marginBottom: 0 }}>
+                    <div className="billing-row"><span>Consultation Fee</span> <span>₹500.00</span></div>
+                    <div className="billing-row"><span>Registration Fee</span> <span>₹50.00</span></div>
+                    <div className="billing-total" style={{ marginTop: '16px', paddingTop: '16px', borderTop: '2px dashed var(--border)' }}>
+                      <span>Total Amount</span> <span>₹550.00</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Payment Gateway */}
+                <div className="glass-card" style={{ padding: '24px' }}>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, marginBottom: '12px', color: '#1A1D23' }}>Payment Method <span style={{ color: '#EF4444' }}>*</span></label>
+                  <div style={{ background: '#FFFBEB', border: '1px solid #FCD34D', borderRadius: '12px', padding: '16px', marginBottom: '20px', display: 'flex', alignItems: 'start', gap: '12px' }}>
+                    <i data-lucide="alert-triangle" style={{ color: '#D97706', width: '20px', flexShrink: 0, marginTop: '2px' }}></i>
+                    <div>
+                      <div style={{ fontSize: '13px', fontWeight: 800, color: '#92400E' }}>Offline Settlement Required</div>
+                      <div style={{ fontSize: '12px', color: '#B45309', marginTop: '4px', fontWeight: 600, lineHeight: 1.4 }}>
+                        You will pay ₹550.00 at the reception desk when you arrive. The doctor will attend you once payment is recorded.
+                      </div>
+                    </div>
+                  </div>
+                  <button className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', height: '52px', fontSize: '15px', borderRadius: '12px', background: 'var(--primary-gradient)', boxShadow: '0 8px 16px rgba(59, 113, 254, 0.2)' }} onClick={confirmBooking} disabled={loading}>
+                    <i data-lucide="calendar" style={{ width: '16px' }}></i> {loading ? 'Processing...' : 'Confirm Appointment (Pay Offline)'}
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {detailsModalOpen && selectedAppointment && (
+        <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={() => setDetailsModalOpen(false)}>
+          <div className="modal-box" style={{ background: 'white', borderRadius: '24px', padding: '32px', width: '100%', maxWidth: '500px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#1A1D23', margin: 0 }}>Appointment Details</h2>
+              <button 
+                type="button" 
+                onClick={() => setDetailsModalOpen(false)} 
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px' }}
+              >
+                <i data-lucide="x" style={{ width: '20px', height: '20px' }}></i>
+              </button>
+            </div>
+            <div style={{ background: '#F8FAFC', padding: '20px', borderRadius: '16px', marginBottom: '24px', border: '1px solid #E2E8F0' }}>
+              <div className="mobile-stack" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}><div><div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Doctor Name</div><div style={{ fontWeight: 800, fontSize: '15px' }}>{selectedAppointment.doctorId?.name || 'Assigned Doctor'}</div></div><div><div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Current Status</div><div style={{ fontWeight: 800, fontSize: '15px' }}>{selectedAppointment.status}</div></div></div>
+              <div className="mobile-stack" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}><div><div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Hospital</div><div style={{ fontWeight: 800, fontSize: '15px' }}>{getHospitalDetails(selectedAppointment.tenantId).name}</div></div><div><div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Payment Status</div><div style={{ fontWeight: 800, fontSize: '15px', color: selectedAppointment.billingStatus === 'Paid' ? '#16A34A' : '#D97706' }}>{selectedAppointment.billingStatus === 'Paid' ? 'Paid' : 'Unpaid (Please Pay Offline)'}</div></div></div>
+              <div><div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Reason</div><div style={{ fontWeight: 800, fontSize: '15px' }}>{selectedAppointment.reason}</div></div>
+              <div style={{ borderTop: '1px solid #E2E8F0', margin: '20px 0' }}></div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {(() => {
+                  const originalStatus = appointments.find(a => a._id === selectedAppointment._id)?.status || selectedAppointment.status;
+                  const isLocked = originalStatus === 'Cancelled' || originalStatus === 'Completed' || originalStatus === 'Checked Out';
+                  const isCompleted = originalStatus === 'Completed' || originalStatus === 'Checked Out';
+
+                  if (isLocked) {
+                    return (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div style={{ padding: '12px 16px', background: '#F1F5F9', borderRadius: '12px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '13px', fontWeight: 700, color: '#475569' }}>
+                            🔒 Status Lock: This appointment has been {originalStatus}. It cannot be rescheduled or modified.
+                          </span>
+                        </div>
+
+                        {isCompleted && (
+                          <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '16px' }}>
+                            <h3 style={{ fontSize: '14px', fontWeight: 800, color: '#1E293B', marginBottom: '12px' }}>Clinical Summary</h3>
+                            
+                            <div style={{ marginBottom: '16px' }}>
+                              <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', marginBottom: '6px' }}>Prescribed Medicines</div>
+                              {selectedAppointmentDetails.prescriptions.length === 0 ? (
+                                <div style={{ fontSize: '13px', color: '#64748B', fontStyle: 'italic' }}>No medicines prescribed.</div>
+                              ) : (
+                                selectedAppointmentDetails.prescriptions.map((presc, idx) => (
+                                  <div key={presc._id || idx} style={{ background: '#EFF6FF', padding: '10px 12px', borderRadius: '8px', marginBottom: '6px', border: '1px solid #DBEAFE' }}>
+                                    {(presc.items || []).map((item, i) => (
+                                      <div key={i} style={{ fontSize: '13px', color: '#1E293B', fontWeight: 600 }}>
+                                        💊 {item.name} - {item.dosage} ({item.duration})
+                                      </div>
+                                    ))}
+                                  </div>
+                                ))
+                              )}
+                            </div>
+
+                            <div>
+                              <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', marginBottom: '6px' }}>Ordered Lab Tests</div>
+                              {selectedAppointmentDetails.labs.length === 0 ? (
+                                <div style={{ fontSize: '13px', color: '#64748B', fontStyle: 'italic' }}>No lab tests ordered.</div>
+                              ) : (
+                                <div style={{ background: '#F0FDF4', padding: '10px 12px', borderRadius: '8px', border: '1px solid #DCFCE7' }}>
+                                  {selectedAppointmentDetails.labs.map((lab, idx) => (
+                                    <div key={lab._id || idx} style={{ fontSize: '13px', color: '#16A34A', fontWeight: 600, display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                      <span>🔬 {lab.testName}</span>
+                                      <span style={{ fontSize: '11px', background: '#DCFCE7', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase' }}>{lab.status}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, marginBottom: '8px', color: '#1A1D23' }}>Reschedule Date</label>
+                        <input 
+                          type="date" 
+                          className="form-control" 
+                          style={{ background: 'white', border: '1px solid #CBD5E1', borderRadius: '10px', height: '44px', width: '100%', padding: '0 12px', fontWeight: 600 }} 
+                          value={selectedAppointment.date ? new Date(selectedAppointment.date).toISOString().split('T')[0] : ''} 
+                          min={getLocalDateString()} 
+                          onChange={(e) => setSelectedAppointment({...selectedAppointment, date: e.target.value})} 
+                        />
+                      </div>
+
+                      {!rescheduleAvailability.available && (
+                        <div style={{ color: '#EF4444', background: '#FEF2F2', padding: '12px', borderRadius: '10px', fontSize: '12px', fontWeight: 700, border: '1px solid #FEE2E2' }}>
+                          Doctor Unavailable: {rescheduleAvailability.reason || 'Doctor is on leave or weekly off'}
+                        </div>
+                      )}
+
+                      {rescheduleAvailability.available && (
+                        <div>
+                          <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, marginBottom: '8px', color: '#1A1D23' }}>Reschedule Time Slot</label>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '8px', maxHeight: '140px', overflowY: 'auto', paddingRight: '4px', border: '1px solid #E2E8F0', padding: '10px', borderRadius: '10px', background: '#F8FAFC' }}>
+                            {(rescheduleAvailability.slots && rescheduleAvailability.slots.length > 0 ? rescheduleAvailability.slots : DEFAULT_TIME_SLOTS).map(time => {
+                              const docId = selectedAppointment.doctorId?._id || selectedAppointment.doctorId;
+                              const cleanTimeSlotStr = (s) => s ? s.split(/\(Limit:/i)[0].trim().toLowerCase() : '';
+                              const targetTimeClean = cleanTimeSlotStr(time);
+
+                              let limit = 10;
+                              const selectedDocObj = doctors.find(d => String(d._id) === String(docId));
+                              if (selectedDocObj) {
+                                  limit = selectedDocObj.max_slots || 10;
+                              }
+
+                              const match = time.match(/\(Limit:\s*(\d+)\)/i);
+                              if (match) {
+                                  limit = parseInt(match[1], 10);
+                              }
+
+                              let bookedCount = 0;
+                              const targetDateStr = new Date(selectedAppointment.date).toDateString();
+                              bookedCount = rescheduleBookedSlots.filter(app => {
+                                  if (app._id === selectedAppointment._id) return false;
+                                  if (app.status === 'Cancelled') return false;
+                                  const appDocId = app.doctorId?._id || app.doctorId;
+                                  if (String(appDocId) !== String(docId)) return false;
+                                  const appDateStr = new Date(app.date).toDateString();
+                                  if (appDateStr !== targetDateStr) return false;
+                                  return cleanTimeSlotStr(app.time) === targetTimeClean;
+                              }).length;
+
+                              const isFull = bookedCount >= limit;
+                              const isSelected = selectedAppointment.time === time;
+                              const displayTime = time.split(/\(Limit:/i)[0].trim();
+
+                              return (
+                                <button
+                                  key={time}
+                                  type="button"
+                                  disabled={isFull}
+                                  onClick={() => setSelectedAppointment({ ...selectedAppointment, time })}
+                                  style={{
+                                    minHeight: '38px',
+                                    padding: '4px 8px',
+                                    borderRadius: '8px',
+                                    border: isSelected ? '2px solid #2563EB' : '1px solid #CBD5E1',
+                                    background: isFull ? '#E2E8F0' : (isSelected ? '#EFF6FF' : 'white'),
+                                    color: isFull ? '#94A3B8' : (isSelected ? '#2563EB' : '#1E293B'),
+                                    fontWeight: isSelected ? 800 : 600,
+                                    fontSize: '11px',
+                                    cursor: isFull ? 'not-allowed' : 'pointer',
+                                    transition: 'all 0.15s',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                  }}
+                                >
+                                  <span style={{ fontWeight: 700 }}>{displayTime}</span>
+                                  <span style={{ fontSize: '9px', opacity: 0.8 }}>({bookedCount}/{limit})</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, marginBottom: '8px', color: '#1A1D23' }}>Update Status</label>
+                        <select className="form-control" style={{ background: 'white', border: '1px solid #CBD5E1', borderRadius: '10px', height: '44px', width: '100%', padding: '0 12px', fontWeight: 600 }} value={selectedAppointment.status} onChange={(e) => setSelectedAppointment({...selectedAppointment, status: e.target.value})}>
+                          <option value="Pending">Keep as Pending</option>
+                          <option value="Cancelled">Cancel Appointment</option>
+                        </select>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            </div>
+            {(() => {
+              const originalStatus = appointments.find(a => a._id === selectedAppointment._id)?.status || selectedAppointment.status;
+              const isLocked = originalStatus === 'Cancelled' || originalStatus === 'Completed' || originalStatus === 'Checked Out';
+              return (
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                  <button className="btn" style={{ background: '#FEE2E2', color: '#EF4444', fontWeight: 800, padding: '0 20px', borderRadius: '10px', height: '44px' }} onClick={() => handleDeleteAppointment(selectedAppointment._id)}>Delete Record</button>
+                  {!isLocked ? (
+                    <button className="btn btn-primary" style={{ fontWeight: 800, padding: '0 24px', borderRadius: '10px', height: '44px' }} onClick={() => handleUpdateAppointment(selectedAppointment)}>Save Changes</button>
+                  ) : (
+                    <button className="btn btn-secondary" style={{ fontWeight: 800, padding: '0 24px', borderRadius: '10px', height: '44px', background: '#F1F5F9', color: '#475569' }} onClick={() => setDetailsModalOpen(false)}>Close</button>
+                  )}
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
+      {/* View Prescription Modal */}
+      {prescriptionModalOpen && selectedPrescription && (
+        <div 
+          onClick={() => setPrescriptionModalOpen(false)} 
+          style={{ 
+            position: 'fixed', 
+            inset: 0, 
+            background: 'rgba(15,23,42,0.45)', 
+            backdropFilter: 'blur(8px)', 
+            zIndex: 99000, 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            padding: '20px' 
+          }}
+        >
+          <div 
+            onClick={e => e.stopPropagation()} 
+            style={{ 
+              background: 'white', 
+              borderRadius: '24px', 
+              width: '100%', 
+              maxWidth: '500px', 
+              boxShadow: '0 25px 50px -12px rgba(59, 113, 254, 0.15)', 
+              maxHeight: '90vh', 
+              display: 'flex', 
+              flexDirection: 'column', 
+              overflow: 'hidden', 
+              border: '1px solid #BFDBFE',
+              fontFamily: "'Urbanist', sans-serif"
+            }}
+          >
+            {/* Modal Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid #E2E8F0', flexShrink: 0 }}>
+              <div>
+                <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', margin: 0, fontFamily: "'Outfit', sans-serif" }}>Prescription Details</h3>
+                <p style={{ fontSize: '12px', color: '#64748B', margin: '4px 0 0 0' }}>
+                  Issued by: <strong>{selectedPrescription.doctorId?.name || 'Dr. kunal'}</strong>
+                </p>
+              </div>
+              <button 
+                onClick={() => setPrescriptionModalOpen(false)} 
+                style={{ 
+                  background: '#F1F5F9', 
+                  border: 'none', 
+                  borderRadius: '8px', 
+                  width: '32px', 
+                  height: '32px', 
+                  cursor: 'pointer', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  color: '#64748B', 
+                  fontSize: '16px', 
+                  fontWeight: 'bold' 
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div style={{ padding: '24px', overflowY: 'auto', flex: 1 }} data-lenis-prevent>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', padding: '12px 16px', background: '#F8FAFC', borderRadius: '12px' }}>
+                <div>
+                  <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Prescription Date</div>
+                  <div style={{ fontSize: '14px', fontWeight: 800, color: '#334155', marginTop: '2px' }}>
+                    {selectedPrescription.createdAt ? new Date(selectedPrescription.createdAt).toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric' }) : '24 May 2024'}
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Dispense Status</div>
+                  <span 
+                    style={{ 
+                      display: 'inline-block',
+                      background: selectedPrescription.status === 'Dispensed' || selectedPrescription.status === 'Dispensed by Pharmacy' ? '#ECFDF5' : '#FFF7ED', 
+                      color: selectedPrescription.status === 'Dispensed' || selectedPrescription.status === 'Dispensed by Pharmacy' ? '#10B981' : '#EA580C',
+                      border: selectedPrescription.status === 'Dispensed' || selectedPrescription.status === 'Dispensed by Pharmacy' ? '1px solid #D1FAE5' : '1px solid #FFEDD5',
+                      fontWeight: 700,
+                      fontSize: '11px',
+                      padding: '4px 8px',
+                      borderRadius: '6px',
+                      marginTop: '4px'
+                    }}
+                  >
+                    {selectedPrescription.status === 'Pending Pharmacy Dispatch' ? 'PENDING' : selectedPrescription.status.toUpperCase()}
+                  </span>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ fontSize: '13px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Medicine List</div>
+                {selectedPrescription.items && selectedPrescription.items.length > 0 ? (
+                  selectedPrescription.items.map((item, idx) => (
+                    <div 
+                      key={idx} 
+                      style={{ 
+                        padding: '16px', 
+                        border: '1px solid #BFDBFE', 
+                        borderRadius: '12px', 
+                        background: '#FFFFFF',
+                        boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                        <div style={{ fontWeight: 800, fontSize: '15px', color: '#0F172A', fontFamily: "'Outfit', sans-serif" }}>
+                          {item.medicine}
+                        </div>
+                        <span style={{ fontSize: '11px', fontWeight: 700, padding: '4px 8px', background: '#EFF6FF', color: '#2563EB', borderRadius: '6px' }}>
+                          {item.duration}
+                        </span>
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '12.5px', color: '#475569' }}>
+                        <div>
+                          <strong>Dosage:</strong> {item.dosage}
+                        </div>
+                        <div>
+                          <strong>Instructions:</strong> {item.instructions || 'As directed'}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div style={{ textAlign: 'center', padding: '20px', color: '#94A3B8' }}>
+                    No medicines listed.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div style={{ display: 'flex', gap: '16px', padding: '20px 24px', borderTop: '1px solid #E2E8F0', flexShrink: 0 }}>
+              <button 
+                type="button" 
+                className="btn btn-secondary" 
+                style={{ 
+                  flex: 1, 
+                  justifyContent: 'center', 
+                  height: '44px', 
+                  borderRadius: '10px', 
+                  border: '1px solid #BFDBFE', 
+                  background: 'transparent', 
+                  color: '#2563EB', 
+                  fontWeight: 700, 
+                  cursor: 'pointer' 
+                }} 
+                onClick={() => setPrescriptionModalOpen(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showAadhaarModal && (
+        <div className="modal-overlay" style={{ zIndex: 10000 }}>
+          <div className="modal-box" style={{ maxWidth: '450px', padding: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', margin: 0, fontFamily: "'Outfit', sans-serif" }}>
+                Verify Aadhaar (KYC Setup)
+              </h3>
+              <button 
+                type="button" 
+                onClick={() => setShowAadhaarModal(false)} 
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B' }}
+              >
+                <i data-lucide="x" style={{ width: '20px', height: '20px' }}></i>
+              </button>
+            </div>
+            
+            <form onSubmit={handleVerifyAadhaar}>
+              <p style={{ fontSize: '13px', color: '#64748B', lineHeight: 1.5, marginBottom: '20px' }}>
+                Enter your 12-digit Aadhaar number to perform a secure e-KYC query. This integrates with UIDAI validation sandbox to verify your identity.
+              </p>
+              
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>
+                  Aadhaar Card Number *
+                </label>
+                <input 
+                  type="text" 
+                  className="form-control" 
+                  maxLength="12"
+                  placeholder="e.g. 567812349012"
+                  value={aadhaarInput}
+                  onChange={(e) => setAadhaarInput(e.target.value.replace(/\D/g, ''))}
+                  style={{ height: '44px', width: '100%', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', fontSize: '14px', fontWeight: 600, letterSpacing: '1px' }}
+                  required
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button 
+                  type="button" 
+                  className="btn btn-secondary" 
+                  style={{ flex: 1, justifyContent: 'center' }}
+                  onClick={() => setShowAadhaarModal(false)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="btn btn-primary" 
+                  style={{ flex: 1, justifyContent: 'center' }}
+                  disabled={verifyingAadhaar}
+                >
+                  {verifyingAadhaar ? 'Verifying...' : 'Submit Verification'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showAbhaModal && (
+        <div className="modal-overlay" style={{ zIndex: 10000 }}>
+          <div className="modal-box" style={{ maxWidth: '450px', padding: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', margin: 0, fontFamily: "'Outfit', sans-serif" }}>
+                Link ABHA Health ID
+              </h3>
+              <button 
+                type="button" 
+                onClick={() => setShowAbhaModal(false)} 
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B' }}
+              >
+                <i data-lucide="x" style={{ width: '20px', height: '20px' }}></i>
+              </button>
+            </div>
+            
+            <form onSubmit={handleLinkAbha}>
+              <p style={{ fontSize: '13px', color: '#64748B', lineHeight: 1.5, marginBottom: '20px' }}>
+                Link your Ayushman Bharat Health Account (ABHA) to share health records digitally across ABDM-registered facilities in India.
+              </p>
+              
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>
+                  ABHA ID / Address *
+                </label>
+                <input 
+                  type="text" 
+                  className="form-control" 
+                  placeholder="e.g. 91-1234-5678-9012 or username@sbx"
+                  value={abhaInput}
+                  onChange={(e) => setAbhaInput(e.target.value)}
+                  style={{ height: '44px', width: '100%', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', fontSize: '14px', fontWeight: 600 }}
+                  required
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button 
+                  type="button" 
+                  className="btn btn-secondary" 
+                  style={{ flex: 1, justifyContent: 'center' }}
+                  onClick={() => setShowAbhaModal(false)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="btn btn-primary" 
+                  style={{ flex: 1, justifyContent: 'center' }}
+                  disabled={verifyingAbha}
+                >
+                  {verifyingAbha ? 'Linking ID...' : 'Link ABHA Account'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      <div className="mobile-bottom-nav">
+        <div className={`mob-nav-item ${activeTab === 'summary' ? 'active' : ''}`} onClick={() => setActiveTab('summary')}><i data-lucide="layout-dashboard"></i><span>Home</span></div>
+        <div className={`mob-nav-item ${activeTab === 'records' ? 'active' : ''}`} onClick={() => setActiveTab('records')}><i data-lucide="file-text"></i><span>Timeline</span></div>
+        <div className={`mob-nav-item ${activeTab === 'documents' ? 'active' : ''}`} onClick={() => setActiveTab('documents')}><i data-lucide="folder"></i><span>Docs</span></div>
+        <div className={`mob-nav-item ${activeTab === 'privacy' ? 'active' : ''}`} onClick={() => setActiveTab('privacy')}><i data-lucide="shield"></i><span>Privacy</span></div>
+        <div className={`mob-nav-item ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => setActiveTab('profile')}><i data-lucide="user"></i><span>Profile</span></div>
+      </div>
+
+      {/* DELETE APPOINTMENT CONFIRMATION MODAL */}
+      {deleteApptConfirmId && (
+        <div className="modal-overlay" style={{ zIndex: 10000 }}>
+          <div className="modal-box" style={{ maxWidth: '400px', padding: '24px', textAlign: 'center' }}>
+            <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2.5"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+            </div>
+            <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', marginBottom: '8px' }}>Cancel Appointment?</h3>
+            <p style={{ fontSize: '13px', color: '#64748B', lineHeight: 1.5, marginBottom: '24px' }}>
+              Are you sure you want to cancel and delete this appointment? This action cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button 
+                type="button" 
+                className="btn" 
+                style={{ flex: 1, background: '#F1F5F9', color: '#475569', fontWeight: 800, height: '40px', borderRadius: '10px', cursor: 'pointer', border: '1px solid #E2E8F0' }}
+                onClick={() => setDeleteApptConfirmId(null)}
+              >
+                Go Back
+              </button>
+              <button 
+                type="button" 
+                className="btn" 
+                style={{ flex: 1, background: '#EF4444', color: 'white', fontWeight: 800, height: '40px', borderRadius: '10px', cursor: 'pointer', border: 'none' }}
+                onClick={confirmDeleteAppointment}
+              >
+                Cancel Appt
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {notification && (
+        <div className="premium-toast" style={{
+          background: notification.type === 'error' ? '#FEF2F2' : '#F0FDF4',
+          border: `1px solid ${notification.type === 'error' ? '#FCA5A5' : '#BBF7D0'}`,
+          color: notification.type === 'error' ? '#B91C1C' : '#15803D',
+          animation: 'toastSlideDown 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
+        }}>
+          {notification.message}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default PatientDashboard;

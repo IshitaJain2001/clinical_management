@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Curoxa - Healthcare Dashboard</title>
+    <script src="https://unpkg.com/lucide@0.344.0"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <!-- GSAP & Lenis Smooth Scroll CDNs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Premium Global Scroll Smoother Engine -->
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        // Automatically check if we are on a dashboard route
+        const isDashboardRoute = () => {
+          return /receptionist|patient|doctor|admin|pharmacy|lab|procure|hr|payroll/i.test(window.location.pathname);
+        };
+
+        if (typeof Lenis !== "undefined" && !isDashboardRoute()) {
+          // Initialize Lenis buttery-smooth scrolling
+          const lenis = new Lenis({
+            duration: 1.1,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Premium hardware ease-out curve
+            direction: "vertical",
+            gestureDirection: "vertical",
+            smooth: true,
+            mouseMultiplier: 0.9,
+            smoothTouch: false, // Keep standard high-performance native touch scroll on mobile devices
+            touchMultiplier: 1.5,
+            infinite: false,
+          });
+
+          // Connect Lenis to GSAP ScrollTrigger ticker updates
+          if (
+            typeof gsap !== "undefined" &&
+            typeof ScrollTrigger !== "undefined"
+          ) {
+            gsap.registerPlugin(ScrollTrigger);
+            lenis.on("scroll", ScrollTrigger.update);
+
+            gsap.ticker.add((time) => {
+              if (window.lenis) {
+                window.lenis.raf(time * 1000);
+              }
+            });
+
+            gsap.ticker.lagSmoothing(0);
+          }
+
+          // Expose globally
+          window.lenis = lenis;
+          console.log("GSAP & Lenis smooth scrolling initializers loaded.");
+
+          // Periodically check if we transitioned to a dashboard route and destroy Lenis if so
+          const routeChecker = setInterval(() => {
+            if (isDashboardRoute()) {
+              if (window.lenis) {
+                window.lenis.destroy();
+                window.lenis = null;
+                console.log("Lenis destroyed dynamically via route check.");
+                clearInterval(routeChecker);
+              }
+            }
+          }, 100);
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,10 @@
+47c6e3c Update index.html
+8fd6093 new changes
+0449a5a Update index.html
+baa4a2b new changes
+4d9bb67 Update index.html
+7c0cd84 mobile responsive fix
+fec99df Update index.html
+357e58a google login fixed
+540a52e Update index.html
+6808b5a curoxa
