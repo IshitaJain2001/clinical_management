@@ -429,8 +429,6 @@ export default function EmployeeProfileView({
             { id: 'Professional', label: 'Professional Info', icon: MapPin },
             { id: 'Attendance', label: 'Attendance logs', icon: Clock },
             { id: 'Leave', label: 'Leave & Balance', icon: CalendarDays },
-            { id: 'Payroll', label: 'Salary & Payslips', icon: Wallet },
-            { id: 'Performance', label: 'Goals & Reviews', icon: Trophy },
             { id: 'Documents', label: 'Verification Docs', icon: FileLock },
           ];
 
@@ -1086,267 +1084,9 @@ export default function EmployeeProfileView({
           </div>
         )}
 
-        {/* TAB 6: Salary & Payslips */}
-        {activeTab === 'Payroll' && (
-          <div className="space-y-6">
-            
-            {/* Salary Breakdown Widget */}
-            <div>
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
-                <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Salary Structure Breakdown</h3>
-                <div className="flex items-center gap-3">
-                  <span className={`font-semibold text-xs px-3 py-1 rounded-full ${employee.ctcAnnual > 0 ? 'text-blue-600 bg-blue-50' : 'text-amber-700 bg-amber-50 border border-amber-200'}`}>
-                    Annual CTC: ₹{(employee.ctcAnnual || 0).toLocaleString()} {employee.ctcAnnual === 0 ? '(Not Set)' : ''}
-                  </span>
-                  {isAdminOrHR && !isEditingSalary && (
-                    <button 
-                      onClick={() => {
-                        setSalaryFormData({
-                          ctcAnnual: employee.ctcAnnual !== undefined && employee.ctcAnnual !== null ? employee.ctcAnnual : 0,
-                          pfEnrolled: employee.pfEnrolled !== false,
-                          esiEnrolled: employee.esiEnrolled !== false
-                        });
-                        setIsEditingSalary(true);
-                      }}
-                      className="px-3 py-1.5 text-xs font-bold bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 shadow-sm transition-all flex items-center gap-1.5"
-                    >
-                      <Edit3 className="w-3.5 h-3.5" />
-                      Edit Salary Structure
-                    </button>
-                  )}
-                </div>
-              </div>
 
-              {isEditingSalary && (
-                <div className="bg-blue-50/60 p-4 rounded-xl border border-blue-200 mb-6 space-y-4 animate-fadeIn">
-                  <div className="flex justify-between items-center">
-                    <h4 className="text-xs font-bold text-blue-900 uppercase tracking-wider flex items-center gap-1.5">
-                      <Wallet className="w-4 h-4 text-blue-600" />
-                      Update Annual CTC & Statutory Contributions
-                    </h4>
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={() => setIsEditingSalary(false)} 
-                        className="px-3 py-1.5 text-xs font-bold bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-100 transition-colors"
-                      >
-                        Cancel
-                      </button>
-                      <button 
-                        onClick={handleSaveSalary} 
-                        className="px-3 py-1.5 text-xs font-bold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-                      >
-                        Save Salary Changes
-                      </button>
-                    </div>
-                  </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                    <div>
-                      <label className="text-[10px] font-bold text-slate-600 block mb-1">Annual CTC (₹ INR) *</label>
-                      <input 
-                        type="number" 
-                        placeholder="e.g. 480000" 
-                        value={salaryFormData.ctcAnnual} 
-                        onChange={e => setSalaryFormData({...salaryFormData, ctcAnnual: e.target.value})} 
-                        className="w-full h-9 px-3 border border-slate-300 rounded-lg bg-white font-mono font-semibold text-slate-800 outline-none focus:ring-1 focus:ring-blue-500" 
-                      />
-                    </div>
 
-                    <div className="flex items-center gap-2 pt-4">
-                      <input 
-                        type="checkbox" 
-                        id="edit-pf-enrolled"
-                        checked={salaryFormData.pfEnrolled} 
-                        onChange={e => setSalaryFormData({...salaryFormData, pfEnrolled: e.target.checked})} 
-                        className="w-4 h-4 text-blue-600 rounded cursor-pointer" 
-                      />
-                      <label htmlFor="edit-pf-enrolled" className="text-xs font-semibold text-slate-700 cursor-pointer">
-                        Provident Fund (PF) Enrolled
-                      </label>
-                    </div>
-
-                    <div className="flex items-center gap-2 pt-4">
-                      <input 
-                        type="checkbox" 
-                        id="edit-esi-enrolled"
-                        checked={salaryFormData.esiEnrolled} 
-                        onChange={e => setSalaryFormData({...salaryFormData, esiEnrolled: e.target.checked})} 
-                        className="w-4 h-4 text-blue-600 rounded cursor-pointer" 
-                      />
-                      <label htmlFor="edit-esi-enrolled" className="text-xs font-semibold text-slate-700 cursor-pointer">
-                        Employee State Insurance (ESI) Enrolled
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                <div className="space-y-3">
-                  <h4 className="text-xs font-bold text-slate-700 uppercase">MONTHLY EARNINGS</h4>
-                  <div className="space-y-2 text-xs">
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Basic Pay</span>
-                      <span className="font-semibold text-slate-800 font-mono">₹{Math.round(((employee.ctcAnnual || 0) * 0.45 / 12)).toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">HRA (House Rent Allowance)</span>
-                      <span className="font-semibold text-slate-800 font-mono">₹{Math.round(((employee.ctcAnnual || 0) * 0.20 / 12)).toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Medical Allowance</span>
-                      <span className="font-semibold text-slate-800 font-mono">₹{employee.ctcAnnual > 0 ? '1,250' : '0'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Conveyance Allowance</span>
-                      <span className="font-semibold text-slate-800 font-mono">₹{employee.ctcAnnual > 0 ? '1,600' : '0'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Special Allowance</span>
-                      <span className="font-semibold text-slate-800 font-mono">₹{Math.round(((employee.ctcAnnual || 0) * 0.15 / 12)).toLocaleString()}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-3 border-t md:border-t-0 md:border-l border-slate-200 pt-3 md:pt-0 md:pl-6">
-                  <h4 className="text-xs font-bold text-slate-700 uppercase">MONTHLY DEDUCTIONS</h4>
-                  <div className="space-y-2 text-xs">
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Provident Fund (PF)</span>
-                      <span className="font-semibold text-red-600 font-mono">{employee.pfEnrolled && employee.ctcAnnual > 0 ? `-₹${Math.min(1800, Math.round(((employee.ctcAnnual || 0) * 0.45 / 12) * 0.12)).toLocaleString()}` : '₹0'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Employee State Insurance (ESI)</span>
-                      <span className="font-semibold text-red-600 font-mono">{employee.esiEnrolled && employee.ctcAnnual > 0 ? `-₹${Math.round(((employee.ctcAnnual || 0) * 0.45 / 12) * 0.0075).toLocaleString()}` : '₹0'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Professional Tax (PT)</span>
-                      <span className="font-semibold text-red-600 font-mono">{employee.ctcAnnual > 0 ? '-₹200' : '₹0'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Estimated Income Tax (TDS)</span>
-                      <span className="font-semibold text-red-600 font-mono">-₹{Math.round(((employee.ctcAnnual || 0) * 0.18 / 12)).toLocaleString()}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Salary slips list */}
-            <div className="space-y-3">
-              <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Historical Salary Slips</h3>
-              <p className="text-[11px] text-slate-400">Generated automatically at the end of every active hospital billing cycle.</p>
-              
-              <div className="border border-slate-100 rounded-xl overflow-hidden shadow-sm">
-                <table className="w-full text-left border-collapse text-xs">
-                  <thead>
-                    <tr className="border-b border-slate-100 bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                      <th className="px-6 py-3">Payslip Cycle</th>
-                      <th className="px-6 py-3">Gross Earnings</th>
-                      <th className="px-6 py-3">Total Deductions</th>
-                      <th className="px-6 py-3">Net Payable Amount</th>
-                      <th className="px-6 py-3">Payment Status</th>
-                      <th className="px-6 py-3 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {salarySlips.length === 0 ? (
-                      <tr>
-                        <td colSpan={6} className="px-6 py-8 text-center text-slate-400">
-                          No historical payslips on record yet. Payslips are generated automatically at the end of each completed monthly billing cycle.
-                        </td>
-                      </tr>
-                    ) : (
-                      salarySlips.map((slip) => (
-                        <tr key={slip.id} className="hover:bg-slate-50/50">
-                          <td className="px-6 py-3 font-semibold text-slate-800">{slip.month}</td>
-                          <td className="px-6 py-3 font-mono text-slate-600">₹{slip.totalEarnings.toLocaleString()}</td>
-                          <td className="px-6 py-3 font-mono text-slate-600">₹{slip.totalDeductions.toLocaleString()}</td>
-                          <td className="px-6 py-3 font-mono text-emerald-600 font-bold">₹{slip.netPayable.toLocaleString()}</td>
-                          <td className="px-6 py-3">
-                            <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-[10px] font-bold">
-                              {slip.status}
-                            </span>
-                          </td>
-                          <td className="px-6 py-3 text-right">
-                            <button 
-                              onClick={() => setSelectedPayslip(slip)}
-                              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-1 text-[11px] font-semibold ml-auto"
-                            >
-                              <Printer className="w-3.5 h-3.5" />
-                              Print Slip
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-          </div>
-        )}
-
-        {/* TAB 7: Goals & Reviews */}
-        {activeTab === 'Performance' && (
-          <div className="space-y-6">
-            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Clinical Performance Framework</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              
-              {/* Core active KPIs */}
-              <div className="space-y-4">
-                <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Operational Target Goals</h4>
-                
-                <div className="space-y-3">
-                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="font-semibold text-slate-800">EMR Documentation Accuracy</span>
-                      <span className="text-[11px] font-mono font-bold text-blue-600">95% Target</span>
-                    </div>
-                    <p className="text-[11px] text-slate-400">Maintains 100% compliance with Joint Commission patient file standards.</p>
-                  </div>
-
-                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="font-semibold text-slate-800">Clinical Wait-Time Optimization</span>
-                      <span className="text-[11px] font-mono font-bold text-blue-600">&lt;15 mins</span>
-                    </div>
-                    <p className="text-[11px] text-slate-400">Optimizing patient processing speed in Outpatient / Clinic consulting rooms.</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Quarterly Review */}
-              <div className="bg-slate-50/70 p-4 rounded-xl border border-slate-100 space-y-3">
-                <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1">
-                  <Trophy className="w-4 h-4 text-amber-500" />
-                  Q2 Executive Performance Summary
-                </h4>
-                <div className="space-y-2.5 text-xs">
-                  <div>
-                    <span className="text-slate-400 text-[10px] block">RATING GIVEN BY MEDICAL DIRECTOR</span>
-                    <span className="font-bold text-slate-800">4.8 / 5.0 (Exceptional Footprint)</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 text-[10px] block">STRENGTHS EXPORTED</span>
-                    <p className="text-slate-600 mt-0.5 leading-relaxed">
-                      Maintains flawless diagnostic records and exhibits empathetic triage management. Praised highly in patient satisfaction surveys.
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 text-[10px] block">PROMOTION ELIGIBILITY</span>
-                    <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded mt-1 inline-block">
-                      Eligible (Pending Q4 Board Audit)
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        )}
 
         {/* TAB 8: Verification Docs */}
         {activeTab === 'Documents' && (
@@ -1720,11 +1460,39 @@ export default function EmployeeProfileView({
                 >
                   Reset
                 </button>
-                <button
+                 <button
                   type="button"
                   onClick={async () => {
                     try {
-                      await onUpdateEmployee(employee.id, { doctorSlots: selectedSlots });
+                      let slotsToSave = [...selectedSlots];
+                      
+                      // Auto-add slot from inputs if they filled it but forgot to click "Add Slot"
+                      let finalSlot = newSlotTime.trim();
+                      if (!finalSlot && newSlotStartTime && newSlotEndTime) {
+                        const formatTime12h = (timeVal) => {
+                          if (!timeVal) return '';
+                          const [hoursStr, minutesStr] = timeVal.split(':');
+                          let hours = parseInt(hoursStr, 10);
+                          const ampm = hours >= 12 ? 'PM' : 'AM';
+                          hours = hours % 12;
+                          hours = hours ? hours : 12;
+                          const hoursFormatted = hours < 10 ? '0' + hours : hours;
+                          return `${hoursFormatted}:${minutesStr} ${ampm}`;
+                        };
+                        const start12 = formatTime12h(newSlotStartTime);
+                        const end12 = formatTime12h(newSlotEndTime);
+                        finalSlot = `${start12} to ${end12}${newSlotLimit ? ` (Limit: ${newSlotLimit})` : ''}`;
+                      }
+                      
+                      if (finalSlot && !slotsToSave.includes(finalSlot)) {
+                        slotsToSave.push(finalSlot);
+                        setSelectedSlots(slotsToSave);
+                        setNewSlotTime('');
+                        setNewSlotStartTime('');
+                        setNewSlotEndTime('');
+                      }
+
+                      await onUpdateEmployee(employee.id, { doctorSlots: slotsToSave });
                       showToast('Doctor slots updated successfully!', 'success');
                     } catch (e) {
                       showToast('Failed to update doctor slots', 'error');

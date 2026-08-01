@@ -142,6 +142,7 @@ router.post("/users", isHrOrAdmin, async (req, res) => {
 router.put("/users/:id", isHrOrAdmin, async (req, res) => {
   const id = req.params.id;
   const { password } = req.body;
+  console.log(`[UPDATE USER] ID: ${id}, Body:`, JSON.stringify(req.body));
 
   try {
     const updateFields = {};

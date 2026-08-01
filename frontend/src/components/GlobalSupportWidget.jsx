@@ -8,6 +8,7 @@ export default function GlobalSupportWidget() {
   const [newTicketDesc, setNewTicketDesc] = useState('');
   const [chatMessage, setChatMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [supportTab, setSupportTab] = useState('raised'); // 'raised' or 'general'
   
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [currentUser, setCurrentUser] = useState(() => JSON.parse(localStorage.getItem('user') || '{}'));
@@ -468,51 +469,150 @@ export default function GlobalSupportWidget() {
                   <h4 style={{ margin: '0 0 2px 0', fontSize: '13px', fontWeight: 800, color: '#1E293B', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     Your Support Tickets
                   </h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {tickets.length === 0 ? (
-                      <div style={{ padding: '24px', textAlign: 'center', color: '#94A3B8', fontSize: '12px', background: '#F8FAFC', border: '1px dashed #E2E8F0', borderRadius: '8px' }}>
-                        No support tickets logged.
-                      </div>
-                    ) : (
-                      tickets.map(t => (
-                        <div
-                          key={t._id}
-                          onClick={() => setActiveTicket(t)}
-                          style={{
-                            padding: '12px',
-                            background: 'white',
-                            border: '1px solid #E2E8F0',
-                            borderRadius: '10px',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s',
-                            boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
-                          }}
-                          onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.transform = 'none'; }}
-                        >
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                            <span style={{ fontWeight: 800, fontSize: '12px', color: '#1E293B' }}>{t.id}</span>
+                  
+                  {/* Tabs */}
+                  {(() => {
+                    const raisedTickets = tickets.filter(t => 
+                      t.status === 'Open' && (
+                        t.contact === currentUser?.email || 
+                        t.contact === currentUser?.staff_id || 
+                        (t.messages && t.messages[0] && (t.messages[0].sender === currentUser?.name || t.messages[0].sender === currentUser?.staff_id))
+                      )
+                    );
+                    const generalTickets = tickets.filter(t => 
+                      t.status === 'Open' && 
+                      !(t.contact === currentUser?.email || 
+                        t.contact === currentUser?.staff_id || 
+                        (t.messages && t.messages[0] && (t.messages[0].sender === currentUser?.name || t.messages[0].sender === currentUser?.staff_id)))
+                    );
+                    const activeList = supportTab === 'raised' ? raisedTickets : generalTickets;
+
+                    return (
+                      <>
+                        <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #E2E8F0', paddingBottom: '8px', marginBottom: '4px' }}>
+                          <button
+                            type="button"
+                            onClick={() => setSupportTab('raised')}
+                            style={{
+                              background: supportTab === 'raised' ? '#2563EB' : 'transparent',
+                              color: supportTab === 'raised' ? '#FFFFFF' : '#64748B',
+                              border: 'none',
+                              padding: '6px 12px',
+                              borderRadius: '6px',
+                              fontSize: '11px',
+                              fontWeight: 800,
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              transition: 'all 0.2s',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.3px'
+                            }}
+                          >
+                            Raised by You
                             <span style={{
+                              background: supportTab === 'raised' ? 'rgba(255,255,255,0.2)' : '#E2E8F0',
+                              color: supportTab === 'raised' ? '#FFFFFF' : '#64748B',
+                              padding: '1px 6px',
+                              borderRadius: '10px',
                               fontSize: '9px',
-                              fontWeight: 700,
-                              background: t.status === 'Open' ? '#FEF3C7' : '#D1FAE5',
-                              color: t.status === 'Open' ? '#D97706' : '#065F46',
-                              padding: '2px 6px',
-                              borderRadius: '10px'
+                              fontWeight: 800
                             }}>
-                              {t.status}
+                              {raisedTickets.length}
                             </span>
-                          </div>
-                          <p style={{ fontSize: '12px', color: '#475569', margin: '0 0 6px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {t.description}
-                          </p>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '10px', color: '#94A3B8' }}>
-                            <span>Dept: {t.department}</span>
-                          </div>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSupportTab('general')}
+                            style={{
+                              background: supportTab === 'general' ? '#2563EB' : 'transparent',
+                              color: supportTab === 'general' ? '#FFFFFF' : '#64748B',
+                              border: 'none',
+                              padding: '6px 12px',
+                              borderRadius: '6px',
+                              fontSize: '11px',
+                              fontWeight: 800,
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              transition: 'all 0.2s',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.3px'
+                            }}
+                          >
+                            General
+                            <span style={{
+                              background: supportTab === 'general' ? 'rgba(255,255,255,0.2)' : '#E2E8F0',
+                              color: supportTab === 'general' ? '#FFFFFF' : '#64748B',
+                              padding: '1px 6px',
+                              borderRadius: '10px',
+                              fontSize: '9px',
+                              fontWeight: 800
+                            }}>
+                              {generalTickets.length}
+                            </span>
+                          </button>
                         </div>
-                      ))
-                    )}
-                  </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {activeList.length === 0 ? (
+                            <div style={{ padding: '24px', textAlign: 'center', color: '#94A3B8', fontSize: '12px', background: '#F8FAFC', border: '1px dashed #E2E8F0', borderRadius: '8px' }}>
+                              {supportTab === 'raised' ? 'No tickets raised by you.' : 'No general support tickets.'}
+                            </div>
+                          ) : (
+                            activeList.map(t => {
+                              const raisedDate = t.createdAt ? new Date(t.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : t.createdOn || '';
+                              return (
+                                <div
+                                  key={t._id}
+                                  onClick={() => setActiveTicket(t)}
+                                  style={{
+                                    padding: '12px',
+                                    background: 'white',
+                                    border: '1px solid #E2E8F0',
+                                    borderRadius: '10px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                    boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+                                  }}
+                                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.transform = 'none'; }}
+                                >
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                      <span style={{ fontWeight: 800, fontSize: '12px', color: '#1E293B' }}>{t.id}</span>
+                                      <span style={{ fontSize: '10px', color: '#94A3B8', fontWeight: 600 }}>• {raisedDate}</span>
+                                    </div>
+                                    <span style={{
+                                      fontSize: '9px',
+                                      fontWeight: 700,
+                                      background: t.status === 'Open' ? '#FEF3C7' : '#D1FAE5',
+                                      color: t.status === 'Open' ? '#D97706' : '#065F46',
+                                      padding: '2px 6px',
+                                      borderRadius: '10px'
+                                    }}>
+                                      {t.status}
+                                    </span>
+                                  </div>
+                                  <p style={{ fontSize: '12px', color: '#475569', margin: '0 0 6px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    {t.description}
+                                  </p>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '10px', color: '#94A3B8' }}>
+                                    <span>Dept: {t.department}</span>
+                                    {supportTab === 'general' && t.messages && t.messages[0] && (
+                                      <span style={{ fontSize: '9px', color: '#64748B', fontWeight: 600 }}>By: {t.messages[0].sender}</span>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })
+                          )}
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
               </>
             )}

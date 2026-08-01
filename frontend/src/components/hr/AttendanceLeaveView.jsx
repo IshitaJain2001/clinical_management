@@ -71,8 +71,9 @@ export default function AttendanceLeaveView({
     }
     setOverrideDate(dateStr);
     
+    const emp = employees.find(e => e.id === selectedCalendarEmployeeId || e.staff_id === selectedCalendarEmployeeId);
     const existing = attendanceRecords.find(
-      r => r.employeeId === selectedCalendarEmployeeId && r.date === dateStr
+      r => (r.employeeId === selectedCalendarEmployeeId || r.employeeId === emp?.id || r.employeeId === emp?.staff_id) && r.date === dateStr
     );
     
     if (existing) {
@@ -126,7 +127,7 @@ export default function AttendanceLeaveView({
     if (!emp) return;
     
     const existing = attendanceRecords.find(
-      r => r.employeeId === selectedCalendarEmployeeId && r.date === overrideDate
+      r => (r.employeeId === selectedCalendarEmployeeId || r.employeeId === emp?.id || r.employeeId === emp?.staff_id) && r.date === overrideDate
     );
     
     const calculatedHours = calculateWorkHours(overrideClockIn, overrideClockOut);
@@ -167,18 +168,14 @@ export default function AttendanceLeaveView({
   // Leave policies state (should come from backend props)
   const [policies, setPolicies] = useState(() => {
     // Try to get from backend data if available
-    if (employees.length > 0 && employees[0].leaveBalance) {
-      const lb = employees[0].leaveBalance;
-      return [
-        { type: 'Sick Leave', paid: true, days: lb.sick || 12, carryForward: true, description: 'Medical emergency and recovery. Requires board doctor advisory if >3 days.' },
-        { type: 'Casual Leave', paid: true, days: lb.casual || 10, carryForward: false, description: 'Personal affairs, travel, or unplanned personal engagements.' },
-        { type: 'Annual Leave (Earned)', paid: true, days: lb.annual || 15, carryForward: true, description: 'Pre-planned vacations. Minimum 14-day advance booking notice.' },
-        { type: 'Maternity Leave', paid: true, days: lb.maternity || 90, carryForward: false, description: 'Fully paid medical prenatal and postnatal care leave.' },
-        { type: 'Comp Off', paid: true, days: lb.compOff || 5, carryForward: false, description: 'Earned compensatory leaves in lieu of emergency weekend ICU call duty.' }
-      ];
-    }
-    // Check if policies are passed via props, otherwise use empty array
-    return [];
+    const lb = (employees.length > 0 && employees[0].leaveBalance) ? employees[0].leaveBalance : {};
+    return [
+      { type: 'Sick Leave', paid: true, days: lb.sick || 12, carryForward: true, description: 'Medical emergency and recovery. Requires board doctor advisory if >3 days.', enabled: true },
+      { type: 'Casual Leave', paid: true, days: lb.casual || 10, carryForward: false, description: 'Personal affairs, travel, or unplanned personal engagements.', enabled: true },
+      { type: 'Annual Leave (Earned)', paid: true, days: lb.annual || 15, carryForward: true, description: 'Pre-planned vacations. Minimum 14-day advance booking notice.', enabled: true },
+      { type: 'Maternity Leave', paid: true, days: lb.maternity || 90, carryForward: false, description: 'Fully paid medical prenatal and postnatal care leave.', enabled: true },
+      { type: 'Comp Off', paid: true, days: lb.compOff || 5, carryForward: false, description: 'Earned compensatory leaves in lieu of emergency weekend ICU call duty.', enabled: true }
+    ];
   });
 
   const [editingPolicyIdx, setEditingPolicyIdx] = useState(null);
@@ -318,68 +315,7 @@ export default function AttendanceLeaveView({
             </div>
           </div>
 
-          {/* Biometric correction requests queue */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Biometric Correction Approvals Queue</h3>
-                <p className="text-[11px] text-slate-400 mt-0.5">Biometric thumbprint failures requiring supervisor/HR adjustment override.</p>
-              </div>
-              <span className="px-2.5 py-0.5 bg-amber-50 text-amber-700 text-xs font-bold rounded-full">
-                {attendanceRecords.filter(r => r.correctionRequested && r.correctionStatus === 'Pending').length} Pending Review
-              </span>
-            </div>
 
-            <div className="space-y-3.5">
-              {attendanceRecords.filter(r => r.correctionRequested && r.correctionStatus === 'Pending').map((record) => (
-                <div key={record._id || record.id} className="p-4 bg-slate-50 rounded-xl border border-slate-155 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-amber-100 transition-colors">
-                  <div className="flex gap-3">
-                    <img src={record.employeePhoto || ''} alt={record.employeeName} className="w-9 h-9 rounded-full object-cover" />
-                    <div>
-                      <h4 className="font-semibold text-xs text-slate-800">{record.employeeName} ({record.employeeId})</h4>
-                      <p className="text-[10px] text-slate-400 mt-0.5">Dept: {record.department} &bull; Date: {record.date}</p>
-                      
-                      <div className="grid grid-cols-2 gap-4 mt-2 bg-white px-3 py-1.5 rounded border border-slate-100 text-[10px]">
-                        <div>
-                          <span className="text-slate-400 block font-semibold uppercase">System punch recorded</span>
-                          <span className="text-slate-500 line-through font-mono">{record.clockIn || record.punchIn || '—'} &rarr; {record.clockOut || record.punchOut || '—'}</span>
-                        </div>
-                        <div>
-                          <span className="text-blue-600 block font-bold uppercase">Proposed Correct punch</span>
-                          <span className="text-blue-700 font-bold font-mono">{record.correctionPunchIn || record.clockIn || '—'} &rarr; {record.correctionPunchOut || record.clockOut || '—'}</span>
-                        </div>
-                      </div>
-
-                      <p className="text-[11px] text-slate-500 italic mt-2">
-                        &ldquo;{record.correctionReason}&rdquo;
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2 self-end md:self-center">
-                    <button 
-                      onClick={() => onRejectAttendance(record._id || record.id)}
-                      className="px-3 py-1.5 border border-red-200 text-red-600 hover:bg-red-50 text-[11px] font-semibold rounded-lg transition-colors"
-                    >
-                      Reject Request
-                    </button>
-                    <button 
-                      onClick={() => onApproveAttendance(record._id || record.id)}
-                      className="px-3 py-1.5 bg-emerald-600 text-white hover:bg-emerald-700 text-[11px] font-semibold rounded-lg shadow-sm transition-colors"
-                    >
-                      Approve & Re-Sync Log
-                    </button>
-                  </div>
-                </div>
-              ))}
-
-              {attendanceRecords.filter(r => r.correctionRequested && r.correctionStatus === 'Pending').length === 0 && (
-                <div className="p-6 text-center text-slate-400 text-xs border border-dashed border-slate-200 rounded-xl">
-                  There are no pending biometric attendance corrections at this time.
-                </div>
-              )}
-            </div>
-          </div>
           {/* Roster database logs card */}
           <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
             <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
@@ -545,7 +481,7 @@ export default function AttendanceLeaveView({
                         
                         // Match record
                         const record = attendanceRecords.find(
-                          r => r.employeeId === selectedCalendarEmployeeId && r.date === day.dateStr
+                          r => (r.employeeId === selectedCalendarEmployeeId || r.employeeId === emp?.id || r.employeeId === emp?.staff_id) && r.date === day.dateStr
                         );
                         
                         // Check for approved leave
@@ -568,11 +504,11 @@ export default function AttendanceLeaveView({
                               : dayName === (emp.weeklyOff || 'Sunday')
                         );
                         
-                        // Check if date is past/today
+                        // Check if date is past
                         const cellDate = new Date(day.dateStr + 'T00:00:00');
                         const todayDate = new Date();
                         todayDate.setHours(0,0,0,0);
-                        const isPastOrToday = cellDate <= todayDate;
+                        const isPast = cellDate < todayDate;
 
                         let statusText = '';
                         let statusStyle = '';
@@ -605,7 +541,7 @@ export default function AttendanceLeaveView({
                         } else if (isWeeklyOff) {
                           statusText = 'Weekly Off';
                           statusStyle = 'bg-slate-100 text-slate-500 border border-slate-200';
-                        } else if (isPastOrToday) {
+                        } else if (isPast) {
                           statusText = 'Absent';
                           statusStyle = 'bg-red-50 text-red-700 border border-red-100';
                         } else {
@@ -737,10 +673,35 @@ export default function AttendanceLeaveView({
                 <div key={policy.type} className="p-4 bg-slate-50 rounded-xl border border-slate-100 flex flex-col justify-between">
                   <div>
                     <div className="flex justify-between items-start">
-                      <h4 className="font-bold text-xs text-slate-800">{policy.type}</h4>
-                      <span className="font-bold text-xs text-blue-600 font-mono">
-                        {policy.days} Days / year
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <h4 className={`font-bold text-xs ${policy.enabled !== false ? 'text-slate-800' : 'text-slate-400 line-through font-normal'}`}>{policy.type}</h4>
+                        {policy.enabled === false && (
+                          <span className="px-1.5 py-0.5 bg-slate-200 text-slate-500 rounded text-[9px] font-bold uppercase tracking-wider">Disabled</span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className={`font-bold text-xs font-mono ${policy.enabled !== false ? 'text-blue-600' : 'text-slate-400'}`}>
+                          {policy.days} Days / year
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = [...policies];
+                            updated[idx] = { ...updated[idx], enabled: updated[idx].enabled !== false ? false : true };
+                            setPolicies(updated);
+                            showToast(`${policy.type} leave policy ${updated[idx].enabled ? 'enabled' : 'disabled'} successfully!`, 'success');
+                          }}
+                          className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                            policy.enabled !== false ? 'bg-blue-600' : 'bg-slate-300'
+                          }`}
+                        >
+                          <span
+                            className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                              policy.enabled !== false ? 'translate-x-4' : 'translate-x-0'
+                            }`}
+                          />
+                        </button>
+                      </div>
                     </div>
                     <p className="text-[11px] text-slate-500 mt-2 leading-relaxed">{policy.description}</p>
                     

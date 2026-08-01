@@ -14,7 +14,7 @@ import DashboardView from '../components/hr/DashboardView';
 import EmployeeDirectoryView from '../components/hr/EmployeeDirectoryView';
 import EmployeeProfileView from '../components/hr/EmployeeProfileView';
 import AttendanceLeaveView from '../components/hr/AttendanceLeaveView';
-import PayrollView from '../components/hr/PayrollView';
+
 import ReportsView from '../components/hr/ReportsView';
 import HRPayrollStaff from './HRPayrollStaff';
 import SettingsView from '../components/hr/SettingsView';
@@ -434,7 +434,7 @@ export default function HRPayroll({ onExit, initialTab = 'Dashboard', initialIsA
       await fetchData(false);
     } catch (err) {
       console.error(err);
-      showFeedback('Failed to update employee details', 'error');
+      showFeedback(err.response?.data?.error || err.message || 'Failed to update employee details', 'error');
     }
   };
 
@@ -705,7 +705,6 @@ export default function HRPayroll({ onExit, initialTab = 'Dashboard', initialIsA
         { id: 'Directory', label: 'Staff Directory', icon: Users },
         { id: 'Attendance', label: 'Attendance & Leaves', icon: CalendarClock },
         { id: 'RoleCoverage', label: 'Role Coverage', icon: UserCheck },
-        { id: 'Payroll', label: 'Payroll & CTC', icon: CircleDollarSign },
         { id: 'Reports', label: 'Audits & Reports', icon: FileText },
         { id: 'Settings', label: 'Configurations', icon: Settings }
       ]
@@ -1025,16 +1024,13 @@ export default function HRPayroll({ onExit, initialTab = 'Dashboard', initialIsA
                     />
                   )}
 
-                  {activeTab === 'Payroll' && (
-                    <PayrollView 
-                      employees={employees}
-                      onRefresh={fetchData}
-                    />
-                  )}
+
 
                   {activeTab === 'Reports' && (
                     <ReportsView 
                       employees={employees}
+                      attendanceRecords={attendanceRecords}
+                      leaveRequests={leaveRequests}
                     />
                   )}
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FileText, Download, PieChart, BarChart4, CheckCircle, RefreshCcw, Landmark, Users } from 'lucide-react';
 
-export default function ReportsView({ employees = [] }) {
+export default function ReportsView({ employees = [], attendanceRecords = [], leaveRequests = [] }) {
   const [exportType, setExportType] = useState('PDF');
   const [downloadingReportId, setDownloadingReportId] = useState(null);
   const [toast, setToast] = useState(null);
@@ -11,21 +11,95 @@ export default function ReportsView({ employees = [] }) {
   };
 
   // Compute stats
-  const totalCTC = employees.reduce((sum, e) => sum + e.ctcAnnual, 0);
+  const totalStaffCount = employees.length;
   const avgExperience = (employees.reduce((sum, e) => sum + e.experienceYears, 0) / (employees.length || 1)).toFixed(1);
   const activeCount = employees.filter(e => e.status === 'Active').length;
   const probationCount = employees.filter(e => e.status === 'Probation').length;
 
-  const handleSimulateDownload = (reportName) => {
+  const handleExport = (reportId, reportName) => {
     setDownloadingReportId(reportName);
     setTimeout(() => {
       setDownloadingReportId(null);
-      showToast(`Report "${reportName}" exported and downloaded successfully as a .${exportType.toLowerCase()} file.`, 'success');
+      
+      let headers = [];
+      let rows = [];
+      
+      if (reportId === 'R-101') {
+        // Active Clinical Staff Directory Ledger
+        headers = ["Staff ID", "Employee Name", "Department", "Designation", "Employment Type", "Status"];
+        rows = employees.map(e => [
+          e.staff_id, 
+          e.name, 
+          e.department, 
+          e.designation, 
+          e.employmentType, 
+          e.status
+        ]);
+      } else if (reportId === 'R-102') {
+        // Biometric Attendance Scanner Sync Log
+        headers = ["Record ID", "Employee Name", "Employee ID", "Date", "Clock In", "Clock Out", "Status", "Work Hours", "Device"];
+        rows = attendanceRecords.map(r => [
+          r._id || r.id, 
+          r.employeeName || 'Unknown', 
+          r.employeeId, 
+          r.date, 
+          r.clockIn || r.punchIn || '', 
+          r.clockOut || r.punchOut || '', 
+          r.status, 
+          r.workHours || 0, 
+          r.device || 'Web Portal'
+        ]);
+      } else if (reportId === 'R-103') {
+        // Annual Nurse Attrition & Roster Stability Audit
+        headers = ["Employee ID", "Employee Name", "Department", "Role", "Carried Forward Leaves", "Monthly Sick Leave", "Monthly Casual Leave", "Monthly Annual Leave"];
+        rows = employees.map(e => [
+          e.staff_id, 
+          e.name, 
+          e.department, 
+          e.role || 'Staff', 
+          e.carriedForwardLeaves || 0, 
+          e.monthlyLeaveAllocation?.sick || 1, 
+          e.monthlyLeaveAllocation?.casual || 1, 
+          e.monthlyLeaveAllocation?.annual || 1.25
+        ]);
+      } else if (reportId === 'R-104') {
+        // Joint Commission HIPAA Compliance Training Scores
+        headers = ["Staff ID", "Employee Name", "Department", "Designation", "HIPAA Training Status", "Verification Documents Uploaded"];
+        rows = employees.map(e => [
+          e.staff_id, 
+          e.name, 
+          e.department, 
+          e.designation, 
+          e.status === 'Active' ? 'COMPLETED' : 'PENDING', 
+          e.documents ? e.documents.length : 0
+        ]);
+      }
+      
+      // Generate CSV content
+      const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.map(val => `"${String(val).replace(/"/g, '""')}"`).join(','))
+      ].join('\n');
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      
+      // Determine file extension
+      const ext = exportType.toLowerCase();
+      link.setAttribute("download", `${reportName.replace(/\s+/g, '_')}_Report.${ext === 'pdf' ? 'csv' : ext}`);
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      showToast(`Report "${reportName}" exported and downloaded successfully as a .${ext === 'pdf' ? 'csv' : ext} file.`, 'success');
     }, 1500);
   };
 
   const reportsList = [
-    { id: 'R-101', name: 'July Active Clinical Payroll Ledger', type: 'Payroll', size: '2.4 MB' },
+    { id: 'R-101', name: 'Active Clinical Staff Directory Ledger', type: 'Directory', size: '2.4 MB' },
     { id: 'R-102', name: 'Biometric Attendance Scanner Sync Log', type: 'Attendance', size: '1.8 MB' },
     { id: 'R-103', name: 'Annual Nurse Attrition & Roster Stability Audit', type: 'Attrition', size: '940 KB' },
     { id: 'R-104', name: 'Joint Commission HIPAA Compliance Training Scores', type: 'Compliance', size: '1.2 MB' }
@@ -87,26 +161,16 @@ export default function ReportsView({ employees = [] }) {
       </div>
 
       {/* Analytics overview widgets */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         
         <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-xs">
-          <span className="text-[10px] text-slate-400 block font-bold uppercase">ANNUAL HR COST</span>
-          <h3 className="text-lg font-bold text-slate-800 font-mono mt-1">₹{totalCTC.toLocaleString()}</h3>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-xs">
-          <span className="text-[10px] text-slate-400 block font-bold uppercase">AVERAGE CLINICAL EXP</span>
-          <h3 className="text-lg font-bold text-slate-800 font-mono mt-1">{avgExperience} Years</h3>
+          <span className="text-[10px] text-slate-400 block font-bold uppercase">TOTAL STAFF COUNT</span>
+          <h3 className="text-lg font-bold text-slate-800 font-mono mt-1">{totalStaffCount} Staff</h3>
         </div>
 
         <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-xs">
           <span className="text-[10px] text-slate-400 block font-bold uppercase">ACTIVE ROSTER HEADCOUNT</span>
           <h3 className="text-lg font-bold text-slate-800 font-mono mt-1">{activeCount} Active Staff</h3>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-xs">
-          <span className="text-[10px] text-slate-400 block font-bold uppercase">PROBATION TIERS</span>
-          <h3 className="text-lg font-bold text-slate-800 font-mono mt-1">{probationCount} Staff</h3>
         </div>
 
       </div>
@@ -131,7 +195,7 @@ export default function ReportsView({ employees = [] }) {
               </div>
 
               <button
-                onClick={() => handleSimulateDownload(report.name)}
+                onClick={() => handleExport(report.id, report.name)}
                 disabled={downloadingReportId !== null}
                 className="px-3.5 py-1.5 border border-blue-200 text-blue-600 hover:bg-blue-50 text-xs font-semibold rounded-lg shadow-xs flex items-center gap-1 shrink-0 self-end sm:self-center disabled:opacity-50"
               >

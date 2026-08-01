@@ -396,6 +396,7 @@ const AdminDashboard = () => {
   const [selectedDateFilter, setSelectedDateFilter] = useState('Today');
   const [selectedPatientDateFilter, setSelectedPatientDateFilter] = useState('All');
   const [selectedProfileAppointment, setSelectedProfileAppointment] = useState(null);
+  const [patientLabTests, setPatientLabTests] = useState([]);
   const [prescriptionModalOpen, setPrescriptionModalOpen] = useState(false);
   const [widgetSelectedStaff, setWidgetSelectedStaff] = useState('');
   const [widgetSelectedModule, setWidgetSelectedModule] = useState('');
@@ -1357,6 +1358,24 @@ const AdminDashboard = () => {
       console.error('Failed to load role coverage from backend', err);
     }
   };
+
+  useEffect(() => {
+    if (activeTab === 'patient-details' && viewingPatient) {
+      const patientId = viewingPatient.raw?._id || viewingPatient.id;
+      if (patientId) {
+        api.get(`/labs?patientId=${patientId}`)
+          .then(res => {
+            setPatientLabTests(res.data || []);
+          })
+          .catch(err => {
+            console.error("Failed to load patient lab tests", err);
+            setPatientLabTests([]);
+          });
+      } else {
+        setPatientLabTests([]);
+      }
+    }
+  }, [activeTab, viewingPatient]);
 
   const fetchStaff = async () => {
     try {
@@ -8393,6 +8412,67 @@ const AdminDashboard = () => {
                   </div>
                 </div>
 
+                {/* Lab & Diagnostic Test History Table */}
+                <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#0F172A', margin: '0 0 20px 0' }}>Laboratory & Diagnostic Tests</h3>
+                  
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                      <thead>
+                        <tr style={{ borderBottom: '2px solid #F1F5F9' }}>
+                          <th style={{ padding: '12px', fontSize: '12px', color: '#64748B', fontWeight: 800, textTransform: 'uppercase' }}>Test Name</th>
+                          <th style={{ padding: '12px', fontSize: '12px', color: '#64748B', fontWeight: 800, textTransform: 'uppercase' }}>Date Requested</th>
+                          <th style={{ padding: '12px', fontSize: '12px', color: '#64748B', fontWeight: 800, textTransform: 'uppercase' }}>Doctor</th>
+                          <th style={{ padding: '12px', fontSize: '12px', color: '#64748B', fontWeight: 800, textTransform: 'uppercase' }}>Status</th>
+                          <th style={{ padding: '12px', fontSize: '12px', color: '#64748B', fontWeight: 800, textTransform: 'uppercase' }}>Test Results</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {patientLabTests.length === 0 ? (
+                          <tr>
+                            <td colSpan="5" style={{ padding: '30px 0', textTransform: 'uppercase', textAlign: 'center', fontSize: '13px', color: '#94A3B8', fontWeight: 700 }}>
+                              No lab tests or diagnostics on record for this patient.
+                            </td>
+                          </tr>
+                        ) : (
+                          patientLabTests.map(test => (
+                            <tr key={test._id} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                              {/* Test Name */}
+                              <td style={{ padding: '16px 12px', fontWeight: 800, color: '#0F172A', fontSize: '13.5px' }}>
+                                {test.testName}
+                              </td>
+                              
+                              {/* Date Requested */}
+                              <td style={{ padding: '16px 12px', fontWeight: 600, color: '#475569', fontSize: '13px' }}>
+                                {new Date(test.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
+                              </td>
+                              
+                              {/* Doctor */}
+                              <td style={{ padding: '16px 12px', fontWeight: 600, color: '#475569', fontSize: '13px' }}>
+                                {test.doctorId?.name || 'Unassigned'}
+                              </td>
+                              
+                              {/* Status */}
+                              <td style={{ padding: '16px 12px' }}>
+                                <span style={{ 
+                                  background: test.status === 'Completed' ? '#ECFDF5' : (test.status === 'In Progress' ? '#FAF5FF' : '#FEF2F2'), 
+                                  color: test.status === 'Completed' ? '#10B981' : (test.status === 'In Progress' ? '#7E22CE' : '#EF4444'), 
+                                  fontSize: '11px', padding: '4px 10px', borderRadius: '6px', fontWeight: 800 
+                                }}>{test.status}</span>
+                              </td>
+                              
+                              {/* Test Results */}
+                              <td style={{ padding: '16px 12px', fontWeight: 600, color: '#475569', fontSize: '13px' }}>
+                                {test.results || (test.status === 'Completed' ? 'Normal' : 'Pending Results')}
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
               </div>
 
               {/* Right Column - Appointment Summary */}
@@ -9244,171 +9324,190 @@ const AdminDashboard = () => {
         )}
 
         {/* Dedicated Updates Page Tab */}
-        {activeTab === 'updates' && (
-          <div className="admin-dashboard-content">
-            {/* KPI STAT CARDS */}
-            <div className="admin-kpi-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginBottom: '24px' }}>
-              <div className="admin-kpi-card" style={{ background: '#FFFFFF', padding: '24px', borderRadius: '16px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <span className="kpi-card-header" style={{ textTransform: 'uppercase', fontSize: '11px', fontWeight: 800, color: '#64748B', letterSpacing: '0.5px' }}>Pending Updates</span>
-                <span className="kpi-card-val" style={{ fontSize: '32px', fontWeight: 900, color: '#0F172A', fontFamily: "'Outfit', sans-serif" }}>3</span>
-                <span className="kpi-card-sub" style={{ fontSize: '13px', fontWeight: 600, color: '#64748B' }}>From superadmin</span>
-              </div>
+        {activeTab === 'updates' && (() => {
+          const daysLeft = subscription ? Math.max(0, Math.ceil((new Date(subscription.renewalDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))) : 8;
+          const showRenewalCard = daysLeft <= 30;
+          const pendingUpdatesCount = systemBroadcasts.length + (showRenewalCard ? 1 : 0);
 
-              <div className="admin-kpi-card" style={{ background: '#FFFFFF', padding: '24px', borderRadius: '16px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <span className="kpi-card-header" style={{ textTransform: 'uppercase', fontSize: '11px', fontWeight: 800, color: '#64748B', letterSpacing: '0.5px' }}>Current Version</span>
-                <span className="kpi-card-val" style={{ fontSize: '32px', fontWeight: 900, color: '#0F172A', fontFamily: "'Outfit', sans-serif" }}>v 2.1.4</span>
-                <span className="kpi-card-sub" style={{ fontSize: '13px', fontWeight: 600, color: '#64748B' }}>Latest applied</span>
-              </div>
+          return (
+            <div className="admin-dashboard-content">
+              {/* KPI STAT CARDS */}
+              <div className="admin-kpi-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginBottom: '24px' }}>
+                <div className="admin-kpi-card" style={{ background: '#FFFFFF', padding: '24px', borderRadius: '16px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <span className="kpi-card-header" style={{ textTransform: 'uppercase', fontSize: '11px', fontWeight: 800, color: '#64748B', letterSpacing: '0.5px' }}>Pending Updates</span>
+                  <span className="kpi-card-val" style={{ fontSize: '32px', fontWeight: 900, color: '#0F172A', fontFamily: "'Outfit', sans-serif" }}>{pendingUpdatesCount}</span>
+                  <span className="kpi-card-sub" style={{ fontSize: '13px', fontWeight: 600, color: '#64748B' }}>From superadmin</span>
+                </div>
 
-              <div className="admin-kpi-card" style={{ background: '#FFFFFF', padding: '24px', borderRadius: '16px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <span className="kpi-card-header" style={{ textTransform: 'uppercase', fontSize: '11px', fontWeight: 800, color: '#64748B', letterSpacing: '0.5px' }}>Subscription Days Left</span>
-                <span className="kpi-card-val" style={{ fontSize: '32px', fontWeight: 900, color: '#D97706', fontFamily: "'Outfit', sans-serif" }}>8</span>
-                <span className="kpi-card-sub" style={{ fontSize: '13px', fontWeight: 600, color: '#64748B' }}>Renewal due 8 Jun</span>
-              </div>
-            </div>
+                <div className="admin-kpi-card" style={{ background: '#FFFFFF', padding: '24px', borderRadius: '16px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <span className="kpi-card-header" style={{ textTransform: 'uppercase', fontSize: '11px', fontWeight: 800, color: '#64748B', letterSpacing: '0.5px' }}>Current Version</span>
+                  <span className="kpi-card-val" style={{ fontSize: '32px', fontWeight: 900, color: '#0F172A', fontFamily: "'Outfit', sans-serif" }}>v 2.1.4</span>
+                  <span className="kpi-card-sub" style={{ fontSize: '13px', fontWeight: 600, color: '#64748B' }}>Latest applied</span>
+                </div>
 
-            {/* Updates widget block */}
-            <div className="dashboard-widget-card" style={{ padding: '24px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
-              <h3 style={{ fontSize: '16px', fontWeight: 900, color: '#0F172A', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-                Updates from superadmin
-              </h3>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                
-                {/* Update item 1: System update */}
-                <div className="admin-update-card" style={{
-                  background: '#EFF6FF',
-                  border: '1px solid #DBEAFE'
-                }}>
-                  <div className="admin-update-card-left">
-                    <div style={{
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '12px',
-                      background: '#DBEAFE',
-                      color: '#2563EB',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0
-                    }}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-                    </div>
-                    <div>
-                      <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', fontWeight: 800, color: '#1E293B' }}>System update – v 2.1.4</h4>
-                      <p style={{ margin: 0, fontSize: '13px', fontWeight: 600, color: '#64748B' }}>Maintenance window: 28 May • 2-4 AM • Scheduled at 25 May 5:03 PM</p>
-                    </div>
-                  </div>
-                  <span style={{
-                    background: '#DBEAFE',
-                    color: '#2563EB',
-                    fontSize: '11px',
-                    fontWeight: 800,
-                    padding: '6px 14px',
-                    borderRadius: '99px',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px'
-                  }}>
-                    SCHEDULED
+                <div className="admin-kpi-card" style={{ background: '#FFFFFF', padding: '24px', borderRadius: '16px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <span className="kpi-card-header" style={{ textTransform: 'uppercase', fontSize: '11px', fontWeight: 800, color: '#64748B', letterSpacing: '0.5px' }}>Subscription Days Left</span>
+                  <span className="kpi-card-val" style={{ fontSize: '32px', fontWeight: 900, color: '#D97706', fontFamily: "'Outfit', sans-serif" }}>
+                    {daysLeft}
+                  </span>
+                  <span className="kpi-card-sub" style={{ fontSize: '13px', fontWeight: 600, color: '#64748B' }}>
+                    Renewal due {subscription ? new Date(subscription.renewalDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '8 Jun'}
                   </span>
                 </div>
+              </div>
 
-                {/* Update item 2: Subscription renewal */}
-                <div className="admin-update-card" style={{
-                  background: '#FFFDF5',
-                  border: '1px solid #FEF3C7'
-                }}>
-                  <div className="admin-update-card-left">
-                    <div style={{
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '12px',
-                      background: '#FEF3C7',
-                      color: '#D97706',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0
+              {/* Updates widget block */}
+              <div className="dashboard-widget-card" style={{ padding: '24px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
+                <h3 style={{ fontSize: '16px', fontWeight: 900, color: '#0F172A', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                  Updates from superadmin
+                </h3>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  
+                  {/* Subscription renewal card (only shown if <= 30 days left) */}
+                  {showRenewalCard && (
+                    <div className="admin-update-card" style={{
+                      background: '#FFFDF5',
+                      border: '1px solid #FEF3C7'
                     }}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                      <div className="admin-update-card-left">
+                        <div style={{
+                          width: '40px',
+                          height: '40px',
+                          borderRadius: '12px',
+                          background: '#FEF3C7',
+                          color: '#D97706',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0
+                        }}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                        </div>
+                        <div>
+                          <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', fontWeight: 800, color: '#1E293B' }}>Subscription renewal reminder</h4>
+                          <p style={{ margin: 0, fontSize: '13px', fontWeight: 600, color: '#64748B' }}>
+                            Plan expires in {daysLeft} days. Renew to avoid disruption. (21 May 4:07 PM)
+                          </p>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => setActiveTab('subscription')}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: '#D97706',
+                          fontSize: '14px',
+                          fontWeight: 800,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          padding: '8px 12px',
+                          borderRadius: '8px',
+                          transition: 'background-color 0.2s'
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#FFFbeb'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                      >
+                        View →
+                      </button>
                     </div>
-                    <div>
-                      <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', fontWeight: 800, color: '#1E293B' }}>Subscription renewal reminder</h4>
-                      <p style={{ margin: 0, fontSize: '13px', fontWeight: 600, color: '#64748B' }}>Plan expires in 8 days. Renew to avoid disruption. (21 May 4:07 PM)</p>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => setActiveTab('subscription')}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: '#D97706',
+                  )}
+
+                  {/* Dynamic updates/broadcasts from superadmin */}
+                  {systemBroadcasts.map(b => {
+                    const date = new Date(b.createdAt);
+                    const formattedDate = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' · ' + date.toLocaleDateString();
+                    const isMaintenance = b.audience?.includes('maintenance') || b.subject?.toLowerCase().includes('maintenance');
+                    
+                    return (
+                      <div key={b._id} className="admin-update-card" style={{
+                        background: isMaintenance ? '#EFF6FF' : '#F0FDF4',
+                        border: isMaintenance ? '1px solid #DBEAFE' : '1px solid #DCFCE7'
+                      }}>
+                        <div className="admin-update-card-left">
+                          <div style={{
+                            width: '40px',
+                            height: '40px',
+                            borderRadius: '12px',
+                            background: isMaintenance ? '#DBEAFE' : '#DCFCE7',
+                            color: isMaintenance ? '#2563EB' : '#15803D',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0
+                          }}>
+                            {isMaintenance ? (
+                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                            ) : (
+                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            )}
+                          </div>
+                          <div>
+                            <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', fontWeight: 800, color: '#1E293B' }}>{b.subject}</h4>
+                            <p style={{ margin: 0, fontSize: '13px', fontWeight: 600, color: '#64748B' }}>
+                              {b.message} • {formattedDate}
+                            </p>
+                          </div>
+                        </div>
+                        {isMaintenance ? (
+                          <span style={{
+                            background: '#DBEAFE',
+                            color: '#2563EB',
+                            fontSize: '11px',
+                            fontWeight: 800,
+                            padding: '6px 14px',
+                            borderRadius: '99px',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
+                          }}>
+                            System Update
+                          </span>
+                        ) : (
+                          <button 
+                            onClick={() => showFeedback("Notice acknowledged successfully.", "success")}
+                            style={{
+                              background: '#22C55E',
+                              color: '#FFFFFF',
+                              fontSize: '13px',
+                              fontWeight: 800,
+                              padding: '10px 18px',
+                              borderRadius: '8px',
+                              border: 'none',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s'
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#16a34a'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#22C55E'; }}
+                          >
+                            Acknowledge
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+
+                  {systemBroadcasts.length === 0 && !showRenewalCard && (
+                    <div style={{
+                      padding: '48px',
+                      textAlign: 'center',
+                      border: '1px dashed #E2E8F0',
+                      borderRadius: '12px',
+                      color: '#94A3B8',
                       fontSize: '14px',
-                      fontWeight: 800,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      padding: '8px 12px',
-                      borderRadius: '8px',
-                      transition: 'background-color 0.2s'
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#FFFbeb'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-                  >
-                    View →
-                  </button>
-                </div>
-
-                {/* Update item 3: Compliance guideline */}
-                <div className="admin-update-card" style={{
-                  background: '#F0FDF4',
-                  border: '1px solid #DCFCE7'
-                }}>
-                  <div className="admin-update-card-left">
-                    <div style={{
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '12px',
-                      background: '#DCFCE7',
-                      color: '#15803D',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0
+                      fontWeight: 600,
+                      background: '#F8FAFC'
                     }}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                      No new updates or guidelines from superadmin.
                     </div>
-                    <div>
-                      <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', fontWeight: 800, color: '#1E293B' }}>New compliance guideline</h4>
-                      <p style={{ margin: 0, fontSize: '13px', fontWeight: 600, color: '#64748B' }}>Patient consent form updated. View & acknowledge required. (21 May 4:07 PM)</p>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => showFeedback("Guidelines acknowledged successfully.", "success")}
-                    style={{
-                      background: '#22C55E',
-                      color: '#FFFFFF',
-                      fontSize: '13px',
-                      fontWeight: 800,
-                      padding: '10px 18px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#16a34a'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#22C55E'; }}
-                  >
-                    View & acknowledge
-                  </button>
+                  )}
                 </div>
-
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* 9. Maintenance / System Services Dashboard */}
         {activeTab === 'maintenance' && (
