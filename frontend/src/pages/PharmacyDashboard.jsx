@@ -172,7 +172,63 @@ const PharmacyDashboard = () => {
   const [goodsReceipts, setGoodsReceipts] = useState([]);
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [showAddVendorModal, setShowAddVendorModal] = useState(false);
-  const [newVendor, setNewVendor] = useState({ name: '', code: '', email: '', phone: '', address: '' });
+  const [newVendor, setNewVendor] = useState({
+    name: '',
+    code: '',
+    email: '',
+    phone: '',
+    address: '',
+    city: '',
+    state: '',
+    type: 'Manufacturer',
+    contactPerson: '',
+    gstNumber: '',
+    status: 'Active',
+    panNumber: '',
+    licenseNumber: '',
+    zipCode: '',
+    notes: '',
+    alternatePhone: '',
+    
+    // New Excel Fields
+    supplierCategory: 'Medicine',
+    organizationType: 'Private Ltd',
+    houseNo: '',
+    street: '',
+    country: 'India',
+    pinCode: '',
+    landline: '',
+    faxNo: '',
+    website: '',
+    primaryContactPerson: '',
+    primaryContactPersonDesignation: '',
+    primaryContactPersonMobileNo: '',
+    primaryContactPersonEmailId: '',
+    secondaryContactPerson: '',
+    secondaryContactPersonDesignation: '',
+    secondaryContactPersonMobileNo: '',
+    secondaryContactPersonEmailId: '',
+    cinNo: '',
+    pfRegistrationNo: '',
+    nameOnPanCard: '',
+    panCardNo: '',
+    rocNo: '',
+    esiRegistrationNo: '',
+    isoCertificationNo: '',
+    isoValidUpto: '',
+    pollutionControlBoardCertificationNo: '',
+    pollutionValidUpto: '',
+    bank1Name: '',
+    bank1Branch: '',
+    bank1AccountNumber: '',
+    bank1IfscCode: '',
+    bank1Address: '',
+    taxes: '',
+    deliveryTerms: '',
+    isMsmeRegistration: 'No',
+    msmeRegistrationNo: '',
+    msmeRegistrationType: ''
+  });
   const [showPriceListModal, setShowPriceListModal] = useState(false);
   const [editablePriceList, setEditablePriceList] = useState([]);
   const [showCreatePOModal, setShowCreatePOModal] = useState(false);
@@ -205,6 +261,14 @@ const PharmacyDashboard = () => {
 
   const handleAddVendor = async (e) => {
     e.preventDefault();
+    const phoneRegex = /^[0-9]{10}$/;
+    if (newVendor.phone) {
+      const cleanPhone = newVendor.phone.replace(/[\s\-+]/g, '');
+      if (!phoneRegex.test(cleanPhone)) {
+        showToast('Please enter a valid 10-digit mobile number', 'error');
+        return;
+      }
+    }
     try {
       const res = await api.post('/vendors', newVendor);
       setVendors([...vendors, res.data]);
@@ -3609,8 +3673,11 @@ const PharmacyDashboard = () => {
             switch (status) {
               case 'Pending': return { background: '#FEF3C7', color: '#D97706', padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 800 };
               case 'Approved': return { background: '#D1FAE5', color: '#065F46', padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 800 };
-              case 'Received': return { background: '#E0F2FE', color: '#0369A1', padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 800 };
-              case 'Rejected': return { background: '#FEE2E2', color: '#991B1B', padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 800 };
+              case 'Received':
+              case 'Fulfilled': return { background: '#D1FAE5', color: '#065F46', padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 800 };
+              case 'Partially Fulfilled': return { background: '#FFF3E0', color: '#E65100', padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 800 };
+              case 'Rejected':
+              case 'Cannot Fulfill': return { background: '#FEE2E2', color: '#991B1B', padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 800 };
               default: return { background: '#F1F5F9', color: '#475569', padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 800 };
             }
           };
@@ -3618,8 +3685,9 @@ const PharmacyDashboard = () => {
           const getIndentRowBg = (status) => {
             if (status === 'Pending') return 'rgba(254, 243, 199, 0.15)';
             if (status === 'Approved') return 'rgba(209, 250, 229, 0.15)';
-            if (status === 'Received') return 'rgba(224, 242, 254, 0.15)';
-            if (status === 'Rejected') return 'rgba(254, 226, 226, 0.15)';
+            if (status === 'Received' || status === 'Fulfilled') return 'rgba(209, 250, 229, 0.10)';
+            if (status === 'Partially Fulfilled') return 'rgba(255, 243, 224, 0.15)';
+            if (status === 'Rejected' || status === 'Cannot Fulfill') return 'rgba(254, 226, 226, 0.15)';
             return 'transparent';
           };
 
@@ -3640,13 +3708,13 @@ const PharmacyDashboard = () => {
                   <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                     <thead>
                       <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
-                        <th style={{ padding: '14px 20px', width: '40px' }}><input type="checkbox" readOnly /></th>
                         <th style={{ padding: '14px 20px', fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Indent ID</th>
                         <th style={{ padding: '14px 20px', fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Items Ordered</th>
                         <th style={{ padding: '14px 20px', fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Requested By</th>
                         <th style={{ padding: '14px 20px', fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Priority</th>
                         <th style={{ padding: '14px 20px', fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Qty</th>
                         <th style={{ padding: '14px 20px', fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Status</th>
+                        <th style={{ padding: '14px 20px', fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -3670,9 +3738,6 @@ const PharmacyDashboard = () => {
                             onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(241,245,249,0.4)'; }}
                             onMouseLeave={(e) => { e.currentTarget.style.background = getIndentRowBg(ind.status); }}
                           >
-                            <td onClick={e => e.stopPropagation()} style={{ padding: '14px 20px' }}>
-                              <input type="checkbox" readOnly />
-                            </td>
                             <td style={{ padding: '14px 20px', fontWeight: 800, color: '#0F172A', fontSize: '13.5px' }}>
                               {ind.indentId}
                             </td>
@@ -3719,6 +3784,80 @@ const PharmacyDashboard = () => {
                             </td>
                             <td style={{ padding: '14px 20px' }}>
                               <span style={getIndentStatusStyle(ind.status)}>{ind.status}</span>
+                            </td>
+                            <td onClick={e => e.stopPropagation()} style={{ padding: '14px 20px', textAlign: 'right' }}>
+                              {!['Received', 'Fulfilled', 'Cannot Fulfill', 'Rejected'].includes(ind.status) ? (
+                                <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                                  <button
+                                    disabled={loading}
+                                    onClick={async (e) => {
+                                      e.stopPropagation();
+                                      try {
+                                        setLoading(true);
+                                        await api.put(`/indents/${ind._id}`, { status: 'Fulfilled' });
+                                        setIndents(prev => prev.map(item => item._id === ind._id ? { ...item, status: 'Fulfilled' } : item));
+                                        showToast('Indent marked as Fulfilled!');
+                                      } catch (err) {
+                                        console.error(err);
+                                        showToast('Failed to update status', 'error');
+                                      } finally {
+                                        setLoading(false);
+                                      }
+                                    }}
+                                    style={{ padding: '6px 10px', background: '#10B981', color: 'white', border: 'none', borderRadius: '6px', fontSize: '11px', fontWeight: 800, cursor: 'pointer', transition: 'opacity 0.2s' }}
+                                    onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                                    onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                                  >
+                                    Fulfill
+                                  </button>
+                                  <button
+                                    disabled={loading}
+                                    onClick={async (e) => {
+                                      e.stopPropagation();
+                                      try {
+                                        setLoading(true);
+                                        await api.put(`/indents/${ind._id}`, { status: 'Partially Fulfilled' });
+                                        setIndents(prev => prev.map(item => item._id === ind._id ? { ...item, status: 'Partially Fulfilled' } : item));
+                                        showToast('Indent marked as Partially Fulfilled');
+                                      } catch (err) {
+                                        console.error(err);
+                                        showToast('Failed to update status', 'error');
+                                      } finally {
+                                        setLoading(false);
+                                      }
+                                    }}
+                                    style={{ padding: '6px 10px', background: '#F59E0B', color: 'white', border: 'none', borderRadius: '6px', fontSize: '11px', fontWeight: 800, cursor: 'pointer', transition: 'opacity 0.2s' }}
+                                    onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                                    onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                                  >
+                                    Partial
+                                  </button>
+                                  <button
+                                    disabled={loading}
+                                    onClick={async (e) => {
+                                      e.stopPropagation();
+                                      try {
+                                        setLoading(true);
+                                        await api.put(`/indents/${ind._id}`, { status: 'Cannot Fulfill' });
+                                        setIndents(prev => prev.map(item => item._id === ind._id ? { ...item, status: 'Cannot Fulfill' } : item));
+                                        showToast('Indent marked as Cannot Fulfill');
+                                      } catch (err) {
+                                        console.error(err);
+                                        showToast('Failed to update status', 'error');
+                                      } finally {
+                                        setLoading(false);
+                                      }
+                                    }}
+                                    style={{ padding: '6px 10px', background: '#EF4444', color: 'white', border: 'none', borderRadius: '6px', fontSize: '11px', fontWeight: 800, cursor: 'pointer', transition: 'opacity 0.2s' }}
+                                    onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                                    onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                                  >
+                                    Reject
+                                  </button>
+                                </div>
+                              ) : (
+                                <span style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 700 }}>Processed</span>
+                              )}
                             </td>
                           </tr>
                         ))
@@ -3979,7 +4118,7 @@ const PharmacyDashboard = () => {
                     className="btn btn-primary"
                     style={{ padding: '8px 16px', fontSize: '12.5px', borderRadius: '8px', background: '#2563EB', border: 'none', color: 'white', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
                     onClick={() => {
-                      setNewVendor({ name: '', code: `VEND-0${vendors.length + 1}`, email: '', phone: '', address: '' });
+                      setNewVendor({ name: '', code: `VEND-0${vendors.length + 1}`, email: '', phone: '', address: '', type: 'Manufacturer', supplierCategory: 'Medicine', organizationType: 'Private Ltd', isMsmeRegistration: 'No' });
                       setShowAddVendorModal(true);
                     }}
                   >
@@ -4008,13 +4147,33 @@ const PharmacyDashboard = () => {
                             <td style={{ fontWeight: 600, color: '#64748B' }}>{v.email || '--'}</td>
                             <td style={{ fontWeight: 600, color: '#64748B' }}>{v.phone || '--'}</td>
                             <td style={{ fontWeight: 600, color: '#475569' }}>{v.address || '--'}</td>
-                            <td>
+                            <td style={{ display: 'flex', gap: '8px' }}>
                               <button 
                                 className="btn btn-secondary"
                                 style={{ padding: '6px 12px', fontSize: '11.5px', borderRadius: '6px', border: '1px solid #E2E8F0', background: 'transparent', color: '#2563EB', fontWeight: 700, cursor: 'pointer' }}
                                 onClick={() => setSelectedVendor(v)}
                               >
                                 View Profile
+                              </button>
+                              <button 
+                                className="btn"
+                                style={{ padding: '6px 12px', fontSize: '11.5px', borderRadius: '6px', border: 'none', background: '#FEE2E2', color: '#DC2626', fontWeight: 700, cursor: 'pointer', transition: 'opacity 0.2s' }}
+                                onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                                onClick={async () => {
+                                  if (window.confirm(`Are you sure you want to delete vendor "${v.name}"?`)) {
+                                    try {
+                                      await api.delete(`/vendors/${v._id}`);
+                                      setVendors(prev => prev.filter(x => x._id !== v._id));
+                                      showToast('Vendor deleted successfully!');
+                                    } catch (err) {
+                                      console.error(err);
+                                      showToast('Failed to delete vendor', 'error');
+                                    }
+                                  }
+                                }}
+                              >
+                                Delete
                               </button>
                             </td>
                           </tr>
@@ -6094,8 +6253,12 @@ const PharmacyDashboard = () => {
                 <input 
                   type="text" 
                   value={newVendor.phone} 
-                  onChange={e => setNewVendor({ ...newVendor, phone: e.target.value })}
-                  placeholder="e.g. +91 98765 43210"
+                  onChange={e => {
+                    const val = e.target.value.replace(/[^0-9]/g, '');
+                    setNewVendor({ ...newVendor, phone: val });
+                  }}
+                  placeholder="e.g. 9876543210"
+                  maxLength={10}
                   style={{ width: '100%', height: '40px', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '0 12px', outline: 'none', fontSize: '13px', fontWeight: 600 }}
                   required 
                 />
@@ -6973,14 +7136,14 @@ const PharmacyDashboard = () => {
                   <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 800, textTransform: 'uppercase' }}>Status</span>
                   <div style={{ marginTop: '2px' }}>
                     <span style={{
-                      background: selectedIndent.status === 'Received' ? '#E0F2FE' : selectedIndent.status === 'Pending' ? '#FEF3C7' : selectedIndent.status === 'Approved' ? '#D1FAE5' : '#FEE2E2',
-                      color: selectedIndent.status === 'Received' ? '#0369A1' : selectedIndent.status === 'Pending' ? '#D97706' : selectedIndent.status === 'Approved' ? '#065F46' : '#991B1B',
+                      background: selectedIndent.status === 'Received' || selectedIndent.status === 'Fulfilled' ? '#D1FAE5' : selectedIndent.status === 'Pending' ? '#FEF3C7' : selectedIndent.status === 'Approved' ? '#EFF6FF' : selectedIndent.status === 'Partially Fulfilled' ? '#FFF3E0' : '#FEE2E2',
+                      color: selectedIndent.status === 'Received' || selectedIndent.status === 'Fulfilled' ? '#065F46' : selectedIndent.status === 'Pending' ? '#D97706' : selectedIndent.status === 'Approved' ? '#2563EB' : selectedIndent.status === 'Partially Fulfilled' ? '#E65100' : '#991B1B',
                       padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 800
                     }}>{selectedIndent.status}</span>
                   </div>
                 </div>
               </div>
-
+ 
               <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: '16px' }}>
                 <h4 style={{ fontSize: '13px', fontWeight: 800, color: '#475569', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Items Ordered</h4>
                 <div style={{ border: '1px solid #E2E8F0', borderRadius: '10px', overflow: 'hidden' }}>
@@ -7004,7 +7167,7 @@ const PharmacyDashboard = () => {
                   </table>
                 </div>
               </div>
-
+ 
               {selectedIndent.purpose && (
                 <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: '16px' }}>
                   <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 800, textTransform: 'uppercase' }}>Remarks/Purpose</span>
@@ -7012,39 +7175,88 @@ const PharmacyDashboard = () => {
                 </div>
               )}
             </div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', padding: '20px 0 0 0', borderTop: '1px solid #F1F5F9', flexShrink: 0, marginTop: '20px' }}>
+ 
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', padding: '20px 0 0 0', borderTop: '1px solid #F1F5F9', flexShrink: 0, marginTop: '20px', flexWrap: 'wrap' }}>
               <button
                 onClick={() => { setShowIndentModal(false); setSelectedIndent(null); }}
                 style={{ height: '40px', padding: '0 16px', borderRadius: '8px', border: '1px solid #E2E8F0', background: 'white', cursor: 'pointer', fontWeight: 700, fontSize: '13px', color: '#64748B' }}
               >
                 Close
               </button>
-              {selectedIndent.status !== 'Received' && (
-                <button
-                  disabled={loading}
-                  onClick={async () => {
-                    try {
-                      setLoading(true);
-                      await api.put(`/indents/${selectedIndent._id}`, { status: 'Received' });
-                      const updated = { ...selectedIndent, status: 'Received' };
-                      setIndents(prev => prev.map(ind => ind._id === selectedIndent._id ? updated : ind));
-                      setSelectedIndent(updated);
-                      showToast('Indent marked as received!');
-                    } catch (err) {
-                      console.error(err);
-                      showToast('Failed to update indent status', 'error');
-                    } finally {
-                      setLoading(false);
-                    }
-                  }}
-                  style={{ height: '40px', padding: '0 20px', borderRadius: '8px', border: 'none', background: loading ? '#93C5FD' : '#2563EB', color: 'white', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 800, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                  {loading ? 'Updating...' : 'Mark as Received'}
-                </button>
+              {!['Received', 'Fulfilled', 'Cannot Fulfill', 'Rejected'].includes(selectedIndent.status) && (
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  {/* Cannot Fulfill Button */}
+                  <button
+                    disabled={loading}
+                    onClick={async () => {
+                      try {
+                        setLoading(true);
+                        await api.put(`/indents/${selectedIndent._id}`, { status: 'Cannot Fulfill' });
+                        const updated = { ...selectedIndent, status: 'Cannot Fulfill' };
+                        setIndents(prev => prev.map(ind => ind._id === selectedIndent._id ? updated : ind));
+                        setSelectedIndent(updated);
+                        showToast('Indent marked as Cannot Fulfill');
+                      } catch (err) {
+                        console.error(err);
+                        showToast('Failed to update indent status', 'error');
+                      } finally {
+                        setLoading(false);
+                      }
+                    }}
+                    style={{ height: '40px', padding: '0 14px', borderRadius: '8px', border: 'none', background: '#EF4444', color: 'white', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 800, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                    Cannot Fulfill
+                  </button>
+
+                  {/* Partially Fulfilled Button */}
+                  <button
+                    disabled={loading}
+                    onClick={async () => {
+                      try {
+                        setLoading(true);
+                        await api.put(`/indents/${selectedIndent._id}`, { status: 'Partially Fulfilled' });
+                        const updated = { ...selectedIndent, status: 'Partially Fulfilled' };
+                        setIndents(prev => prev.map(ind => ind._id === selectedIndent._id ? updated : ind));
+                        setSelectedIndent(updated);
+                        showToast('Indent marked as Partially Fulfilled');
+                      } catch (err) {
+                        console.error(err);
+                        showToast('Failed to update indent status', 'error');
+                      } finally {
+                        setLoading(false);
+                      }
+                    }}
+                    style={{ height: '40px', padding: '0 14px', borderRadius: '8px', border: 'none', background: '#F59E0B', color: 'white', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 800, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    Partially Fulfilled
+                  </button>
+
+                  {/* Fulfilled Button */}
+                  <button
+                    disabled={loading}
+                    onClick={async () => {
+                      try {
+                        setLoading(true);
+                        await api.put(`/indents/${selectedIndent._id}`, { status: 'Fulfilled' });
+                        const updated = { ...selectedIndent, status: 'Fulfilled' };
+                        setIndents(prev => prev.map(ind => ind._id === selectedIndent._id ? updated : ind));
+                        setSelectedIndent(updated);
+                        showToast('Indent marked as Fulfilled!');
+                      } catch (err) {
+                        console.error(err);
+                        showToast('Failed to update indent status', 'error');
+                      } finally {
+                        setLoading(false);
+                      }
+                    }}
+                    style={{ height: '40px', padding: '0 14px', borderRadius: '8px', border: 'none', background: '#10B981', color: 'white', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 800, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    Fulfilled
+                  </button>
+                </div>
               )}
             </div>
           </div>

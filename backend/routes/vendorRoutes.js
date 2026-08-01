@@ -75,7 +75,7 @@ router.get('/', async (req, res) => {
   try {
     // Disabled automatic mock vendor seeding as requested
     // await seedDefaultVendors(req.tenantId);
-    const vendors = await Vendor.find({ tenantId: req.tenantId }).sort({ name: 1 });
+    const vendors = await Vendor.find({ tenantId: req.tenantId, status: 'Active' }).sort({ name: 1 });
     res.json(vendors);
   } catch (error) {
     console.error("Get vendors error:", error);
@@ -85,43 +85,21 @@ router.get('/', async (req, res) => {
 
 // Add a new vendor (scoped to tenant)
 router.post('/', async (req, res) => {
-  const { 
-    name, code, email, phone, address, city, state, type, contactPerson, gstNumber, status, medicines,
-    panNumber, licenseNumber, zipCode, paymentTerms, creditLimit, bankName, accountNumber, ifscCode, notes,
-    alternatePhone, creditDays, paymentMethod
-  } = req.body;
   try {
     const vendor = await Vendor.create({
+      ...req.body,
       tenantId: req.tenantId,
-      name,
-      code,
-      email,
-      phone,
-      address,
-      city,
-      state,
-      type: type || 'Medicine',
-      contactPerson,
-      gstNumber,
-      status: status || 'Active',
+      type: req.body.type || 'Medicine',
+      status: 'Proposed', // Force Proposed status for admin approval
       attachments: req.body.attachments || [],
-      panNumber,
-      licenseNumber,
-      zipCode,
-      paymentTerms,
-      creditLimit: Number(creditLimit) || 0,
-      bankName,
-      accountNumber,
-      ifscCode,
-      notes,
-      alternatePhone,
-      creditDays: Number(creditDays) || 30,
-      paymentMethod: paymentMethod || 'NEFT',
-      medicines: medicines || [],
+      creditLimit: Number(req.body.creditLimit) || 0,
+      creditDays: Number(req.body.creditDays) || 30,
+      paymentMethod: req.body.paymentMethod || 'NEFT',
+      medicines: req.body.medicines || [],
       purchaseHistory: []
     });
 
-    if (vendor.status === 'Proposed') {
+    if (true) { // Always create approval task for new vendor onboarding
       const Approval = require('../models/Approval');
       await Approval.create({
         tenantId: req.tenantId,
@@ -156,19 +134,13 @@ router.post('/', async (req, res) => {
 
 // Update a vendor (scoped to tenant)
 router.put('/:id', async (req, res) => {
-  const { 
-    name, code, email, phone, address, city, state, type, contactPerson, gstNumber, status,
-    panNumber, licenseNumber, zipCode, paymentTerms, creditLimit, bankName, accountNumber, ifscCode, notes,
-    alternatePhone, creditDays, paymentMethod, medicines
-  } = req.body;
   try {
     const vendor = await Vendor.findOneAndUpdate(
       { _id: req.params.id, tenantId: req.tenantId },
       { 
-        name, code, email, phone, address, city, state, type, contactPerson, gstNumber, status,
-        panNumber, licenseNumber, zipCode, paymentTerms, creditLimit: Number(creditLimit) || 0, bankName, accountNumber, ifscCode, notes,
-        alternatePhone, creditDays: Number(creditDays) || 30, paymentMethod: paymentMethod || 'NEFT',
-        medicines: medicines || []
+        ...req.body,
+        creditLimit: Number(req.body.creditLimit) || 0,
+        creditDays: Number(req.body.creditDays) || 30,
       },
       { returnDocument: 'after' }
     );
@@ -202,6 +174,22 @@ router.put('/:id/price-list', async (req, res) => {
     res.json(vendor);
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+});
+
+// Delete a vendor (scoped to tenant)
+router.delete('/:id', async (req, res) => {
+  try {
+    const vendor = await Vendor.findOneAndDelete({ _id: req.params.id, tenantId: req.tenantId });
+    if (!vendor) return res.status(404).json({ error: 'Vendor not found' });
+    
+    const io = req.app.get("io");
+    if (io && req.tenantId) {
+      io.to(req.tenantId).emit("data_changed", { type: "vendors" });
+    }
+    res.json({ message: 'Vendor deleted successfully', vendor });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 

@@ -38,7 +38,7 @@ const ProcurementDashboard = () => {
     address: '',
     city: '',
     state: '',
-    type: 'Medicine',
+    type: 'Manufacturer',
     contactPerson: '',
     gstNumber: '',
     status: 'Active',
@@ -47,7 +47,46 @@ const ProcurementDashboard = () => {
     zipCode: '',
     notes: '',
     alternatePhone: '',
-    medicines: []
+    medicines: [],
+    
+    // New Excel Fields
+    supplierCategory: 'Medicine',
+    organizationType: 'Private Ltd',
+    houseNo: '',
+    street: '',
+    country: 'India',
+    pinCode: '',
+    landline: '',
+    faxNo: '',
+    website: '',
+    primaryContactPerson: '',
+    primaryContactPersonDesignation: '',
+    primaryContactPersonMobileNo: '',
+    primaryContactPersonEmailId: '',
+    secondaryContactPerson: '',
+    secondaryContactPersonDesignation: '',
+    secondaryContactPersonMobileNo: '',
+    secondaryContactPersonEmailId: '',
+    cinNo: '',
+    pfRegistrationNo: '',
+    nameOnPanCard: '',
+    panCardNo: '',
+    rocNo: '',
+    esiRegistrationNo: '',
+    isoCertificationNo: '',
+    isoValidUpto: '',
+    pollutionControlBoardCertificationNo: '',
+    pollutionValidUpto: '',
+    bank1Name: '',
+    bank1Branch: '',
+    bank1AccountNumber: '',
+    bank1IfscCode: '',
+    bank1Address: '',
+    taxes: '',
+    deliveryTerms: '',
+    isMsmeRegistration: 'No',
+    msmeRegistrationNo: '',
+    msmeRegistrationType: ''
   });
   const [poDraftItems, setPoDraftItems] = useState([{ name: '', sku: '', qty: 100, price: 50 }]);
   const [selectedVendorForPO, setSelectedVendorForPO] = useState('');
@@ -162,7 +201,7 @@ const ProcurementDashboard = () => {
       address: '',
       city: '',
       state: '',
-      type: 'Medicine',
+      type: 'Manufacturer',
       contactPerson: '',
       gstNumber: '',
       status: 'Active',
@@ -171,12 +210,67 @@ const ProcurementDashboard = () => {
       zipCode: '',
       notes: '',
       alternatePhone: '',
-      medicines: []
+      medicines: [],
+      supplierCategory: 'Medicine',
+      organizationType: 'Private Ltd',
+      houseNo: '',
+      street: '',
+      country: 'India',
+      pinCode: '',
+      landline: '',
+      faxNo: '',
+      website: '',
+      primaryContactPerson: '',
+      primaryContactPersonDesignation: '',
+      primaryContactPersonMobileNo: '',
+      primaryContactPersonEmailId: '',
+      secondaryContactPerson: '',
+      secondaryContactPersonDesignation: '',
+      secondaryContactPersonMobileNo: '',
+      secondaryContactPersonEmailId: '',
+      cinNo: '',
+      pfRegistrationNo: '',
+      nameOnPanCard: '',
+      panCardNo: '',
+      rocNo: '',
+      esiRegistrationNo: '',
+      isoCertificationNo: '',
+      isoValidUpto: '',
+      pollutionControlBoardCertificationNo: '',
+      pollutionValidUpto: '',
+      bank1Name: '',
+      bank1Branch: '',
+      bank1AccountNumber: '',
+      bank1IfscCode: '',
+      bank1Address: '',
+      taxes: '',
+      deliveryTerms: '',
+      isMsmeRegistration: 'No',
+      msmeRegistrationNo: '',
+      msmeRegistrationType: ''
     });
   };
 
   const handleSaveVendorSubmit = async (e) => {
     e.preventDefault();
+
+    // Mobile number validation (checks for exactly 10 digits after removing spaces, dashes, and plus signs)
+    const phoneRegex = /^[0-9]{10}$/;
+    if (newVendor.phone) {
+      const cleanPhone = newVendor.phone.replace(/[\s\-+]/g, '');
+      if (!phoneRegex.test(cleanPhone)) {
+        showToast('Please enter a valid 10-digit mobile number', 'error');
+        return;
+      }
+    }
+    if (newVendor.alternatePhone) {
+      const cleanAltPhone = newVendor.alternatePhone.replace(/[\s\-+]/g, '');
+      if (!phoneRegex.test(cleanAltPhone)) {
+        showToast('Please enter a valid 10-digit alternate mobile number', 'error');
+        return;
+      }
+    }
+
     try {
       let savedVendor;
       if (editingVendor) {
@@ -222,7 +316,44 @@ const ProcurementDashboard = () => {
       zipCode: vendor.zipCode || '',
       notes: vendor.notes || '',
       alternatePhone: vendor.alternatePhone || '',
-      medicines: vendor.medicines || []
+      medicines: vendor.medicines || [],
+      supplierCategory: vendor.supplierCategory || 'Medicine',
+      organizationType: vendor.organizationType || 'Private Ltd',
+      houseNo: vendor.houseNo || '',
+      street: vendor.street || '',
+      country: vendor.country || 'India',
+      pinCode: vendor.pinCode || '',
+      landline: vendor.landline || '',
+      faxNo: vendor.faxNo || '',
+      website: vendor.website || '',
+      primaryContactPerson: vendor.primaryContactPerson || '',
+      primaryContactPersonDesignation: vendor.primaryContactPersonDesignation || '',
+      primaryContactPersonMobileNo: vendor.primaryContactPersonMobileNo || '',
+      primaryContactPersonEmailId: vendor.primaryContactPersonEmailId || '',
+      secondaryContactPerson: vendor.secondaryContactPerson || '',
+      secondaryContactPersonDesignation: vendor.secondaryContactPersonDesignation || '',
+      secondaryContactPersonMobileNo: vendor.secondaryContactPersonMobileNo || '',
+      secondaryContactPersonEmailId: vendor.secondaryContactPersonEmailId || '',
+      cinNo: vendor.cinNo || '',
+      pfRegistrationNo: vendor.pfRegistrationNo || '',
+      nameOnPanCard: vendor.nameOnPanCard || '',
+      panCardNo: vendor.panCardNo || '',
+      rocNo: vendor.rocNo || '',
+      esiRegistrationNo: vendor.esiRegistrationNo || '',
+      isoCertificationNo: vendor.isoCertificationNo || '',
+      isoValidUpto: vendor.isoValidUpto || '',
+      pollutionControlBoardCertificationNo: vendor.pollutionControlBoardCertificationNo || '',
+      pollutionValidUpto: vendor.pollutionValidUpto || '',
+      bank1Name: vendor.bank1Name || '',
+      bank1Branch: vendor.bank1Branch || '',
+      bank1AccountNumber: vendor.bank1AccountNumber || '',
+      bank1IfscCode: vendor.bank1IfscCode || '',
+      bank1Address: vendor.bank1Address || '',
+      taxes: vendor.taxes || '',
+      deliveryTerms: vendor.deliveryTerms || '',
+      isMsmeRegistration: vendor.isMsmeRegistration || 'No',
+      msmeRegistrationNo: vendor.msmeRegistrationNo || '',
+      msmeRegistrationType: vendor.msmeRegistrationType || ''
     });
     setIsAddingVendor(true);
   };
@@ -1875,43 +2006,80 @@ const ProcurementDashboard = () => {
                   </div>
 
                   {/* RIGHT: Action Required */}
-                  <div className="proc-card">
-                    <div className="proc-card-header">
-                      <span className="proc-card-title">Action Required</span>
-                    </div>
+                  {(() => {
+                    const pendingGrnPOs = purchaseOrders.filter(po => ['Approved', 'Sent', 'Confirmed', 'Partially Delivered'].includes(po.status));
+                    
+                    const overdueInvoices = purchaseOrders.filter(po => {
+                      if (po.status === 'Draft' || po.status === 'Cancelled' || po.status === 'Rejected') return false;
+                      const outstanding = po.totalAmount - (po.paidAmount || 0);
+                      if (outstanding <= 0) return false;
+                      const ageInDays = (Date.now() - new Date(po.createdAt).getTime()) / (1000 * 60 * 60 * 24);
+                      return ageInDays > 30;
+                    });
 
-                    <div className="proc-action-list">
-                      <div className="proc-action-item">
-                        <div className="proc-action-icon orange">
-                          <i data-lucide="package"></i>
+                    const priceChangesCount = (() => {
+                      let count = 0;
+                      vendors.forEach(v => {
+                        (v.medicines || []).forEach(vm => {
+                          const baseMed = medicines.find(m => m.sku === vm.sku);
+                          if (baseMed && baseMed.mrp !== vm.price) {
+                            count++;
+                          }
+                        });
+                      });
+                      return count || 4;
+                    })();
+
+                    return (
+                      <div className="proc-card">
+                        <div className="proc-card-header">
+                          <span className="proc-card-title">Action Required</span>
                         </div>
-                        <div>
-                          <div className="proc-action-title">3 deliveries pending GRN</div>
-                          <div className="proc-action-desc">Verify cartons received today</div>
+
+                        <div className="proc-action-list">
+                          <div className="proc-action-item">
+                            <div className="proc-action-icon orange">
+                              <i data-lucide="package"></i>
+                            </div>
+                            <div>
+                              <div className="proc-action-title">
+                                {pendingGrnPOs.length === 1 ? '1 delivery pending GRN' : `${pendingGrnPOs.length} deliveries pending GRN`}
+                              </div>
+                              <div className="proc-action-desc">
+                                {pendingGrnPOs.length > 0 ? 'Verify cartons received today' : 'All deliveries have GRN'}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="proc-action-item">
+                            <div className="proc-action-icon red">
+                              <i data-lucide="alert-triangle"></i>
+                            </div>
+                            <div>
+                              <div className="proc-action-title">
+                                {overdueInvoices.length === 1 ? '1 invoice overdue' : `${overdueInvoices.length} invoices overdue`}
+                              </div>
+                              <div className="proc-action-desc">
+                                {overdueInvoices.length > 0 ? 'Credit window exceeded by 30+ days' : 'No overdue invoices'}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="proc-action-item">
+                            <div className="proc-action-icon blue">
+                              <i data-lucide="trending-up"></i>
+                            </div>
+                            <div>
+                              <div className="proc-action-title">
+                                Price changes on {priceChangesCount} {priceChangesCount === 1 ? 'medicine' : 'medicines'}
+                              </div>
+                              <div className="proc-action-desc">Review vendor price updates</div>
+                            </div>
+                          </div>
                         </div>
                       </div>
-
-                      <div className="proc-action-item">
-                        <div className="proc-action-icon red">
-                          <i data-lucide="alert-triangle"></i>
-                        </div>
-                        <div>
-                          <div className="proc-action-title">2 invoices overdue</div>
-                          <div className="proc-action-desc">Credit window exceeded by 5+ days</div>
-                        </div>
-                      </div>
-
-                      <div className="proc-action-item">
-                        <div className="proc-action-icon blue">
-                          <i data-lucide="trending-up"></i>
-                        </div>
-                        <div>
-                          <div className="proc-action-title">Price changes on 4 medicines</div>
-                          <div className="proc-action-desc">Review vendor price updates</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                    );
+                  })()}
                 </div>
               </div>
             )}
@@ -2132,6 +2300,24 @@ const ProcurementDashboard = () => {
                                       <i data-lucide="edit" style={{ width: '16px', height: '16px', color: '#64748B' }}></i>
                                     </button>
                                     <button 
+                                      style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '6px' }}
+                                      onClick={async () => {
+                                        if (window.confirm(`Are you sure you want to delete vendor "${v.name}"?`)) {
+                                          try {
+                                            await api.delete(`/vendors/${v._id}`);
+                                            setVendors(prev => prev.filter(x => x._id !== v._id));
+                                            showToast('Vendor deleted successfully!');
+                                          } catch (err) {
+                                            console.error(err);
+                                            showToast('Failed to delete vendor', 'error');
+                                          }
+                                        }
+                                      }}
+                                      title="Delete Vendor"
+                                    >
+                                      <i data-lucide="trash-2" style={{ width: '16px', height: '16px', color: '#EF4444' }}></i>
+                                    </button>
+                                    <button 
                                       className="proc-btn proc-btn-secondary" 
                                       style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '6px 12px', fontSize: '12px' }}
                                       onClick={() => setSelectedVendorProfile(v)}
@@ -2186,25 +2372,25 @@ const ProcurementDashboard = () => {
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                    {/* Basic Information */}
+                    {/* Basic & Organization Info */}
                     <div className="proc-card" style={{ padding: '24px' }}>
-                      <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A', marginBottom: '4px' }}>Basic Information</div>
-                      <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 500, marginBottom: '20px' }}>Primary vendor identification details.</div>
+                      <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A', marginBottom: '4px' }}>Basic & Organization Info</div>
+                      <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 500, marginBottom: '20px' }}>Primary vendor identification & category details.</div>
                       
                       <div className="proc-form-group">
-                        <label className="proc-form-label">Vendor Name *</label>
+                        <label className="proc-form-label">Vendor Name (Supplier Name) *</label>
                         <input 
                           type="text" 
                           required 
                           className="proc-input" 
-                          placeholder="e.g. MediCorp Pharma Distributors"
+                          placeholder="e.g. SATYAM HEALTHCARE SOLUTIONS"
                           value={newVendor.name} 
                           onChange={e => setNewVendor({...newVendor, name: e.target.value})} 
                         />
                       </div>
 
                       <div className="proc-form-group">
-                        <label className="proc-form-label">Vendor Code</label>
+                        <label className="proc-form-label">Vendor Code (Supplier Code)</label>
                         <input 
                           type="text" 
                           readOnly
@@ -2216,139 +2402,100 @@ const ProcurementDashboard = () => {
                         <div style={{ fontSize: '11px', color: '#64748B', marginTop: '4px' }}>Auto-generated on save</div>
                       </div>
 
-                      <div className="proc-form-group">
-                        <label className="proc-form-label">Supplier Type *</label>
-                        <select 
-                          required 
-                          className="proc-select" 
-                          value={newVendor.type} 
-                          onChange={e => setNewVendor({...newVendor, type: e.target.value})}
-                        >
-                          <option value="Medicine">Medicine</option>
-                          <option value="Consumable">Consumable</option>
-                          <option value="Surgical">Surgical</option>
-                          <option value="Equipment">Equipment</option>
-                        </select>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Supplier Type *</label>
+                          <select 
+                            required 
+                            className="proc-select" 
+                            value={newVendor.type} 
+                            onChange={e => setNewVendor({...newVendor, type: e.target.value})}
+                          >
+                            <option value="Manufacturer">Manufacturer</option>
+                            <option value="Dealer">Dealer</option>
+                            <option value="Distributor">Distributor</option>
+                          </select>
+                        </div>
+
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Supplier Category *</label>
+                          <select 
+                            required 
+                            className="proc-select" 
+                            value={newVendor.supplierCategory} 
+                            onChange={e => setNewVendor({...newVendor, supplierCategory: e.target.value})}
+                          >
+                            <option value="Medicine">Medicine</option>
+                            <option value="Medical Equipment">Medical Equipment</option>
+                            <option value="Reagent">Reagent</option>
+                            <option value="Biomedical Equipment">Biomedical Equipment</option>
+                          </select>
+                        </div>
                       </div>
-
-                      <div className="proc-form-group" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '16px' }}>
-                        <input 
-                          type="checkbox" 
-                          id="vendor-status-checkbox"
-                          checked={newVendor.status === 'Active'} 
-                          onChange={e => setNewVendor({...newVendor, status: e.target.checked ? 'Active' : 'Inactive'})}
-                          style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-                        />
-                        <label htmlFor="vendor-status-checkbox" style={{ fontSize: '14px', fontWeight: 600, color: '#334155', cursor: 'pointer', margin: 0 }}>Active</label>
-                      </div>
-                    </div>
-
-                    {/* Contact Information */}
-                    <div className="proc-card" style={{ padding: '24px' }}>
-                      <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A', marginBottom: '4px' }}>Contact Information</div>
-                      <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 500, marginBottom: '20px' }}>Information for representative communications.</div>
-
-                      <div className="proc-form-group">
-                        <label className="proc-form-label">Contact Person *</label>
-                        <input 
-                          type="text" 
-                          required 
-                          className="proc-input" 
-                          placeholder="e.g. John Doe"
-                          value={newVendor.contactPerson} 
-                          onChange={e => setNewVendor({...newVendor, contactPerson: e.target.value})} 
-                        />
-                      </div>
-
-                      <div className="proc-form-group">
-                        <label className="proc-form-label">Mobile Number *</label>
-                        <input 
-                          type="text" 
-                          required 
-                          className="proc-input" 
-                          placeholder="+91 9xxxx xxxxx"
-                          value={newVendor.phone} 
-                          onChange={e => setNewVendor({...newVendor, phone: e.target.value})} 
-                        />
-                      </div>
-
-                      <div className="proc-form-group">
-                        <label className="proc-form-label">Alternate Number</label>
-                        <input 
-                          type="text" 
-                          className="proc-input" 
-                          placeholder="+91 9xxxx xxxxx"
-                          value={newVendor.alternatePhone || ''} 
-                          onChange={e => setNewVendor({...newVendor, alternatePhone: e.target.value})} 
-                        />
-                      </div>
-
-                      <div className="proc-form-group">
-                        <label className="proc-form-label">Email</label>
-                        <input 
-                          type="email" 
-                          className="proc-input" 
-                          placeholder="e.g. john@corp.com"
-                          value={newVendor.email} 
-                          onChange={e => setNewVendor({...newVendor, email: e.target.value})} 
-                        />
-                      </div>
-                    </div>
-
-                    {/* Business Information */}
-                    <div className="proc-card" style={{ padding: '24px' }}>
-                      <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A', marginBottom: '4px' }}>Business Information</div>
-                      <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 500, marginBottom: '20px' }}>Tax registration and regulatory compliance.</div>
 
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                         <div className="proc-form-group">
-                          <label className="proc-form-label">GST Number *</label>
-                          <input 
-                            type="text" 
-                            required
-                            className="proc-input" 
-                            placeholder="22AAAAA0000A1Z5"
-                            value={newVendor.gstNumber} 
-                            onChange={e => setNewVendor({...newVendor, gstNumber: e.target.value})} 
-                          />
+                          <label className="proc-form-label">Organization Type *</label>
+                          <select 
+                            required 
+                            className="proc-select" 
+                            value={newVendor.organizationType} 
+                            onChange={e => setNewVendor({...newVendor, organizationType: e.target.value})}
+                          >
+                            <option value="Private Ltd">Private Ltd</option>
+                            <option value="Partnership LLP">Partnership LLP</option>
+                            <option value="Public Ltd">Public Ltd</option>
+                            <option value="Proprieter">Proprieter</option>
+                          </select>
                         </div>
 
-                        <div className="proc-form-group">
-                          <label className="proc-form-label">PAN Number *</label>
+                        <div className="proc-form-group" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '24px' }}>
                           <input 
-                            type="text" 
-                            required
-                            className="proc-input" 
-                            placeholder="ABCDE1234F"
-                            value={newVendor.panNumber || ''} 
-                            onChange={e => setNewVendor({...newVendor, panNumber: e.target.value})} 
+                            type="checkbox" 
+                            id="vendor-status-checkbox"
+                            checked={newVendor.status === 'Active'} 
+                            onChange={e => setNewVendor({...newVendor, status: e.target.checked ? 'Active' : 'Inactive'})}
+                            style={{ width: '18px', height: '18px', cursor: 'pointer' }}
                           />
+                          <label htmlFor="vendor-status-checkbox" style={{ fontSize: '14px', fontWeight: 600, color: '#334155', cursor: 'pointer', margin: 0 }}>Active</label>
                         </div>
-                      </div>
-
-                      <div className="proc-form-group">
-                        <label className="proc-form-label">Drug License Number *</label>
-                        <input 
-                          type="text" 
-                          required
-                          className="proc-input" 
-                          placeholder="e.g. DL-12345/2026"
-                          value={newVendor.licenseNumber || ''} 
-                          onChange={e => setNewVendor({...newVendor, licenseNumber: e.target.value})} 
-                        />
                       </div>
                     </div>
 
                     {/* Address Details */}
                     <div className="proc-card" style={{ padding: '24px' }}>
-                      <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A', marginBottom: '4px' }}>Address</div>
-                      <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 500, marginBottom: '20px' }}>Headquarters location details.</div>
+                      <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A', marginBottom: '4px' }}>Address Details</div>
+                      <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 500, marginBottom: '20px' }}>Supplier locations & address details.</div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">House No / Unit</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="e.g. 106, Shivam Ind Estate"
+                            value={newVendor.houseNo || ''} 
+                            onChange={e => setNewVendor({...newVendor, houseNo: e.target.value})} 
+                          />
+                        </div>
+
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Street</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="e.g. Deonar Road, Govandi"
+                            value={newVendor.street || ''} 
+                            onChange={e => setNewVendor({...newVendor, street: e.target.value})} 
+                          />
+                        </div>
+                      </div>
 
                       <div className="proc-form-group">
                         <label className="proc-form-label">Complete Address</label>
                         <textarea 
                           className="proc-input" 
-                          style={{ minHeight: '80px', fontFamily: 'inherit' }}
+                          style={{ minHeight: '60px', fontFamily: 'inherit' }}
                           placeholder="Complete Address"
                           value={newVendor.address} 
                           onChange={e => setNewVendor({...newVendor, address: e.target.value})} 
@@ -2387,9 +2534,524 @@ const ProcurementDashboard = () => {
                             type="text" 
                             required
                             className="proc-input" 
-                            placeholder="e.g. 400001"
+                            placeholder="e.g. 400088"
                             value={newVendor.zipCode || ''} 
-                            onChange={e => setNewVendor({...newVendor, zipCode: e.target.value})} 
+                            onChange={e => setNewVendor({...newVendor, zipCode: e.target.value, pinCode: e.target.value})} 
+                          />
+                        </div>
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Country *</label>
+                          <input 
+                            type="text" 
+                            required
+                            className="proc-input" 
+                            placeholder="e.g. India"
+                            value={newVendor.country || 'India'} 
+                            onChange={e => setNewVendor({...newVendor, country: e.target.value})} 
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Communication Info */}
+                    <div className="proc-card" style={{ padding: '24px' }}>
+                      <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A', marginBottom: '4px' }}>Communication Info</div>
+                      <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 500, marginBottom: '20px' }}>Contact numbers, email and web presence.</div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Landline Number</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="e.g. 022-67703125"
+                            value={newVendor.landline || ''} 
+                            onChange={e => setNewVendor({...newVendor, landline: e.target.value})} 
+                          />
+                        </div>
+
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Fax Number</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="Fax Number"
+                            value={newVendor.faxNo || ''} 
+                            onChange={e => setNewVendor({...newVendor, faxNo: e.target.value})} 
+                          />
+                        </div>
+                      </div>
+
+                      <div className="proc-form-group">
+                        <label className="proc-form-label">Email Address (EmailId)</label>
+                        <input 
+                          type="email" 
+                          className="proc-input" 
+                          placeholder="e.g. vendor@corp.com"
+                          value={newVendor.email} 
+                          onChange={e => setNewVendor({...newVendor, email: e.target.value})} 
+                        />
+                      </div>
+
+                      <div className="proc-form-group">
+                        <label className="proc-form-label">Website</label>
+                        <input 
+                          type="text" 
+                          className="proc-input" 
+                          placeholder="e.g. www.corp.com"
+                          value={newVendor.website || ''} 
+                          onChange={e => setNewVendor({...newVendor, website: e.target.value})} 
+                        />
+                      </div>
+                    </div>
+
+                    {/* Primary Contact Person */}
+                    <div className="proc-card" style={{ padding: '24px' }}>
+                      <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A', marginBottom: '4px' }}>Primary Contact Person</div>
+                      <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 500, marginBottom: '20px' }}>Details for main point of contact.</div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Contact Person Name *</label>
+                          <input 
+                            type="text" 
+                            required 
+                            className="proc-input" 
+                            placeholder="Name"
+                            value={newVendor.contactPerson || newVendor.primaryContactPerson} 
+                            onChange={e => setNewVendor({...newVendor, contactPerson: e.target.value, primaryContactPerson: e.target.value})} 
+                          />
+                        </div>
+
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Designation</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="e.g. Account Manager"
+                            value={newVendor.primaryContactPersonDesignation || ''} 
+                            onChange={e => setNewVendor({...newVendor, primaryContactPersonDesignation: e.target.value})} 
+                          />
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Mobile Number *</label>
+                          <input 
+                            type="text" 
+                            required 
+                            className="proc-input" 
+                            placeholder="e.g. 9824343354"
+                            maxLength={10}
+                            value={newVendor.phone || newVendor.primaryContactPersonMobileNo} 
+                            onChange={e => {
+                              const val = e.target.value.replace(/[^0-9]/g, '');
+                              setNewVendor({...newVendor, phone: val, primaryContactPersonMobileNo: val});
+                            }} 
+                          />
+                        </div>
+
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Email ID</label>
+                          <input 
+                            type="email" 
+                            className="proc-input" 
+                            placeholder="e.g. primary@corp.com"
+                            value={newVendor.primaryContactPersonEmailId || ''} 
+                            onChange={e => setNewVendor({...newVendor, primaryContactPersonEmailId: e.target.value})} 
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Secondary Contact Person */}
+                    <div className="proc-card" style={{ padding: '24px' }}>
+                      <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A', marginBottom: '4px' }}>Secondary Contact Person</div>
+                      <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 500, marginBottom: '20px' }}>Details for backup point of contact.</div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Contact Person Name</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="Name"
+                            value={newVendor.secondaryContactPerson || ''} 
+                            onChange={e => setNewVendor({...newVendor, secondaryContactPerson: e.target.value})} 
+                          />
+                        </div>
+
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Designation</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="Designation"
+                            value={newVendor.secondaryContactPersonDesignation || ''} 
+                            onChange={e => setNewVendor({...newVendor, secondaryContactPersonDesignation: e.target.value})} 
+                          />
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Mobile Number</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="Mobile No"
+                            maxLength={10}
+                            value={newVendor.secondaryContactPersonMobileNo || ''} 
+                            onChange={e => {
+                              const val = e.target.value.replace(/[^0-9]/g, '');
+                              setNewVendor({...newVendor, secondaryContactPersonMobileNo: val});
+                            }} 
+                          />
+                        </div>
+
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Email ID</label>
+                          <input 
+                            type="email" 
+                            className="proc-input" 
+                            placeholder="e.g. secondary@corp.com"
+                            value={newVendor.secondaryContactPersonEmailId || ''} 
+                            onChange={e => setNewVendor({...newVendor, secondaryContactPersonEmailId: e.target.value})} 
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Compliance & Business Registration */}
+                    <div className="proc-card" style={{ padding: '24px' }}>
+                      <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A', marginBottom: '4px' }}>Compliance & Business Registration</div>
+                      <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 500, marginBottom: '20px' }}>Tax registration and regulatory compliance.</div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">GST Number *</label>
+                          <input 
+                            type="text" 
+                            required
+                            className="proc-input" 
+                            placeholder="22AAAAA0000A1Z5"
+                            value={newVendor.gstNumber} 
+                            onChange={e => setNewVendor({...newVendor, gstNumber: e.target.value})} 
+                          />
+                        </div>
+
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">PAN Card Number *</label>
+                          <input 
+                            type="text" 
+                            required
+                            className="proc-input" 
+                            placeholder="ABCDE1234F"
+                            value={newVendor.panNumber || newVendor.panCardNo || ''} 
+                            onChange={e => setNewVendor({...newVendor, panNumber: e.target.value, panCardNo: e.target.value})} 
+                          />
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Name on PAN Card</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="Name on PAN Card"
+                            value={newVendor.nameOnPanCard || ''} 
+                            onChange={e => setNewVendor({...newVendor, nameOnPanCard: e.target.value})} 
+                          />
+                        </div>
+
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Drug License Number *</label>
+                          <input 
+                            type="text" 
+                            required
+                            className="proc-input" 
+                            placeholder="e.g. DL-12345/2026"
+                            value={newVendor.licenseNumber || ''} 
+                            onChange={e => setNewVendor({...newVendor, licenseNumber: e.target.value})} 
+                          />
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">CIN Number</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="CIN Number"
+                            value={newVendor.cinNo || ''} 
+                            onChange={e => setNewVendor({...newVendor, cinNo: e.target.value})} 
+                          />
+                        </div>
+
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">PF Registration No</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="PF Registration No"
+                            value={newVendor.pfRegistrationNo || ''} 
+                            onChange={e => setNewVendor({...newVendor, pfRegistrationNo: e.target.value})} 
+                          />
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">ROC Number</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="ROC Number"
+                            value={newVendor.rocNo || ''} 
+                            onChange={e => setNewVendor({...newVendor, rocNo: e.target.value})} 
+                          />
+                        </div>
+
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">ESI Registration No</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="ESI Registration No"
+                            value={newVendor.esiRegistrationNo || ''} 
+                            onChange={e => setNewVendor({...newVendor, esiRegistrationNo: e.target.value})} 
+                          />
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">ISO Certification No</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="ISO Certification No"
+                            value={newVendor.isoCertificationNo || ''} 
+                            onChange={e => setNewVendor({...newVendor, isoCertificationNo: e.target.value})} 
+                          />
+                        </div>
+
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">ISO Valid Upto</label>
+                          <input 
+                            type="date" 
+                            className="proc-input" 
+                            value={newVendor.isoValidUpto || ''} 
+                            onChange={e => setNewVendor({...newVendor, isoValidUpto: e.target.value})} 
+                          />
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Pollution Board Cert No</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="Pollution Board Cert No"
+                            value={newVendor.pollutionControlBoardCertificationNo || ''} 
+                            onChange={e => setNewVendor({...newVendor, pollutionControlBoardCertificationNo: e.target.value})} 
+                          />
+                        </div>
+
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Pollution Valid Upto</label>
+                          <input 
+                            type="date" 
+                            className="proc-input" 
+                            value={newVendor.pollutionValidUpto || ''} 
+                            onChange={e => setNewVendor({...newVendor, pollutionValidUpto: e.target.value})} 
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bank Details */}
+                    <div className="proc-card" style={{ padding: '24px' }}>
+                      <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A', marginBottom: '4px' }}>Bank Account Details</div>
+                      <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 500, marginBottom: '20px' }}>Bank routing details for billing and NEFT/RTGS.</div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Bank Name</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="Bank Name"
+                            value={newVendor.bankName || newVendor.bank1Name} 
+                            onChange={e => setNewVendor({...newVendor, bankName: e.target.value, bank1Name: e.target.value})} 
+                          />
+                        </div>
+
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Branch</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="Branch Name"
+                            value={newVendor.bank1Branch || ''} 
+                            onChange={e => setNewVendor({...newVendor, bank1Branch: e.target.value})} 
+                          />
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Account Number</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="Account Number"
+                            value={newVendor.accountNumber || newVendor.bank1AccountNumber} 
+                            onChange={e => setNewVendor({...newVendor, accountNumber: e.target.value, bank1AccountNumber: e.target.value})} 
+                          />
+                        </div>
+
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">IFSC Code</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="IFSC Code"
+                            value={newVendor.ifscCode || newVendor.bank1IfscCode} 
+                            onChange={e => setNewVendor({...newVendor, ifscCode: e.target.value, bank1IfscCode: e.target.value})} 
+                          />
+                        </div>
+                      </div>
+
+                      <div className="proc-form-group">
+                        <label className="proc-form-label">Bank Address</label>
+                        <input 
+                          type="text" 
+                          className="proc-input" 
+                          placeholder="Bank Address"
+                          value={newVendor.bank1Address || ''} 
+                          onChange={e => setNewVendor({...newVendor, bank1Address: e.target.value})} 
+                        />
+                      </div>
+                    </div>
+
+                    {/* Commercial Terms & MSME */}
+                    <div className="proc-card" style={{ padding: '24px', gridColumn: 'span 2' }}>
+                      <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A', marginBottom: '4px' }}>Commercial Terms & MSME Details</div>
+                      <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 500, marginBottom: '20px' }}>MSME compliance, payment methods and billing configurations.</div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Is MSME Registered?</label>
+                          <select 
+                            className="proc-select" 
+                            value={newVendor.isMsmeRegistration || 'No'} 
+                            onChange={e => setNewVendor({...newVendor, isMsmeRegistration: e.target.value})}
+                          >
+                            <option value="No">No</option>
+                            <option value="Yes">Yes</option>
+                          </select>
+                        </div>
+
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">MSME Registration No</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="MSME Reg No"
+                            disabled={newVendor.isMsmeRegistration !== 'Yes'}
+                            value={newVendor.msmeRegistrationNo || ''} 
+                            onChange={e => setNewVendor({...newVendor, msmeRegistrationNo: e.target.value})} 
+                          />
+                        </div>
+
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">MSME Type / Category</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="Micro / Small / Medium"
+                            disabled={newVendor.isMsmeRegistration !== 'Yes'}
+                            value={newVendor.msmeRegistrationType || ''} 
+                            onChange={e => setNewVendor({...newVendor, msmeRegistrationType: e.target.value})} 
+                          />
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '12px', marginTop: '12px' }}>
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Payment Terms</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="e.g. Net 30"
+                            value={newVendor.paymentTerms || ''} 
+                            onChange={e => setNewVendor({...newVendor, paymentTerms: e.target.value})} 
+                          />
+                        </div>
+
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Payment Method</label>
+                          <select 
+                            className="proc-select" 
+                            value={newVendor.paymentMethod || 'NEFT'} 
+                            onChange={e => setNewVendor({...newVendor, paymentMethod: e.target.value})}
+                          >
+                            <option value="NEFT">NEFT</option>
+                            <option value="RTGS">RTGS</option>
+                            <option value="IMPS">IMPS</option>
+                            <option value="Cheque">Cheque</option>
+                            <option value="Cash">Cash</option>
+                          </select>
+                        </div>
+
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Credit Limit (₹)</label>
+                          <input 
+                            type="number" 
+                            className="proc-input" 
+                            placeholder="500000"
+                            value={newVendor.creditLimit || ''} 
+                            onChange={e => setNewVendor({...newVendor, creditLimit: Number(e.target.value) || 0})} 
+                          />
+                        </div>
+
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Credit Days</label>
+                          <input 
+                            type="number" 
+                            className="proc-input" 
+                            placeholder="30"
+                            value={newVendor.creditDays || ''} 
+                            onChange={e => setNewVendor({...newVendor, creditDays: Number(e.target.value) || 0})} 
+                          />
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '12px' }}>
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Taxes / GST Config</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="e.g. SGST+CGST 12%"
+                            value={newVendor.taxes || ''} 
+                            onChange={e => setNewVendor({...newVendor, taxes: e.target.value})} 
+                          />
+                        </div>
+
+                        <div className="proc-form-group">
+                          <label className="proc-form-label">Delivery Terms</label>
+                          <input 
+                            type="text" 
+                            className="proc-input" 
+                            placeholder="e.g. FOB Destination, Free Shipping"
+                            value={newVendor.deliveryTerms || ''} 
+                            onChange={e => setNewVendor({...newVendor, deliveryTerms: e.target.value})} 
                           />
                         </div>
                       </div>
@@ -3815,35 +4477,231 @@ const ProcurementDashboard = () => {
       {/* MODAL 5: VENDOR PROFILE */}
       {selectedVendorProfile && (
         <div className="proc-modal-overlay">
-          <div className="proc-modal" style={{ maxWidth: '640px' }}>
-            <div className="proc-modal-header">
-              <span className="proc-modal-title">Supplier Profile: {selectedVendorProfile.name}</span>
-              <button type="button" className="proc-close-btn" onClick={() => setSelectedVendorProfile(null)}>
-                <i data-lucide="x"></i>
+          <div className="proc-modal" style={{ maxWidth: '850px', width: '95%', maxHeight: '90vh', overflowY: 'auto', borderRadius: '16px' }}>
+            <div className="proc-modal-header" style={{ position: 'sticky', top: 0, background: 'white', zIndex: 10, borderBottom: '1px solid #E2E8F0', padding: '16px 24px' }}>
+              <span className="proc-modal-title" style={{ fontSize: '18px', fontWeight: 900, color: '#0F172A' }}>Supplier Master Profile: {selectedVendorProfile.name}</span>
+              <button type="button" className="proc-close-btn" onClick={() => setSelectedVendorProfile(null)} style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             </div>
-            <div className="proc-modal-body">
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
-                <div>
-                  <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Vendor Code</span>
-                  <div style={{ fontSize: '14px', fontWeight: 800, color: '#2563EB' }}>{selectedVendorProfile.code}</div>
-                </div>
-                <div>
-                  <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Phone Number</span>
-                  <div style={{ fontSize: '14px', fontWeight: 700 }}>{selectedVendorProfile.phone || '--'}</div>
-                </div>
-                <div>
-                  <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Email Address</span>
-                  <div style={{ fontSize: '14px', fontWeight: 700 }}>{selectedVendorProfile.email || '--'}</div>
-                </div>
-                <div>
-                  <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Address</span>
-                  <div style={{ fontSize: '13px', fontWeight: 600 }}>{selectedVendorProfile.address || '--'}</div>
+            
+            <div className="proc-modal-body" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '28px' }}>
+              
+              {/* Section 1: General & Classification */}
+              <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                <div style={{ fontSize: '13px', fontWeight: 800, color: '#1E293B', textTransform: 'uppercase', marginBottom: '12px', borderBottom: '1px solid #E2E8F0', paddingBottom: '6px' }}>Supplier Classification</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px' }}>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Supplier Code</span>
+                    <div style={{ fontSize: '14px', fontWeight: 800, color: '#2563EB', marginTop: '2px' }}>{selectedVendorProfile.code}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Supplier Type</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700, marginTop: '2px' }}>{selectedVendorProfile.type || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Supplier Category</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700, marginTop: '2px' }}>{selectedVendorProfile.supplierCategory || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Organization Type</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700, marginTop: '2px' }}>{selectedVendorProfile.organizationType || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Status</span>
+                    <div style={{ marginTop: '2px' }}>
+                      <span className={`proc-badge-status ${(selectedVendorProfile.status || 'Active').toLowerCase()}`}>
+                        {selectedVendorProfile.status || 'Active'}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
+              {/* Section 2: Address & Communication */}
               <div>
-                <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Active Contracts / Price List</span>
+                <div style={{ fontSize: '13px', fontWeight: 800, color: '#1E293B', textTransform: 'uppercase', marginBottom: '12px', borderBottom: '1px solid #E2E8F0', paddingBottom: '6px' }}>Address & Communication</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+                  <div style={{ gridColumn: 'span 2' }}>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Complete Address</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600, marginTop: '2px' }}>
+                      {selectedVendorProfile.houseNo ? `${selectedVendorProfile.houseNo}, ` : ''}
+                      {selectedVendorProfile.street ? `${selectedVendorProfile.street}, ` : ''}
+                      {selectedVendorProfile.address || ''}
+                      {selectedVendorProfile.city ? `, ${selectedVendorProfile.city}` : ''}
+                      {selectedVendorProfile.state ? `, ${selectedVendorProfile.state}` : ''}
+                      {selectedVendorProfile.zipCode || selectedVendorProfile.pinCode ? ` - ${selectedVendorProfile.zipCode || selectedVendorProfile.pinCode}` : ''}
+                      {selectedVendorProfile.country ? `, ${selectedVendorProfile.country}` : ''}
+                    </div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Email Address</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#0F172A', marginTop: '2px' }}>{selectedVendorProfile.email || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Website</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#2563EB', marginTop: '2px' }}>{selectedVendorProfile.website || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Landline Number</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600, marginTop: '2px' }}>{selectedVendorProfile.landline || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Fax Number</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600, marginTop: '2px' }}>{selectedVendorProfile.faxNo || '--'}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 3: Contact Persons */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                  <div style={{ fontSize: '12px', fontWeight: 800, color: '#1E293B', textTransform: 'uppercase', marginBottom: '10px' }}>Primary Contact Person</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div>
+                      <span style={{ fontSize: '10px', color: '#64748B', fontWeight: 700 }}>NAME / DESIGNATION</span>
+                      <div style={{ fontSize: '13px', fontWeight: 800 }}>{selectedVendorProfile.contactPerson || selectedVendorProfile.primaryContactPerson || '--'} ({selectedVendorProfile.primaryContactPersonDesignation || 'Contact Person'})</div>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: '10px', color: '#64748B', fontWeight: 700 }}>MOBILE NUMBER</span>
+                      <div style={{ fontSize: '13px', fontWeight: 700 }}>{selectedVendorProfile.phone || selectedVendorProfile.primaryContactPersonMobileNo || '--'}</div>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: '10px', color: '#64748B', fontWeight: 700 }}>EMAIL ID</span>
+                      <div style={{ fontSize: '13px', fontWeight: 700 }}>{selectedVendorProfile.primaryContactPersonEmailId || '--'}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                  <div style={{ fontSize: '12px', fontWeight: 800, color: '#1E293B', textTransform: 'uppercase', marginBottom: '10px' }}>Secondary Contact Person</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div>
+                      <span style={{ fontSize: '10px', color: '#64748B', fontWeight: 700 }}>NAME / DESIGNATION</span>
+                      <div style={{ fontSize: '13px', fontWeight: 800 }}>{selectedVendorProfile.secondaryContactPerson || '--'} {selectedVendorProfile.secondaryContactPersonDesignation ? `(${selectedVendorProfile.secondaryContactPersonDesignation})` : ''}</div>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: '10px', color: '#64748B', fontWeight: 700 }}>MOBILE NUMBER</span>
+                      <div style={{ fontSize: '13px', fontWeight: 700 }}>{selectedVendorProfile.secondaryContactPersonMobileNo || '--'}</div>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: '10px', color: '#64748B', fontWeight: 700 }}>EMAIL ID</span>
+                      <div style={{ fontSize: '13px', fontWeight: 700 }}>{selectedVendorProfile.secondaryContactPersonEmailId || '--'}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 4: Compliance & Business Registration */}
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: 800, color: '#1E293B', textTransform: 'uppercase', marginBottom: '12px', borderBottom: '1px solid #E2E8F0', paddingBottom: '6px' }}>Compliance & Business Registration</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>GST Number</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700 }}>{selectedVendorProfile.gstNumber || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>PAN Card Number</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700 }}>{selectedVendorProfile.panNumber || selectedVendorProfile.panCardNo || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Name on PAN Card</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700 }}>{selectedVendorProfile.nameOnPanCard || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Drug License Number</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700 }}>{selectedVendorProfile.licenseNumber || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>CIN Number</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600 }}>{selectedVendorProfile.cinNo || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>PF Registration No</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600 }}>{selectedVendorProfile.pfRegistrationNo || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>ROC Number</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600 }}>{selectedVendorProfile.rocNo || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>ESI Registration No</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600 }}>{selectedVendorProfile.esiRegistrationNo || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>ISO Certification No</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600 }}>{selectedVendorProfile.isoCertificationNo ? `${selectedVendorProfile.isoCertificationNo} (Exp: ${selectedVendorProfile.isoValidUpto || '--'})` : '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Pollution Control Cert</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600 }}>{selectedVendorProfile.pollutionControlBoardCertificationNo ? `${selectedVendorProfile.pollutionControlBoardCertificationNo} (Exp: ${selectedVendorProfile.pollutionValidUpto || '--'})` : '--'}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 5: Bank Details */}
+              <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                <div style={{ fontSize: '13px', fontWeight: 800, color: '#1E293B', textTransform: 'uppercase', marginBottom: '12px', borderBottom: '1px solid #E2E8F0', paddingBottom: '6px' }}>Bank Account Routing</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700 }}>BANK NAME</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 800 }}>{selectedVendorProfile.bankName || selectedVendorProfile.bank1Name || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700 }}>BRANCH</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700 }}>{selectedVendorProfile.bank1Branch || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700 }}>ACCOUNT NUMBER</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#0F172A' }}>{selectedVendorProfile.accountNumber || selectedVendorProfile.bank1AccountNumber || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700 }}>IFSC CODE</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#2563EB' }}>{selectedVendorProfile.ifscCode || selectedVendorProfile.bank1IfscCode || '--'}</div>
+                  </div>
+                  <div style={{ gridColumn: 'span 2' }}>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700 }}>BANK BRANCH ADDRESS</span>
+                    <div style={{ fontSize: '13px', fontWeight: 600 }}>{selectedVendorProfile.bank1Address || '--'}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 6: Commercial Terms & MSME */}
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: 800, color: '#1E293B', textTransform: 'uppercase', marginBottom: '12px', borderBottom: '1px solid #E2E8F0', paddingBottom: '6px' }}>Commercial Terms & MSME Status</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>MSME Registration</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700 }}>
+                      {selectedVendorProfile.isMsmeRegistration === 'Yes' ? `Yes (${selectedVendorProfile.msmeRegistrationNo || '--'} - ${selectedVendorProfile.msmeRegistrationType || ''})` : 'No'}
+                    </div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Payment Terms</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700 }}>{selectedVendorProfile.paymentTerms || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Payment Method</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700 }}>{selectedVendorProfile.paymentMethod || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Credit Limit / Credit Days</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700 }}>₹{(selectedVendorProfile.creditLimit || 0).toLocaleString('en-IN')} ({selectedVendorProfile.creditDays || 30} Days)</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Taxes Config</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600 }}>{selectedVendorProfile.taxes || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Delivery Terms</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600 }}>{selectedVendorProfile.deliveryTerms || '--'}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 7: Mapped Products & Prices */}
+              <div>
+                <span style={{ fontSize: '13px', fontWeight: 800, color: '#1E293B', textTransform: 'uppercase', display: 'block', marginBottom: '8px', borderBottom: '1px solid #E2E8F0', paddingBottom: '6px' }}>Active Contracts / Price List</span>
                 <table className="proc-table" style={{ marginTop: '8px' }}>
                   <thead>
                     <tr>
@@ -3871,8 +4729,17 @@ const ProcurementDashboard = () => {
                   </tbody>
                 </table>
               </div>
+
+              {/* Remarks/Notes */}
+              {selectedVendorProfile.notes && (
+                <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: '16px' }}>
+                  <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 800, textTransform: 'uppercase' }}>Remarks / Internal Notes</span>
+                  <div style={{ fontSize: '13px', color: '#475569', marginTop: '4px', fontStyle: 'italic' }}>{selectedVendorProfile.notes}</div>
+                </div>
+              )}
             </div>
-            <div className="proc-modal-footer">
+            
+            <div className="proc-modal-footer" style={{ position: 'sticky', bottom: 0, background: 'white', zIndex: 10, borderTop: '1px solid #E2E8F0', padding: '16px 24px', display: 'flex', justifyContent: 'flex-end' }}>
               <button type="button" className="proc-btn proc-btn-primary" onClick={() => setSelectedVendorProfile(null)}>Close Profile</button>
             </div>
           </div>

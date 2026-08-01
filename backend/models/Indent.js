@@ -21,7 +21,7 @@ const indentSchema = new mongoose.Schema({
     mrp: { type: Number, default: 50.00 }
   }],
   totalQty: { type: Number, required: true, default: 0 },
-  status: { type: String, enum: ['Pending', 'Approved', 'Rejected', 'Draft', 'Received'], default: 'Pending' }
+  status: { type: String, enum: ['Pending', 'Approved', 'Rejected', 'Draft', 'Received', 'Fulfilled', 'Partially Fulfilled', 'Cannot Fulfill'], default: 'Pending' }
 }, { timestamps: true });
 
 // Compound unique index for local uniqueness within each tenant
