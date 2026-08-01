@@ -75,7 +75,7 @@ router.get('/', async (req, res) => {
   try {
     // Disabled automatic mock vendor seeding as requested
     // await seedDefaultVendors(req.tenantId);
-    const vendors = await Vendor.find({ tenantId: req.tenantId, status: 'Active' }).sort({ name: 1 });
+    const vendors = await Vendor.find({ tenantId: req.tenantId }).sort({ name: 1 });
     res.json(vendors);
   } catch (error) {
     console.error("Get vendors error:", error);

@@ -118,6 +118,28 @@ const ProcurementDashboard = () => {
   const [editingDraftPO, setEditingDraftPO] = useState(null);
 
   const [selectedInvoiceDetails, setSelectedInvoiceDetails] = useState(null);
+  const [previewPoDetails, setPreviewPoDetails] = useState(null);
+
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifDropdown, setShowNotifDropdown] = useState(false);
+  const [readNotifIds, setReadNotifIds] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('read_notif_ids') || '[]');
+    } catch {
+      return [];
+    }
+  });
+
+  const handleToggleNotif = () => {
+    setShowNotifDropdown(!showNotifDropdown);
+    if (!showNotifDropdown) {
+      const allIds = notifications.map(n => n.id);
+      setReadNotifIds(allIds);
+      localStorage.setItem('read_notif_ids', JSON.stringify(allIds));
+    }
+  };
+
+  const unreadCount = notifications.filter(n => !readNotifIds.includes(n.id)).length;
 
   // Compare Drawer state
   const [compareItemIdx, setCompareItemIdx] = useState(null);
@@ -127,23 +149,72 @@ const ProcurementDashboard = () => {
   const [currentUser] = useState(() => JSON.parse(localStorage.getItem('user') || '{"name":"Dr. Ramesh","role":"Pharmacy Admin","email":"ramesh@curoxa.com"}'));
   const navigate = useNavigate();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.dispatchEvent(new CustomEvent('curoxa_logout'));
+    navigate('/login');
+  };
 
   // Fetch all data
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [vendorRes, poRes, grnRes, medRes] = await Promise.all([
+      const [vendorRes, poRes, grnRes, medRes, approvalsRes] = await Promise.all([
         api.get('/vendors'),
         api.get('/purchase-orders'),
         api.get('/goods-receipts'),
-        api.get('/medicines')
+        api.get('/medicines'),
+        api.get('/approvals').catch(() => ({ data: [] }))
       ]);
 
       const fetchedVendors = vendorRes.data || [];
       setVendors(fetchedVendors);
       setPurchaseOrders(poRes.data || []);
       setGoodsReceipts(grnRes.data || []);
-      setMedicines(medRes.data || []);
+      
+      const dbMedicines = medRes.data || [];
+      const vendorMedicines = [];
+      fetchedVendors.forEach(v => {
+        if (v.medicines && Array.isArray(v.medicines)) {
+          v.medicines.forEach(m => {
+            if (m.name && !vendorMedicines.some(existing => existing.name.toLowerCase() === m.name.toLowerCase()) && !dbMedicines.some(existing => existing.name.toLowerCase() === m.name.toLowerCase())) {
+              vendorMedicines.push({
+                name: m.name,
+                sku: m.sku || `vsku-${Math.random().toString(36).substr(2, 5)}`,
+                stock: 0,
+                avgMonthlyUse: 1200,
+                status: 'In Stock',
+                mrp: m.price || 0
+              });
+            }
+          });
+        }
+      });
+      setMedicines([...dbMedicines, ...vendorMedicines]);
+
+      const allApprovals = approvalsRes.data || [];
+      const resolved = allApprovals.filter(app => app.status === 'approved' || app.status === 'denied');
+      const mappedNotifs = resolved.map(app => {
+        let title = '';
+        let type = app.status === 'approved' ? 'success' : 'error';
+        if (app.type === 'vendor_onboarding') {
+          title = `Vendor Onboarding "${app.details.vendorName}" has been ${app.status === 'approved' ? 'Approved' : 'Denied'} by Admin.`;
+        } else if (app.type === 'purchase_order_approval') {
+          title = `Purchase Order ${app.details.poNumber || 'PO'} has been ${app.status === 'approved' ? 'Approved' : 'Rejected'} by Admin.`;
+        } else {
+          title = `Request "${app.type}" has been ${app.status === 'approved' ? 'Approved' : 'Denied'} by Admin.`;
+        }
+        return {
+          id: app._id,
+          title,
+          type,
+          time: new Date(app.resolvedAt || app.updatedAt || Date.now()).toLocaleDateString()
+        };
+      });
+      setNotifications(mappedNotifs);
 
       if (fetchedVendors.length > 0 && !selectedPaymentVendorId) {
         setSelectedPaymentVendorId(fetchedVendors[0]._id);
@@ -166,6 +237,20 @@ const ProcurementDashboard = () => {
   }, []);
 
   useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (!e.target.closest('.proc-header-actions')) {
+        setShowNotifDropdown(false);
+      }
+    };
+    if (showNotifDropdown) {
+      document.addEventListener('click', handleOutsideClick);
+    }
+    return () => {
+      document.removeEventListener('click', handleOutsideClick);
+    };
+  }, [showNotifDropdown]);
+
+  useEffect(() => {
     if (window.lucide) {
       window.lucide.createIcons();
     }
@@ -185,7 +270,7 @@ const ProcurementDashboard = () => {
 
   // Dynamic lists with NO static mock fallbacks
   const getDisplayVendors = () => {
-    return vendors;
+    return vendors.filter(v => v.status === 'Active');
   };
 
   const getDisplayPOs = () => {
@@ -1815,14 +1900,55 @@ const ProcurementDashboard = () => {
             </button>
           </nav>
 
-          <div className="proc-sidebar-footer">
+          <div className="proc-sidebar-footer" style={{ position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }} onClick={() => setShowUserDropdown(!showUserDropdown)}>
             <div className="proc-avatar">
-              DR
+              {currentUser.name ? currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) : 'DR'}
             </div>
-            <div>
-              <div className="proc-user-name">{currentUser.name}</div>
+            <div style={{ flexGrow: 1, overflow: 'hidden' }}>
+              <div className="proc-user-name" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{currentUser.name}</div>
               <div className="proc-user-role">Pharmacy Admin</div>
             </div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: showUserDropdown ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}><polyline points="18 15 12 9 6 15"/></svg>
+            
+            {showUserDropdown && (
+              <div style={{
+                position: 'absolute',
+                bottom: '100%',
+                left: '0px',
+                right: '0px',
+                marginBottom: '8px',
+                background: 'white',
+                border: '1.5px solid #E2E8F0',
+                borderRadius: '12px',
+                boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
+                padding: '6px',
+                zIndex: 99
+              }} onClick={e => e.stopPropagation()}>
+                <button 
+                  onClick={handleLogout}
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 12px',
+                    border: 'none',
+                    background: 'none',
+                    borderRadius: '8px',
+                    color: '#EF4444',
+                    fontWeight: 700,
+                    fontSize: '12.5px',
+                    cursor: 'pointer',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#FEF2F2'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                  Logout Account
+                </button>
+              </div>
+            )}
           </div>
         </aside>
 
@@ -1859,11 +1985,58 @@ const ProcurementDashboard = () => {
                 </div>
               </div>
 
-              <div className="proc-header-actions">
-                <div className="proc-notif-btn">
-                  <i data-lucide="bell"></i>
-                  <span className="proc-notif-badge">3</span>
+              <div className="proc-header-actions" style={{ position: 'relative' }}>
+                <div className="proc-notif-btn" onClick={handleToggleNotif} style={{ position: 'relative', cursor: 'pointer' }}>
+                  <i data-lucide="bell" style={{ width: '20px', height: '20px' }}></i>
+                  {unreadCount > 0 && <span className="proc-notif-badge">{unreadCount}</span>}
                 </div>
+
+                {showNotifDropdown && (
+                  <div className="proc-notif-dropdown" style={{
+                    position: 'absolute',
+                    top: '100%',
+                    right: 0,
+                    marginTop: '10px',
+                    width: '320px',
+                    background: '#ffffff',
+                    border: '1.5px solid #E2E8F0',
+                    borderRadius: '12px',
+                    boxShadow: '0 10px 25px rgba(15, 23, 42, 0.15)',
+                    zIndex: 2000,
+                    maxHeight: '360px',
+                    overflowY: 'auto',
+                    padding: '8px'
+                  }} onClick={e => e.stopPropagation()}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #F1F5F9', padding: '8px 12px', marginBottom: '8px' }}>
+                      <span style={{ fontWeight: 800, fontSize: '13px', color: '#0F172A' }}>Notifications</span>
+                      <span style={{ fontSize: '11px', color: '#2563EB', cursor: 'pointer', fontWeight: 700 }} onClick={() => {
+                        const allIds = notifications.map(n => n.id);
+                        setReadNotifIds(allIds);
+                        localStorage.setItem('read_notif_ids', JSON.stringify(allIds));
+                      }}>Mark all read</span>
+                    </div>
+                    {notifications.filter(n => !readNotifIds.includes(n.id)).length === 0 ? (
+                      <div style={{ padding: '24px', textAlign: 'center', color: '#94A3B8', fontSize: '12.5px', fontWeight: 600 }}>
+                        No unread notifications
+                      </div>
+                    ) : (
+                      notifications.filter(n => !readNotifIds.includes(n.id)).map(notif => (
+                        <div key={notif.id} style={{
+                          padding: '10px 12px',
+                          borderRadius: '8px',
+                          marginBottom: '4px',
+                          background: notif.type === 'success' ? '#F0FDF4' : '#FEF2F2',
+                          borderLeft: notif.type === 'success' ? '4px solid #16A34A' : '4px solid #EF4444',
+                          fontSize: '12px',
+                          textAlign: 'left'
+                        }}>
+                          <div style={{ fontWeight: 700, color: '#1E293B', lineHeight: '1.4' }}>{notif.title}</div>
+                          <div style={{ fontSize: '10px', color: '#64748B', marginTop: '4px', fontWeight: 500 }}>{notif.time}</div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </header>
@@ -2027,7 +2200,7 @@ const ProcurementDashboard = () => {
                           }
                         });
                       });
-                      return count || 4;
+                      return count;
                     })();
 
                     return (
@@ -2065,17 +2238,17 @@ const ProcurementDashboard = () => {
                             </div>
                           </div>
 
-                          <div className="proc-action-item">
-                            <div className="proc-action-icon blue">
-                              <i data-lucide="trending-up"></i>
-                            </div>
-                            <div>
-                              <div className="proc-action-title">
-                                Price changes on {priceChangesCount} {priceChangesCount === 1 ? 'medicine' : 'medicines'}
-                              </div>
-                              <div className="proc-action-desc">Review vendor price updates</div>
-                            </div>
-                          </div>
+                          <div className="proc-action-item" style={{ cursor: 'pointer' }} onClick={() => setActiveTab('vendors')}>
+                             <div className="proc-action-icon blue">
+                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                             </div>
+                             <div>
+                               <div className="proc-action-title">
+                                 Price changes on {priceChangesCount} {priceChangesCount === 1 ? 'medicine' : 'medicines'}
+                               </div>
+                               <div className="proc-action-desc">Review vendor price updates</div>
+                             </div>
+                           </div>
                         </div>
                       </div>
                     );
@@ -2134,7 +2307,7 @@ const ProcurementDashboard = () => {
                   </div>
 
                   {/* KPI CARDS ROW */}
-                  <div className="proc-stats-grid">
+                  <div className="proc-stats-grid" style={{ gridTemplateColumns: 'repeat(5, 1fr)' }}>
                     <div className="proc-stat-card">
                       <div>
                         <div className="proc-stat-label">Total Vendors</div>
@@ -2154,6 +2327,18 @@ const ProcurementDashboard = () => {
                       </div>
                       <div className="proc-stat-icon green">
                         <i data-lucide="check-circle"></i>
+                      </div>
+                    </div>
+
+                    <div className="proc-stat-card">
+                      <div>
+                        <div className="proc-stat-label">Under Process</div>
+                        <div className="proc-stat-val" style={{ color: '#EA580C' }}>
+                          {vendors.filter(v => v.status === 'Proposed').length}
+                        </div>
+                      </div>
+                      <div className="proc-stat-icon orange" style={{ background: '#FFF7ED', color: '#EA580C' }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                       </div>
                     </div>
 
@@ -3417,33 +3602,49 @@ const ProcurementDashboard = () => {
                                 <td style={{ fontWeight: 700 }}>{itemsCount}</td>
                                 <td style={{ fontWeight: 800, color: '#0F172A' }}>₹{po.totalAmount.toLocaleString()}</td>
                                 <td>
-                                  <span className={`proc-badge ${po.status.toLowerCase().replace(/ /g, '-')}`}>
-                                    {po.status}
+                                  <span className={`proc-badge ${po.status.toLowerCase().replace(/ /g, '-')}`} style={{ 
+                                    background: po.status === 'Pending' ? '#FFF7ED' : undefined,
+                                    color: po.status === 'Pending' ? '#C2410C' : undefined
+                                  }}>
+                                    {po.status === 'Pending' ? 'Sent for Approval' : po.status}
                                   </span>
                                 </td>
-                                <td style={{ textAlign: 'right', paddingRight: '24px', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-                                  {po.status === 'Draft' || po.status === 'Rejected' ? (
-                                    <button 
-                                      className="proc-btn proc-btn-primary" 
-                                      style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', fontSize: '12px' }}
-                                      onClick={() => handleResumeDraft(po)}
-                                    >
-                                      <i data-lucide="edit-3" style={{ width: '14px', height: '14px' }}></i> Resume
-                                    </button>
-                                  ) : (
-                                    <button 
-                                      className="proc-btn proc-btn-secondary" 
-                                      style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', fontSize: '12px' }}
-                                      onClick={() => {
-                                        handleGrnPOSelection(po._id);
-                                        setGrnFlowType('po');
-                                        setActiveTab('grn');
-                                        setShowGRNModal(true);
-                                      }}
-                                    >
-                                      <i data-lucide="eye" style={{ width: '14px', height: '14px' }}></i> View
-                                    </button>
-                                  )}
+                                <td style={{ textAlign: 'right', paddingRight: '24px' }}>
+                                  <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                                    {po.status === 'Draft' || po.status === 'Rejected' ? (
+                                      <button 
+                                        className="proc-btn proc-btn-primary" 
+                                        style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', fontSize: '12px' }}
+                                        onClick={() => handleResumeDraft(po)}
+                                      >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Resume
+                                      </button>
+                                    ) : (
+                                      <>
+                                        {po.status === 'Pending' && (
+                                          <button 
+                                            className="proc-btn" 
+                                            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', fontSize: '12px', background: '#FFF7ED', color: '#C2410C', border: '1px solid #FFEDD5', borderRadius: '6px', fontWeight: 700 }}
+                                            onClick={() => setPreviewPoDetails(po)}
+                                          >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> PO Copy
+                                          </button>
+                                        )}
+                                        <button 
+                                          className="proc-btn proc-btn-secondary" 
+                                          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', fontSize: '12px' }}
+                                          onClick={() => {
+                                            handleGrnPOSelection(po._id);
+                                            setGrnFlowType('po');
+                                            setActiveTab('grn');
+                                            setShowGRNModal(true);
+                                          }}
+                                        >
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> View
+                                        </button>
+                                      </>
+                                    )}
+                                  </div>
                                 </td>
                               </tr>
                             );
@@ -3454,18 +3655,43 @@ const ProcurementDashboard = () => {
                   </div>
                 </div>
               ) : (() => {
-                const totalSubtotal = poScreenItems.reduce((acc, item) => acc + ((item.qty || 0) * (item.price || 0)), 0);
-                const totalDiscount = poScreenItems.reduce((acc, item) => {
+                const activeScreenItems = poScreenItems.filter(item => item.sku);
+                const totalSubtotal = activeScreenItems.reduce((acc, item) => acc + ((item.qty || 0) * (item.price || 0)), 0);
+                const totalDiscount = activeScreenItems.reduce((acc, item) => {
                   const sub = (item.qty || 0) * (item.price || 0);
                   return acc + (sub * ((item.discount || 0) / 100));
                 }, 0);
-                const totalTax = poScreenItems.reduce((acc, item) => {
+                const totalTax = activeScreenItems.reduce((acc, item) => {
                   const sub = (item.qty || 0) * (item.price || 0);
                   const discAmt = sub * ((item.discount || 0) / 100);
                   return acc + ((sub - discAmt) * ((item.tax || 12) / 100));
                 }, 0);
                 const totalOverallAmount = totalSubtotal - totalDiscount + totalTax;
-                const uniqueVendorsCount = new Set(poScreenItems.map(item => item.vendorId).filter(Boolean)).size;
+                const uniqueVendorsCount = new Set(activeScreenItems.map(item => item.vendorId).filter(Boolean)).size;
+
+                const vendorBreakdown = {};
+                activeScreenItems.forEach(item => {
+                  const vId = item.vendorId || 'unassigned';
+                  const vName = vendors.find(v => v._id === vId)?.name || 'Unassigned Vendor';
+                  const sub = (item.qty || 0) * (item.price || 0);
+                  const disc = sub * ((item.discount || 0) / 100);
+                  const tax = (sub - disc) * ((item.tax || 12) / 100);
+                  const total = sub - disc + tax;
+
+                  if (!vendorBreakdown[vId]) {
+                    vendorBreakdown[vId] = {
+                      name: vName,
+                      subtotal: 0,
+                      discount: 0,
+                      tax: 0,
+                      total: 0
+                    };
+                  }
+                  vendorBreakdown[vId].subtotal += sub;
+                  vendorBreakdown[vId].discount += disc;
+                  vendorBreakdown[vId].tax += tax;
+                  vendorBreakdown[vId].total += total;
+                });
 
                 return (
                   <div>
@@ -3509,8 +3735,8 @@ const ProcurementDashboard = () => {
                               return {
                                 ...item,
                                 vendorId: val,
-                                price: medInVendor ? medInVendor.price : (item.price || 40),
-                                tax: medInVendor && medInVendor.gst !== undefined ? medInVendor.gst : 12
+                                price: item.sku ? (medInVendor ? medInVendor.price : (item.price || 40)) : 0,
+                                tax: item.sku ? (medInVendor && medInVendor.gst !== undefined ? medInVendor.gst : 12) : 12
                               };
                             });
                             setPoScreenItems(updated);
@@ -3523,206 +3749,307 @@ const ProcurementDashboard = () => {
                         </select>
                       </div>
                     </div>
+                      {/* Order Items Table Card */}
+                      <div className="proc-create-po-block" style={{ border: 'none', background: 'transparent', padding: 0 }}>
+                        <div className="proc-create-po-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                          <span style={{ fontSize: '16px', fontWeight: 900 }}>Order Items</span>
+                          <button className="proc-btn proc-btn-primary" style={{ padding: '8px 16px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: '8px' }} onClick={() => {
+                            setPoScreenItems([...poScreenItems, { sku: '', qty: 100, vendorId: '', price: 0, discount: 0, tax: 12 }]);
+                          }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Line
+                          </button>
+                        </div>
 
-                    {/* Order Items Table Card */}
-                    <div className="proc-create-po-block">
-                      <div className="proc-create-po-title">
-                        <span>Order Items</span>
-                        <button className="proc-btn proc-btn-secondary" style={{ padding: '6px 12px', fontSize: '13px' }} onClick={() => {
-                          setPoScreenItems([...poScreenItems, { sku: medicines[0]?.sku || '', qty: 100, vendorId: '', price: 0, discount: 0, tax: 12 }]);
+                        <div style={{ 
+                          display: 'grid', 
+                          gridTemplateColumns: '2.5fr 1fr 2fr 1fr 1fr 1fr 1.2fr 45px', 
+                          gap: '12px', 
+                          padding: '12px 16px', 
+                          background: '#F8FAFC', 
+                          borderRadius: '10px', 
+                          marginBottom: '12px', 
+                          fontSize: '11px', 
+                          fontWeight: 800, 
+                          color: '#475569', 
+                          textTransform: 'uppercase', 
+                          border: '1px solid #E2E8F0',
+                          letterSpacing: '0.5px'
                         }}>
-                          <i data-lucide="plus" style={{ width: '14px', height: '14px' }}></i> Add Line
-                        </button>
-                      </div>
+                          <div>Product / Medicine</div>
+                          <div>Qty</div>
+                          <div>Vendor Mapping</div>
+                          <div>Unit ₹</div>
+                          <div>Disc %</div>
+                          <div>Tax %</div>
+                          <div style={{ textAlign: 'right' }}>Line Total</div>
+                          <div></div>
+                        </div>
 
-                      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 2fr 1fr 1fr 1fr 1fr 40px', gap: '12px', paddingBottom: '8px', borderBottom: '1.5px solid #F1F5F9', marginBottom: '8px', fontSize: '11px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
-                        <div>Product</div>
-                        <div>Qty</div>
-                        <div>Vendor</div>
-                        <div>Unit ₹</div>
-                        <div>Disc %</div>
-                        <div>Tax %</div>
-                        <div style={{ textAlign: 'right' }}>Total</div>
-                        <div></div>
-                      </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          {poScreenItems.map((item, idx) => {
+                            const selectedMed = medicines.find(m => m.sku === item.sku);
+                            const selectedVendorObj = vendors.find(v => v._id === item.vendorId);
+                            
+                            const hasSku = !!item.sku;
+                            const sub = hasSku ? (item.qty || 0) * (item.price || 0) : 0;
+                            const discAmt = sub * ((item.discount || 0) / 100);
+                            const taxAmt = (sub - discAmt) * ((item.tax || 12) / 100);
+                            const lineTotal = sub - discAmt + taxAmt;
 
-                      {poScreenItems.map((item, idx) => {
-                        const selectedMed = medicines.find(m => m.sku === item.sku);
-                        const selectedVendorObj = vendors.find(v => v._id === item.vendorId);
-                        
-                        const sub = (item.qty || 0) * (item.price || 0);
-                        const discAmt = sub * ((item.discount || 0) / 100);
-                        const taxAmt = (sub - discAmt) * ((item.tax || 12) / 100);
-                        const lineTotal = sub - discAmt + taxAmt;
-
-                        return (
-                          <div key={idx} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 2fr 1fr 1fr 1fr 1fr 40px', gap: '12px', alignItems: 'start', padding: '12px 0', borderBottom: '1px solid #F1F5F9', position: 'relative', zIndex: activePoItemFocus === idx ? 99 : 1 }}>
-                            <div style={{ position: 'relative' }}>
-                              <input
-                                type="text"
-                                className="proc-input"
-                                placeholder="Search medicine..."
-                                value={item.tempName !== undefined ? item.tempName : (selectedMed ? selectedMed.name : '')}
-                                onChange={e => {
-                                  const val = e.target.value;
-                                  const updated = [...poScreenItems];
-                                  updated[idx] = { ...updated[idx], tempName: val };
-                                  const match = medicines.find(m => m.name.toLowerCase() === val.trim().toLowerCase());
-                                  if (match) {
-                                    let vId = item.vendorId || poScreenDefaultVendor;
-                                    let pr = 0;
-                                    let tx = 12;
-                                    if (vId) {
-                                      const vObj = vendors.find(v => v._id === vId);
-                                      const medInVendor = vObj?.medicines?.find(med => med.sku === match.sku);
-                                      if (medInVendor) {
-                                        pr = medInVendor.price;
-                                        tx = medInVendor.gst !== undefined ? medInVendor.gst : 12;
+                            return (
+                              <div 
+                                key={idx} 
+                                style={{ 
+                                  display: 'grid', 
+                                  gridTemplateColumns: '2.5fr 1fr 2fr 1fr 1fr 1fr 1.2fr 45px', 
+                                  gap: '12px', 
+                                  alignItems: 'center', 
+                                  padding: '16px', 
+                                  background: '#FFFFFF', 
+                                  border: '1px solid #E2E8F0',
+                                  borderRadius: '12px',
+                                  boxShadow: '0 1px 3px rgba(15, 23, 42, 0.02)',
+                                  position: 'relative', 
+                                  zIndex: activePoItemFocus === idx ? 99 : 1,
+                                  transition: 'border-color 0.2s ease, box-shadow 0.2s ease'
+                                }}
+                              >
+                                <div style={{ position: 'relative' }}>
+                                  <input
+                                    type="text"
+                                    className="proc-input"
+                                    style={{ height: '38px', borderRadius: '8px', border: '1.5px solid #E2E8F0', fontWeight: 600, fontSize: '13px' }}
+                                    placeholder="Search medicine..."
+                                    value={item.tempName !== undefined ? item.tempName : (selectedMed ? selectedMed.name : '')}
+                                    onChange={e => {
+                                      const val = e.target.value;
+                                      const updated = [...poScreenItems];
+                                      updated[idx] = { ...updated[idx], tempName: val };
+                                      const match = medicines.find(m => m.name.toLowerCase() === val.trim().toLowerCase());
+                                      if (match) {
+                                        const matchingVendors = vendors.filter(v => v.medicines && v.medicines.some(med => med.name.toLowerCase() === match.name.toLowerCase()));
+                                        let vId = '';
+                                        let pr = 0;
+                                        let tx = 12;
+                                        let matchedSku = match.sku;
+                                        if (matchingVendors.length > 0) {
+                                          const cheapest = matchingVendors.reduce((min, current) => {
+                                            const minPrice = min.medicines.find(med => med.name.toLowerCase() === match.name.toLowerCase())?.price || Infinity;
+                                            const currentPrice = current.medicines.find(med => med.name.toLowerCase() === match.name.toLowerCase())?.price || Infinity;
+                                            return currentPrice < minPrice ? current : min;
+                                          }, matchingVendors[0]);
+                                          vId = cheapest._id;
+                                          const medInfo = cheapest.medicines.find(med => med.name.toLowerCase() === match.name.toLowerCase());
+                                          pr = medInfo ? medInfo.price : 0;
+                                          tx = medInfo && medInfo.gst !== undefined ? medInfo.gst : 12;
+                                          matchedSku = medInfo ? medInfo.sku : match.sku;
+                                        }
+                                        updated[idx] = { ...updated[idx], sku: matchedSku, price: pr, tax: tx, vendorId: vId, tempName: undefined };
                                       }
-                                    }
-                                    updated[idx] = { ...updated[idx], sku: match.sku, price: pr, tax: tx, vendorId: vId, tempName: undefined };
-                                  }
-                                  setPoScreenItems(updated);
-                                }}
-                                onFocus={() => {
-                                  setActivePoItemFocus(idx);
-                                }}
-                                onBlur={() => {
-                                  setTimeout(() => {
-                                    setActivePoItemFocus(null);
-                                    setPoScreenItems(prev => {
-                                      const updated = [...prev];
-                                      if (updated[idx]) {
-                                        updated[idx].tempName = undefined;
-                                      }
-                                      return updated;
-                                    });
-                                  }, 250);
-                                }}
-                              />
-                              {activePoItemFocus === idx && (() => {
-                                const query = (item.tempName !== undefined ? item.tempName : (selectedMed ? selectedMed.name : '')).trim().toLowerCase();
-                                const filtered = query
-                                  ? medicines.filter(m => m.name.toLowerCase().includes(query)).slice(0, 6)
-                                  : medicines.slice(0, 6);
-                                if (filtered.length === 0) return null;
-                                return (
-                                  <div
-                                    data-lenis-prevent onMouseDown={(e) => e.preventDefault()}
-                                    style={{
-                                      position: 'absolute',
-                                      top: '100%',
-                                      left: 0,
-                                      right: 0,
-                                      backgroundColor: '#ffffff',
-                                      border: '1px solid #E2E8F0',
-                                      borderRadius: '8px',
-                                      boxShadow: '0 10px 25px rgba(15, 23, 42, 0.12)',
-                                      zIndex: 1000,
-                                      maxHeight: '160px',
-                                      overflowY: 'auto',
-                                      marginTop: '4px'
+                                      setPoScreenItems(updated);
                                     }}
-                                  >
-                                    {filtered.map(m => (
-                                      <div
-                                        key={m.sku}
-                                        onMouseDown={(e) => {
-                                          e.preventDefault();
-                                          e.stopPropagation(); let vId = item.vendorId || poScreenDefaultVendor;
-                                          let pr = 0;
-                                          let tx = 12;
-                                          if (vId) {
-                                            const vObj = vendors.find(v => v._id === vId);
-                                            const medInVendor = vObj?.medicines?.find(med => med.sku === m.sku);
-                                            if (medInVendor) {
-                                              pr = medInVendor.price;
-                                              tx = medInVendor.gst !== undefined ? medInVendor.gst : 12;
+                                    onFocus={() => {
+                                      setActivePoItemFocus(idx);
+                                    }}
+                                    onBlur={() => {
+                                      setTimeout(() => {
+                                        setActivePoItemFocus(null);
+                                        setPoScreenItems(prev => {
+                                          const updated = [...prev];
+                                          if (updated[idx]) {
+                                            if (updated[idx].sku) {
+                                              updated[idx].tempName = undefined;
                                             }
                                           }
-                                          const updated = [...poScreenItems];
-                                          updated[idx] = { ...updated[idx], sku: m.sku, price: pr, tax: tx, vendorId: vId, tempName: undefined };
-                                          setPoScreenItems(updated);
-                                          setActivePoItemFocus(null);
-                                        }}
+                                          return updated;
+                                        });
+                                      }, 250);
+                                    }}
+                                  />
+                                  {activePoItemFocus === idx && (() => {
+                                    const query = (item.tempName !== undefined ? item.tempName : (selectedMed ? selectedMed.name : '')).trim().toLowerCase();
+                                    const filtered = query
+                                      ? medicines.filter(m => m.name.toLowerCase().includes(query)).slice(0, 6)
+                                      : medicines.slice(0, 6);
+
+                                    if (filtered.length === 0) return null;
+                                    return (
+                                      <div
+                                        data-lenis-prevent onMouseDown={(e) => e.preventDefault()}
                                         style={{
-                                          padding: '8px 12px',
-                                          fontSize: '13px',
-                                          fontWeight: 700,
-                                          color: '#1E293B',
-                                          cursor: 'pointer',
-                                          borderBottom: '1px solid #F1F5F9',
-                                          display: 'flex',
-                                          justifyContent: 'space-between',
-                                          textAlign: 'left'
+                                          position: 'absolute',
+                                          top: '100%',
+                                          left: 0,
+                                          right: 0,
+                                          backgroundColor: '#ffffff',
+                                          border: '1.5px solid #CBD5E1',
+                                          borderRadius: '10px',
+                                          boxShadow: '0 10px 30px rgba(15, 23, 42, 0.15)',
+                                          zIndex: 1000,
+                                          maxHeight: '180px',
+                                          overflowY: 'auto',
+                                          marginTop: '6px',
+                                          padding: '4px'
                                         }}
-                                        onMouseEnter={e => e.currentTarget.style.background = '#F1F5F9'}
-                                        onMouseLeave={e => e.currentTarget.style.background = '#ffffff'}
                                       >
-                                        <span>{m.name}</span>
-                                        <span style={{ fontSize: '11px', color: '#64748B', fontFamily: 'monospace' }}>{m.sku}</span>
+                                        {filtered.map(m => (
+                                          <div
+                                            key={m.sku}
+                                            onMouseDown={(e) => {
+                                              e.preventDefault();
+                                              const matchingVendors = vendors.filter(v => v.medicines && v.medicines.some(med => med.name.toLowerCase() === m.name.toLowerCase()));
+                                              let vId = '';
+                                              let pr = 0;
+                                              let tx = 12;
+                                              let matchedSku = m.sku;
+                                              if (matchingVendors.length > 0) {
+                                                const cheapest = matchingVendors.reduce((min, current) => {
+                                                  const minPrice = min.medicines.find(med => med.name.toLowerCase() === m.name.toLowerCase())?.price || Infinity;
+                                                  const currentPrice = current.medicines.find(med => med.name.toLowerCase() === m.name.toLowerCase())?.price || Infinity;
+                                                  return currentPrice < minPrice ? current : min;
+                                                }, matchingVendors[0]);
+                                                vId = cheapest._id;
+                                                const medInfo = cheapest.medicines.find(med => med.name.toLowerCase() === m.name.toLowerCase());
+                                                pr = medInfo ? medInfo.price : 0;
+                                                tx = medInfo && medInfo.gst !== undefined ? medInfo.gst : 12;
+                                                matchedSku = medInfo ? medInfo.sku : m.sku;
+                                              }
+                                              const updated = [...poScreenItems];
+                                              updated[idx] = { ...updated[idx], sku: matchedSku, price: pr, tax: tx, vendorId: vId, tempName: undefined };
+                                              setPoScreenItems(updated);
+                                              setActivePoItemFocus(null);
+                                            }}
+                                            style={{
+                                              padding: '8px 12px',
+                                              fontSize: '12.5px',
+                                              fontWeight: 700,
+                                              color: '#1E293B',
+                                              cursor: 'pointer',
+                                              borderRadius: '6px',
+                                              marginBottom: '2px',
+                                              display: 'flex',
+                                              justifyContent: 'space-between',
+                                              textAlign: 'left',
+                                              transition: 'background 0.15s ease'
+                                            }}
+                                            onMouseEnter={e => e.currentTarget.style.background = '#F1F5F9'}
+                                            onMouseLeave={e => e.currentTarget.style.background = '#ffffff'}
+                                          >
+                                            <span>{m.name}</span>
+                                            <span style={{ fontSize: '11px', color: '#64748B', fontFamily: 'monospace' }}>{m.sku}</span>
+                                          </div>
+                                        ))}
                                       </div>
-                                    ))}
+                                    );
+                                  })()}
+                                  <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '4px', fontWeight: 600, paddingLeft: '4px' }}>
+                                    Stock: <span style={{ color: '#0F172A', fontWeight: 800 }}>{selectedMed?.stock || 0}</span> · Avg/mo: <span style={{ color: '#0F172A', fontWeight: 800 }}>{selectedMed?.avgMonthlyUse || 1200}</span>
                                   </div>
-                                );
-                              })()}
-                              <div style={{ fontSize: '11px', color: '#64748B', marginTop: '4px', fontWeight: 500 }}>
-                                Stock: {selectedMed?.stock || 0} · Avg/mo: {selectedMed?.avgMonthlyUse || 1200}
+                                </div>
+
+                                <div>
+                                  <input type="number" className="proc-input" style={{ height: '38px', borderRadius: '8px', border: '1.5px solid #E2E8F0', fontWeight: 700, fontSize: '13.5px', textAlign: 'center' }} value={item.qty} onChange={e => {
+                                    const updated = [...poScreenItems];
+                                    updated[idx].qty = Number(e.target.value) || 0;
+                                    setPoScreenItems(updated);
+                                  }} />
+                                </div>
+
+                                <div>
+                                  {item.sku && selectedMed ? (() => {
+                                    const candidateVendors = vendors.filter(v => 
+                                      v.medicines && v.medicines.some(med => med.name && med.name.toLowerCase() === selectedMed.name.toLowerCase())
+                                    );
+                                    return (
+                                      <select
+                                        className="proc-select"
+                                        style={{ height: '38px', borderRadius: '8px', border: '1.5px solid #E2E8F0', fontWeight: 700, fontSize: '12px', background: '#FFFFFF', padding: '0 8px', width: '100%', outline: 'none' }}
+                                        value={item.vendorId}
+                                        onChange={e => {
+                                          const val = e.target.value;
+                                          const updated = [...poScreenItems];
+                                          if (val) {
+                                            const vObj = vendors.find(v => v._id === val);
+                                            const medInfo = vObj?.medicines?.find(med => med.name && med.name.toLowerCase() === selectedMed.name.toLowerCase());
+                                            updated[idx] = {
+                                              ...updated[idx],
+                                              vendorId: val,
+                                              price: medInfo ? medInfo.price : 0,
+                                              tax: medInfo && medInfo.gst !== undefined ? medInfo.gst : 12
+                                            };
+                                          } else {
+                                            updated[idx] = {
+                                              ...updated[idx],
+                                              vendorId: '',
+                                              price: 0,
+                                              tax: 12
+                                            };
+                                          }
+                                          setPoScreenItems(updated);
+                                        }}
+                                      >
+                                        <option value="">— Select Vendor —</option>
+                                        {candidateVendors.map(v => {
+                                          const medInfo = v.medicines.find(med => med.name && med.name.toLowerCase() === selectedMed.name.toLowerCase());
+                                          return (
+                                            <option key={v._id} value={v._id}>
+                                              {v.name} (₹{medInfo ? medInfo.price : '--'})
+                                            </option>
+                                          );
+                                        })}
+                                      </select>
+                                    );
+                                  })() : (
+                                    <select
+                                      className="proc-select"
+                                      style={{ height: '38px', borderRadius: '8px', border: '1.5px solid #E2E8F0', fontWeight: 700, fontSize: '12px', background: '#F8FAFC', color: '#94A3B8', padding: '0 8px', width: '100%', cursor: 'not-allowed' }}
+                                      disabled
+                                    >
+                                      <option>— Select medicine first —</option>
+                                    </select>
+                                  )}
+                                </div>
+
+                                <div>
+                                  <input type="number" className="proc-input" style={{ height: '38px', borderRadius: '8px', border: '1.5px solid #E2E8F0', background: '#F8FAFC', color: '#64748B', fontWeight: 700, fontSize: '13px', textAlign: 'center', cursor: 'not-allowed' }} value={item.price} readOnly />
+                                </div>
+
+                                <div>
+                                  <input type="number" className="proc-input" style={{ height: '38px', borderRadius: '8px', border: '1.5px solid #E2E8F0', fontWeight: 600, fontSize: '13.5px', textAlign: 'center' }} value={item.discount} onChange={e => {
+                                    const updated = [...poScreenItems];
+                                    updated[idx].discount = Number(e.target.value) || 0;
+                                    setPoScreenItems(updated);
+                                  }} />
+                                </div>
+
+                                <div>
+                                  <input type="number" className="proc-input" style={{ height: '38px', borderRadius: '8px', border: '1.5px solid #E2E8F0', fontWeight: 600, fontSize: '13.5px', textAlign: 'center' }} value={item.tax} onChange={e => {
+                                    const updated = [...poScreenItems];
+                                    updated[idx].tax = Number(e.target.value) || 0;
+                                    setPoScreenItems(updated);
+                                  }} />
+                                </div>
+
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '38px', fontWeight: 900, color: '#0F172A', fontSize: '14px', paddingRight: '4px' }}>
+                                  ₹{Math.round(lineTotal).toLocaleString()}
+                                </div>
+
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '38px' }}>
+                                  <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#EF4444', padding: '6px', borderRadius: '6px', transition: 'background 0.2s' }} 
+                                    onMouseEnter={e => e.currentTarget.style.background = '#FEF2F2'}
+                                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                                    onClick={() => {
+                                      if (poScreenItems.length === 1) return;
+                                      setPoScreenItems(poScreenItems.filter((_, i) => i !== idx));
+                                    }}
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                                  </button>
+                                </div>
                               </div>
-                            </div>
-
-                            <div>
-                              <input type="number" className="proc-input" value={item.qty} onChange={e => {
-                                const updated = [...poScreenItems];
-                                updated[idx].qty = Number(e.target.value) || 0;
-                                setPoScreenItems(updated);
-                              }} />
-                            </div>
-
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', height: '40px' }}>
-                              <span style={{ fontSize: '13px', fontWeight: 700, color: '#334155', flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {selectedVendorObj ? selectedVendorObj.name : <span style={{ color: '#94A3B8', fontWeight: 500 }}>Choose Vendor</span>}
-                              </span>
-                              <button className="proc-btn proc-btn-secondary" style={{ padding: '6px 10px', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', background: '#EFF6FF', color: '#2563EB', borderColor: '#BFDBFE' }} onClick={() => setCompareItemIdx(idx)}>
-                                <i data-lucide="git-compare" style={{ width: '13px', height: '13px' }}></i> Compare
-                              </button>
-                            </div>
-
-                            <div>
-                              <input type="number" className="proc-input" style={{ background: '#F8FAFC' }} value={item.price} readOnly />
-                            </div>
-
-                            <div>
-                              <input type="number" className="proc-input" value={item.discount} onChange={e => {
-                                const updated = [...poScreenItems];
-                                updated[idx].discount = Number(e.target.value) || 0;
-                                setPoScreenItems(updated);
-                              }} />
-                            </div>
-
-                            <div>
-                              <input type="number" className="proc-input" value={item.tax} onChange={e => {
-                                const updated = [...poScreenItems];
-                                updated[idx].tax = Number(e.target.value) || 0;
-                                setPoScreenItems(updated);
-                              }} />
-                            </div>
-
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '40px', fontWeight: 800, color: '#0F172A', fontSize: '14.5px' }}>
-                              ₹{Math.round(lineTotal).toLocaleString()}
-                            </div>
-
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '40px' }}>
-                              <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#EF4444' }} onClick={() => {
-                                if (poScreenItems.length === 1) return;
-                                setPoScreenItems(poScreenItems.filter((_, i) => i !== idx));
-                              }}>
-                                <i data-lucide="trash-2" style={{ width: '16px', height: '16px' }}></i>
-                              </button>
-                            </div>
-                          </div>
-                        );
-                      })}
+                            );
+                          })}
+                        </div>
                     </div>
 
                     {/* Notes & Summary Columns */}
@@ -3739,30 +4066,41 @@ const ProcurementDashboard = () => {
                       </div>
 
                       <div className="proc-create-po-block">
-                        <div className="proc-create-po-title">Order Summary</div>
+                        <div className="proc-create-po-title" style={{ borderBottom: '1px solid #F1F5F9', paddingBottom: '10px', marginBottom: '12px' }}>Order Summary</div>
                         
-                        <div className="proc-po-summary-flex">
-                          <span>Subtotal</span>
-                          <span>₹{Math.round(totalSubtotal).toLocaleString()}</span>
-                        </div>
-                        <div className="proc-po-summary-flex" style={{ color: '#16A34A' }}>
-                          <span>Discount</span>
-                          <span>- ₹{Math.round(totalDiscount).toLocaleString()}</span>
-                        </div>
-                        <div className="proc-po-summary-flex">
-                          <span>Tax</span>
-                          <span>₹{Math.round(totalTax).toLocaleString()}</span>
-                        </div>
-                        
-                        <div className="proc-po-summary-flex total">
-                          <span>Total</span>
-                          <span>₹{Math.round(totalOverallAmount).toLocaleString()}</span>
-                        </div>
+                        {Object.values(vendorBreakdown).map((vData, vIdx) => (
+                          <div key={vIdx} style={{ marginBottom: '16px', borderBottom: vIdx < Object.keys(vendorBreakdown).length - 1 ? '1px dashed #E2E8F0' : 'none', paddingBottom: '12px' }}>
+                            <div style={{ fontSize: '11px', fontWeight: 900, color: '#2563EB', textTransform: 'uppercase', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <span>Bill #{vIdx + 1}: {vData.name}</span>
+                              <span style={{ fontSize: '10px', background: '#EFF6FF', padding: '2px 6px', borderRadius: '4px' }}>Draft PO</span>
+                            </div>
+                            <div className="proc-po-summary-flex" style={{ fontSize: '12.5px', padding: '2px 0' }}>
+                              <span>Subtotal</span>
+                              <span style={{ fontWeight: 600 }}>₹{Math.round(vData.subtotal).toLocaleString()}</span>
+                            </div>
+                            <div className="proc-po-summary-flex" style={{ fontSize: '12.5px', padding: '2px 0', color: '#16A34A' }}>
+                              <span>Discount</span>
+                              <span style={{ fontWeight: 600 }}>- ₹{Math.round(vData.discount).toLocaleString()}</span>
+                            </div>
+                            <div className="proc-po-summary-flex" style={{ fontSize: '12.5px', padding: '2px 0' }}>
+                              <span>Tax</span>
+                              <span style={{ fontWeight: 600 }}>₹{Math.round(vData.tax).toLocaleString()}</span>
+                            </div>
+                            <div className="proc-po-summary-flex total" style={{ fontSize: '13.5px', padding: '6px 0', marginTop: '6px', borderTop: '1px solid #F1F5F9' }}>
+                              <span>PO Total</span>
+                              <span style={{ color: '#0F172A', fontWeight: 900 }}>₹{Math.round(vData.total).toLocaleString()}</span>
+                            </div>
+                          </div>
+                        ))}
 
-                        <div style={{ borderTop: '1px solid #E2E8F0', marginTop: '16px', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#64748B', fontWeight: 600 }}>
-                            <span>Vendors involved</span>
-                            <span style={{ color: '#0F172A', fontWeight: 800 }}>{uniqueVendorsCount}</span>
+                        <div style={{ borderTop: '1.5px solid #E2E8F0', marginTop: '16px', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12.5px', color: '#64748B', fontWeight: 700 }}>
+                            <span>Total Bills / POs</span>
+                            <span style={{ color: '#0F172A', fontWeight: 900 }}>{uniqueVendorsCount}</span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', color: '#0F172A', fontWeight: 900 }}>
+                            <span>Grand Combined Total</span>
+                            <span style={{ color: '#2563EB', fontSize: '15px' }}>₹{Math.round(totalOverallAmount).toLocaleString()}</span>
                           </div>
                         </div>
 
@@ -4976,6 +5314,129 @@ const ProcurementDashboard = () => {
             </div>
             <div className="proc-modal-footer">
               <button type="button" className="proc-btn proc-btn-primary" onClick={() => setSelectedInvoiceDetails(null)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: PO COPY PREVIEW (SAMPLE BILL) */}
+      {previewPoDetails && (
+        <div className="proc-modal-overlay">
+          <div className="proc-modal" style={{ maxWidth: '680px', padding: '24px' }}>
+            <div className="proc-modal-header" style={{ borderBottom: 'none', paddingBottom: 0 }}>
+              <span className="proc-modal-title" style={{ fontSize: '14px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Purchase Order Preview</span>
+              <button type="button" className="proc-close-btn" onClick={() => setPreviewPoDetails(null)}>
+                ✕
+              </button>
+            </div>
+            
+            <div className="proc-modal-body" style={{ background: '#FFFFFF', border: '1.5px solid #E2E8F0', borderRadius: '12px', padding: '24px', position: 'relative', overflow: 'hidden' }}>
+              {/* Approval Watermark */}
+              <div style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%) rotate(-25deg)',
+                fontSize: '38px',
+                fontWeight: 900,
+                color: 'rgba(194, 65, 12, 0.07)',
+                letterSpacing: '3px',
+                pointerEvents: 'none',
+                textTransform: 'uppercase',
+                whiteSpace: 'nowrap',
+                border: '4px double rgba(194, 65, 12, 0.07)',
+                padding: '10px 20px',
+                borderRadius: '8px'
+              }}>
+                Sent for Approval
+              </div>
+
+              {/* Bill Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px', alignItems: 'flex-start' }}>
+                <div>
+                  <div style={{ fontSize: '18px', fontWeight: 900, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                    Curoxa Pharmacy
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#64748B', marginTop: '4px', fontWeight: 500 }}>
+                    102, Medical Enclave, Sector-4<br />
+                    Phone: +91 98765 43210 | GSTIN: 07AAAAC1234A1Z1
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ background: '#FFF7ED', color: '#C2410C', border: '1.5px solid #FFEDD5', fontSize: '10px', fontWeight: 800, padding: '3px 8px', borderRadius: '20px', display: 'inline-block', textTransform: 'uppercase', marginBottom: '8px' }}>
+                    Sent for Approval
+                  </div>
+                  <div style={{ fontSize: '13px', fontWeight: 800, color: '#475569' }}>{previewPoDetails.poId}</div>
+                  <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 600, marginTop: '2px' }}>Date: {new Date(previewPoDetails.createdAt || Date.now()).toISOString().split('T')[0]}</div>
+                </div>
+              </div>
+
+              {/* Vendor & Delivery info */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', padding: '14px', background: '#F8FAFC', borderRadius: '10px', marginBottom: '20px', border: '1px solid #E2E8F0' }}>
+                <div>
+                  <div style={{ fontSize: '10px', color: '#64748B', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Vendor / Supplier</div>
+                  <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#0F172A' }}>{previewPoDetails.vendorName}</div>
+                  <div style={{ fontSize: '11px', color: '#475569', marginTop: '2px', fontWeight: 500 }}>
+                    Vendor ID: {previewPoDetails.vendorId}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '10px', color: '#64748B', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Expected Delivery</div>
+                  <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#0F172A' }}>
+                    {previewPoDetails.expectedDelivery ? new Date(previewPoDetails.expectedDelivery).toISOString().split('T')[0] : '3-5 Days (Standard)'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Items Table */}
+              <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
+                <thead>
+                  <tr style={{ borderBottom: '2px solid #E2E8F0', paddingBottom: '6px' }}>
+                    <th style={{ textAlign: 'left', fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', padding: '6px 4px' }}>Product / Item</th>
+                    <th style={{ textAlign: 'left', fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', padding: '6px 4px' }}>SKU</th>
+                    <th style={{ textAlign: 'center', fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', padding: '6px 4px' }}>Qty</th>
+                    <th style={{ textAlign: 'right', fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', padding: '6px 4px' }}>Rate</th>
+                    <th style={{ textAlign: 'right', fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', padding: '6px 4px' }}>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {previewPoDetails.items && previewPoDetails.items.map((item, idx) => (
+                    <tr key={idx} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                      <td style={{ fontSize: '12.5px', fontWeight: 700, color: '#0F172A', padding: '10px 4px' }}>{item.name}</td>
+                      <td style={{ fontSize: '11px', color: '#475569', fontFamily: 'monospace', padding: '10px 4px' }}>{item.sku}</td>
+                      <td style={{ fontSize: '12.5px', fontWeight: 700, color: '#0F172A', textAlign: 'center', padding: '10px 4px' }}>{item.requiredQty || item.qty}</td>
+                      <td style={{ fontSize: '12.5px', fontWeight: 600, color: '#0F172A', textAlign: 'right', padding: '10px 4px' }}>₹{(item.price || 0).toLocaleString()}</td>
+                      <td style={{ fontSize: '12.5px', fontWeight: 800, color: '#0F172A', textAlign: 'right', padding: '10px 4px' }}>₹{(item.total || 0).toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {/* Total calculations */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <div style={{ width: '200px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11.5px', color: '#64748B', fontWeight: 600 }}>
+                    <span>Subtotal</span>
+                    <span>₹{previewPoDetails.totalAmount.toLocaleString()}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11.5px', color: '#64748B', fontWeight: 600 }}>
+                    <span>GST (Included)</span>
+                    <span>Included</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#0F172A', fontWeight: 900, borderTop: '1.5px solid #E2E8F0', paddingTop: '6px', marginTop: '4px' }}>
+                    <span>Grand Total</span>
+                    <span style={{ color: '#2563EB' }}>₹{previewPoDetails.totalAmount.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="proc-modal-footer" style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '16px' }}>
+              <button type="button" className="proc-btn proc-btn-secondary" style={{ padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }} onClick={() => window.print()}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Print
+              </button>
+              <button type="button" className="proc-btn proc-btn-primary" style={{ padding: '6px 12px', fontSize: '12px' }} onClick={() => setPreviewPoDetails(null)}>Close</button>
             </div>
           </div>
         </div>

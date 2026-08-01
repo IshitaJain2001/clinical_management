@@ -408,6 +408,7 @@ const AdminDashboard = () => {
   // Purchase Order Approval states
   const [purchaseOrders, setPurchaseOrders] = useState([]);
   const [vendors, setVendors] = useState([]);
+  const [selectedVendorProfile, setSelectedVendorProfile] = useState(null);
   const [selectedPO, setSelectedPO] = useState(null);
   const [poEditItems, setPoEditItems] = useState([]);
   const [showEditPOModal, setShowEditPOModal] = useState(false);
@@ -1281,7 +1282,8 @@ const AdminDashboard = () => {
           raisedBy: `${appItem.requesterName} (${appItem.requesterRole || 'Staff'}) • ${new Date(appItem.requestedAt).toLocaleDateString()}`,
           status: appItem.status.charAt(0).toUpperCase() + appItem.status.slice(1),
           details: appItem.comment || appItem.details?.reason || 'No additional details provided.',
-          raw: appItem
+          raw: appItem,
+          isDbItem: true
         };
       });
 
@@ -6397,8 +6399,19 @@ const AdminDashboard = () => {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {pendingApprovals.slice(0, 4).map(item => (
                       <div key={item.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', border: '1px solid #E2E8F0', borderRadius: '12px', background: '#FFFFFF' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1, minWidth: 0 }}>
-                          <span style={{ fontSize: '13px', fontWeight: 800, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</span>
+                        <div 
+                          style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1, minWidth: 0, cursor: item.category === 'vendor_onboarding' ? 'pointer' : 'default' }}
+                          onClick={() => {
+                            if (item.category === 'vendor_onboarding') {
+                              const vendorId = item.raw?.details?.vendorId;
+                              const v = vendors.find(x => x._id === vendorId);
+                              if (v) setSelectedVendorProfile(v);
+                              else showToast('Vendor profile data not found in catalog', 'error');
+                            }
+                          }}
+                          title={item.category === 'vendor_onboarding' ? 'Click to view full vendor profile' : ''}
+                        >
+                          <span style={{ fontSize: '13px', fontWeight: 800, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textDecoration: item.category === 'vendor_onboarding' ? 'underline' : 'none' }}>{item.title}</span>
                           <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 600 }}>{item.category} · {item.subtitle || 'Pending'}</span>
                         </div>
                         <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
@@ -7315,6 +7328,18 @@ const AdminDashboard = () => {
                           <div><strong>Vendor Code:</strong> {item.raw?.details?.vendorCode}</div>
                           <div><strong>GST Number:</strong> {item.raw?.details?.gstNumber}</div>
                           <div><strong>Contact:</strong> {item.raw?.details?.contact}</div>
+                          <button 
+                            className="btn btn-secondary" 
+                            style={{ marginTop: '8px', padding: '4px 10px', fontSize: '12px', height: '30px', fontWeight: 700, borderRadius: '6px', border: '1.5px solid #E2E8F0', background: 'white', color: '#475569', cursor: 'pointer' }}
+                            onClick={() => {
+                              const vendorId = item.raw?.details?.vendorId;
+                              const v = vendors.find(x => x._id === vendorId);
+                              if (v) setSelectedVendorProfile(v);
+                              else showToast('Vendor profile data not found in catalog', 'error');
+                            }}
+                          >
+                            View Full Supplier Profile
+                          </button>
                         </div>
                       )}
 
@@ -12879,6 +12904,240 @@ const AdminDashboard = () => {
               >
                 Acknowledge
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* VENDOR PROFILE MODAL FOR ADMIN */}
+      {selectedVendorProfile && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999 }} onClick={() => setSelectedVendorProfile(null)}>
+          <div style={{ maxWidth: '850px', width: '95%', maxHeight: '90vh', overflowY: 'auto', borderRadius: '16px', background: 'white', display: 'flex', flexDirection: 'column', position: 'relative' }} onClick={e => e.stopPropagation()}>
+            <div style={{ position: 'sticky', top: 0, background: 'white', zIndex: 10, borderBottom: '1px solid #E2E8F0', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '18px', fontWeight: 950, color: '#0F172A' }}>Supplier Master Profile: {selectedVendorProfile.name}</span>
+              <button type="button" onClick={() => setSelectedVendorProfile(null)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#64748B' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            
+            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '28px' }}>
+              
+              {/* Section 1: General & Classification */}
+              <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                <div style={{ fontSize: '13px', fontWeight: 800, color: '#1E293B', textTransform: 'uppercase', marginBottom: '12px', borderBottom: '1px solid #E2E8F0', paddingBottom: '6px' }}>Supplier Classification</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px' }}>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Supplier Code</span>
+                    <div style={{ fontSize: '14px', fontWeight: 800, color: '#2563EB', marginTop: '2px' }}>{selectedVendorProfile.code}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Supplier Type</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700, marginTop: '2px' }}>{selectedVendorProfile.type || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Supplier Category</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700, marginTop: '2px' }}>{selectedVendorProfile.supplierCategory || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Organization Type</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700, marginTop: '2px' }}>{selectedVendorProfile.organizationType || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Status</span>
+                    <div style={{ marginTop: '2px' }}>
+                      <span className="badge-pill-state pending" style={{ display: 'inline-block', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', padding: '4px 8px', borderRadius: '9999px', background: '#FFF7ED', color: '#C2410C' }}>
+                        {selectedVendorProfile.status || 'Active'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 2: Address & Communication */}
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: 800, color: '#1E293B', textTransform: 'uppercase', marginBottom: '12px', borderBottom: '1px solid #E2E8F0', paddingBottom: '6px' }}>Address & Communication</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+                  <div style={{ gridColumn: 'span 2' }}>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Complete Address</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600, marginTop: '2px' }}>
+                      {selectedVendorProfile.houseNo ? `${selectedVendorProfile.houseNo}, ` : ''}
+                      {selectedVendorProfile.street ? `${selectedVendorProfile.street}, ` : ''}
+                      {selectedVendorProfile.address || ''}
+                      {selectedVendorProfile.city ? `, ${selectedVendorProfile.city}` : ''}
+                      {selectedVendorProfile.state ? `, ${selectedVendorProfile.state}` : ''}
+                      {selectedVendorProfile.zipCode || selectedVendorProfile.pinCode ? ` - ${selectedVendorProfile.zipCode || selectedVendorProfile.pinCode}` : ''}
+                      {selectedVendorProfile.country ? `, ${selectedVendorProfile.country}` : ''}
+                    </div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Email Address</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#0F172A', marginTop: '2px' }}>{selectedVendorProfile.email || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Website</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#2563EB', marginTop: '2px' }}>{selectedVendorProfile.website || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Landline Number</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600, marginTop: '2px' }}>{selectedVendorProfile.landline || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Fax Number</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600, marginTop: '2px' }}>{selectedVendorProfile.faxNo || '--'}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 3: Contact Persons */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                  <div style={{ fontSize: '12px', fontWeight: 800, color: '#1E293B', textTransform: 'uppercase', marginBottom: '10px' }}>Primary Contact Person</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div>
+                      <span style={{ fontSize: '10px', color: '#64748B', fontWeight: 700 }}>NAME / DESIGNATION</span>
+                      <div style={{ fontSize: '13px', fontWeight: 800 }}>{selectedVendorProfile.contactPerson || selectedVendorProfile.primaryContactPerson || '--'} ({selectedVendorProfile.primaryContactPersonDesignation || 'Contact Person'})</div>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: '10px', color: '#64748B', fontWeight: 700 }}>MOBILE NUMBER</span>
+                      <div style={{ fontSize: '13px', fontWeight: 700 }}>{selectedVendorProfile.phone || selectedVendorProfile.primaryContactPersonMobileNo || '--'}</div>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: '10px', color: '#64748B', fontWeight: 700 }}>EMAIL ID</span>
+                      <div style={{ fontSize: '13px', fontWeight: 700 }}>{selectedVendorProfile.primaryContactPersonEmailId || '--'}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                  <div style={{ fontSize: '12px', fontWeight: 800, color: '#1E293B', textTransform: 'uppercase', marginBottom: '10px' }}>Secondary Contact Person</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div>
+                      <span style={{ fontSize: '10px', color: '#64748B', fontWeight: 700 }}>NAME / DESIGNATION</span>
+                      <div style={{ fontSize: '13px', fontWeight: 800 }}>{selectedVendorProfile.secondaryContactPerson || '--'} {selectedVendorProfile.secondaryContactPersonDesignation ? `(${selectedVendorProfile.secondaryContactPersonDesignation})` : ''}</div>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: '10px', color: '#64748B', fontWeight: 700 }}>MOBILE NUMBER</span>
+                      <div style={{ fontSize: '13px', fontWeight: 700 }}>{selectedVendorProfile.secondaryContactPersonMobileNo || '--'}</div>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: '10px', color: '#64748B', fontWeight: 700 }}>EMAIL ID</span>
+                      <div style={{ fontSize: '13px', fontWeight: 700 }}>{selectedVendorProfile.secondaryContactPersonEmailId || '--'}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 4: Compliance & Business Registration */}
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: 800, color: '#1E293B', textTransform: 'uppercase', marginBottom: '12px', borderBottom: '1px solid #E2E8F0', paddingBottom: '6px' }}>Compliance & Business Registration</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>GST Number</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700 }}>{selectedVendorProfile.gstNumber || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>PAN Card Number</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700 }}>{selectedVendorProfile.panNumber || selectedVendorProfile.panCardNo || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Name on PAN Card</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700 }}>{selectedVendorProfile.nameOnPanCard || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Drug License Number</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700 }}>{selectedVendorProfile.licenseNumber || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>CIN Number</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600 }}>{selectedVendorProfile.cinNo || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>PF Registration No</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600 }}>{selectedVendorProfile.pfRegistrationNo || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>ROC Number</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600 }}>{selectedVendorProfile.rocNo || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>ESI Registration No</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600 }}>{selectedVendorProfile.esiRegistrationNo || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>ISO Certification No</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600 }}>{selectedVendorProfile.isoCertificationNo ? `${selectedVendorProfile.isoCertificationNo} (Exp: ${selectedVendorProfile.isoValidUpto || '--'})` : '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Pollution Control Cert</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600 }}>{selectedVendorProfile.pollutionControlBoardCertificationNo ? `${selectedVendorProfile.pollutionControlBoardCertificationNo} (Exp: ${selectedVendorProfile.pollutionValidUpto || '--'})` : '--'}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 5: Bank Details */}
+              <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                <div style={{ fontSize: '13px', fontWeight: 800, color: '#1E293B', textTransform: 'uppercase', marginBottom: '12px', borderBottom: '1px solid #E2E8F0', paddingBottom: '6px' }}>Bank Account Routing</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700 }}>BANK NAME</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 800 }}>{selectedVendorProfile.bankName || selectedVendorProfile.bank1Name || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700 }}>BRANCH</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700 }}>{selectedVendorProfile.bank1Branch || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700 }}>ACCOUNT NUMBER</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#0F172A' }}>{selectedVendorProfile.accountNumber || selectedVendorProfile.bank1AccountNumber || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700 }}>IFSC CODE</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#2563EB' }}>{selectedVendorProfile.ifscCode || selectedVendorProfile.bank1IfscCode || '--'}</div>
+                  </div>
+                  <div style={{ gridColumn: 'span 2' }}>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700 }}>BANK BRANCH ADDRESS</span>
+                    <div style={{ fontSize: '13px', fontWeight: 600 }}>{selectedVendorProfile.bank1Address || '--'}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 6: Commercial Terms & MSME */}
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: 800, color: '#1E293B', textTransform: 'uppercase', marginBottom: '12px', borderBottom: '1px solid #E2E8F0', paddingBottom: '6px' }}>Commercial Terms & MSME Status</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>MSME Registration</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700 }}>
+                      {selectedVendorProfile.isMsmeRegistration === 'Yes' ? `Yes (${selectedVendorProfile.msmeRegistrationNo || '--'} - ${selectedVendorProfile.msmeRegistrationType || ''})` : 'No'}
+                    </div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Payment Terms</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700 }}>{selectedVendorProfile.paymentTerms || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Payment Method</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700 }}>{selectedVendorProfile.paymentMethod || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Credit Limit / Credit Days</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700 }}>₹{(selectedVendorProfile.creditLimit || 0).toLocaleString('en-IN')} ({selectedVendorProfile.creditDays || 30} Days)</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Taxes Config</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600 }}>{selectedVendorProfile.taxes || '--'}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Delivery Terms</span>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600 }}>{selectedVendorProfile.deliveryTerms || '--'}</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            
+            <div style={{ position: 'sticky', bottom: 0, background: 'white', zIndex: 10, borderTop: '1px solid #E2E8F0', padding: '16px 24px', display: 'flex', justifyContent: 'flex-end' }}>
+              <button type="button" style={{ background: '#2563EB', color: 'white', border: 'none', borderRadius: '8px', padding: '8px 16px', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }} onClick={() => setSelectedVendorProfile(null)}>Close Profile</button>
             </div>
           </div>
         </div>
