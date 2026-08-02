@@ -16,6 +16,22 @@ import api from './utils/api';
 
 import { socket, joinTenantRoom } from './utils/socket';
 
+// Proactively clean up any corrupted or "undefined" values in localStorage on boot to prevent JSON.parse crashes
+for (const key of ['user', 'tenantModules', 'curoxa_pmState', 'read_notif_ids', 'curoxa_superadmin_session']) {
+  try {
+    const val = localStorage.getItem(key);
+    if (val) {
+      if (val === 'undefined' || val === 'null' || val === '[object Object]') {
+        localStorage.removeItem(key);
+      } else {
+        JSON.parse(val);
+      }
+    }
+  } catch (e) {
+    localStorage.removeItem(key);
+  }
+}
+
 const checkHasCoverage = (username, targetRole) => {
   try {
     const saved = localStorage.getItem('curoxa_pmState');

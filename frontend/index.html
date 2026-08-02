@@ -2,6 +2,21 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      // Instantly purge any corrupted or "undefined" values from localStorage before React loads
+      for (const key of ['user', 'tenantModules', 'curoxa_pmState', 'read_notif_ids', 'curoxa_superadmin_session']) {
+        try {
+          const val = localStorage.getItem(key);
+          if (val === 'undefined' || val === 'null' || val === '[object Object]') {
+            localStorage.removeItem(key);
+          } else if (val) {
+            JSON.parse(val);
+          }
+        } catch (e) {
+          localStorage.removeItem(key);
+        }
+      }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Curoxa - Healthcare Dashboard</title>
     <script src="https://unpkg.com/lucide@0.344.0"></script>
