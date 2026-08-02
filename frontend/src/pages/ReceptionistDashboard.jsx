@@ -5466,14 +5466,14 @@ const ReceptionistDashboard = () => {
                     <>
                       {/* DPDP Consent Module */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
-                          <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#F59E0B', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '14px' }}>
+                          <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#64748B', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '14px' }}>
                             <i data-lucide="shield-check" style={{ width: '16px', height: '16px' }}></i>
                           </div>
-                          <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#1A1D23', margin: 0 }}>DPDP Data Protection Consent</h2>
+                          <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#1A1D23', margin: 0 }}>Patient Consent</h2>
                       </div>
-                      <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', padding: '24px', borderRadius: '12px', marginBottom: '32px' }}>
-                        <div style={{ fontSize: '13px', color: '#92400E', marginBottom: '16px', fontWeight: 600 }}>
-                          Under the Digital Personal Data Protection (DPDP) Act, explicit patient consent is required for EMR creation and data processing. Every hospital must manage its own separate data protection compliance. The patient has the right to withdraw this consent at any time, with multiple data retention options available.
+                      <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '24px', borderRadius: '12px', marginBottom: '32px' }}>
+                        <div style={{ fontSize: '13px', color: '#475569', marginBottom: '16px', fontWeight: 600 }}>
+                          Patient consent is required for EMR creation and medical data processing. The patient has the right to withdraw this consent at any time.
                         </div>
                         <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', marginBottom: '12px' }}>
                           <input type="checkbox" checked={dpdpConsent.emrCreation} onChange={e => setDpdpConsent({...dpdpConsent, emrCreation: e.target.checked})} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
