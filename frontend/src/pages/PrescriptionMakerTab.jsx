@@ -458,23 +458,23 @@ export default function PrescriptionMakerTab({
             <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#64748B', letterSpacing: '0.05em', marginBottom: '12px' }}>MEDICATIONS</label>
             
             <div style={{ border: '1px solid #E2E8F0', borderRadius: '12px', overflowX: activeMedFocus ? 'visible' : 'auto', minHeight: activeMedFocus ? '320px' : 'auto' }}>
-              <table style={{ width: '100%', minWidth: '950px', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <table style={{ width: '100%', minWidth: '680px', borderCollapse: 'collapse', textAlign: 'left' }}>
                 <thead>
                   <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
-                    <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: 700, color: '#64748B', width: '40px' }}>#</th>
-                    <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: 700, color: '#64748B', minWidth: '220px' }}>MEDICINE</th>
-                    <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: 700, color: '#64748B', width: '120px' }}>DOSAGE</th>
-                    <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: 700, color: '#64748B', width: '160px' }}>FREQUENCY</th>
-                    <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: 700, color: '#64748B', width: '110px' }}>DURATION</th>
-                    <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: 700, color: '#64748B', width: '160px' }}>INSTRUCTIONS</th>
-                    <th style={{ padding: '12px 16px', width: '40px', textAlign: 'center' }}></th>
+                    <th style={{ padding: '10px 8px', fontSize: '11px', fontWeight: 700, color: '#64748B', width: '30px' }}>#</th>
+                    <th style={{ padding: '10px 8px', fontSize: '11px', fontWeight: 700, color: '#64748B', minWidth: '150px' }}>MEDICINE</th>
+                    <th style={{ padding: '10px 8px', fontSize: '11px', fontWeight: 700, color: '#64748B', width: '90px' }}>DOSAGE</th>
+                    <th style={{ padding: '10px 8px', fontSize: '11px', fontWeight: 700, color: '#64748B', width: '120px' }}>FREQUENCY</th>
+                    <th style={{ padding: '10px 8px', fontSize: '11px', fontWeight: 700, color: '#64748B', width: '80px' }}>DURATION</th>
+                    <th style={{ padding: '10px 8px', fontSize: '11px', fontWeight: 700, color: '#64748B', width: '120px' }}>INSTRUCTIONS</th>
+                    <th style={{ padding: '10px 8px', width: '30px', textAlign: 'center' }}></th>
                   </tr>
                 </thead>
                 <tbody>
                   {medicines.map((med, idx) => (
                     <tr key={med.id || idx} style={{ borderBottom: idx === medicines.length - 1 ? 'none' : '1px solid #E2E8F0' }}>
-                      <td style={{ padding: '12px 16px', fontSize: '13.5px', fontWeight: 700, color: '#64748B' }}>{idx + 1}</td>
-                      <td style={{ padding: '12px 16px', position: 'relative', zIndex: activeMedFocus === med.id ? 99 : 1 }}>
+                      <td style={{ padding: '8px 6px', fontSize: '13.5px', fontWeight: 700, color: '#64748B' }}>{idx + 1}</td>
+                      <td style={{ padding: '8px 6px', position: 'relative', zIndex: activeMedFocus === med.id ? 99 : 1 }}>
                         <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                           <input 
                             type="text" 
@@ -608,7 +608,7 @@ export default function PrescriptionMakerTab({
                           );
                         })()}
                       </td>
-                      <td style={{ padding: '12px 16px' }}>
+                      <td style={{ padding: '8px 6px' }}>
                         <select 
                           value={med.dose} 
                           onChange={e => updateMedicineRow(med.id, 'dose', e.target.value)} 
@@ -642,7 +642,7 @@ export default function PrescriptionMakerTab({
                           <option value="2 Tabs">2 Tabs</option>
                         </select>
                       </td>
-                      <td style={{ padding: '12px 16px' }}>
+                      <td style={{ padding: '8px 6px' }}>
                         <select 
                           value={med.freq} 
                           onChange={e => updateMedicineRow(med.id, 'freq', e.target.value)} 
@@ -674,7 +674,7 @@ export default function PrescriptionMakerTab({
                           <option value="1 Tab OD">1 Tab OD</option>
                         </select>
                       </td>
-                      <td style={{ padding: '12px 16px' }}>
+                      <td style={{ padding: '8px 6px' }}>
                         <select 
                           value={med.duration} 
                           onChange={e => updateMedicineRow(med.id, 'duration', e.target.value)} 
@@ -705,7 +705,7 @@ export default function PrescriptionMakerTab({
                           <option value="30 Days">30 Days</option>
                         </select>
                       </td>
-                      <td style={{ padding: '12px 16px' }}>
+                      <td style={{ padding: '8px 6px' }}>
                         <select 
                           value={med.timing} 
                           onChange={e => updateMedicineRow(med.id, 'timing', e.target.value)} 
@@ -734,7 +734,7 @@ export default function PrescriptionMakerTab({
                           <option value="Empty Stomach">Empty Stomach</option>
                         </select>
                       </td>
-                      <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                      <td style={{ padding: '8px 6px', textAlign: 'center' }}>
                         <button 
                           onClick={() => removeMedicineRow(med.id)} 
                           style={{ border: 'none', background: 'none', color: '#EF4444', cursor: 'pointer', padding: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}

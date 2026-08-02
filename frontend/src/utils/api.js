@@ -66,6 +66,7 @@ export const handleAutoLogout = (reason = 'session_expired') => {
   localStorage.removeItem('tenantId');
   localStorage.removeItem('tenantModules');
   localStorage.removeItem('plan');
+  localStorage.removeItem('curoxa_superadmin_session');
   window.dispatchEvent(new CustomEvent('curoxa_logout'));
   window.location.href = '/login';
 };

@@ -626,10 +626,15 @@ const LabDashboard = () => {
 
   useEffect(() => {
     const handleSync = (e) => {
-      const { type } = e.detail;
+      const { type, message, changes } = e.detail || {};
       console.log('[SOCKET] LabDashboard received sync event for:', type);
       if (type === 'coverage') {
         fetchCoverageData();
+      } else if (type === 'prescription_updated') {
+        if (changes && changes.labTech) {
+          showToast(message || 'A lab order/prescription has been edited by the doctor!');
+        }
+        fetchData();
       } else {
         fetchData();
       }

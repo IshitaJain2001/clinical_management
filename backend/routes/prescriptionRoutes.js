@@ -2,6 +2,8 @@ const express = require("express");
 const Prescription = require("../models/Prescription");
 const Medicine = require("../models/Medicine");
 const AuditLog = require("../models/AuditLog");
+const Appointment = require("../models/Appointment");
+const LabRequest = require("../models/LabRequest");
 const { verifyToken } = require("../middleware/authMiddleware");
 const router = express.Router();
 
@@ -109,16 +111,16 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Update status (e.g. Dispensed) — stock is pre-deducted at prescription create time
+// Update status or edit prescription details (scoped to tenant)
 router.put("/:id", async (req, res) => {
-  const { items, status, appointmentId } = req.body;
+  const { items, status, appointmentId, labs, diagnosis, notes } = req.body;
   try {
     const rxId = req.params.id;
     const previous = await Prescription.findOne({
       _id: rxId,
       tenantId: req.tenantId,
     })
-      .select("status items")
+      .populate("patientId", "name")
       .lean();
     if (!previous)
       return res.status(404).json({ error: "Prescription not found" });
@@ -131,8 +133,57 @@ router.put("/:id", async (req, res) => {
     const prescription = await Prescription.findOneAndUpdate(
       { _id: rxId, tenantId: req.tenantId },
       updateObj,
-      { returnDocument: "after" },
-    );
+      { returnDocument: "after" }
+    ).populate("patientId", "name");
+
+    let pharmacistChanged = false;
+    let labTechChanged = false;
+
+    // 1. Compare medicines (pharmacist changes)
+    if (items !== undefined && previous.items) {
+      const prevItems = previous.items.map(i => `${i.medicine}-${i.dosage}-${i.quantity}-${i.instructions}`);
+      const newItems = items.map(i => `${i.medicine}-${i.dosage}-${i.quantity}-${i.instructions}`);
+      if (prevItems.length !== newItems.length || prevItems.some((val, idx) => val !== newItems[idx])) {
+        pharmacistChanged = true;
+      }
+    }
+
+    // 2. Manage Labs & Compare (lab technician changes)
+    const activeAppId = appointmentId || previous.appointmentId;
+    if (labs !== undefined && activeAppId) {
+      const existingLabs = await LabRequest.find({ appointmentId: activeAppId, tenantId: req.tenantId });
+      const existingNames = existingLabs.map(l => l.testName.trim().toLowerCase());
+      const newNames = labs.map(l => l.trim().toLowerCase());
+
+      // Find to delete
+      const toDelete = existingLabs.filter(l => !newNames.includes(l.testName.trim().toLowerCase()));
+      if (toDelete.length > 0) {
+        await LabRequest.deleteMany({ _id: { $in: toDelete.map(l => l._id) } });
+        labTechChanged = true;
+      }
+
+      // Find to create
+      const toCreate = labs.filter(name => !existingNames.includes(name.trim().toLowerCase()));
+      for (const test of toCreate) {
+        await LabRequest.create({
+          tenantId: req.tenantId,
+          appointmentId: activeAppId,
+          patientId: previous.patientId?._id || previous.patientId,
+          doctorId: req.user.id,
+          testName: test.trim(),
+          notes: 'Requested from Prescription EMR (Edited)'
+        });
+        labTechChanged = true;
+      }
+    }
+
+    // 3. Update Appointment diagnosis/notes if provided
+    if (activeAppId && (diagnosis !== undefined || notes !== undefined)) {
+      const appUpdate = {};
+      if (diagnosis !== undefined) appUpdate.diagnosis = diagnosis;
+      if (notes !== undefined) appUpdate.notes = notes;
+      await Appointment.findByIdAndUpdate(activeAppId, appUpdate);
+    }
 
     // Restore stock if transitioning to Cancelled
     if (status === "Cancelled" && previous.status !== "Cancelled") {
@@ -174,23 +225,42 @@ router.put("/:id", async (req, res) => {
       }
     }
 
-    // Audit log for status transitions
-    if (status && previous.status !== status) {
-      AuditLog.create({
-        tenantId: req.tenantId,
-        actor: req.user.staff_id || req.user.id || "system",
-        actorName: req.user.name || "",
-        actorRole: req.user.role || "",
-        action: "prescription_status_changed",
-        target: prescription._id.toString(),
-        metadata: { from: previous.status, to: status },
-      }).catch(() => {});
-    }
+    // Audit log for edits or status transitions
+    AuditLog.create({
+      tenantId: req.tenantId,
+      actor: req.user.staff_id || req.user.id || "system",
+      actorName: req.user.name || "",
+      actorRole: req.user.role || "",
+      action: pharmacistChanged || labTechChanged ? "prescription_edited" : "prescription_status_changed",
+      target: prescription._id.toString(),
+      metadata: { 
+        pharmacistChanged,
+        labTechChanged,
+        from: previous.status, 
+        to: status || prescription.status 
+      },
+    }).catch(() => {});
 
     const io = req.app.get("io");
     if (io && req.tenantId) {
       io.to(req.tenantId).emit("data_changed", { type: "prescriptions" });
       io.to(req.tenantId).emit("data_changed", { type: "medicines" });
+      if (labTechChanged) {
+        io.to(req.tenantId).emit("data_changed", { type: "labs" });
+      }
+
+      // If changes are related to pharmacist or lab technician, emit specific notification event
+      if (pharmacistChanged || labTechChanged) {
+        const patientName = prescription.patientId?.name || "Patient";
+        io.to(req.tenantId).emit("data_changed", {
+          type: "prescription_updated",
+          message: `Prescription for Patient "${patientName}" has been edited by Dr. ${req.user.name || 'Sarah'}`,
+          changes: {
+            pharmacist: pharmacistChanged,
+            labTech: labTechChanged
+          }
+        });
+      }
     }
     res.json(prescription);
   } catch (error) {

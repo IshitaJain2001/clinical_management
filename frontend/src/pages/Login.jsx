@@ -41,6 +41,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    localStorage.removeItem('curoxa_superadmin_session');
     const reason = localStorage.getItem('logout_reason');
     if (reason === 'password_changed') {
       setShowPasswordChangedModal(true);

@@ -947,6 +947,8 @@ const DoctorDashboard = () => {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [selectedProfileAppointment, setSelectedProfileAppointment] = useState(null);
   const [activeAppointmentId, setActiveAppointmentId] = useState(null);
+  const [editingPrescriptionId, setEditingPrescriptionId] = useState(null);
+  const [editingAppointmentId, setEditingAppointmentId] = useState(null);
   const [allLabs, setAllLabs] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
@@ -1101,6 +1103,59 @@ const DoctorDashboard = () => {
     } catch (e) {
       console.warn("Failed to fetch past prescriptions from backend", e);
     }
+  };
+
+  const handleLoadPrescriptionForEdit = (rx, relatedLabs) => {
+    setEditingPrescriptionId(rx._id);
+    setEditingAppointmentId(rx.appointmentId);
+
+    if (rx.items && rx.items.length > 0) {
+      const loadedMeds = rx.items.map((item, idx) => {
+        let freq = 'Once a Day';
+        if (item.instructions) {
+          if (item.instructions.includes('Twice') || item.instructions.includes('BD')) freq = 'Twice a Day';
+          else if (item.instructions.includes('Thrice') || item.instructions.includes('TDS')) freq = 'Thrice a Day';
+          else if (item.instructions.includes('Four') || item.instructions.includes('QD')) freq = 'Four times a Day';
+        }
+        let timing = 'After Food';
+        if (item.instructions && item.instructions.includes('Before Food')) timing = 'Before Food';
+
+        return {
+          id: idx + 1,
+          name: item.medicine,
+          dose: item.dosage,
+          freq: freq,
+          duration: item.duration,
+          timing: timing,
+          notes: ''
+        };
+      });
+      setMedicines(loadedMeds);
+    } else {
+      setMedicines([{ id: 1, name: '', dose: '', freq: 'Once a Day', duration: '5 Days', timing: 'After Food', notes: '' }]);
+    }
+
+    if (relatedLabs && relatedLabs.length > 0) {
+      setLabs(relatedLabs.map(l => l.testName));
+    } else {
+      setLabs([]);
+    }
+
+    const relatedApp = rx.appointmentId ? appointments.find(a => a._id.toString() === rx.appointmentId.toString() || a._id === rx.appointmentId) : null;
+    if (relatedApp) {
+      setDiagnosisText(relatedApp.diagnosis || '');
+      setSoap({
+        subjective: '',
+        objective: '',
+        assessment: relatedApp.notes || '',
+        plan: ''
+      });
+    }
+
+    setActiveTab('prescriptions');
+    setShowTimelineModal(false);
+    showToastNotification("Prescription loaded for editing!", "info");
+    addLog(`Editing prescription ID: ${rx._id}`);
   };
 
   // Vitals State
@@ -2411,12 +2466,12 @@ const DoctorDashboard = () => {
     const validLabs = labs.filter(test => test && test.trim() !== '');
 
     // 1. Immediately transition UI back to appointments list in foreground
-    showToastNotification("Prescription locked! Syncing encounter records in the background.", "success");
+    showToastNotification(editingPrescriptionId ? "Prescription updated! Syncing changes in the background." : "Prescription locked! Syncing encounter records in the background.", "success");
     setActiveTab('appointments');
 
     // 2. Perform DB operations asynchronously in background
     const saveEncounterData = async () => {
-      let resolvedAppId = appointmentIdToUse;
+      let resolvedAppId = appointmentIdToUse || editingAppointmentId;
       
       // If there is no activeAppointmentId, create a Completed appointment on the fly
       if (!resolvedAppId) {
@@ -2436,23 +2491,39 @@ const DoctorDashboard = () => {
 
       // Create prescription record with conditional status based on sendToPharmacy
       const rxStatus = sendToPharmacy ? 'Pending Pharmacy Dispatch' : 'Direct Patient';
-      await api.post('/prescriptions', {
-        appointmentId: resolvedAppId,
-        patientId: patientId,
-        doctorId: user.id,
-        status: rxStatus,
-        items: validMedicines
-      });
 
-      // Create real lab requests in DB
-      for (const test of validLabs) {
-        await api.post('/labs', {
+      if (editingPrescriptionId) {
+        // Edit flow
+        await api.put(`/prescriptions/${editingPrescriptionId}`, {
           appointmentId: resolvedAppId,
           patientId: patientId,
           doctorId: user.id,
-          testName: test.trim(),
-          notes: 'Requested from Prescription Maker EMR'
+          status: rxStatus,
+          items: validMedicines,
+          labs: validLabs,
+          diagnosis: cleanDiagnosisText,
+          notes: soap.assessment || ''
         });
+      } else {
+        // Create flow
+        await api.post('/prescriptions', {
+          appointmentId: resolvedAppId,
+          patientId: patientId,
+          doctorId: user.id,
+          status: rxStatus,
+          items: validMedicines
+        });
+
+        // Create real lab requests in DB
+        for (const test of validLabs) {
+          await api.post('/labs', {
+            appointmentId: resolvedAppId,
+            patientId: patientId,
+            doctorId: user.id,
+            testName: test.trim(),
+            notes: 'Requested from Prescription Maker EMR'
+          });
+        }
       }
 
       // Create real itemized bill in DB only if one doesn't already exist for this appointment
@@ -2519,13 +2590,14 @@ const DoctorDashboard = () => {
       }
 
       // Update the appointment status to Completed and add diagnosis
-      if (appointmentIdToUse) {
+      const appToUpdate = appointmentIdToUse || editingAppointmentId;
+      if (appToUpdate) {
         // Optimistically update states!
-        setAppointments(prev => prev.map(a => a._id === appointmentIdToUse ? { ...a, status: 'Completed', diagnosis: cleanDiagnosisText, notes: soap.assessment || '' } : a));
-        setCoverageQueue(prev => prev.map(q => q.id === appointmentIdToUse ? { ...q, status: 'Completed' } : q));
-        setCoverageAppts(prev => prev.map(a => a.id === appointmentIdToUse ? { ...a, status: 'Completed' } : a));
+        setAppointments(prev => prev.map(a => a._id === appToUpdate ? { ...a, status: 'Completed', diagnosis: cleanDiagnosisText, notes: soap.assessment || '' } : a));
+        setCoverageQueue(prev => prev.map(q => q.id === appToUpdate ? { ...q, status: 'Completed' } : q));
+        setCoverageAppts(prev => prev.map(a => a.id === appToUpdate ? { ...a, status: 'Completed' } : a));
 
-        await api.put(`/appointments/${appointmentIdToUse}`, { 
+        await api.put(`/appointments/${appToUpdate}`, { 
           status: 'Completed', 
           diagnosis: cleanDiagnosisText,
           notes: soap.assessment || ''
@@ -2548,6 +2620,8 @@ const DoctorDashboard = () => {
         // Reset states
         setSelectedPatient(null);
         setActiveAppointmentId(null);
+        setEditingPrescriptionId(null);
+        setEditingAppointmentId(null);
         setDiagnosisText('');
         setMedicines([]);
         setLabs([]);
@@ -8459,7 +8533,9 @@ I have scanned the medical reference databases, but couldn't find a direct match
                           })),
                           tests: relatedLabs.map(l => l.testName),
                           isReal: true,
-                          type: 'prescription'
+                          type: 'prescription',
+                          rx: rx,
+                          relatedLabs: relatedLabs
                         });
                       });
 
@@ -8538,9 +8614,20 @@ I have scanned the medical reference databases, but couldn't find a direct match
                           <div className="patient-row-hover" style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '16px', padding: '20px', transition: 'all 0.2s ease', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.01), 0 2px 4px -1px rgba(0,0,0,0.01)' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
                               <span style={{ fontSize: '12.5px', fontWeight: 850, color: '#1E293B' }}>{item.date}</span>
-                              <span style={{ fontSize: '9.5px', background: item.isReal ? '#EFF6FF' : '#E6F4EA', color: item.isReal ? '#1E40AF' : '#137333', padding: '4px 10px', borderRadius: '8px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.5px', border: item.isReal ? '1px solid rgba(37,99,235,0.1)' : '1px solid rgba(16,185,129,0.1)' }}>
-                                {item.title}
-                              </span>
+                              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                <span style={{ fontSize: '9.5px', background: item.isReal ? '#EFF6FF' : '#E6F4EA', color: item.isReal ? '#1E40AF' : '#137333', padding: '4px 10px', borderRadius: '8px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.5px', border: item.isReal ? '1px solid rgba(37,99,235,0.1)' : '1px solid rgba(16,185,129,0.1)' }}>
+                                  {item.title}
+                                </span>
+                                {item.isReal && item.type === 'prescription' && (
+                                  <button
+                                    onClick={() => handleLoadPrescriptionForEdit(item.rx, item.relatedLabs)}
+                                    style={{ margin: 0, padding: '4px 10px', fontSize: '10.5px', background: '#F0FDF4', color: '#15803D', border: '1px solid #BBF7D0', cursor: 'pointer', borderRadius: '8px', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '4px', transition: 'all 0.2s ease' }}
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                                    Edit
+                                  </button>
+                                )}
+                              </div>
                             </div>
 
                             <div style={{ fontSize: '11.5px', color: '#64748B', marginBottom: '12px', fontWeight: 700 }}>

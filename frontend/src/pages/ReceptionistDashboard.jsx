@@ -651,6 +651,7 @@ const ReceptionistDashboard = () => {
   const [searchPatientQuery, setSearchPatientQuery] = useState('');
   const [pendingRegistrationPayload, setPendingRegistrationPayload] = useState(null);
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const [reschedulingAppointment, setReschedulingAppointment] = useState(null);
   
   // Patient Profile Details States
   const [selectedProfileAppointment, setSelectedProfileAppointment] = useState(null);
@@ -2075,6 +2076,26 @@ const ReceptionistDashboard = () => {
         return;
       }
 
+      // Check if existing patient already has an appointment today with any of the selected doctors in database
+      if (isExistingPatient && selectedPatient) {
+        for (const apptToBook of allApptsToBook) {
+          const alreadyHasApptInDb = appointments.some(appt => {
+            const pId = appt.patientId && typeof appt.patientId === 'object' ? appt.patientId._id : appt.patientId;
+            const dId = appt.doctorId && typeof appt.doctorId === 'object' ? appt.doctorId._id : appt.doctorId;
+            const samePatient = String(pId) === String(selectedPatient._id);
+            const sameDoctor = String(dId) === String(apptToBook.doctorId);
+            const sameDay = new Date(appt.date).toDateString() === new Date(apptToBook.date).toDateString();
+            const notCancelled = appt.status !== 'Cancelled';
+            return samePatient && sameDoctor && sameDay && notCancelled;
+          });
+          if (alreadyHasApptInDb) {
+            showToast(`Patient ${selectedPatient.name} already has an appointment booked with ${apptToBook.doctorName} on this day.`, "error");
+            setLoading(false);
+            return;
+          }
+        }
+      }
+
       if (allApptsToBook.length === 0) {
         showToast("Please select a Doctor and Time Slot for consultation.", "error");
         setLoading(false);
@@ -2209,12 +2230,45 @@ const ReceptionistDashboard = () => {
     try {
       setLoading(true);
       // Optimistically update appointments state!
-      setAppointments(prev => prev.map(a => a._id === apptId ? { ...a, date: rescheduleProfileDate, time: rescheduleProfileTime } : a));
-      setSelectedProfileAppointment(prev => prev && prev._id === apptId ? { ...prev, date: rescheduleProfileDate, time: rescheduleProfileTime } : prev);
-      await api.put(`/appointments/${apptId}`, { date: rescheduleProfileDate, time: rescheduleProfileTime });
+      setAppointments(prev => prev.map(a => a._id === apptId ? { ...a, date: rescheduleProfileDate, time: rescheduleProfileTime, status: 'Rescheduled' } : a));
+      setSelectedProfileAppointment(prev => prev && prev._id === apptId ? { ...prev, date: rescheduleProfileDate, time: rescheduleProfileTime, status: 'Rescheduled' } : prev);
+      await api.put(`/appointments/${apptId}`, { date: rescheduleProfileDate, time: rescheduleProfileTime, status: 'Rescheduled' });
       showToast("Appointment rescheduled successfully", "success");
       setIsReschedulingProfileAppt(false);
       await fetchData();
+    } catch (err) {
+      console.error(err);
+      showToast("Failed to reschedule appointment", "error");
+      await fetchData();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRescheduleSubmit = async () => {
+    if (!reschedulingAppointment) return;
+    const apptId = reschedulingAppointment._id;
+    if (!bookingDate || !selectedSlot) {
+      showToast("Please choose both date and time slot for rescheduling", "error");
+      return;
+    }
+    try {
+      setLoading(true);
+      await api.put(`/appointments/${apptId}`, { date: bookingDate, time: selectedSlot, status: 'Rescheduled' });
+      showToast("Appointment rescheduled successfully!", "success");
+      
+      setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '' });
+      setSelectedSymptoms([]);
+      setIsExistingPatient(null);
+      setSearchPatientQuery('');
+      setSelectedPatient(null);
+      setBookingPaymentMethod('');
+      setReschedulingAppointment(null);
+      setBookingDate(getLocalDateString());
+      setSelectedSlot('');
+
+      await fetchData();
+      switchTab('appointments');
     } catch (err) {
       console.error(err);
       showToast("Failed to reschedule appointment", "error");
@@ -2353,6 +2407,29 @@ const ReceptionistDashboard = () => {
       hospitalName: currentUser?.tenantName || 'Curoxa Medical Center'
     });
     setShowSlipPdfModal(true);
+  };
+
+  const getBillingItems = () => {
+    if (bookingType === 'lab') {
+      return selectedLabTestsList.map(item => ({ description: item.testName, amount: Number(item.price || 0) }));
+    } else if (bookingType === 'service') {
+      return selectedServicesList.map(item => ({ description: item.serviceName, amount: Number(item.price || 0) }));
+    } else {
+      const items = additionalApptsList.map(appt => ({
+        description: `Consultation (${appt.doctorName})`,
+        amount: Number(appt.fee !== undefined ? appt.fee : (doctors.find(d => String(d._id) === String(appt.doctorId))?.consultationFee || 500))
+      }));
+      
+      const isCurrentDoctorAlreadyQueued = formData.doctorId && additionalApptsList.some(appt => String(appt.doctorId) === String(formData.doctorId));
+      if ((formData.doctorId && selectedSlot && !isCurrentDoctorAlreadyQueued) || (additionalApptsList.length === 0)) {
+        const docObj = doctors.find(d => String(d._id) === String(formData.doctorId));
+        items.push({
+          description: `Consultation (${docObj ? docObj.name : 'Doctor'})`,
+          amount: Number(docObj?.consultationFee || 500)
+        });
+      }
+      return items;
+    }
   };
 
   return (
@@ -4578,7 +4655,35 @@ const ReceptionistDashboard = () => {
                                 justifyContent: 'center',
                                 gap: '8px'
                               }}
-                              onClick={() => setIsReschedulingProfileAppt(true)}
+                              onClick={() => {
+                                setReschedulingAppointment(selectedProfileAppointment);
+                                setIsExistingPatient(true);
+                                setSelectedPatient(selectedProfileAppointment.patientId);
+                                setFormData({
+                                  name: selectedProfileAppointment.patientId?.name || '',
+                                  age: selectedProfileAppointment.patientId?.age || '',
+                                  gender: selectedProfileAppointment.patientId?.gender || '',
+                                  contact: selectedProfileAppointment.patientId?.contact || '',
+                                  email: selectedProfileAppointment.patientId?.email || '',
+                                  doctorId: selectedProfileAppointment.doctorId?._id || selectedProfileAppointment.doctorId || '',
+                                  bloodGroup: selectedProfileAppointment.patientId?.bloodGroup || '',
+                                  address: selectedProfileAppointment.patientId?.address || '',
+                                  medicalHistory: selectedProfileAppointment.patientId?.medicalHistory || ''
+                                });
+                                let apptDateVal = '';
+                                if (selectedProfileAppointment.date) {
+                                  try {
+                                    apptDateVal = new Date(selectedProfileAppointment.date).toISOString().split('T')[0];
+                                  } catch (e) {
+                                    apptDateVal = '';
+                                  }
+                                }
+                                setBookingDate(apptDateVal);
+                                setSelectedSlot(selectedProfileAppointment.time || '');
+                                setBookingType('opd');
+                                setSelectedSymptoms(selectedProfileAppointment.reason ? selectedProfileAppointment.reason.split(', ') : []);
+                                switchTab('registration-form');
+                              }}
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -4790,14 +4895,18 @@ const ReceptionistDashboard = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                 <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#1A1D23', margin: 0 }}>Registration and appointment</h1>
                 {isExistingPatient !== null && (
-                  <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '12px' }} onClick={() => {
-                    setIsExistingPatient(null);
-                    setSelectedPatient(null);
-                    setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: formData.doctorId, bloodGroup: '', address: '', medicalHistory: '' });
-                  }}>
-                    ← Back to Selection
-                  </button>
-                )}
+                   <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '12px' }} onClick={() => {
+                     setIsExistingPatient(null);
+                     setSelectedPatient(null);
+                     setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '' });
+                     if (reschedulingAppointment) {
+                       setReschedulingAppointment(null);
+                       switchTab('appointments');
+                     }
+                   }}>
+                     {reschedulingAppointment ? '← Cancel Rescheduling' : '← Back to Selection'}
+                   </button>
+                 )}
               </div>
 
               {isExistingPatient === null ? (
@@ -5124,7 +5233,14 @@ const ReceptionistDashboard = () => {
                             type="text" 
                             className="form-control" 
                             placeholder="e.g. 9876543210" 
-                            style={{ height: '48px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: isExistingPatient ? 700 : 500 }} 
+                            style={{ 
+                              height: '48px', 
+                              borderRadius: '8px', 
+                              background: isExistingPatient ? '#F1F5F9' : 'white', 
+                              cursor: isExistingPatient ? 'not-allowed' : 'text', 
+                              fontWeight: isExistingPatient ? 700 : 500,
+                              borderColor: (!isExistingPatient && formData.contact && patientsList.some(p => String(p.contact) === String(formData.contact))) ? '#EF4444' : '#E2E8F0'
+                            }} 
                             value={formData.contact} 
                             onChange={e => {
                               const val = e.target.value.replace(/\D/g, '').substring(0, 10);
@@ -5132,6 +5248,12 @@ const ReceptionistDashboard = () => {
                             }} 
                             readOnly={isExistingPatient}
                           />
+                          {!isExistingPatient && formData.contact && patientsList.some(p => String(p.contact) === String(formData.contact)) && (
+                            <div style={{ color: '#EF4444', fontSize: '11px', fontWeight: 700, marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                              This mobile number is already registered. Please search for the patient or use a different number.
+                            </div>
+                          )}
                       </div>
                       {bookingType !== 'lab' && bookingType !== 'service' && (
                         <>
@@ -5491,15 +5613,15 @@ const ReceptionistDashboard = () => {
                           <div className="form-group">
                               <label>Symptoms <span style={{ color: '#EF4444' }}>*</span></label>
                               <div className="custom-dropdown-container">
-                                  <div className="custom-dropdown-trigger" onClick={() => setSymptomDropdownOpen(!symptomDropdownOpen)}>
+                                  <div className="custom-dropdown-trigger" onClick={() => !reschedulingAppointment && setSymptomDropdownOpen(!symptomDropdownOpen)} style={reschedulingAppointment ? { cursor: 'not-allowed', background: '#F1F5F9' } : {}}>
                                       <div className="selected-items" data-lenis-prevent>
                                           {selectedSymptoms.length > 0 ? (
                                               selectedSymptoms.map(s => (
                                                 <div key={s} className="symptom-tag">
                                                     {s}
                                                     <span 
-                                                      onClick={(e) => { e.stopPropagation(); toggleSymptom(s); }}
-                                                      style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginLeft: '4px' }}
+                                                      onClick={(e) => { e.stopPropagation(); if (!reschedulingAppointment) toggleSymptom(s); }}
+                                                      style={{ cursor: reschedulingAppointment ? 'not-allowed' : 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginLeft: '4px' }}
                                                     >
                                                         <i data-lucide="x" style={{ pointerEvents: 'none', width: '14px', height: '14px' }}></i>
                                                     </span>
@@ -5522,7 +5644,7 @@ const ReceptionistDashboard = () => {
                           </div>
                           <div className="form-group">
                               <label>Select Doctor <span style={{ color: '#EF4444' }}>*</span></label>
-                              <select className="form-control" style={{ height: '48px', borderRadius: '8px' }} value={formData.doctorId} onChange={e => setFormData({...formData, doctorId: e.target.value})}>
+                              <select className="form-control" style={{ height: '48px', borderRadius: '8px', background: reschedulingAppointment ? '#F1F5F9' : 'white', cursor: reschedulingAppointment ? 'not-allowed' : 'pointer', fontWeight: reschedulingAppointment ? 700 : 500 }} value={formData.doctorId} onChange={e => setFormData({...formData, doctorId: e.target.value})} disabled={!!reschedulingAppointment}>
                                   <option value="">-- Choose Doctor --</option>
                                   {doctors.map(doc => (
                                       <option key={doc._id} value={doc._id}>{doc.name}</option>
@@ -5672,6 +5794,21 @@ const ReceptionistDashboard = () => {
                             if (isDoctorAlreadyQueued) {
                               showToast(`An appointment with ${docObj ? docObj.name : 'this doctor'} is already queued. You cannot book multiple appointments with the same doctor in a single form.`, "error");
                               return;
+                            }
+                            if (isExistingPatient && selectedPatient) {
+                              const alreadyHasApptInDb = appointments.some(appt => {
+                                const pId = appt.patientId && typeof appt.patientId === 'object' ? appt.patientId._id : appt.patientId;
+                                const dId = appt.doctorId && typeof appt.doctorId === 'object' ? appt.doctorId._id : appt.doctorId;
+                                const samePatient = String(pId) === String(selectedPatient._id);
+                                const sameDoctor = String(dId) === String(formData.doctorId);
+                                const sameDay = new Date(appt.date).toDateString() === new Date(bookingDate).toDateString();
+                                const notCancelled = appt.status !== 'Cancelled';
+                                return samePatient && sameDoctor && sameDay && notCancelled;
+                              });
+                              if (alreadyHasApptInDb) {
+                                showToast(`This patient already has an appointment booked with ${docObj ? docObj.name : 'this doctor'} on this day.`, "error");
+                                return;
+                              }
                             }
                             setAdditionalApptsList([
                               ...additionalApptsList,
@@ -6072,88 +6209,63 @@ const ReceptionistDashboard = () => {
 
                   <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '40px', marginBottom: '48px' }}>
                       <div className="billing-summary">
-                          {bookingType === 'lab' ? (
-                            <>
-                              {selectedLabTestsList.map((test, i) => (
-                                <div key={i} className="billing-row">
-                                  <span>{test.testName}</span> 
-                                  <span>₹{Number(test.price || 0).toFixed(2)}</span>
-                                </div>
-                              ))}
-                            </>
-                          ) : bookingType === 'service' ? (
-                            <>
-                              {selectedServicesList.map((srv, i) => (
-                                <div key={i} className="billing-row">
-                                  <span>{srv.serviceName}</span> 
-                                  <span>₹{Number(srv.price || 0).toFixed(2)}</span>
-                                </div>
-                              ))}
-                            </>
-                          ) : (
-                            <>
-                              {additionalApptsList.map((appt, i) => (
-                                <div key={i} className="billing-row">
-                                  <span>Consultation ({appt.doctorName})</span>
-                                  <span>₹{Number(appt.fee !== undefined ? appt.fee : (doctors.find(d => String(d._id) === String(appt.doctorId))?.consultationFee || 500)).toFixed(2)}</span>
-                                </div>
-                              ))}
-                              {(formData.doctorId && selectedSlot || additionalApptsList.length === 0) && (
-                                <div className="billing-row">
-                                  <span>Consultation ({doctors.find(d => String(d._id) === String(formData.doctorId))?.name || 'Doctor'})</span>
-                                  <span>₹{(doctors.find(d => String(d._id) === String(formData.doctorId))?.consultationFee || 500).toFixed(2)}</span>
-                                </div>
-                              )}
-                            </>
-                          )}
+                          {getBillingItems().map((item, i) => (
+                            <div key={i} className="billing-row">
+                              <span>{item.description}</span>
+                              <span>₹{Number(item.amount).toFixed(2)}</span>
+                            </div>
+                          ))}
                           {!isExistingPatient && <div className="billing-row"><span>Registration Fee</span> <span>₹50.00</span></div>}
                           <div className="billing-total">
                             <span>Total Amount</span> 
                             <span>
-                              ₹{bookingType === 'lab' 
-                                  ? (selectedLabTestsList.reduce((sum, item) => sum + Number(item.price || 0), 0) + (isExistingPatient ? 0 : 50)).toFixed(2)
-                                  : bookingType === 'service'
-                                  ? (selectedServicesList.reduce((sum, item) => sum + Number(item.price || 0), 0) + (isExistingPatient ? 0 : 50)).toFixed(2)
-                                  : ((additionalApptsList.reduce((sum, appt) => sum + Number(appt.fee !== undefined ? appt.fee : (doctors.find(d => String(d._id) === String(appt.doctorId))?.consultationFee || 500)), 0) + (formData.doctorId && selectedSlot ? (doctors.find(d => String(d._id) === String(formData.doctorId))?.consultationFee || 500) : (additionalApptsList.length === 0 ? (doctors.find(d => String(d._id) === String(formData.doctorId))?.consultationFee || 500) : 0))) + (isExistingPatient ? 0 : 50)).toFixed(2)}
+                              ₹{(getBillingItems().reduce((sum, item) => sum + item.amount, 0) + (isExistingPatient ? 0 : 50)).toFixed(2)}
                             </span>
                           </div>
                       </div>
                       
                       <div>
-                          <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, marginBottom: '12px', color: '#64748B' }}>Payment Method <span style={{ color: '#EF4444' }}>*</span></label>
-                          <div className="payment-grid" style={{ marginBottom: '24px' }}>
-                              {['Cash', 'UPI', 'Card', 'Insurance', 'Other'].map(method => (
-                                  <div key={method} className={`pay-btn ${bookingPaymentMethod === method ? 'active' : ''}`} onClick={() => setBookingPaymentMethod(method)}>
-                                      {bookingPaymentMethod === method && (
-                                          <svg 
-                                              xmlns="http://www.w3.org/2000/svg" 
-                                              width="18" 
-                                              height="18" 
-                                              viewBox="0 0 24 24" 
-                                              fill="none" 
-                                              stroke="currentColor" 
-                                              strokeWidth="2.5" 
-                                              strokeLinecap="round" 
-                                              strokeLinejoin="round" 
-                                              className="lucide lucide-check-circle"
-                                              style={{ flexShrink: 0 }}
-                                          >
-                                              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                                              <polyline points="22 4 12 14.01 9 11.01" />
-                                          </svg>
-                                      )} {method}
-                                  </div>
-                              ))}
-                          </div>
+                          <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, marginBottom: '12px', color: '#64748B' }}>Payment Method / Status</label>
+                          {reschedulingAppointment ? (
+                              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#D1FAE5', color: '#065F46', padding: '12px 20px', borderRadius: '8px', fontWeight: 800, fontSize: '14px', border: '1px solid #A7F3D0' }}>
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                  Paid (Original Payment Preserved)
+                              </div>
+                          ) : (
+                              <div className="payment-grid" style={{ marginBottom: '24px' }}>
+                                  {['Cash', 'UPI', 'Card', 'Insurance', 'Other'].map(method => (
+                                      <div key={method} className={`pay-btn ${bookingPaymentMethod === method ? 'active' : ''}`} onClick={() => setBookingPaymentMethod(method)}>
+                                          {bookingPaymentMethod === method && (
+                                              <svg 
+                                                  xmlns="http://www.w3.org/2000/svg" 
+                                                  width="18" 
+                                                  height="18" 
+                                                  viewBox="0 0 24 24" 
+                                                  fill="none" 
+                                                  stroke="currentColor" 
+                                                  strokeWidth="2.5" 
+                                                  strokeLinecap="round" 
+                                                  strokeLinejoin="round" 
+                                                  className="lucide lucide-check-circle"
+                                                  style={{ flexShrink: 0 }}
+                                              >
+                                                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                                  <polyline points="22 4 12 14.01 9 11.01" />
+                                              </svg>
+                                          )} {method}
+                                      </div>
+                                  ))}
+                              </div>
+                          )}
                       </div>
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '20px' }}>
-                      <button className="btn btn-primary" style={{ width: '400px', height: '54px', fontWeight: 800, fontSize: '16px', borderRadius: '10px', justifyContent: 'center', gap: '12px' }} onClick={bookingType === 'lab' ? handleCreateLabOrder : bookingType === 'service' ? handleCreateServiceOrder : handleCreateAppointment} disabled={loading}>
-                          <i data-lucide={bookingType === 'lab' ? "flask-conical" : bookingType === 'service' ? "sparkles" : "qr-code"}></i> 
+                      <button className="btn btn-primary" style={{ width: '400px', height: '54px', fontWeight: 800, fontSize: '16px', borderRadius: '10px', justifyContent: 'center', gap: '12px' }} onClick={reschedulingAppointment ? handleRescheduleSubmit : (bookingType === 'lab' ? handleCreateLabOrder : bookingType === 'service' ? handleCreateServiceOrder : handleCreateAppointment)} disabled={loading}>
+                          <i data-lucide={reschedulingAppointment ? "calendar-days" : (bookingType === 'lab' ? "flask-conical" : bookingType === 'service' ? "sparkles" : "qr-code")}></i> 
                           {loading 
-                            ? (bookingType === 'lab' ? 'Creating Lab Order...' : bookingType === 'service' ? 'Creating Service Order...' : 'Registering & Booking...') 
-                            : (bookingType === 'lab' ? 'Confirm Lab Test & Pay' : bookingType === 'service' ? 'Confirm Service & Pay' : `Confirm & Pay (${(additionalApptsList.length + (formData.doctorId && selectedSlot ? 1 : 0)) || 1} Appts)`)}
+                            ? (reschedulingAppointment ? 'Rescheduling Appointment...' : (bookingType === 'lab' ? 'Creating Lab Order...' : bookingType === 'service' ? 'Creating Service Order...' : 'Registering & Booking...')) 
+                            : (reschedulingAppointment ? 'Confirm Reschedule' : (bookingType === 'lab' ? 'Confirm Lab Test & Pay' : bookingType === 'service' ? 'Confirm Service & Pay' : `Confirm & Pay (${(additionalApptsList.length + (formData.doctorId && selectedSlot ? 1 : 0)) || 1} Appts)`))}
                       </button>
                   </div>
                 </div>
@@ -6342,8 +6454,9 @@ const ReceptionistDashboard = () => {
                         <td>
                           <span className={`status-badge ${
                             app.status === 'Completed' || app.status === 'Paid' ? 'available' : 
+                            app.status === 'Rescheduled' ? 'rescheduled' :
                             (app.status === 'Cancelled' ? 'critical' : 'pending')
-                          }`}>
+                          }`} style={app.status === 'Rescheduled' ? { background: '#E0F2FE', color: '#0369A1' } : {}}>
                             {app.status}
                           </span>
                         </td>

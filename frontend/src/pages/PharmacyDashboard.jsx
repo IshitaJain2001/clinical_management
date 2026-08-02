@@ -1048,10 +1048,15 @@ const PharmacyDashboard = () => {
 
   useEffect(() => {
     const handleSync = (e) => {
-      const { type } = e.detail;
+      const { type, message, changes } = e.detail || {};
       console.log('[SOCKET] PharmacyDashboard received sync event for:', type);
       if (type === 'coverage') {
         fetchCoverageData();
+      } else if (type === 'prescription_updated') {
+        if (changes && changes.pharmacist) {
+          showToast(message || 'A prescription has been edited by the doctor!', 'info');
+        }
+        fetchData();
       } else {
         fetchData();
       }
@@ -2464,7 +2469,7 @@ const PharmacyDashboard = () => {
               <i data-lucide="trending-up"></i> Reports
             </a>
           )}
-          {(currentUser?.role === 'pharmacy') && tenantModules.inventory?.enabled !== false && (
+          {(currentUser?.role === 'pharmacy' || currentUser?.role === 'admin' || coverageState['ph-stock']?.on) && (
             <a href="#" className="nav-link" onClick={(e) => { e.preventDefault(); window.open('/procurement', '_blank'); setMobileSidebarOpen(false); }}>
               <i data-lucide="shopping-cart"></i> Procurement
             </a>

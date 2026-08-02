@@ -343,6 +343,7 @@ router.put('/:id', async (req, res) => {
     }
     res.json(appointment);
   } catch (error) {
+    console.error("PUT Appointment Error:", error);
     res.status(400).json({ error: error.message });
   }
 });

@@ -371,11 +371,13 @@ const AdminDashboard = () => {
   const [selectedDoctorFilter, setSelectedDoctorFilter] = useState('All');
   const [activeApptFilter, setActiveApptFilter] = useState('All');
   const [showNewApptModal, setShowNewApptModal] = useState(false);
+  const [reschedulingApptId, setReschedulingApptId] = useState(null);
   const [newApptData, setNewApptData] = useState({
     patientName: '',
     doctor: 'Dr. Anjali',
     dept: 'General',
     time: '12:00',
+    date: '',
     status: 'SCHEDULED'
   });
 
@@ -725,6 +727,7 @@ const AdminDashboard = () => {
         if (app.status === 'Completed') statusVal = 'COMPLETED';
         else if (app.status === 'In Progress' || app.status === 'In Queue') statusVal = 'IN QUEUE';
         else if (app.status === 'Cancelled') statusVal = 'CANCELLED';
+        else if (app.status === 'Rescheduled' || app.status === 'RESCHEDULED') statusVal = 'RESCHEDULED';
         
         return {
           id: app._id,
@@ -1418,7 +1421,8 @@ const AdminDashboard = () => {
           max_slots: user.max_slots,
           email: user.email || '',
           password: '',
-          staff_id: user.staff_id || ''
+          staff_id: user.staff_id || '',
+          weeklyOff: user.weeklyOff || ''
         };
       });
       setStaff(dbUsers);
@@ -1616,26 +1620,103 @@ const AdminDashboard = () => {
   };
 
   // Appointments interactive handlers
-  const handleCancelAppt = (id) => {
-    setAppointments(prev => prev.map(item => {
-      if (item.id === id) {
-        return { ...item, status: 'CANCELLED' };
+  const handleCancelAppt = async (id) => {
+    try {
+      await api.put(`/appointments/${id}`, { status: 'Cancelled' });
+      showToast('Appointment cancelled successfully', 'success');
+      await fetchAppointments();
+    } catch (err) {
+      console.error('Failed to cancel appointment', err);
+      showToast(err.response?.data?.error || 'Failed to cancel appointment', 'error');
+    }
+  };
+
+  const getTodayStr = () => {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const checkDoctorAvailability = (doctor, dateStr) => {
+    if (!dateStr || !doctor) return { available: true };
+    const selectedDate = new Date(dateStr);
+    const day = selectedDate.getDay();
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const selectedDayName = dayNames[day].toLowerCase();
+    
+    // Find doctor in staff list
+    const cleanDocName = doctor.trim().toLowerCase();
+    const docObj = staff.find(s => s.role === 'doctor' && (s.name.trim().toLowerCase() === cleanDocName || cleanDocName.includes(s.name.trim().toLowerCase())));
+    
+    if (docObj && docObj.weeklyOff) {
+      let offDays = [];
+      if (Array.isArray(docObj.weeklyOff)) {
+        offDays = docObj.weeklyOff.map(d => String(d).trim().toLowerCase());
+      } else if (typeof docObj.weeklyOff === 'string') {
+        offDays = docObj.weeklyOff.split(',').map(d => d.trim().toLowerCase());
       }
-      return item;
-    }));
-    setSuccess('Appointment cancelled successfully');
-    setTimeout(() => setSuccess(''), 3000);
+      
+      if (offDays.includes(selectedDayName)) {
+        const capitalizedDay = dayNames[day];
+        return { available: false, reason: `Weekly off (${capitalizedDay}). Please select a different date.` };
+      }
+    }
+    return { available: true };
+  };
+
+  const isTimeInPast = (dateStr, timeStr) => {
+    if (!dateStr || !timeStr) return false;
+    
+    const today = getTodayStr();
+    if (dateStr !== today) return false;
+    
+    const d = new Date();
+    const cleanTimeStr = timeStr.trim();
+    // Parse formats like "10:00 AM", "10:00AM", "14:30", "10:00"
+    const match = cleanTimeStr.match(/^(\d+):(\d+)\s*(AM|PM)?$/i);
+    if (!match) return false;
+    
+    let hours = Number(match[1]);
+    let minutes = Number(match[2]);
+    const modifier = match[3];
+    
+    if (modifier) {
+      if (modifier.toUpperCase() === 'PM' && hours < 12) hours += 12;
+      if (modifier.toUpperCase() === 'AM' && hours === 12) hours = 0;
+    }
+    
+    const currentHours = d.getHours();
+    const currentMinutes = d.getMinutes();
+    
+    if (hours < currentHours) return true;
+    if (hours === currentHours && minutes < currentMinutes) return true;
+    return false;
   };
 
   const handleRescheduleAppt = (id) => {
-    setAppointments(prev => prev.map(item => {
-      if (item.id === id) {
-        return { ...item, time: '11:00' };
+    const appt = appointments.find(item => item.id === id);
+    if (appt) {
+      let dateVal = '';
+      if (appt.date) {
+        try {
+          dateVal = new Date(appt.date).toISOString().split('T')[0];
+        } catch (e) {
+          dateVal = appt.date;
+        }
       }
-      return item;
-    }));
-    setSuccess('Appointment rescheduled to 11:00 AM');
-    setTimeout(() => setSuccess(''), 3000);
+      setNewApptData({
+        patientName: appt.patientName,
+        doctor: appt.doctor,
+        dept: appt.dept,
+        time: appt.time,
+        date: dateVal,
+        status: appt.status
+      });
+      setReschedulingApptId(id);
+      setShowNewApptModal(true);
+    }
   };
 
   const handleManageAppt = (id) => {
@@ -1643,13 +1724,40 @@ const AdminDashboard = () => {
     setTimeout(() => setSuccess(''), 3000);
   };
 
-  const handleAddNewAppt = (e) => {
+  const handleAddNewAppt = async (e) => {
     e.preventDefault();
+    if (reschedulingApptId) {
+      try {
+        await api.put(`/appointments/${reschedulingApptId}`, {
+          time: newApptData.time,
+          date: newApptData.date,
+          status: 'Rescheduled'
+        });
+        showToast('Appointment rescheduled successfully', 'success');
+        setReschedulingApptId(null);
+        setShowNewApptModal(false);
+        setNewApptData({
+          patientName: '',
+          doctor: 'Dr. Anjali',
+          dept: 'General',
+          time: '12:00',
+          date: '',
+          status: 'SCHEDULED'
+        });
+        await fetchAppointments();
+      } catch (err) {
+        console.error('Failed to reschedule appointment in Admin', err);
+        showToast(err.response?.data?.error || 'Failed to reschedule appointment', 'error');
+      }
+      return;
+    }
+
     const newId = (appointments.length + 1).toString();
     const randomToken = '#' + Math.floor(1000 + Math.random() * 9000).toString();
     const newEntry = {
       id: newId,
       time: newApptData.time,
+      date: newApptData.date || new Date().toISOString().split('T')[0],
       patientName: newApptData.patientName,
       patientId: randomToken,
       doctor: newApptData.doctor,
@@ -1663,6 +1771,7 @@ const AdminDashboard = () => {
       doctor: 'Dr. Anjali',
       dept: 'General',
       time: '12:00',
+      date: '',
       status: 'SCHEDULED'
     });
     setSuccess('Appointment scheduled successfully');
@@ -1835,6 +1944,7 @@ const AdminDashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('curoxa_superadmin_session');
     navigate('/login');
   };
 
@@ -7086,7 +7196,12 @@ const AdminDashboard = () => {
                               <button
                                 className="eac-action-btn primary"
                                 onClick={() => {
-                                  showToast(`Action: ${alert.actionText} — ${alert.title}`, 'success');
+                                  if (alert.actionText === 'Review Bills') {
+                                    setRevenueTimeframe('all');
+                                    setShowRevenueModal(true);
+                                  } else {
+                                    showToast(`Action: ${alert.actionText} — ${alert.title}`, 'success');
+                                  }
                                 }}
                               >
                                 {alert.actionText} →
@@ -8021,12 +8136,6 @@ const AdminDashboard = () => {
                     All ({dateFilteredAppointments.length})
                   </button>
                   <button 
-                    className={`appt-tab-btn ${activeApptFilter === 'Waiting' ? 'active' : ''}`}
-                    onClick={() => setActiveApptFilter('Waiting')}
-                  >
-                    Waiting ({dateFilteredAppointments.filter(item => item.status === 'IN QUEUE').length})
-                  </button>
-                  <button 
                     className={`appt-tab-btn ${activeApptFilter === 'Completed' ? 'active' : ''}`}
                     onClick={() => setActiveApptFilter('Completed')}
                   >
@@ -8153,6 +8262,9 @@ const AdminDashboard = () => {
                             {item.status === 'CANCELLED' && (
                               <span className="appt-status-badge badge-danger">Cancelled</span>
                             )}
+                            {(item.status === 'Rescheduled' || item.status === 'RESCHEDULED') && (
+                              <span className="appt-status-badge" style={{ backgroundColor: '#E0F2FE', color: '#0369A1' }}>Rescheduled</span>
+                            )}
                           </td>
                           <td style={{ textAlign: 'right' }}>
                             <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
@@ -8162,14 +8274,12 @@ const AdminDashboard = () => {
                               {item.status === 'IN QUEUE' && (
                                 <button className="appt-action-outline-btn" onClick={() => handleManageAppt(item.id)}>Manage</button>
                               )}
-                              {item.status === 'SCHEDULED' && item.patientName === 'Sunita Devi' && (
+                              {item.status === 'SCHEDULED' && (
                                 <>
+                                  <button className="appt-action-outline-btn" onClick={() => handleOpenPatientProfile(item.patientMongoId || item.patientName)}>View</button>
                                   <button className="appt-action-outline-btn" onClick={() => handleRescheduleAppt(item.id)}>Reschedule</button>
                                   <button className="appt-action-outline-btn-red" onClick={() => handleCancelAppt(item.id)}>Cancel</button>
                                 </>
-                              )}
-                              {item.status === 'SCHEDULED' && item.patientName !== 'Sunita Devi' && (
-                                <button className="appt-action-outline-btn" onClick={() => handleOpenPatientProfile(item.patientMongoId || item.patientName)}>View</button>
                               )}
                               {item.status === 'CANCELLED' && (
                                 <span style={{ color: '#94A3B8', fontSize: '13px', fontWeight: 600, paddingRight: '12px' }}>Cancelled</span>
@@ -11849,11 +11959,11 @@ const AdminDashboard = () => {
 
       {/* Pop-up New Appointment Modal Overlay */}
       {showNewApptModal && (
-        <div className="admin-modal-overlay" onClick={() => setShowNewApptModal(false)}>
+        <div className="admin-modal-overlay" onClick={() => { setShowNewApptModal(false); setReschedulingApptId(null); }}>
           <div className="admin-modal-card" onClick={e => e.stopPropagation()}>
             <div className="admin-modal-header">
-              <span className="admin-modal-title">Schedule New Appointment</span>
-              <button className="admin-modal-close-btn" onClick={() => setShowNewApptModal(false)}>
+              <span className="admin-modal-title">{reschedulingApptId ? 'Reschedule Appointment' : 'Schedule New Appointment'}</span>
+              <button className="admin-modal-close-btn" onClick={() => { setShowNewApptModal(false); setReschedulingApptId(null); }}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
               </button>
             </div>
@@ -11868,26 +11978,54 @@ const AdminDashboard = () => {
                   onChange={e => setNewApptData({...newApptData, patientName: e.target.value})} 
                   placeholder="e.g. Ramesh Kumar" 
                   required 
+                  readOnly={!!reschedulingApptId}
+                  style={reschedulingApptId ? { background: '#F1F5F9', cursor: 'not-allowed', fontWeight: 600 } : {}}
                 />
               </div>
               <div className="admin-input-group">
                 <label className="admin-input-label">Select Doctor</label>
-                <select 
+                {reschedulingApptId ? (
+                  <input 
+                    type="text" 
+                    className="admin-text-input" 
+                    value={newApptData.doctor}
+                    readOnly
+                    style={{ background: '#F1F5F9', cursor: 'not-allowed', fontWeight: 600 }}
+                  />
+                ) : (
+                  <select 
+                    className="admin-text-input" 
+                    value={newApptData.doctor}
+                    onChange={e => {
+                      const doc = e.target.value;
+                      let dept = 'General';
+                      if (doc === 'Dr. Rajan') dept = 'Ortho';
+                      if (doc === 'Dr. Mehta') dept = 'Cardio';
+                      setNewApptData({...newApptData, doctor: doc, dept: dept});
+                    }}
+                    required
+                  >
+                    <option value="Dr. Anjali">Dr. Anjali (General)</option>
+                    <option value="Dr. Rajan">Dr. Rajan (Ortho)</option>
+                    <option value="Dr. Mehta">Dr. Mehta (Cardio)</option>
+                  </select>
+                )}
+              </div>
+              <div className="admin-input-group">
+                <label className="admin-input-label">Preferred Date</label>
+                <input 
+                  type="date" 
                   className="admin-text-input" 
-                  value={newApptData.doctor}
-                  onChange={e => {
-                    const doc = e.target.value;
-                    let dept = 'General';
-                    if (doc === 'Dr. Rajan') dept = 'Ortho';
-                    if (doc === 'Dr. Mehta') dept = 'Cardio';
-                    setNewApptData({...newApptData, doctor: doc, dept: dept});
-                  }}
-                  required
-                >
-                  <option value="Dr. Anjali">Dr. Anjali (General)</option>
-                  <option value="Dr. Rajan">Dr. Rajan (Ortho)</option>
-                  <option value="Dr. Mehta">Dr. Mehta (Cardio)</option>
-                </select>
+                  value={newApptData.date} 
+                  min={getTodayStr()}
+                  onChange={e => setNewApptData({...newApptData, date: e.target.value})} 
+                  required 
+                />
+                {!checkDoctorAvailability(newApptData.doctor, newApptData.date).available && (
+                  <div style={{ color: '#EF4444', fontSize: '12px', fontWeight: 600, marginTop: '4px' }}>
+                    {checkDoctorAvailability(newApptData.doctor, newApptData.date).reason}
+                  </div>
+                )}
               </div>
               <div className="admin-input-group">
                 <label className="admin-input-label">Preferred Time slot</label>
@@ -11896,12 +12034,32 @@ const AdminDashboard = () => {
                   className="admin-text-input" 
                   value={newApptData.time} 
                   onChange={e => setNewApptData({...newApptData, time: e.target.value})} 
-                  placeholder="e.g. 11:30" 
+                  placeholder="e.g. 10:00 AM or 14:30" 
                   required 
                 />
+                {isTimeInPast(newApptData.date, newApptData.time) && (
+                  <div style={{ color: '#EF4444', fontSize: '12px', fontWeight: 600, marginTop: '4px' }}>
+                    Cannot select a past time slot for today.
+                  </div>
+                )}
               </div>
-              <button type="submit" className="admin-submit-btn" style={{ marginTop: '16px' }}>
-                Schedule Appointment
+              {reschedulingApptId && (
+                <div className="admin-input-group">
+                  <label className="admin-input-label">Payment Status</label>
+                  <span style={{ fontSize: '13px', fontWeight: 800, color: '#15803D', background: '#DCFCE7', padding: '6px 12px', borderRadius: '6px', display: 'inline-block' }}>Paid</span>
+                </div>
+              )}
+              <button 
+                type="submit" 
+                className="admin-submit-btn" 
+                style={{ 
+                  marginTop: '16px', 
+                  opacity: (!checkDoctorAvailability(newApptData.doctor, newApptData.date).available || isTimeInPast(newApptData.date, newApptData.time)) ? 0.6 : 1,
+                  cursor: (!checkDoctorAvailability(newApptData.doctor, newApptData.date).available || isTimeInPast(newApptData.date, newApptData.time)) ? 'not-allowed' : 'pointer'
+                }} 
+                disabled={!checkDoctorAvailability(newApptData.doctor, newApptData.date).available || isTimeInPast(newApptData.date, newApptData.time)}
+              >
+                {reschedulingApptId ? 'Confirm Reschedule' : 'Schedule Appointment'}
               </button>
             </form>
           </div>
@@ -12544,7 +12702,7 @@ const AdminDashboard = () => {
 
       {showRevenueModal && (
         <div className="admin-modal-overlay" data-lenis-prevent onClick={() => setShowRevenueModal(false)}>
-          <div className="admin-modal-card" onClick={e => e.stopPropagation()} style={{ maxWidth: '520px', padding: '24px' }}>
+          <div className="admin-modal-card" onClick={e => e.stopPropagation()} style={{ maxWidth: '520px', padding: '24px', maxHeight: '85vh', overflowY: 'auto' }}>
             <div className="admin-modal-header" style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '12px', marginBottom: '20px' }}>
               <span className="admin-modal-title" style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A' }}>Detailed Revenue Breakdown</span>
               <button className="admin-modal-close-btn" onClick={() => setShowRevenueModal(false)}>
@@ -12682,6 +12840,52 @@ const AdminDashboard = () => {
                     <span style={{ fontSize: '13.5px', fontWeight: 650, color: '#92400E' }}>Outstanding / Pending Bills</span>
                     <span style={{ fontSize: '14.5px', fontWeight: 800, color: '#B45309' }}>₹{breakdown.pending.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                   </div>
+
+                  {(() => {
+                    const unpaidBillsList = bills.filter(b => {
+                      if (b.status !== 'Unpaid') return false;
+                      if (revenueTimeframe === 'today') {
+                        const bd = new Date(b.createdAt);
+                        const today = new Date();
+                        return bd.getDate() === today.getDate() &&
+                               bd.getMonth() === today.getMonth() &&
+                               bd.getFullYear() === today.getFullYear();
+                      }
+                      return true;
+                    });
+
+                    if (unpaidBillsList.length === 0) return null;
+
+                    return (
+                      <div style={{ marginTop: '16px', borderTop: '1.5px solid #F1F5F9', paddingTop: '16px' }}>
+                        <span style={{ fontSize: '13px', fontWeight: 800, color: '#0F172A', textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>
+                          Outstanding Bills List ({unpaidBillsList.length})
+                        </span>
+                        <div style={{ maxHeight: '180px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }} data-lenis-prevent="true">
+                          {unpaidBillsList.map(b => (
+                            <div key={b._id || b.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', backgroundColor: '#FEF2F2', borderRadius: '8px', border: '1px solid #FEE2E2' }}>
+                              <div style={{ textAlign: 'left' }}>
+                                <div style={{ fontSize: '13px', fontWeight: 700, color: '#991B1B' }}>
+                                  {b.patientId?.name || 'Walk-in Patient'}
+                                </div>
+                                <div style={{ fontSize: '11.5px', color: '#B91C1C', fontWeight: 550 }}>
+                                  {b.items?.map(item => item.description).join(', ') || 'No itemized details'}
+                                </div>
+                              </div>
+                              <div style={{ textAlign: 'right' }}>
+                                <span style={{ fontSize: '13.5px', fontWeight: 800, color: '#991B1B' }}>
+                                  ₹{(b.totalAmount || 0).toLocaleString()}
+                                </span>
+                                <div style={{ fontSize: '10.5px', color: '#B91C1C', fontWeight: 600 }}>
+                                  {b.createdAt ? new Date(b.createdAt).toLocaleDateString() : ''}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               );
             })()}

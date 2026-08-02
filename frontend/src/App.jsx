@@ -89,7 +89,7 @@ const ProtectedRoute = ({ children, targetRole }) => {
         'inventory': 'inventory'
       };
       const moduleKey = moduleMapping[targetRole];
-      if (moduleKey && tenantModules[moduleKey] && tenantModules[moduleKey].enabled === false) {
+      if (moduleKey && moduleKey !== 'inventory' && tenantModules[moduleKey] && tenantModules[moduleKey].enabled === false) {
         console.warn(`[GATING] Module ${moduleKey} is disabled for this tenant. Access denied.`);
         return <Navigate to="/login" replace />;
       }
@@ -161,6 +161,7 @@ function App() {
 
     const handleLogoutEvent = () => {
       console.log('[SOCKET] Logout event caught, disconnecting socket...');
+      localStorage.removeItem('curoxa_superadmin_session');
       socket.disconnect();
     };
 
@@ -184,6 +185,7 @@ function App() {
           localStorage.removeItem('user');
           localStorage.removeItem('tenantId');
           localStorage.removeItem('tenantModules');
+          localStorage.removeItem('curoxa_superadmin_session');
           window.dispatchEvent(new CustomEvent('curoxa_logout'));
           window.location.href = '/login';
         }
