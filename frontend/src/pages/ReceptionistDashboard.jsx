@@ -4379,10 +4379,25 @@ const ReceptionistDashboard = () => {
 
                                 {/* Payment */}
                                 <td style={{ padding: '16px 12px' }}>
-                                  <div>
-                                    <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#1E293B' }}>₹550.00</div>
-                                    <div style={{ fontSize: '10px', color: '#16A34A', fontWeight: 800, marginTop: '2px' }}>PAID</div>
-                                  </div>
+                                  {(() => {
+                                    const associatedBill = bills.find(b => {
+                                      const appBId = b.appointmentId?._id || b.appointmentId;
+                                      return appBId && appBId.toString() === app._id.toString();
+                                    });
+                                    const feeVal = associatedBill ? associatedBill.totalAmount : (app.doctorId?.consultationFee || 500);
+                                    const payStatus = associatedBill?.status || 'Unpaid';
+                                    return (
+                                      <div>
+                                        <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#1E293B' }}>₹{Number(feeVal).toFixed(2)}</div>
+                                        <div style={{ 
+                                          fontSize: '10px', 
+                                          color: payStatus === 'Paid' ? '#16A34A' : '#DC2626', 
+                                          fontWeight: 800, 
+                                          marginTop: '2px' 
+                                        }}>{payStatus.toUpperCase()}</div>
+                                      </div>
+                                    );
+                                  })()}
                                 </td>
                               </tr>
                             );
@@ -4490,8 +4505,19 @@ const ReceptionistDashboard = () => {
                           <div>
                             <div style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Department</div>
                             <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#0F172A', marginTop: '4px', lineHeight: '1.4' }}>
-                              {(selectedProfileAppointment.doctorId?.role || 'Cardiology').replace('Doctor', '').trim() + ' Wing'}<br />
-                              <span style={{ color: '#64748B', fontWeight: 500 }}>2nd Floor, Room 204</span>
+                              {((selectedProfileAppointment.doctorId?.specialty || selectedProfileAppointment.doctorId?.role || 'Cardiology').replace('Doctor', '').trim() + ' Wing')}<br />
+                              <span style={{ color: '#64748B', fontWeight: 500 }}>
+                                {(() => {
+                                  const docId = String(selectedProfileAppointment.doctorId?._id || '');
+                                  let sum = 0;
+                                  for (let i = 0; i < docId.length; i++) sum += docId.charCodeAt(i);
+                                  const floorNum = (sum % 4) + 1;
+                                  const roomNum = floorNum * 100 + (sum % 20) + 1;
+                                  const suffixes = ['st', 'nd', 'rd', 'th'];
+                                  const suffix = floorNum <= 3 ? suffixes[floorNum - 1] : 'th';
+                                  return `${floorNum}${suffix} Floor, Room ${roomNum}`;
+                                })()}
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -4507,8 +4533,8 @@ const ReceptionistDashboard = () => {
                           <div>
                             <div style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Location</div>
                             <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#0F172A', marginTop: '4px', lineHeight: '1.4' }}>
-                              Main Medical Plaza<br />
-                              <span style={{ color: '#64748B', fontWeight: 500 }}>Downtown Campus</span>
+                              {currentUser?.tenantName || 'Main Medical Plaza'}<br />
+                              <span style={{ color: '#64748B', fontWeight: 500 }}>{selectedProfileAppointment.doctorId?.address || 'Downtown Campus'}</span>
                             </div>
                           </div>
                         </div>
