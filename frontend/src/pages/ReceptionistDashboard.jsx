@@ -2424,7 +2424,7 @@ const ReceptionistDashboard = () => {
       }));
       
       const isCurrentDoctorAlreadyQueued = formData.doctorId && additionalApptsList.some(appt => String(appt.doctorId) === String(formData.doctorId));
-      if ((formData.doctorId && selectedSlot && !isCurrentDoctorAlreadyQueued) || (additionalApptsList.length === 0)) {
+      if (formData.doctorId && selectedSlot && !isCurrentDoctorAlreadyQueued) {
         const docObj = doctors.find(d => String(d._id) === String(formData.doctorId));
         items.push({
           description: `Consultation (${docObj ? docObj.name : 'Doctor'})`,
@@ -6199,11 +6199,11 @@ const ReceptionistDashboard = () => {
                               <span>₹{Number(item.amount).toFixed(2)}</span>
                             </div>
                           ))}
-                          {!isExistingPatient && <div className="billing-row"><span>Registration Fee</span> <span>₹50.00</span></div>}
+                          {!isExistingPatient && getBillingItems().length > 0 && <div className="billing-row"><span>Registration Fee</span> <span>₹50.00</span></div>}
                           <div className="billing-total">
                             <span>Total Amount</span> 
                             <span>
-                              ₹{(getBillingItems().reduce((sum, item) => sum + item.amount, 0) + (isExistingPatient ? 0 : 50)).toFixed(2)}
+                              ₹{(getBillingItems().reduce((sum, item) => sum + item.amount, 0) + ((!isExistingPatient && getBillingItems().length > 0) ? 50 : 0)).toFixed(2)}
                             </span>
                           </div>
                       </div>
