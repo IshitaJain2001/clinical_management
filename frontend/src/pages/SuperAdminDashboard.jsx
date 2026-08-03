@@ -4,7 +4,20 @@ import * as Icons from 'lucide-react';
 import { socket } from '../utils/socket';
 import { handleAutoLogout } from '../utils/api';
 
+const originalFetch = window.fetch;
+const fetch = async (url, options = {}) => {
+  const baseUrl = import.meta.env.VITE_API_URL || '/api';
+  let targetUrl = url;
+  if (url && typeof url === 'string' && url.startsWith('/api')) {
+    if (baseUrl.startsWith('http')) {
+      targetUrl = url.replace('/api', baseUrl);
+    }
+  }
+  return originalFetch(targetUrl, options);
+};
+
 const LucideIcon = ({ name, ...props }) => {
+
   if (!name) return <Icons.HelpCircle {...props} />;
   const camelName = name
     .split('-')

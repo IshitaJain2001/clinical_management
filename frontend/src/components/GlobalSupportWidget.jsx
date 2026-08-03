@@ -1,6 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { socket } from '../utils/socket';
 
+const originalFetch = window.fetch;
+const fetch = async (url, options = {}) => {
+  const baseUrl = import.meta.env.VITE_API_URL || '/api';
+  let targetUrl = url;
+  if (url && typeof url === 'string' && url.startsWith('/api')) {
+    if (baseUrl.startsWith('http')) {
+      targetUrl = url.replace('/api', baseUrl);
+    }
+  }
+  return originalFetch(targetUrl, options);
+};
+
 export default function GlobalSupportWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [tickets, setTickets] = useState([]);

@@ -47,7 +47,6 @@ const Login = () => {
       setShowPasswordChangedModal(true);
       localStorage.removeItem('logout_reason');
     } else if (reason === 'session_expired' || reason === 'backend_disconnected') {
-      setError('Backend session disconnected or connection lost. You have been automatically logged out.');
       localStorage.removeItem('logout_reason');
     }
   }, []);
