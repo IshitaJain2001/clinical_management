@@ -302,7 +302,9 @@ export default function HRPayroll({ onExit, initialTab = 'Dashboard', initialIsA
           doctorSlots: user.doctorSlots || [],
           weeklyOff: user.weeklyOff || [],
           carriedForwardLeaves: user.carriedForwardLeaves || 0,
-          monthlyLeaveAllocation: user.monthlyLeaveAllocation || { sick: 1, casual: 1, annual: 1.25 }
+          monthlyLeaveAllocation: user.monthlyLeaveAllocation || { sick: 1, casual: 1, annual: 1.25 },
+          documents: user.documents || [],
+          consultationFee: user.consultationFee
         };
       });
       setEmployees(mappedBackendEmployees);
