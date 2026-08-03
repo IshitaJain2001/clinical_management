@@ -2069,13 +2069,6 @@ const SuperAdminDashboard = () => {
     }
   }, [selectedTicketId, tickets.find(t => t._id === selectedTicketId)?.messages?.length]);
 
-  useEffect(() => {
-    if (isOnboardingWizardOpen && wizardHospital && !wizardHospital.contractStartDate) {
-      const todayStr = new Date().toLocaleDateString('sv-SE');
-      updateWizardField('contractStartDate', todayStr);
-    }
-  }, [isOnboardingWizardOpen, wizardHospital?.contractStartDate]);
-
   const fetchBroadcasts = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -2605,6 +2598,13 @@ const SuperAdminDashboard = () => {
         return updated;
       });
     };
+
+    useEffect(() => {
+      if (isOnboardingWizardOpen && wizardHospital && !wizardHospital.contractStartDate) {
+        const todayStr = new Date().toLocaleDateString('sv-SE');
+        updateWizardField('contractStartDate', todayStr);
+      }
+    }, [isOnboardingWizardOpen, wizardHospital?.contractStartDate]);
 
     const isModuleEnabled = (moduleKey) => {
       if (wizardHospital.subscriptionPlan === 'custom') {
