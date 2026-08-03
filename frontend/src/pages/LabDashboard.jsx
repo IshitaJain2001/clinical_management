@@ -3707,13 +3707,9 @@ const LabDashboard = () => {
                               onChange={e => setCatalogForm({ ...catalogForm, category: e.target.value })}
                               style={{ width: '100%', height: '40px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 10px', fontSize: '13px', fontWeight: 600, background: '#FFF' }}
                             >
-                              <option value="Hematology">Hematology</option>
-                              <option value="Biochemistry">Biochemistry</option>
-                              <option value="Serology">Serology</option>
-                              <option value="Microbiology">Microbiology</option>
-                              <option value="Pathology">Pathology</option>
-                              <option value="Radiology">Radiology</option>
-                              <option value="Endocrinology">Endocrinology</option>
+                              {Array.from(new Set(labTestCatalog.map(item => (item.category || 'General').trim()).filter(Boolean))).sort().map(cat => (
+                                <option key={cat} value={cat}>{cat}</option>
+                              ))}
                             </select>
                           </div>
                           <div>
