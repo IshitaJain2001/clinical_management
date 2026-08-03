@@ -1308,8 +1308,16 @@ const ReceptionistDashboard = () => {
       });
       setPatientsList(sortedPatients);
 
-      const apps = await api.get('/appointments');
-      const sortedApps = (apps.data || []).sort((a, b) => {
+      const [appsRes, docsRes, staffRes, indentsRes, medsRes, billsRes] = await Promise.all([
+        api.get('/appointments'),
+        api.get('/auth/doctors'),
+        api.get('/auth/users/all').catch(() => ({ data: [] })),
+        api.get('/indents'),
+        api.get('/medicines'),
+        api.get('/billing')
+      ]);
+
+      const sortedApps = (appsRes.data || []).sort((a, b) => {
         const aCompleted = a.status === 'Completed' || a.status === 'Cancelled' || a.status === 'Checked Out';
         const bCompleted = b.status === 'Completed' || b.status === 'Cancelled' || b.status === 'Checked Out';
         if (aCompleted && !bCompleted) return 1;
@@ -1323,25 +1331,12 @@ const ReceptionistDashboard = () => {
         }
         return 0;
       });
+      
       setAppointments(sortedApps);
-
-      const docs = await api.get('/auth/doctors');
-      setDoctors(docs.data);
-
-      try {
-        const staffRes = await api.get('/auth/users/all');
-        setStaffList(staffRes.data || []);
-      } catch (err) {
-        console.error("Failed to fetch staff list:", err);
-      }
-
-      const indentsRes = await api.get('/indents');
+      setDoctors(docsRes.data);
+      setStaffList(staffRes.data || []);
       setIndents(indentsRes.data);
-
-      const medsRes = await api.get('/medicines');
       setMedicines(medsRes.data);
-
-      const billsRes = await api.get('/billing');
       setBills(billsRes.data);
 
       try {
@@ -4699,33 +4694,13 @@ const ReceptionistDashboard = () => {
                                 gap: '8px'
                               }}
                               onClick={() => {
-                                setReschedulingAppointment(selectedProfileAppointment);
-                                setIsExistingPatient(true);
-                                setSelectedPatient(selectedProfileAppointment.patientId);
-                                setFormData({
-                                  name: selectedProfileAppointment.patientId?.name || '',
-                                  age: selectedProfileAppointment.patientId?.age || '',
-                                  gender: selectedProfileAppointment.patientId?.gender || '',
-                                  contact: selectedProfileAppointment.patientId?.contact || '',
-                                  email: selectedProfileAppointment.patientId?.email || '',
-                                  doctorId: selectedProfileAppointment.doctorId?._id || selectedProfileAppointment.doctorId || '',
-                                  bloodGroup: selectedProfileAppointment.patientId?.bloodGroup || '',
-                                  address: selectedProfileAppointment.patientId?.address || '',
-                                  medicalHistory: selectedProfileAppointment.patientId?.medicalHistory || ''
-                                });
-                                let apptDateVal = '';
-                                if (selectedProfileAppointment.date) {
-                                  try {
-                                    apptDateVal = new Date(selectedProfileAppointment.date).toISOString().split('T')[0];
-                                  } catch (e) {
-                                    apptDateVal = '';
-                                  }
+                                if (selectedProfileAppointment) {
+                                  setIsReschedulingProfileAppt(true);
+                                  const d = new Date(selectedProfileAppointment.date);
+                                  const dateVal = !isNaN(d.getTime()) ? d.toISOString().split('T')[0] : '';
+                                  setRescheduleProfileDate(dateVal);
+                                  setRescheduleProfileTime(selectedProfileAppointment.time || '');
                                 }
-                                setBookingDate(apptDateVal);
-                                setSelectedSlot(selectedProfileAppointment.time || '');
-                                setBookingType('opd');
-                                setSelectedSymptoms(selectedProfileAppointment.reason ? selectedProfileAppointment.reason.split(', ') : []);
-                                switchTab('registration-form');
                               }}
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
