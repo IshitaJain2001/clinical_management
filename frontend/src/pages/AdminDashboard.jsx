@@ -6338,7 +6338,7 @@ const AdminDashboard = () => {
               {/* Card 1: Today's Registrations */}
               <div 
                 className="admin-kpi-card-new"
-                style={{ background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)', border: 'none', cursor: 'pointer', position: 'relative', overflow: 'hidden' }}
+                style={{ background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '150px' }}
                 onClick={() => { setSelectedPatientDateFilter('Today'); setActiveTab('patients'); }}
               >
                 <div className="kpi-card-top-row-new">
@@ -6347,36 +6347,34 @@ const AdminDashboard = () => {
                   </div>
                   <span className="kpi-pill-badge-new" style={{ background: 'rgba(37,99,235,0.15)', color: '#1D4ED8' }}>Patients</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#1E40AF', opacity: 0.8 }}>+{todayPatientsCount} today</span>
-                </div>
                 <div>
-                  <div className="kpi-label-new" style={{ color: '#1E40AF' }}>Today's Registrations</div>
-                  <div className="kpi-value-new" style={{ color: '#1E3A8A', fontSize: '40px' }}>{todayPatientsCount}</div>
+                  <div className="kpi-label-new" style={{ color: '#1E40AF', marginBottom: '6px' }}>Today's Registrations</div>
+                  <div className="kpi-value-new" style={{ color: '#1E3A8A', fontSize: '36px' }}>{todayPatientsCount}</div>
                 </div>
               </div>
 
               {/* Card 2: Appointments Today */}
               <div 
                 className="admin-kpi-card-new"
-                style={{ background: 'linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%)', border: 'none', cursor: 'pointer' }}
+                style={{ background: 'linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%)', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '150px' }}
                 onClick={() => { setSelectedDateFilter('Today'); setActiveTab('appointments'); }}
               >
                 <div className="kpi-card-top-row-new">
                   <div className="kpi-icon-container-new" style={{ background: 'rgba(124,58,237,0.12)', color: '#7C3AED' }}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
                   </div>
+                  <span className="kpi-pill-badge-new" style={{ background: 'rgba(124,58,237,0.15)', color: '#6B21A8' }}>Appointments</span>
                 </div>
                 <div>
-                  <div className="kpi-label-new" style={{ color: '#6B21A8' }}>Appointments Today</div>
-                  <div className="kpi-value-new" style={{ color: '#581C87', fontSize: '40px' }}>{todayAppts.length}</div>
+                  <div className="kpi-label-new" style={{ color: '#6B21A8', marginBottom: '6px' }}>Appointments Today</div>
+                  <div className="kpi-value-new" style={{ color: '#581C87', fontSize: '36px' }}>{todayAppts.length}</div>
                 </div>
               </div>
 
               {/* Card 3: Today's Revenue */}
               <div 
                 className="admin-kpi-card-new"
-                style={{ background: 'linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%)', border: 'none', cursor: 'pointer' }}
+                style={{ background: 'linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%)', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '150px' }}
                 onClick={() => { setRevenueTimeframe('today'); setShowRevenueModal(true); }}
               >
                 <div className="kpi-card-top-row-new">
@@ -6386,15 +6384,15 @@ const AdminDashboard = () => {
                   <span className="kpi-pill-badge-new" style={{ background: 'rgba(16,185,129,0.15)', color: '#047857' }}>Collections</span>
                 </div>
                 <div>
-                  <div className="kpi-label-new" style={{ color: '#065F46' }}>Today's Revenue</div>
-                  <div className="kpi-value-new" style={{ color: '#064E3B', fontSize: '40px' }}>₹{todayRevenue.toLocaleString('en-IN')}</div>
+                  <div className="kpi-label-new" style={{ color: '#065F46', marginBottom: '6px' }}>Today's Revenue</div>
+                  <div className="kpi-value-new" style={{ color: '#064E3B', fontSize: '36px' }}>₹{todayRevenue.toLocaleString('en-IN')}</div>
                 </div>
               </div>
 
               {/* Card 4: Staff Present Today */}
               <div 
                 className="admin-kpi-card-new"
-                style={{ background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)', border: 'none', cursor: 'pointer' }}
+                style={{ background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '150px' }}
                 onClick={() => { setActiveTab('workforce'); }}
               >
                 <div className="kpi-card-top-row-new">
@@ -6404,8 +6402,8 @@ const AdminDashboard = () => {
                   <span className="kpi-pill-badge-new" style={{ background: 'rgba(217,119,6,0.15)', color: '#92400E' }}>Attendance</span>
                 </div>
                 <div>
-                  <div className="kpi-label-new" style={{ color: '#92400E' }}>Staff Present Today</div>
-                  <div className="kpi-value-new" style={{ color: '#78350F', fontSize: '40px' }}>{staffPresentCount}</div>
+                  <div className="kpi-label-new" style={{ color: '#92400E', marginBottom: '6px' }}>Staff Present Today</div>
+                  <div className="kpi-value-new" style={{ color: '#78350F', fontSize: '36px' }}>{staffPresentCount}</div>
                 </div>
               </div>
             </div>
@@ -6476,15 +6474,7 @@ const AdminDashboard = () => {
                         </div>
 
                         {/* Card Actions */}
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #F1F5F9', paddingTop: '12px' }}>
-                          <div style={{ display: 'flex', gap: '16px' }}>
-                            <button style={{ background: 'none', border: 'none', fontSize: '12.5px', fontWeight: 700, color: '#475569', cursor: 'pointer', padding: 0 }}
-                              onMouseEnter={e => e.currentTarget.style.color = '#2563EB'} onMouseLeave={e => e.currentTarget.style.color = '#475569'}
-                            >Edit</button>
-                            <button style={{ background: 'none', border: 'none', fontSize: '12.5px', fontWeight: 700, color: '#475569', cursor: 'pointer', padding: 0 }}
-                              onMouseEnter={e => e.currentTarget.style.color = '#2563EB'} onMouseLeave={e => e.currentTarget.style.color = '#475569'}
-                            >Extend</button>
-                          </div>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', borderTop: '1px solid #F1F5F9', paddingTop: '12px' }}>
                           <button style={{ background: 'none', border: 'none', fontSize: '12.5px', fontWeight: 700, color: '#EF4444', cursor: 'pointer', padding: 0 }}
                             onClick={() => {
                               if (del.isReal) { handleDirectRevoke(del.staffName, del.permId); }
