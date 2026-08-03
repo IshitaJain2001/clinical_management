@@ -11198,7 +11198,7 @@ const AdminDashboard = () => {
                   </thead>
                   <tbody>
                     {filteredCatalog.map(item => (
-                      <tr key={item._id} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                      <tr key={item._id} style={{ borderBottom: '1px solid #F1F5F9', background: item.isActive ? 'transparent' : '#FFF5F5' }}>
                         <td style={{ padding: '16px 20px' }}>
                           <div>
                             <strong style={{ fontSize: '14px', color: '#0F172A', display: 'block' }}>{item.testName}</strong>

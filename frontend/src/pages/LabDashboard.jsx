@@ -3561,7 +3561,7 @@ const LabDashboard = () => {
                           return matchesQuery && matchesCat;
                         })
                         .map(item => (
-                          <tr key={item._id}>
+                          <tr key={item._id} style={{ background: item.isActive ? 'transparent' : '#FFF5F5' }}>
                             <td>
                               <div>
                                 <strong style={{ fontSize: '14px', color: '#0F172A', display: 'block' }}>{item.testName}</strong>
