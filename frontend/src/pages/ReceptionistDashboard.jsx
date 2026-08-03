@@ -3313,6 +3313,19 @@ const ReceptionistDashboard = () => {
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                 <button 
                   className="btn btn-primary" 
+                  style={{ height: '38px', padding: '0 16px', fontWeight: 700, borderRadius: '10px', background: '#2563EB', color: 'white', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }} 
+                  onClick={() => {
+                    setBookingType('opd');
+                    setIsExistingPatient(null);
+                    setSelectedPatient(null);
+                    setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '' });
+                    switchTab('registration-form');
+                  }}
+                >
+                  <i data-lucide="plus" style={{ width: '16px', strokeWidth: 3 }}></i> Create Appointment
+                </button>
+                <button 
+                  className="btn btn-primary" 
                   style={{ height: '38px', padding: '0 16px', fontWeight: 700, borderRadius: '10px', background: '#059669', color: 'white', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }} 
                   onClick={() => {
                     setBookingType('lab');
@@ -3327,16 +3340,17 @@ const ReceptionistDashboard = () => {
                 </button>
                 <button 
                   className="btn btn-primary" 
-                  style={{ height: '38px', padding: '0 16px', fontWeight: 700, borderRadius: '10px', background: '#2563EB', color: 'white', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }} 
+                  style={{ height: '38px', padding: '0 16px', fontWeight: 700, borderRadius: '10px', background: '#7C3AED', color: 'white', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }} 
                   onClick={() => {
-                    setBookingType('opd');
+                    setBookingType('service');
                     setIsExistingPatient(null);
                     setSelectedPatient(null);
                     setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '' });
                     switchTab('registration-form');
                   }}
                 >
-                  <i data-lucide="plus" style={{ width: '16px', strokeWidth: 3 }}></i> Create Appointment
+                  <i data-lucide="sparkles" style={{ width: '16px', height: '16px' }}></i>
+                  Book Direct Service
                 </button>
                 <button 
                   className="btn btn-secondary" 
@@ -5109,80 +5123,7 @@ const ReceptionistDashboard = () => {
                     </button>
                   </div>
 
-                  {/* Sub-toggle: OPD Appointment vs Direct Lab Test Order vs Clinical Service */}
-                  <div style={{ display: 'flex', gap: '12px', marginBottom: '32px', background: '#F8FAFC', padding: '8px', borderRadius: '12px', border: '1px solid #E2E8F0' }} className="mobile-stack">
-                    <button 
-                      type="button"
-                      onClick={() => setBookingType('opd')}
-                      style={{
-                        flex: 1,
-                        height: '44px',
-                        borderRadius: '8px',
-                        border: bookingType === 'opd' ? '2px solid #2563EB' : '1px solid transparent',
-                        background: bookingType === 'opd' ? '#2563EB' : 'transparent',
-                        color: bookingType === 'opd' ? '#FFFFFF' : '#64748B',
-                        fontWeight: 800,
-                        fontSize: '13px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '6px',
-                        transition: 'all 0.2s'
-                      }}
-                    >
-                      <i data-lucide="stethoscope" style={{ width: '16px', height: '16px' }}></i>
-                      Doctor OPD Appointment
-                    </button>
 
-                    <button 
-                      type="button"
-                      onClick={() => setBookingType('lab')}
-                      style={{
-                        flex: 1,
-                        height: '44px',
-                        borderRadius: '8px',
-                        border: bookingType === 'lab' ? '2px solid #059669' : '1px solid transparent',
-                        background: bookingType === 'lab' ? '#059669' : 'transparent',
-                        color: bookingType === 'lab' ? '#FFFFFF' : '#64748B',
-                        fontWeight: 800,
-                        fontSize: '13px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '6px',
-                        transition: 'all 0.2s'
-                      }}
-                    >
-                      <i data-lucide="flask-conical" style={{ width: '16px', height: '16px' }}></i>
-                      Direct Lab Test Order
-                    </button>
-
-                    <button 
-                      type="button"
-                      onClick={() => setBookingType('service')}
-                      style={{
-                        flex: 1,
-                        height: '44px',
-                        borderRadius: '8px',
-                        border: bookingType === 'service' ? '2px solid #7C3AED' : '1px solid transparent',
-                        background: bookingType === 'service' ? '#7C3AED' : 'transparent',
-                        color: bookingType === 'service' ? '#FFFFFF' : '#64748B',
-                        fontWeight: 800,
-                        fontSize: '13px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '6px',
-                        transition: 'all 0.2s'
-                      }}
-                    >
-                      <i data-lucide="sparkles" style={{ width: '16px', height: '16px' }}></i>
-                      Direct Service (Dental, etc.)
-                    </button>
-                  </div>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
                       <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#3B82F6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '14px' }}>1</div>
@@ -5258,18 +5199,20 @@ const ReceptionistDashboard = () => {
                             </div>
                           )}
                       </div>
-                      <div className="form-group">
-                          <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B' }}>Referred By</label>
-                          <input 
-                            type="text" 
-                            className="form-control" 
-                            placeholder="e.g. Dr. Rajesh Shah or Self" 
-                            style={{ height: '48px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: isExistingPatient ? 700 : 500 }} 
-                            value={formData.referredBy || ''} 
-                            onChange={e => setFormData({...formData, referredBy: e.target.value})} 
-                            readOnly={isExistingPatient}
-                          />
-                      </div>
+                      {bookingType === 'lab' && (
+                        <div className="form-group">
+                            <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B' }}>Referred By</label>
+                            <input 
+                              type="text" 
+                              className="form-control" 
+                              placeholder="e.g. Dr. Rajesh Shah or Self" 
+                              style={{ height: '48px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: isExistingPatient ? 700 : 500 }} 
+                              value={formData.referredBy || ''} 
+                              onChange={e => setFormData({...formData, referredBy: e.target.value})} 
+                              readOnly={isExistingPatient}
+                            />
+                        </div>
+                      )}
                       {bookingType !== 'lab' && bookingType !== 'service' && (
                         <>
                           <div className="form-group">
