@@ -4854,6 +4854,33 @@ const SuperAdminDashboard = () => {
 
             </div>
           </div>
+      {toast && (
+        <div style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          background: toast.type === 'error' ? '#FEF2F2' : '#EFF6FF',
+          border: toast.type === 'error' ? '1px solid #FCA5A5' : '1px solid #BFDBFE',
+          borderRadius: '8px',
+          padding: '12px 18px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+          zIndex: 99999,
+          animation: 'toastSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+        }}>
+          <div style={{
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            background: toast.type === 'error' ? '#EF4444' : '#3B82F6'
+          }} />
+          <span style={{ fontSize: '13.5px', fontWeight: 700, color: toast.type === 'error' ? '#991B1B' : '#1E3A8A' }}>
+            {toast.message}
+          </span>
+        </div>
+      )}
       </div>
     );
   };
