@@ -425,7 +425,8 @@ export default function HRPayroll({ onExit, initialTab = 'Dashboard', initialIsA
         weeklyOff: mergedData.weeklyOff,
         carriedForwardLeaves: mergedData.carriedForwardLeaves,
         monthlyLeaveAllocation: mergedData.monthlyLeaveAllocation,
-        documents: mergedData.documents
+        documents: mergedData.documents,
+        consultationFee: mergedData.consultationFee !== undefined && mergedData.consultationFee !== '' ? Number(mergedData.consultationFee) : undefined
       };
       if (mergedData.password) {
         payload.password = mergedData.password;
