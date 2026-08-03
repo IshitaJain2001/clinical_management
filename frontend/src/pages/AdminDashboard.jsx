@@ -11169,7 +11169,7 @@ const AdminDashboard = () => {
                       <button
                         key={cat}
                         type="button"
-                        onClick={() => setCatalogCategoryFilter(cat)}
+                          onClick={() => setCatalogCategoryFilter(cat)}
                         style={{
                           padding: '6px 14px', borderRadius: '8px', border: 'none', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer',
                           background: catalogCategoryFilter === cat ? '#EFF6FF' : 'transparent',
@@ -11193,7 +11193,6 @@ const AdminDashboard = () => {
                       <th style={{ padding: '16px 20px', fontSize: '12px', fontWeight: 800, color: '#64748B' }}>HOSPITAL TARIFF</th>
                       <th style={{ padding: '16px 20px', fontSize: '12px', fontWeight: 800, color: '#64748B' }}>SPECIMEN</th>
                       <th style={{ padding: '16px 20px', fontSize: '12px', fontWeight: 800, color: '#64748B' }}>TAT</th>
-                      <th style={{ padding: '16px 20px', fontSize: '12px', fontWeight: 800, color: '#64748B' }}>STATUS</th>
                       <th style={{ padding: '16px 20px', fontSize: '12px', fontWeight: 800, color: '#64748B', textAlign: 'right' }}>ACTIONS</th>
                     </tr>
                   </thead>
@@ -11222,27 +11221,7 @@ const AdminDashboard = () => {
                         <td style={{ padding: '16px 20px' }}>
                           <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>{item.turnaroundTime || '24 Hours'}</span>
                         </td>
-                        <td style={{ padding: '16px 20px' }}>
-                          <span 
-                            onClick={async () => {
-                              try {
-                                await api.put(`/lab-tests/${item._id}`, { isActive: !item.isActive });
-                                showToast(`Test '${item.testName}' ${item.isActive ? 'deactivated' : 'activated'}!`, "success");
-                                fetchLabTestCatalog();
-                              } catch (e) {
-                                showToast("Failed to toggle test status.", "error");
-                              }
-                            }}
-                            style={{
-                              padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 800, cursor: 'pointer',
-                              background: item.isActive ? '#ECFDF5' : '#FEF2F2',
-                              color: item.isActive ? '#047857' : '#DC2626',
-                              border: `1px solid ${item.isActive ? '#A7F3D0' : '#FCA5A5'}`
-                            }}
-                          >
-                            {item.isActive ? 'Active' : 'Inactive'}
-                          </span>
-                        </td>
+
                         <td style={{ padding: '16px 20px', textAlign: 'right' }}>
                           <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                             <button
@@ -11269,19 +11248,27 @@ const AdminDashboard = () => {
                             <button
                               type="button"
                               onClick={async () => {
-                                if (window.confirm(`Delete lab test '${item.testName}' from hospital tariff?`)) {
-                                  try {
-                                    await api.delete(`/lab-tests/${item._id}`);
-                                    showToast(`Lab test '${item.testName}' deleted.`, "success");
-                                    fetchLabTestCatalog();
-                                  } catch (e) {
-                                    showToast("Failed to delete test.", "error");
-                                  }
+                                try {
+                                  await api.put(`/lab-tests/${item._id}`, { isActive: !item.isActive });
+                                  showToast(`Lab test '${item.testName}' ${item.isActive ? 'deactivated' : 'activated'}!`, "success");
+                                  fetchLabTestCatalog();
+                                } catch (e) {
+                                  showToast("Failed to toggle test status.", "error");
                                 }
                               }}
-                              style={{ padding: '6px 12px', background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: '6px', color: '#DC2626', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+                              style={{
+                                padding: '6px 12px',
+                                border: '1px solid',
+                                borderRadius: '6px',
+                                fontSize: '12px',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                background: item.isActive ? '#FEF2F2' : '#ECFDF5',
+                                borderColor: item.isActive ? '#FCA5A5' : '#A7F3D0',
+                                color: item.isActive ? '#DC2626' : '#047857'
+                              }}
                             >
-                              Delete
+                              {item.isActive ? 'Deactivate' : 'Activate'}
                             </button>
                           </div>
                         </td>

@@ -3549,7 +3549,6 @@ const LabDashboard = () => {
                         <th>Dynamic Price</th>
                         <th>Specimen / Tube</th>
                         <th>Turnaround</th>
-                        <th>Status</th>
                         <th style={{ textAlign: 'right' }}>Actions</th>
                       </tr>
                     </thead>
@@ -3584,28 +3583,7 @@ const LabDashboard = () => {
                             </td>
                             <td>
                               <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>{item.turnaroundTime || '24 Hours'}</span>
-                            </td>
-                            <td>
-                              <span 
-                                onClick={async () => {
-                                  try {
-                                    await api.put(`/lab-tests/${item._id}`, { isActive: !item.isActive });
-                                    showToast(`Test '${item.testName}' ${item.isActive ? 'deactivated' : 'activated'}!`);
-                                    fetchData();
-                                  } catch (e) {
-                                    showToast("Failed to toggle test status.");
-                                  }
-                                }}
-                                style={{
-                                  padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 800, cursor: 'pointer',
-                                  background: item.isActive ? '#ECFDF5' : '#FEF2F2',
-                                  color: item.isActive ? '#047857' : '#DC2626',
-                                  border: `1px solid ${item.isActive ? '#A7F3D0' : '#FCA5A5'}`
-                                }}
-                              >
-                                {item.isActive ? 'Active' : 'Inactive'}
-                              </span>
-                            </td>
+                              </td>
                             <td style={{ textAlign: 'right' }}>
                               <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                                 <button
@@ -3632,19 +3610,27 @@ const LabDashboard = () => {
                                 <button
                                   type="button"
                                   onClick={async () => {
-                                    if (window.confirm(`Delete lab test '${item.testName}' from hospital tariff?`)) {
-                                      try {
-                                        await api.delete(`/lab-tests/${item._id}`);
-                                        showToast(`Lab test '${item.testName}' deleted.`);
-                                        fetchData();
-                                      } catch (e) {
-                                        showToast("Failed to delete test.");
-                                      }
+                                    try {
+                                      await api.put(`/lab-tests/${item._id}`, { isActive: !item.isActive });
+                                      showToast(`Lab test '${item.testName}' ${item.isActive ? 'deactivated' : 'activated'}!`);
+                                      fetchData();
+                                    } catch (e) {
+                                      showToast("Failed to toggle test status.");
                                     }
                                   }}
-                                  style={{ padding: '6px 12px', background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: '6px', color: '#DC2626', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+                                  style={{
+                                    padding: '6px 12px',
+                                    border: '1px solid',
+                                    borderRadius: '6px',
+                                    fontSize: '12px',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                    background: item.isActive ? '#FEF2F2' : '#ECFDF5',
+                                    borderColor: item.isActive ? '#FCA5A5' : '#A7F3D0',
+                                    color: item.isActive ? '#DC2626' : '#047857'
+                                  }}
                                 >
-                                  Delete
+                                  {item.isActive ? 'Deactivate' : 'Activate'}
                                 </button>
                               </div>
                             </td>
