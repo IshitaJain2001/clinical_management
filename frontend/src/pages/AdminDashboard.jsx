@@ -10969,34 +10969,7 @@ const AdminDashboard = () => {
                         </div>
                       </div>
 
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569' }}>Chair / Time Slot:</span>
-                        <select
-                          value={item.duration}
-                          onChange={(e) => {
-                            const newDur = e.target.value;
-                            const updated = pricingCatalog.map(p => p.id === item.id ? { ...p, duration: newDur } : p);
-                            handleSavePricingCatalog(updated);
-                          }}
-                          style={{
-                            height: '34px',
-                            border: '1px solid #CBD5E1',
-                            borderRadius: '8px',
-                            padding: '0 8px',
-                            fontSize: '12px',
-                            fontWeight: 700,
-                            color: '#2563EB',
-                            background: 'white',
-                            outline: 'none'
-                          }}
-                        >
-                          <option value="15 Mins Slot">15 Mins Slot</option>
-                          <option value="30 Mins Chair Slot">30 Mins Chair Slot</option>
-                          <option value="45 Mins Chair Slot">45 Mins Chair Slot</option>
-                          <option value="60 Mins Chair Slot">60 Mins Chair Slot</option>
-                          <option value="90 Mins Chair Slot">90 Mins Chair Slot</option>
-                        </select>
-                      </div>
+                      {/* Chair / Time Slot Removed */}
 
                       {/* Delete procedure option */}
                       <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '4px' }}>
@@ -11087,20 +11060,7 @@ const AdminDashboard = () => {
                         </div>
                       </div>
 
-                      <div className="admin-input-group">
-                        <label className="admin-input-label">Chair / Time Slot Duration</label>
-                        <select 
-                          className="admin-text-input"
-                          value={newProcData.duration}
-                          onChange={e => setNewProcData({ ...newProcData, duration: e.target.value })}
-                        >
-                          <option value="15 Mins Slot">15 Mins Slot</option>
-                          <option value="30 Mins Chair Slot">30 Mins Chair Slot</option>
-                          <option value="45 Mins Chair Slot">45 Mins Chair Slot</option>
-                          <option value="60 Mins Chair Slot">60 Mins Chair Slot</option>
-                          <option value="90 Mins Chair Slot">90 Mins Chair Slot</option>
-                        </select>
-                      </div>
+
 
                       <div className="admin-input-group">
                         <label className="admin-input-label">Clinical Description</label>
