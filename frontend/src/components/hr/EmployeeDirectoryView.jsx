@@ -174,7 +174,14 @@ export default function EmployeeDirectoryView({
   const handleCreateEmployee = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
-    if (!newEmp.name || !newEmp.email || !newEmp.staff_id || !newEmp.password) return;
+    if (!newEmp.name || !newEmp.email || !newEmp.phone || !newEmp.password) {
+      setError('Please fill in all mandatory fields (Name, Email, Phone Number, Password).');
+      return;
+    }
+    if (newEmp.phone.length !== 10) {
+      setError('Phone Number must be exactly 10 digits (it will be used as the Login Username).');
+      return;
+    }
     
     if (newEmp.password !== newEmp.confirmPassword) {
       setError('Passwords do not match.');
@@ -546,14 +553,14 @@ export default function EmployeeDirectoryView({
 
                 {/* Username */}
                 <div className="admin-input-group">
-                  <label className="admin-input-label">Username (Staff ID) *</label>
+                  <label className="admin-input-label">Username (Staff ID / Phone Number) *</label>
                   <input 
                     type="text" 
-                    required 
-                    placeholder="e.g. allisonhouse"
-                    value={newEmp.staff_id}
-                    onChange={(e) => setNewEmp({...newEmp, staff_id: e.target.value})}
-                    className="admin-text-input"
+                    readOnly
+                    disabled
+                    placeholder="Auto-populated from Phone Number"
+                    value={newEmp.phone}
+                    className="admin-text-input bg-slate-50 cursor-not-allowed font-semibold text-slate-600"
                     autoComplete="new-password"
                   />
                 </div>
@@ -682,15 +689,16 @@ export default function EmployeeDirectoryView({
 
                 {/* Phone */}
                 <div className="admin-input-group">
-                  <label className="admin-input-label">Phone Number</label>
+                  <label className="admin-input-label">Phone Number *</label>
                   <input 
                     type="tel" 
+                    required
                     maxLength={10}
                     placeholder="e.g. 9876543210"
                     value={newEmp.phone}
                     onChange={(e) => {
                       const val = e.target.value.replace(/\D/g, '').slice(0, 10);
-                      setNewEmp({...newEmp, phone: val});
+                      setNewEmp({...newEmp, phone: val, staff_id: val});
                     }}
                     className="admin-text-input"
                   />
