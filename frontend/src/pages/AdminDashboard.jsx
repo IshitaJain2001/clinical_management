@@ -11167,21 +11167,18 @@ const AdminDashboard = () => {
                       style={{ width: '100%', height: '40px', paddingLeft: '16px', border: '1px solid #E2E8F0', borderRadius: '8px', fontSize: '13px', outline: 'none' }}
                     />
                   </div>
-                  <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
-                    {categories.map(cat => (
-                      <button
-                        key={cat}
-                        type="button"
-                          onClick={() => setCatalogCategoryFilter(cat)}
-                        style={{
-                          padding: '6px 14px', borderRadius: '8px', border: 'none', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer',
-                          background: catalogCategoryFilter === cat ? '#EFF6FF' : 'transparent',
-                          color: catalogCategoryFilter === cat ? '#2563EB' : '#64748B'
-                        }}
-                      >
-                        {cat}
-                      </button>
-                    ))}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748B' }}>CATEGORY:</span>
+                    <select
+                      value={catalogCategoryFilter}
+                      onChange={e => setCatalogCategoryFilter(e.target.value)}
+                      style={{ height: '42px', border: '1px solid #CBD5E1', borderRadius: '10px', padding: '0 14px', fontSize: '13px', fontWeight: 700, color: '#0F172A', background: '#F8FAFC', outline: 'none' }}
+                    >
+                      <option value="All">All Categories ({labTestCatalog.length})</option>
+                      {categories.filter(c => c !== 'All').map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
               </div>
