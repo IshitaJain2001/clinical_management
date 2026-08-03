@@ -6201,7 +6201,7 @@ const AdminDashboard = () => {
               className="alert-outline-badge" 
               onClick={() => setActiveTab('supply')}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
               <span>{totalAlertsCount} alerts</span>
             </div>
 
@@ -6683,7 +6683,9 @@ const AdminDashboard = () => {
                 <div style={{ display: 'flex', alignItems: 'baseline', marginTop: '12px' }}>
                   <h2 style={{ fontSize: '36px', fontWeight: 800, color: '#0F172A', margin: 0 }}>{staff.length}</h2>
                 </div>
-                <p style={{ color: '#64748B', fontSize: '13px', fontWeight: 600, marginTop: '8px', marginBottom: 0 }}>City Care Clinic</p>
+                <p style={{ color: '#64748B', fontSize: '13px', fontWeight: 600, marginTop: '8px', marginBottom: 0 }}>
+                  {currentUser?.tenantName || subscription?.name || 'Sunrise Multispeciality'}
+                </p>
               </div>
 
               <div className="dashboard-widget-card" style={{ padding: '24px' }}>

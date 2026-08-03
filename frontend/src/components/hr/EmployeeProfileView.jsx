@@ -121,7 +121,13 @@ export default function EmployeeProfileView({
         employmentType: employee.employmentType || 'Full-Time',
         reportingManagerName: employee.reportingManagerName || '',
         shiftName: employee.shiftName || 'General Shift',
-        workLocation: employee.workLocation || 'City Care Clinic',
+        workLocation: employee.workLocation || (() => {
+          try {
+            return JSON.parse(localStorage.getItem('user') || '{}').tenantName || 'Sunrise Multispeciality';
+          } catch (e) {
+            return 'Sunrise Multispeciality';
+          }
+        })(),
         noticePeriodDays: employee.noticePeriodDays || 30,
         weeklyOff: employee.weeklyOff || '',
         experienceYears: employee.experienceYears || 0,
@@ -841,7 +847,15 @@ export default function EmployeeProfileView({
                   {isEditingProfessional ? (
                     <input type="text" className="w-full h-8 px-2 border border-slate-200 rounded text-xs outline-none focus:border-blue-500" value={professionalFormData.workLocation} onChange={e => setProfessionalFormData({...professionalFormData, workLocation: e.target.value})} />
                   ) : (
-                    <span className="text-xs font-semibold text-slate-800">{employee.workLocation || 'City Care Clinic'}</span>
+                    <span className="text-xs font-semibold text-slate-800">
+                      {employee.workLocation || (() => {
+                        try {
+                          return JSON.parse(localStorage.getItem('user') || '{}').tenantName || 'Sunrise Multispeciality';
+                        } catch (e) {
+                          return 'Sunrise Multispeciality';
+                        }
+                      })()}
+                    </span>
                   )}
                 </div>
                 <div className="flex gap-4">
