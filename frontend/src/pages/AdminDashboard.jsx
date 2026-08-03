@@ -11090,14 +11090,17 @@ const AdminDashboard = () => {
         {/* TAB: LAB TEST CATALOG & DYNAMIC PRICES (Added for Hospital Admin Global Management) */}
         {activeTab === 'lab-catalog' && (() => {
           const filteredCatalog = labTestCatalog.filter(item => {
-            const matchesCategory = catalogCategoryFilter === 'All' || item.category === catalogCategoryFilter;
+            const matchesCategory = catalogCategoryFilter === 'All' || (item.category || '').trim() === catalogCategoryFilter;
             const matchesQuery = (item.testName || '').toLowerCase().includes(catalogSearchQuery.toLowerCase()) || 
                                  (item.testCode || '').toLowerCase().includes(catalogSearchQuery.toLowerCase()) ||
                                  (item.category || '').toLowerCase().includes(catalogSearchQuery.toLowerCase());
             return matchesCategory && matchesQuery;
           });
 
-          const categories = ['All', 'Hematology', 'Biochemistry', 'Serology', 'Microbiology', 'Pathology', 'Radiology', 'Endocrinology'];
+          const categories = [
+            'All',
+            ...Array.from(new Set(labTestCatalog.map(item => (item.category || 'General').trim()).filter(Boolean))).sort()
+          ];
 
           return (
             <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out', padding: '24px' }}>

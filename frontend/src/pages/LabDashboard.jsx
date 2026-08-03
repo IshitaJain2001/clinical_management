@@ -3528,13 +3528,9 @@ const LabDashboard = () => {
                       style={{ height: '42px', border: '1px solid #CBD5E1', borderRadius: '10px', padding: '0 14px', fontSize: '13px', fontWeight: 700, color: '#0F172A', background: '#F8FAFC', outline: 'none' }}
                     >
                       <option value="All">All Categories ({labTestCatalog.length})</option>
-                      <option value="Hematology">Hematology</option>
-                      <option value="Biochemistry">Biochemistry</option>
-                      <option value="Serology">Serology</option>
-                      <option value="Microbiology">Microbiology</option>
-                      <option value="Pathology">Pathology</option>
-                      <option value="Radiology">Radiology</option>
-                      <option value="Endocrinology">Endocrinology</option>
+                      {Array.from(new Set(labTestCatalog.map(item => (item.category || 'General').trim()).filter(Boolean))).sort().map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
                     </select>
                   </div>
                 </div>
@@ -3557,7 +3553,7 @@ const LabDashboard = () => {
                         .filter(item => {
                           const query = catalogSearchQuery.toLowerCase().trim();
                           const matchesQuery = !query || item.testName.toLowerCase().includes(query) || item.testCode.toLowerCase().includes(query);
-                          const matchesCat = catalogCategoryFilter === 'All' || item.category === catalogCategoryFilter;
+                          const matchesCat = catalogCategoryFilter === 'All' || (item.category || '').trim() === catalogCategoryFilter;
                           return matchesQuery && matchesCat;
                         })
                         .map(item => (
