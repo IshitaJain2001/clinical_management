@@ -75,7 +75,7 @@ router.get('/', async (req, res) => {
 
     const appointments = await Appointment.find(query)
       .populate('patientId', 'name contact age gender')
-      .populate('doctorId', 'name role specialty')
+      .populate('doctorId', 'name role specialty consultationFee')
       .sort({ date: 1, time: 1 });
 
     // Join billingStatus from Billing records
