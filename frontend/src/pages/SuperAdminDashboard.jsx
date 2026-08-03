@@ -2582,10 +2582,21 @@ const SuperAdminDashboard = () => {
     };
 
     const updateWizardField = (field, value) => {
-      setWizardHospital(prev => ({
-        ...prev,
-        [field]: value
-      }));
+      setWizardHospital(prev => {
+        const updated = {
+          ...prev,
+          [field]: value
+        };
+        if (field === 'panNumber') {
+          const pan = (value || '').trim();
+          if (pan.length >= 4) {
+            const last4 = pan.slice(-4);
+            updated.adminPassword = `${last4}@123`;
+            updated.confirmAdminPassword = `${last4}@123`;
+          }
+        }
+        return updated;
+      });
     };
 
     const isModuleEnabled = (moduleKey) => {
