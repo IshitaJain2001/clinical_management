@@ -2928,29 +2928,21 @@ const SuperAdminDashboard = () => {
                             }}>
                               {(() => {
                                 const allTypes = [
-                                  'General Hospital',
-                                  'Multi-Specialty Hospital',
-                                  'Super-Specialty Hospital',
-                                  'Tertiary Care Hospital',
-                                  'Academic / Teaching Medical Center',
-                                  'Community Health Hospital',
-                                  'Specialty Surgical Center',
-                                  'Maternity & Nursing Home',
-                                  'Pediatric / Children Hospital',
-                                  'Eye Care / Ophthalmology Hospital',
-                                  'Dental Clinic & Hospital',
-                                  'Orthopedic & Trauma Care Center',
-                                  'Cardiology & Heart Institute',
-                                  'Oncology / Cancer Care Center',
-                                  'Neurology & Neuro-Surgery Hospital',
-                                  'Psychiatric & Mental Health Institute',
-                                  'Rehabilitation & Physiotherapy Center',
-                                  'AYUSH / Ayurvedic Hospital',
-                                  'Diagnostic & Pathology Center',
-                                  'Day Care & Ambulatory Surgery Center',
-                                  'ENT (Ear, Nose, Throat) Clinic',
-                                  'Dermatology & Cosmetic Clinic',
-                                  'Urology & Kidney Care Center'
+                                  'General Clinics',
+                                  'Child & Women Care',
+                                  'Medicine Specialties',
+                                  'Surgical Specialties',
+                                  'Cancer & Chronic Care',
+                                  'Mental Health',
+                                  'Skin & Cosmetic',
+                                  'Dental',
+                                  'Rehabilitation',
+                                  'Diagnostics',
+                                  'Eye & Hearing',
+                                  'Lifestyle & Wellness',
+                                  'AYUSH (India)',
+                                  'Specialized Clinics',
+                                  'Digital Healthcare'
                                 ];
 
                                 const query = (wizardHospital.hospitalType || '').toLowerCase().trim();
