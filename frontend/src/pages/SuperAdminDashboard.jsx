@@ -2587,10 +2587,8 @@ const SuperAdminDashboard = () => {
     const handlePrevStep = async () => {
       if (wizardStep > 1) {
         const prevStep = wizardStep - 1;
-        const saved = await saveWizardDraft(false, prevStep);
-        if (saved) {
-          setWizardStep(prevStep);
-        }
+        saveWizardDraft(false, prevStep);
+        setWizardStep(prevStep);
       }
     };
 
@@ -2824,10 +2822,8 @@ const SuperAdminDashboard = () => {
                   key={step.id} 
                   onClick={async () => {
                     if (step.id < wizardStep) {
-                      const saved = await saveWizardDraft(false, step.id);
-                      if (saved) {
-                        setWizardStep(step.id);
-                      }
+                      saveWizardDraft(false, step.id);
+                      setWizardStep(step.id);
                     } else if (step.id > wizardStep) {
                       const missing = getStepValidation(wizardStep);
                       if (missing.length > 0) {
