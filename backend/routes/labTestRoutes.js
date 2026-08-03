@@ -15,6 +15,8 @@ const seedCatalogIfEmpty = async (tenantId) => {
     const seenCodes = new Set();
     const docs = DEFAULT_LAB_TESTS.map(item => {
       const doc = { ...item, tenantId };
+      // Enforce active status by default
+      doc.isActive = true;
       let code = doc.testCode ? doc.testCode.trim() : 'LAB-TEST';
       let counter = 1;
       let newCode = code;
@@ -152,6 +154,8 @@ router.post('/seed-default', async (req, res) => {
     const seenCodes = new Set();
     const docs = DEFAULT_LAB_TESTS.map(item => {
       const doc = { ...item, tenantId };
+      // Enforce active status by default
+      doc.isActive = true;
       let code = doc.testCode ? doc.testCode.trim() : 'LAB-TEST';
       let counter = 1;
       let newCode = code;
