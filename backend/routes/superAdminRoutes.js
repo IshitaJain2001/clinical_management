@@ -804,9 +804,14 @@ router.post('/hospitals', async (req, res) => {
       return res.status(400).json({ error: `Hospital code '${hospitalData.code}' is already registered.` });
     }
 
-    const userExists = await User.findOne({ staff_id: adminPhone });
+    const userExists = await User.findOne({
+      $or: [
+        { staff_id: adminPhone },
+        { phone: adminPhone }
+      ]
+    });
     if (userExists) {
-      return res.status(400).json({ error: `Admin phone/login ID '${adminPhone}' is already in use by another user in the system. Please use a unique ID.` });
+      return res.status(400).json({ error: `Admin phone/login ID '${adminPhone}' is already in use by another staff/admin member in the system. Please use a unique ID.` });
     }
 
     const hospital = await SuperAdminHospital.create(hospitalData);

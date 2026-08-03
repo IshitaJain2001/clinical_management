@@ -397,7 +397,6 @@ export default function EmployeeDirectoryView({
                         >
                           {emp.name}
                         </h4>
-                        <span className="text-[11px] font-mono text-slate-400 font-medium block mt-0.5">{emp.id}</span>
                       </div>
                     </div>
                   </td>

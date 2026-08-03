@@ -8,6 +8,7 @@ const patientSchema = new mongoose.Schema({
   contact: { type: String, required: true },
   email: { type: String, default: 'N/A' },
   address: { type: String },
+  referredBy: { type: String, default: '' },
   bloodGroup: { type: String },
   allergies: { type: String, default: 'None' },
   medicalHistory: [{ type: String }],

@@ -38,7 +38,12 @@ router.get("/users/check-username", isHrOrAdmin, async (req, res) => {
   }
   try {
     const cleanUsername = username.toLowerCase().trim();
-    const existingUser = await User.findOne({ staff_id: cleanUsername });
+    const existingUser = await User.findOne({
+      $or: [
+        { staff_id: cleanUsername },
+        { phone: cleanUsername }
+      ]
+    });
     res.json({ available: !existingUser });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -69,12 +74,30 @@ router.post("/users", isHrOrAdmin, async (req, res) => {
   try {
     const cleanUsername = staff_id.toLowerCase().trim();
     const existingUser = await User.findOne({
-      staff_id: { $regex: new RegExp(`^${cleanUsername.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }
+      $or: [
+        { staff_id: { $regex: new RegExp(`^${cleanUsername.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') } },
+        { phone: { $regex: new RegExp(`^${cleanUsername.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') } }
+      ]
     });
     if (existingUser) {
       return res
         .status(400)
-        .json({ error: "Staff ID/Username already exists in the system. Please use a unique username." });
+        .json({ error: "Staff ID/Username or phone number already exists in the system. Please use a unique username/phone." });
+    }
+
+    if (req.body.phone) {
+      const cleanPhone = req.body.phone.trim();
+      const existingPhone = await User.findOne({
+        $or: [
+          { staff_id: { $regex: new RegExp(`^${cleanPhone.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') } },
+          { phone: { $regex: new RegExp(`^${cleanPhone.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') } }
+        ]
+      });
+      if (existingPhone) {
+        return res
+          .status(400)
+          .json({ error: "This phone number is already registered to another staff/admin member." });
+      }
     }
 
     const SuperAdminHospital = require("../models/SuperAdminHospital");

@@ -67,6 +67,7 @@ router.post('/', async (req, res) => {
       contact: cleanContact,
       email: cleanEmail,
       address,
+      referredBy: req.body.referredBy || '',
       bloodGroup,
       allergies,
       medicalHistory: Array.isArray(medicalHistory) ? medicalHistory : (medicalHistory ? [medicalHistory] : []),
@@ -165,6 +166,7 @@ router.put('/:id', async (req, res) => {
     patient.age = parseInt(age) || patient.age;
     patient.gender = gender || patient.gender;
     patient.address = address !== undefined ? address : patient.address;
+    patient.referredBy = req.body.referredBy !== undefined ? req.body.referredBy : patient.referredBy;
     patient.bloodGroup = bloodGroup || patient.bloodGroup;
     patient.allergies = allergies !== undefined ? allergies : patient.allergies;
     patient.medicalHistory = medicalHistory || patient.medicalHistory;

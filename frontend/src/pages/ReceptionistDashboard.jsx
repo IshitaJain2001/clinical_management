@@ -471,7 +471,7 @@ const ReceptionistDashboard = () => {
   const [bills, setBills] = useState([]);
   
   const [formData, setFormData] = useState({
-    name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: ''
+    name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '', referredBy: ''
   });
 
   const [dpdpConsent, setDpdpConsent] = useState({ emrCreation: true, dataSharing: false });
@@ -998,7 +998,7 @@ const ReceptionistDashboard = () => {
         setPendingRegistrationPayload(null);
         
         // Reset form
-        setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '' });
+        setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '', referredBy: '' });
         setSelectedSymptoms([]);
         setIsExistingPatient(null);
         setSearchPatientQuery('');
@@ -1423,7 +1423,8 @@ const ReceptionistDashboard = () => {
           email: formData.email,
           bloodGroup: formData.bloodGroup,
           address: formData.address,
-          medicalHistory: formData.medicalHistory
+          medicalHistory: formData.medicalHistory,
+          referredBy: formData.referredBy || ''
         });
         targetPatientId = pRes.data._id;
         patientObj = pRes.data;
@@ -1516,7 +1517,8 @@ const ReceptionistDashboard = () => {
           email: formData.email,
           bloodGroup: formData.bloodGroup,
           address: formData.address,
-          medicalHistory: formData.medicalHistory
+          medicalHistory: formData.medicalHistory,
+          referredBy: formData.referredBy || ''
         });
         targetPatientId = pRes.data._id;
         patientObj = pRes.data;
@@ -1930,7 +1932,7 @@ const ReceptionistDashboard = () => {
         setFormData(draftData);
         showToast("Restored unsaved draft for this number.", "info");
       } else {
-        setFormData({ name: '', age: '', gender: '', contact: contactToUse || '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '' });
+        setFormData({ name: '', age: '', gender: '', contact: contactToUse || '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '', referredBy: '' });
       }
     }
     if (tabId === 'new-indent') {
@@ -2132,7 +2134,8 @@ const ReceptionistDashboard = () => {
           medicalHistory: formData.medicalHistory ? formData.medicalHistory.split(',').map(item => item.trim()) : [],
           otp: verificationOtp,
           dpdpConsent: dpdpConsent,
-          patientDocuments: patientDocuments
+          patientDocuments: patientDocuments,
+          referredBy: formData.referredBy || ''
         },
         patientId: isExistingPatient ? selectedPatient._id : null,
         appointmentsList: allApptsToBook.map(a => ({
@@ -5099,7 +5102,7 @@ const ReceptionistDashboard = () => {
                       onClick={() => {
                         setIsExistingPatient(null);
                         setSelectedPatient(null);
-                        setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: formData.doctorId, bloodGroup: '', address: '', medicalHistory: '' });
+                        setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: formData.doctorId, bloodGroup: '', address: '', medicalHistory: '', referredBy: '' });
                       }}
                     >
                       Change Mode
@@ -5254,6 +5257,18 @@ const ReceptionistDashboard = () => {
                               This mobile number is already registered. Please search for the patient or use a different number.
                             </div>
                           )}
+                      </div>
+                      <div className="form-group">
+                          <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B' }}>Referred By</label>
+                          <input 
+                            type="text" 
+                            className="form-control" 
+                            placeholder="e.g. Dr. Rajesh Shah or Self" 
+                            style={{ height: '48px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: isExistingPatient ? 700 : 500 }} 
+                            value={formData.referredBy || ''} 
+                            onChange={e => setFormData({...formData, referredBy: e.target.value})} 
+                            readOnly={isExistingPatient}
+                          />
                       </div>
                       {bookingType !== 'lab' && bookingType !== 'service' && (
                         <>
