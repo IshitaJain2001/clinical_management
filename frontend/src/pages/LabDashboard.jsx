@@ -474,6 +474,7 @@ const LabDashboard = () => {
   const [editingCatalogItem, setEditingCatalogItem] = useState(null);
   const [catalogSearchQuery, setCatalogSearchQuery] = useState('');
   const [catalogCategoryFilter, setCatalogCategoryFilter] = useState('All');
+  const [catalogStatusFilter, setCatalogStatusFilter] = useState('All');
   const [catalogForm, setCatalogForm] = useState({
     testCode: '',
     testName: '',
@@ -3520,18 +3521,33 @@ const LabDashboard = () => {
                     />
                     <i data-lucide="search" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', width: '16px', height: '16px', color: '#64748B' }}></i>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748B' }}>CATEGORY:</span>
-                    <select
-                      value={catalogCategoryFilter}
-                      onChange={e => setCatalogCategoryFilter(e.target.value)}
-                      style={{ height: '42px', border: '1px solid #CBD5E1', borderRadius: '10px', padding: '0 14px', fontSize: '13px', fontWeight: 700, color: '#0F172A', background: '#F8FAFC', outline: 'none' }}
-                    >
-                      <option value="All">All Categories ({labTestCatalog.length})</option>
-                      {Array.from(new Set(labTestCatalog.map(item => (item.category || 'General').trim()).filter(Boolean))).sort().map(cat => (
-                        <option key={cat} value={cat}>{cat}</option>
-                      ))}
-                    </select>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748B' }}>CATEGORY:</span>
+                      <select
+                        value={catalogCategoryFilter}
+                        onChange={e => setCatalogCategoryFilter(e.target.value)}
+                        style={{ height: '42px', border: '1px solid #CBD5E1', borderRadius: '10px', padding: '0 14px', fontSize: '13px', fontWeight: 700, color: '#0F172A', background: '#F8FAFC', outline: 'none' }}
+                      >
+                        <option value="All">All Categories ({labTestCatalog.length})</option>
+                        {Array.from(new Set(labTestCatalog.map(item => (item.category || 'General').trim()).filter(Boolean))).sort().map(cat => (
+                          <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748B' }}>STATUS:</span>
+                      <select
+                        value={catalogStatusFilter}
+                        onChange={e => setCatalogStatusFilter(e.target.value)}
+                        style={{ height: '42px', border: '1px solid #CBD5E1', borderRadius: '10px', padding: '0 14px', fontSize: '13px', fontWeight: 700, color: '#0F172A', background: '#F8FAFC', outline: 'none' }}
+                      >
+                        <option value="All">All Statuses</option>
+                        <option value="Active">Active Tests Only</option>
+                        <option value="Inactive">Deactivated Tests Only</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
 
@@ -3554,7 +3570,10 @@ const LabDashboard = () => {
                           const query = catalogSearchQuery.toLowerCase().trim();
                           const matchesQuery = !query || item.testName.toLowerCase().includes(query) || item.testCode.toLowerCase().includes(query);
                           const matchesCat = catalogCategoryFilter === 'All' || (item.category || '').trim() === catalogCategoryFilter;
-                          return matchesQuery && matchesCat;
+                          const matchesStatus = catalogStatusFilter === 'All' || 
+                                                (catalogStatusFilter === 'Active' && item.isActive) ||
+                                                (catalogStatusFilter === 'Inactive' && !item.isActive);
+                          return matchesQuery && matchesCat && matchesStatus;
                         })
                         .map(item => (
                           <tr key={item._id} style={{ background: item.isActive ? 'transparent' : '#FFF5F5' }}>

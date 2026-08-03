@@ -352,6 +352,7 @@ const AdminDashboard = () => {
   const [editingCatalogItem, setEditingCatalogItem] = useState(null);
   const [catalogSearchQuery, setCatalogSearchQuery] = useState('');
   const [catalogCategoryFilter, setCatalogCategoryFilter] = useState('All');
+  const [catalogStatusFilter, setCatalogStatusFilter] = useState('All');
   const [catalogForm, setCatalogForm] = useState({
     testCode: '',
     testName: '',
@@ -11094,7 +11095,10 @@ const AdminDashboard = () => {
             const matchesQuery = (item.testName || '').toLowerCase().includes(catalogSearchQuery.toLowerCase()) || 
                                  (item.testCode || '').toLowerCase().includes(catalogSearchQuery.toLowerCase()) ||
                                  (item.category || '').toLowerCase().includes(catalogSearchQuery.toLowerCase());
-            return matchesCategory && matchesQuery;
+            const matchesStatus = catalogStatusFilter === 'All' || 
+                                  (catalogStatusFilter === 'Active' && item.isActive) ||
+                                  (catalogStatusFilter === 'Inactive' && !item.isActive);
+            return matchesCategory && matchesQuery && matchesStatus;
           });
 
           const categories = [
@@ -11167,18 +11171,33 @@ const AdminDashboard = () => {
                       style={{ width: '100%', height: '40px', paddingLeft: '16px', border: '1px solid #E2E8F0', borderRadius: '8px', fontSize: '13px', outline: 'none' }}
                     />
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748B' }}>CATEGORY:</span>
-                    <select
-                      value={catalogCategoryFilter}
-                      onChange={e => setCatalogCategoryFilter(e.target.value)}
-                      style={{ height: '42px', border: '1px solid #CBD5E1', borderRadius: '10px', padding: '0 14px', fontSize: '13px', fontWeight: 700, color: '#0F172A', background: '#F8FAFC', outline: 'none' }}
-                    >
-                      <option value="All">All Categories ({labTestCatalog.length})</option>
-                      {categories.filter(c => c !== 'All').map(cat => (
-                        <option key={cat} value={cat}>{cat}</option>
-                      ))}
-                    </select>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748B' }}>CATEGORY:</span>
+                      <select
+                        value={catalogCategoryFilter}
+                        onChange={e => setCatalogCategoryFilter(e.target.value)}
+                        style={{ height: '42px', border: '1px solid #CBD5E1', borderRadius: '10px', padding: '0 14px', fontSize: '13px', fontWeight: 700, color: '#0F172A', background: '#F8FAFC', outline: 'none' }}
+                      >
+                        <option value="All">All Categories ({labTestCatalog.length})</option>
+                        {categories.filter(c => c !== 'All').map(cat => (
+                          <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748B' }}>STATUS:</span>
+                      <select
+                        value={catalogStatusFilter}
+                        onChange={e => setCatalogStatusFilter(e.target.value)}
+                        style={{ height: '42px', border: '1px solid #CBD5E1', borderRadius: '10px', padding: '0 14px', fontSize: '13px', fontWeight: 700, color: '#0F172A', background: '#F8FAFC', outline: 'none' }}
+                      >
+                        <option value="All">All Statuses</option>
+                        <option value="Active">Active Tests Only</option>
+                        <option value="Inactive">Deactivated Tests Only</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </div>
