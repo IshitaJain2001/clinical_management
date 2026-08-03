@@ -3177,7 +3177,7 @@ const SuperAdminDashboard = () => {
                         : "Controlled by the chosen subscription tier. Select Custom plan in Step 4 to modify."}
                     </p>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-                      {['reception', 'doctor', 'pharmacy', 'laboratory', 'radiology', 'emergency', 'icu', 'billing', 'accounts', 'hr', 'payroll'].map(mod => {
+                      {['reception', 'doctor', 'pharmacy', 'laboratory', 'emergency', 'billing', 'accounts', 'hr', 'payroll'].map(mod => {
                         const enabled = isModuleEnabled(mod);
                         return (
                           <label 
@@ -4275,7 +4275,7 @@ const SuperAdminDashboard = () => {
                     PROVISIONED ERP GATES
                   </span>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                    {['reception', 'doctor', 'pharmacy', 'laboratory', 'radiology', 'emergency', 'icu', 'billing', 'accounts', 'payroll'].map(mod => {
+                    {['reception', 'doctor', 'pharmacy', 'laboratory', 'emergency', 'billing', 'accounts', 'payroll'].map(mod => {
                       const enabled = isModuleEnabled(mod);
                       return (
                         <span 
@@ -10873,7 +10873,7 @@ const SuperAdminDashboard = () => {
               <div>
                 <span style={{ ...styles.formLabel, display: 'block', marginBottom: '8px' }}>INCLUDED ERP MODULES</span>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                  {['reception', 'doctor', 'pharmacy', 'laboratory', 'radiology', 'emergency', 'icu', 'billing', 'accounts', 'hr', 'payroll'].map(mod => {
+                  {['reception', 'doctor', 'pharmacy', 'laboratory', 'emergency', 'billing', 'accounts', 'hr', 'payroll'].map(mod => {
                     const isChecked = editingPlan.modules?.includes(mod);
                     return (
                       <label key={mod} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 600, color: '#334155', cursor: 'pointer' }}>

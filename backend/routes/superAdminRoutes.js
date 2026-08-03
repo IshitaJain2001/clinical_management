@@ -623,26 +623,42 @@ router.put('/onboarding/:id', async (req, res) => {
     if (req.body.panNumber) {
       const val = verifyPAN(req.body.panNumber);
       if (!val.success) return res.status(400).json({ error: val.error });
+      const dup = await SuperAdminOnboarding.findOne({ panNumber: req.body.panNumber.trim(), _id: { $ne: req.params.id } });
+      if (dup) return res.status(400).json({ error: `PAN Number '${req.body.panNumber}' is already registered in another onboarding setup.` });
     }
     if (req.body.gstin) {
       const val = await verifyGSTIN(req.body.gstin);
       if (!val.success) return res.status(400).json({ error: val.error });
+      const dupOnb = await SuperAdminOnboarding.findOne({ gstin: req.body.gstin.trim(), _id: { $ne: req.params.id } });
+      if (dupOnb) return res.status(400).json({ error: `GSTIN '${req.body.gstin}' is already registered in another onboarding setup.` });
+      const dupHosp = await SuperAdminHospital.findOne({ gst: req.body.gstin.trim() });
+      if (dupHosp) return res.status(400).json({ error: `GSTIN '${req.body.gstin}' is already in use by an active hospital (${dupHosp.name}).` });
     }
     if (req.body.corpId) {
       const val = verifyCIN(req.body.corpId);
       if (!val.success) return res.status(400).json({ error: val.error });
+      const dup = await SuperAdminOnboarding.findOne({ corpId: req.body.corpId.trim(), _id: { $ne: req.params.id } });
+      if (dup) return res.status(400).json({ error: `CIN / Corporate ID '${req.body.corpId}' is already registered in another onboarding setup.` });
     }
     if (req.body.drugLicense) {
       const val = await verifyDrugLicense(req.body.drugLicense);
       if (!val.success) return res.status(400).json({ error: val.error });
+      const dupOnb = await SuperAdminOnboarding.findOne({ drugLicense: req.body.drugLicense.trim(), _id: { $ne: req.params.id } });
+      if (dupOnb) return res.status(400).json({ error: `Drug License '${req.body.drugLicense}' is already registered in another onboarding setup.` });
+      const dupHosp = await SuperAdminHospital.findOne({ license: req.body.drugLicense.trim() });
+      if (dupHosp) return res.status(400).json({ error: `Drug License '${req.body.drugLicense}' is already in use by an active hospital (${dupHosp.name}).` });
     }
     if (req.body.fireSafetyCertificate) {
       const val = verifyCertificate(req.body.fireSafetyCertificate);
       if (!val.success) return res.status(400).json({ error: "Fire Safety Certificate: " + val.error });
+      const dup = await SuperAdminOnboarding.findOne({ fireSafetyCertificate: req.body.fireSafetyCertificate.trim(), _id: { $ne: req.params.id } });
+      if (dup) return res.status(400).json({ error: `Fire Safety Certificate '${req.body.fireSafetyCertificate}' is already registered in another onboarding setup.` });
     }
     if (req.body.pollutionCertificate) {
       const val = verifyCertificate(req.body.pollutionCertificate);
       if (!val.success) return res.status(400).json({ error: "Pollution Certificate: " + val.error });
+      const dup = await SuperAdminOnboarding.findOne({ pollutionCertificate: req.body.pollutionCertificate.trim(), _id: { $ne: req.params.id } });
+      if (dup) return res.status(400).json({ error: `Pollution Certificate '${req.body.pollutionCertificate}' is already registered in another onboarding setup.` });
     }
 
     const onboarding = await SuperAdminOnboarding.findByIdAndUpdate(req.params.id, req.body, { returnDocument: 'after' });
