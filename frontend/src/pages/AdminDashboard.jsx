@@ -1202,7 +1202,7 @@ const AdminDashboard = () => {
 
     if (activeTab === 'dashboard') {
       main = "Dashboard";
-      sub = `${dateStr} · Sunrise Multispeciality`;
+      sub = `${dateStr} · ${currentUser?.tenantName || subscription?.name || 'Sunrise Multispeciality'}`;
     }
     else if (activeTab === 'supply') { main = "Alerts & Tasks"; sub = "Real-time enterprise alerts & system tracking"; }
     else if (activeTab === 'approvals') { main = "Approvals"; sub = "Pending hospital administrative decisions & requests"; }
@@ -1219,7 +1219,7 @@ const AdminDashboard = () => {
     else if (activeTab === 'updates') { main = "Updates"; sub = "Platform updates, patches & release hotfixes"; }
     else if (activeTab === 'permissions') { main = "Role Coverage"; sub = "Temporary role delegation & access control matrix"; }
     else if (activeTab === 'dpdp') { main = "DPO & DPDP Compliance"; sub = "Data privacy officer portal & compliance audits"; }
-    else { main = "Admin Console"; sub = "Sunrise Multispeciality Hospital Management"; }
+    else { main = "Admin Console"; sub = `${currentUser?.tenantName || subscription?.name || 'Sunrise Multispeciality'} Hospital Management`; }
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column' }}>

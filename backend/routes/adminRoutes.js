@@ -353,6 +353,7 @@ router.get("/subscription", isHrOrAdmin, async (req, res) => {
     const invoices = await SuperAdminInvoice.find({ hospital: hospital.name }).sort({ createdAt: -1 });
 
     res.json({
+      name: hospital.name,
       plan: hospital.plan,
       status: hospital.status,
       limits: hospital.limits || {
