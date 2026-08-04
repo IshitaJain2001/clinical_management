@@ -4,6 +4,7 @@ const superAdminHospitalSchema = new mongoose.Schema({
   name: { type: String, required: true },
   code: { type: String, required: true, unique: true, lowercase: true, trim: true },
   logo: { type: String, default: 'H' },
+  letterheadUrl: { type: String, default: '' },
   plan: { type: String, default: 'Standard Basic' },
   status: { type: String, default: 'Active' },
   csm: { type: String, default: '' },

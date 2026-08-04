@@ -1105,6 +1105,204 @@ const DoctorDashboard = () => {
     }
   };
 
+  const handlePrintPrescription = async (rx, item) => {
+    try {
+      const res = await api.get('/admin/letterhead');
+      const letterheadUrl = res.data?.letterheadUrl || "";
+
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) {
+        showToastNotification("Pop-up blocker active. Please allow pop-ups to print.", "error");
+        return;
+      }
+
+      const medicinesHtml = (item.items || []).map((m, idx) => `
+        <tr style="border-bottom: 1px solid #E2E8F0;">
+          <td style="padding: 12px; font-weight: bold; color: #1E293B;">${idx + 1}. ${m.medicine}</td>
+          <td style="padding: 12px; color: #475569;">${m.dosage}</td>
+          <td style="padding: 12px; color: #475569;">${m.duration}</td>
+          <td style="padding: 12px; color: #2563EB; font-weight: bold;">${m.instructions}</td>
+        </tr>
+      `).join('');
+
+      const labsHtml = (item.tests || []).length > 0 
+        ? `<div style="margin-top: 20px;">
+             <h4 style="margin-bottom: 8px; color: #0F172A; font-family: 'Outfit', sans-serif;">Lab Tests Ordered:</h4>
+             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+               ${item.tests.map(t => `<span style="background: #EFF6FF; color: #1E40AF; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; border: 1px solid #BFDBFE;">${t}</span>`).join('')}
+             </div>
+           </div>`
+        : '';
+
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Prescription - ${selectedPatient?.name || 'Patient'}</title>
+          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Outfit:wght@800&display=swap" rel="stylesheet">
+          <style>
+            @media print {
+              body {
+                margin: 0;
+                padding: 0;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+              .no-print { display: none; }
+            }
+            body {
+              font-family: 'Inter', sans-serif;
+              color: #1E293B;
+              margin: 0;
+              padding: 0;
+              background-color: #f8fafc;
+            }
+            .page-container {
+              width: 210mm;
+              height: 297mm;
+              margin: 0 auto;
+              background-color: #ffffff;
+              box-sizing: border-box;
+              position: relative;
+              box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+              ${letterheadUrl ? `
+                background-image: url('${letterheadUrl}');
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center top;
+              ` : ''}
+            }
+            .content-area {
+              padding-top: ${letterheadUrl ? '160px' : '40px'};
+              padding-bottom: 100px;
+              padding-left: 60px;
+              padding-right: 60px;
+            }
+            .header-info {
+              display: flex;
+              justify-content: space-between;
+              border-bottom: 2px solid #E2E8F0;
+              padding-bottom: 15px;
+              margin-bottom: 20px;
+            }
+            .patient-details {
+              background: #F8FAFC;
+              border: 1px solid #E2E8F0;
+              border-radius: 12px;
+              padding: 16px;
+              margin-bottom: 25px;
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 10px;
+              font-size: 13px;
+            }
+            .rx-title {
+              font-size: 32px;
+              font-weight: 800;
+              color: #2563EB;
+              font-family: 'Outfit', sans-serif;
+              margin-bottom: 15px;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+            }
+            .med-table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 15px;
+              font-size: 13px;
+            }
+            .med-table th {
+              background: #F1F5F9;
+              text-align: left;
+              padding: 10px;
+              color: #475569;
+              font-weight: bold;
+            }
+            .footer-sign {
+              position: absolute;
+              bottom: 80px;
+              right: 60px;
+              text-align: center;
+              font-size: 12px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="page-container">
+            <div class="content-area">
+              ${!letterheadUrl ? `
+                <div class="header-info">
+                  <div>
+                    <h2 style="margin: 0; color: #0F172A; font-family: 'Outfit', sans-serif; font-size: 20px;">${item.clinic || 'Curoxa Cardiac OPD Center'}</h2>
+                    <p style="margin: 4px 0 0 0; font-size: 12px; color: #64748B;">Digital Prescription Record</p>
+                  </div>
+                  <div style="text-align: right;">
+                    <h3 style="margin: 0; color: #1E293B; font-size: 15px;">${item.doctor || 'Dr. Sarah Jenkins'}</h3>
+                    <p style="margin: 4px 0 0 0; font-size: 12px; color: #64748B;">Cardiology Specialist</p>
+                  </div>
+                </div>
+              ` : ''}
+
+              <div class="rx-title">
+                <span style="font-size: 36px; line-height: 1;">℞</span> Prescription
+              </div>
+
+              <div class="patient-details">
+                <div><strong>Patient Name:</strong> ${selectedPatient?.name || '—'}</div>
+                <div><strong>Date:</strong> ${item.date}</div>
+                <div><strong>Age / Gender:</strong> ${selectedPatient?.age ? `${selectedPatient.age} Y` : '—'} / ${selectedPatient?.gender || '—'}</div>
+                <div><strong>Vitals:</strong> ${item.vitals !== '--' ? item.vitals : 'Normal'}</div>
+              </div>
+
+              <div style="margin-bottom: 15px;">
+                <span style="font-size: 10px; background: #FEE2E2; color: #DC2626; padding: 4px 8px; border-radius: 6px; font-weight: 800; letter-spacing: 0.5px;">DIAGNOSIS</span>
+                <div style="font-size: 15px; font-weight: bold; margin-top: 6px; color: #0F172A;">${item.diagnosis}</div>
+              </div>
+
+              <table class="med-table">
+                <thead>
+                  <tr>
+                    <th>Medicine</th>
+                    <th>Dosage</th>
+                    <th>Duration</th>
+                    <th>Instructions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${medicinesHtml}
+                </tbody>
+              </table>
+
+              ${labsHtml}
+
+              <div class="footer-sign">
+                <div style="border-bottom: 1px solid #94A3B8; width: 150px; margin: 0 auto 8px auto; height: 40px;">
+                  <span style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 20px; color: #64748B; display: block; padding-top: 10px;">${item.doctor}</span>
+                </div>
+                <strong>Authorized eSign / Signature</strong>
+                <div style="font-size: 10px; color: #94A3B8; margin-top: 4px;">Tamper-proof DPDP Compliant Log</div>
+              </div>
+            </div>
+          </div>
+          <script>
+            window.onload = function() {
+              window.print();
+              setTimeout(function() { window.close(); }, 500);
+            };
+          </script>
+        </body>
+        </html>
+      `;
+
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+    } catch (err) {
+      console.error("Print prescription error:", err);
+      showToastNotification("Failed to prepare print view.", "error");
+    }
+  };
+
   const handleLoadPrescriptionForEdit = (rx, relatedLabs) => {
     setEditingPrescriptionId(rx._id);
     setEditingAppointmentId(rx.appointmentId);
@@ -8619,13 +8817,22 @@ I have scanned the medical reference databases, but couldn't find a direct match
                                   {item.title}
                                 </span>
                                 {item.isReal && item.type === 'prescription' && (
-                                  <button
-                                    onClick={() => handleLoadPrescriptionForEdit(item.rx, item.relatedLabs)}
-                                    style={{ margin: 0, padding: '4px 10px', fontSize: '10.5px', background: '#F0FDF4', color: '#15803D', border: '1px solid #BBF7D0', cursor: 'pointer', borderRadius: '8px', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '4px', transition: 'all 0.2s ease' }}
-                                  >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                                    Edit
-                                  </button>
+                                  <div style={{ display: 'flex', gap: '6px' }}>
+                                    <button
+                                      onClick={() => handleLoadPrescriptionForEdit(item.rx, item.relatedLabs)}
+                                      style={{ margin: 0, padding: '4px 10px', fontSize: '10.5px', background: '#F0FDF4', color: '#15803D', border: '1px solid #BBF7D0', cursor: 'pointer', borderRadius: '8px', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '4px', transition: 'all 0.2s ease' }}
+                                    >
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                                      Edit
+                                    </button>
+                                    <button
+                                      onClick={() => handlePrintPrescription(item.rx, item)}
+                                      style={{ margin: 0, padding: '4px 10px', fontSize: '10.5px', background: '#EFF6FF', color: '#1E40AF', border: '1px solid #BFDBFE', cursor: 'pointer', borderRadius: '8px', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '4px', transition: 'all 0.2s ease' }}
+                                    >
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                                      Print
+                                    </button>
+                                  </div>
                                 )}
                               </div>
                             </div>

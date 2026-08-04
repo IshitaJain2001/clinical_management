@@ -429,4 +429,101 @@ router.get("/plans", isHrOrAdmin, async (req, res) => {
   }
 });
 
+// Letterhead management routes
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const SuperAdminHospital = require('../models/SuperAdminHospital');
+const { PutObjectCommand } = require('@aws-sdk/client-s3');
+const r2 = require('../config/r2');
+
+const storage = multer.memoryStorage();
+const uploadLetterhead = multer({ storage: storage, limits: { fileSize: 10 * 1024 * 1024 } }); // 10MB limit
+
+// Get current hospital letterhead
+router.get("/letterhead", async (req, res) => {
+  try {
+    const hospital = await SuperAdminHospital.findOne({ code: req.tenantId });
+    if (!hospital) {
+      return res.status(404).json({ error: "Hospital tenant not found" });
+    }
+    res.json({ letterheadUrl: hospital.letterheadUrl || "" });
+  } catch (error) {
+    console.error("Get letterhead error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Upload hospital letterhead
+router.post("/letterhead", isAdmin, uploadLetterhead.single('letterhead'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded." });
+    }
+
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const filename = 'letterheads/' + req.tenantId + '-' + uniqueSuffix + '-' + req.file.originalname.replace(/\s+/g, '-');
+    const bucketName = process.env.R2_BUCKET_NAME || 'medicore-uploads';
+
+    let fileUrl = "";
+    try {
+      const command = new PutObjectCommand({
+        Bucket: bucketName,
+        Key: filename,
+        Body: req.file.buffer,
+        ContentType: req.file.mimetype,
+      });
+
+      await r2.send(command);
+      const publicDomain = process.env.R2_PUBLIC_DOMAIN || `https://pub-${process.env.R2_ACCOUNT_ID}.r2.dev`;
+      fileUrl = `${publicDomain}/${filename}`;
+    } catch (r2Err) {
+      console.warn('R2 upload failed or unconfigured, falling back to local file storage for letterhead:', r2Err);
+      const uploadDir = path.join(__dirname, '../uploads');
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+      const localFileName = `letterhead-${req.tenantId}-${uniqueSuffix}-${req.file.originalname.replace(/\s+/g, '-')}`;
+      const localPath = path.join(uploadDir, localFileName);
+      fs.writeFileSync(localPath, req.file.buffer);
+      fileUrl = `/uploads/${localFileName}`;
+    }
+
+    const hospital = await SuperAdminHospital.findOneAndUpdate(
+      { code: req.tenantId },
+      { $set: { letterheadUrl: fileUrl } },
+      { new: true }
+    );
+
+    if (!hospital) {
+      return res.status(404).json({ error: "Hospital tenant not found" });
+    }
+
+    writeAudit(req, "upload_letterhead", hospital._id, { url: fileUrl });
+    res.json({ success: true, letterheadUrl: fileUrl });
+  } catch (error) {
+    console.error("Upload letterhead error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Clear hospital letterhead
+router.post("/letterhead-clear", isAdmin, async (req, res) => {
+  try {
+    const hospital = await SuperAdminHospital.findOneAndUpdate(
+      { code: req.tenantId },
+      { $set: { letterheadUrl: "" } },
+      { new: true }
+    );
+    if (!hospital) {
+      return res.status(404).json({ error: "Hospital tenant not found" });
+    }
+    writeAudit(req, "clear_letterhead", hospital._id);
+    res.json({ success: true, letterheadUrl: "" });
+  } catch (error) {
+    console.error("Clear letterhead error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = router;
