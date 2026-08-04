@@ -5072,7 +5072,7 @@ const SuperAdminDashboard = () => {
         {/* Center Nav Links */}
         <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
           <span style={{ fontSize: '13px', color: '#64748B', fontWeight: 600, cursor: 'pointer', transition: 'color 0.2s' }} onClick={() => { setActiveTab('platform-control'); setCtrlSubTab('platform-dashboard'); }} onMouseEnter={e => e.currentTarget.style.color = '#2563EB'} onMouseLeave={e => e.currentTarget.style.color = '#64748B'}>Network Status</span>
-          <span style={{ fontSize: '13px', color: '#64748B', fontWeight: 600, cursor: 'pointer', transition: 'color 0.2s' }} onClick={() => { setActiveTab('platform-control'); setCtrlSubTab('developer-center'); }} onMouseEnter={e => e.currentTarget.style.color = '#2563EB'} onMouseLeave={e => e.currentTarget.style.color = '#64748B'}>Logs</span>
+          <span style={{ fontSize: '13px', color: '#64748B', fontWeight: 600, cursor: 'pointer', transition: 'color 0.2s' }} onClick={() => { setActiveTab('platform-audits'); }} onMouseEnter={e => e.currentTarget.style.color = '#2563EB'} onMouseLeave={e => e.currentTarget.style.color = '#64748B'}>Logs</span>
           <span style={{ fontSize: '13px', color: '#64748B', fontWeight: 600, cursor: 'pointer', transition: 'color 0.2s' }} onClick={() => { setActiveTab('bi-reports'); setBiSubTab('bi-dashboard'); }} onMouseEnter={e => e.currentTarget.style.color = '#2563EB'} onMouseLeave={e => e.currentTarget.style.color = '#64748B'}>Analytics</span>
         </div>
 
@@ -5761,7 +5761,7 @@ const SuperAdminDashboard = () => {
                           <span style={{ fontSize: '11.5px', color: '#64748B' }}>Audit logs stream of platform administrator operations</span>
                         </div>
                         <button 
-                          onClick={() => setActiveTab('platform-control')}
+                          onClick={() => setActiveTab('platform-audits')}
                           style={{
                             background: 'transparent',
                             border: 'none',
@@ -6947,6 +6947,13 @@ const SuperAdminDashboard = () => {
             {/* DEPARTMENTS VIEW */}
             {isTabAllowed && activeTab === 'departments' && (
               <div style={{ flex: 1, padding: '24px', overflowY: 'auto' }}>
+                <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #E2E8F0', paddingBottom: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
+                  <button style={activeTab === 'hr-mgmt' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('hr-mgmt')}>Team Directory</button>
+                  <button style={activeTab === 'departments' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('departments')}>Departments</button>
+                  <button style={activeTab === 'task-assignments' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('task-assignments')}>Task Desk</button>
+                  <button style={activeTab === 'platform-roles' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('platform-roles')}>Security Roles</button>
+                  <button style={activeTab === 'platform-audits' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('platform-audits')}>Audit Logs</button>
+                </div>
                 <div>
                   <h2 style={styles.cardHeaderTitle}>Company Departments</h2>
                   <p style={styles.cardHeaderSub}>Monitor SaaS department breakdown, employee workloads, and resource allocation.</p>
@@ -6978,6 +6985,13 @@ const SuperAdminDashboard = () => {
             {/* TASK ASSIGNMENTS VIEW */}
             {isTabAllowed && activeTab === 'task-assignments' && (
               <div style={{ flex: 1, padding: '24px', overflowY: 'auto' }}>
+                <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #E2E8F0', paddingBottom: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
+                  <button style={activeTab === 'hr-mgmt' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('hr-mgmt')}>Team Directory</button>
+                  <button style={activeTab === 'departments' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('departments')}>Departments</button>
+                  <button style={activeTab === 'task-assignments' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('task-assignments')}>Task Desk</button>
+                  <button style={activeTab === 'platform-roles' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('platform-roles')}>Security Roles</button>
+                  <button style={activeTab === 'platform-audits' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('platform-audits')}>Audit Logs</button>
+                </div>
                 <div>
                   <h2 style={styles.cardHeaderTitle}>Task Assignments Desk</h2>
                   <p style={styles.cardHeaderSub}>Allocate onboarding checklists and support task items to the SaaS team directory.</p>
@@ -7207,6 +7221,13 @@ const SuperAdminDashboard = () => {
             {/* PLATFORM ROLES VIEW */}
             {isTabAllowed && activeTab === 'platform-roles' && (
               <div style={{ flex: 1, padding: '24px', overflowY: 'auto' }}>
+                <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #E2E8F0', paddingBottom: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
+                  <button style={activeTab === 'hr-mgmt' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('hr-mgmt')}>Team Directory</button>
+                  <button style={activeTab === 'departments' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('departments')}>Departments</button>
+                  <button style={activeTab === 'task-assignments' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('task-assignments')}>Task Desk</button>
+                  <button style={activeTab === 'platform-roles' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('platform-roles')}>Security Roles</button>
+                  <button style={activeTab === 'platform-audits' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('platform-audits')}>Audit Logs</button>
+                </div>
                 <div>
                   <h2 style={styles.cardHeaderTitle}>Roles & Security Permissions</h2>
                   <p style={styles.cardHeaderSub}>Define global system access levels, check RBAC compliance, and provision tenant staff role coverage schemas.</p>
@@ -7244,6 +7265,13 @@ const SuperAdminDashboard = () => {
             {/* AUDIT LOGS VIEW */}
             {isTabAllowed && activeTab === 'platform-audits' && (
               <div style={{ flex: 1, padding: '24px', overflowY: 'auto' }}>
+                <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #E2E8F0', paddingBottom: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
+                  <button style={activeTab === 'hr-mgmt' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('hr-mgmt')}>Team Directory</button>
+                  <button style={activeTab === 'departments' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('departments')}>Departments</button>
+                  <button style={activeTab === 'task-assignments' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('task-assignments')}>Task Desk</button>
+                  <button style={activeTab === 'platform-roles' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('platform-roles')}>Security Roles</button>
+                  <button style={activeTab === 'platform-audits' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('platform-audits')}>Audit Logs</button>
+                </div>
                 <div>
                   <h2 style={styles.cardHeaderTitle}>Platform System Audit Logs</h2>
                   <p style={styles.cardHeaderSub}>Review immutable platform operational logs, security authorization snapshots, and data mutations records.</p>
@@ -8890,6 +8918,13 @@ const SuperAdminDashboard = () => {
 
               return (
               <div style={styles.pageBodyScroll}>
+                <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #E2E8F0', paddingBottom: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
+                  <button style={activeTab === 'hr-mgmt' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('hr-mgmt')}>Team Directory</button>
+                  <button style={activeTab === 'departments' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('departments')}>Departments</button>
+                  <button style={activeTab === 'task-assignments' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('task-assignments')}>Task Desk</button>
+                  <button style={activeTab === 'platform-roles' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('platform-roles')}>Security Roles</button>
+                  <button style={activeTab === 'platform-audits' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('platform-audits')}>Audit Logs</button>
+                </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
                     <h2 style={styles.cardHeaderTitle}>Curoxa SaaS Team Directory</h2>
