@@ -1076,15 +1076,7 @@ const ReceptionistDashboard = () => {
         setPendingRegistrationPayload(null);
         
         // Reset form
-        setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '', referredBy: '' });
-        setSelectedSymptoms([]);
-        setIsExistingPatient(null);
-        setSearchPatientQuery('');
-        setSelectedPatient(null);
-        setBookingPaymentMethod('');
-        setOtpVerified(false);
-        setOtpSent(false);
-        setVerificationOtp('');
+        resetRegistrationForm();
         switchTab('appointments');
       } else {
         // Normal billing flow
@@ -2496,6 +2488,30 @@ const ReceptionistDashboard = () => {
     }
   };
 
+  const resetRegistrationForm = () => {
+    setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '', referredBy: '' });
+    setSelectedSymptoms([]);
+    setIsExistingPatient(null);
+    setSearchPatientQuery('');
+    setSelectedPatient(null);
+    setBookingPaymentMethod('');
+    setOtpVerified(false);
+    setOtpSent(false);
+    setVerificationOtp('');
+    setAdditionalApptsList([]);
+    setSelectedSlot('');
+    setBookingDate(new Date().toISOString().split('T')[0]);
+    setReschedulingAppointment(null);
+    setVitalTemp('');
+    setVitalPulse('');
+    setVitalBpSys('');
+    setVitalBpDia('');
+    setVitalResp('');
+    setVitalSpo2('');
+    setVitalWeight('');
+    setVitalHeight('');
+  };
+
   const handleCreateAppointmentForProfilePatient = () => {
     if (!selectedPatient) return;
     const pat = { ...selectedPatient };
@@ -3508,10 +3524,8 @@ const ReceptionistDashboard = () => {
                   className="btn btn-primary" 
                   style={{ height: '38px', padding: '0 16px', fontWeight: 700, borderRadius: '10px', background: '#2563EB', color: 'white', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }} 
                   onClick={() => {
+                    resetRegistrationForm();
                     setBookingType('opd');
-                    setIsExistingPatient(null);
-                    setSelectedPatient(null);
-                    setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '' });
                     switchTab('registration-form');
                   }}
                 >
@@ -3521,10 +3535,8 @@ const ReceptionistDashboard = () => {
                   className="btn btn-primary" 
                   style={{ height: '38px', padding: '0 16px', fontWeight: 700, borderRadius: '10px', background: '#059669', color: 'white', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }} 
                   onClick={() => {
+                    resetRegistrationForm();
                     setBookingType('lab');
-                    setIsExistingPatient(null);
-                    setSelectedPatient(null);
-                    setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '' });
                     switchTab('registration-form');
                   }}
                 >
@@ -3535,10 +3547,8 @@ const ReceptionistDashboard = () => {
                   className="btn btn-primary" 
                   style={{ height: '38px', padding: '0 16px', fontWeight: 700, borderRadius: '10px', background: '#7C3AED', color: 'white', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }} 
                   onClick={() => {
+                    resetRegistrationForm();
                     setBookingType('service');
-                    setIsExistingPatient(null);
-                    setSelectedPatient(null);
-                    setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '' });
                     switchTab('registration-form');
                   }}
                 >
@@ -3938,10 +3948,8 @@ const ReceptionistDashboard = () => {
                   className="btn btn-primary" 
                   style={{ height: '38px', padding: '0 16px', fontWeight: 700, borderRadius: '10px', background: '#059669', color: 'white', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }} 
                   onClick={() => {
+                    resetRegistrationForm();
                     setBookingType('lab');
-                    setIsExistingPatient(null);
-                    setSelectedPatient(null);
-                    setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '' });
                     switchTab('registration-form');
                   }}
                 >
@@ -3952,10 +3960,8 @@ const ReceptionistDashboard = () => {
                   className="btn btn-primary" 
                   style={{ height: '38px', padding: '0 16px', fontWeight: 700, borderRadius: '10px', background: '#2563EB', color: '#FFFFFF', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }} 
                   onClick={() => {
+                    resetRegistrationForm();
                     setBookingType('opd');
-                    setIsExistingPatient(null);
-                    setSelectedPatient(null);
-                    setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '' });
                     switchTab('registration-form');
                   }}
                 >
