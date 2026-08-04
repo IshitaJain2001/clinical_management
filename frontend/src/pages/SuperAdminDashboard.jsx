@@ -6956,7 +6956,6 @@ const SuperAdminDashboard = () => {
                 <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #E2E8F0', paddingBottom: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
                   <button style={activeTab === 'hr-mgmt' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('hr-mgmt')}>Team Directory</button>
                   <button style={activeTab === 'departments' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('departments')}>Departments</button>
-                  <button style={activeTab === 'task-assignments' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('task-assignments')}>Task Desk</button>
                   <button style={activeTab === 'platform-roles' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('platform-roles')}>Security Roles</button>
                   <button style={activeTab === 'platform-audits' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('platform-audits')}>Audit Logs</button>
                 </div>
@@ -7005,151 +7004,6 @@ const SuperAdminDashboard = () => {
               </div>
             )}
 
-            {/* TASK ASSIGNMENTS VIEW */}
-            {isTabAllowed && activeTab === 'task-assignments' && (
-              <div style={{ flex: 1, padding: '24px', overflowY: 'auto' }}>
-                <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #E2E8F0', paddingBottom: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
-                  <button style={activeTab === 'hr-mgmt' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('hr-mgmt')}>Team Directory</button>
-                  <button style={activeTab === 'departments' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('departments')}>Departments</button>
-                  <button style={activeTab === 'task-assignments' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('task-assignments')}>Task Desk</button>
-                  <button style={activeTab === 'platform-roles' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('platform-roles')}>Security Roles</button>
-                  <button style={activeTab === 'platform-audits' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('platform-audits')}>Audit Logs</button>
-                </div>
-                <div>
-                  <h2 style={styles.cardHeaderTitle}>Task Assignments Desk</h2>
-                  <p style={styles.cardHeaderSub}>Allocate onboarding checklists and support task items to the SaaS team directory.</p>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '20px', marginTop: '16px' }}>
-                  <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px' }}>
-                    <h3 style={{ fontSize: '14px', fontWeight: 800, marginBottom: '14px' }}>Active Task Logs</h3>
-                    <table style={styles.dataTable}>
-                      <thead>
-                        <tr>
-                          <th style={styles.tableTh}>Task Description</th>
-                          <th style={styles.tableTh}>Assignee</th>
-                          <th style={styles.tableTh}>Priority</th>
-                          <th style={styles.tableTh}>Deadline</th>
-                          <th style={styles.tableTh}>Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {tasks.length === 0 ? (
-                          <tr>
-                            <td colSpan="5" style={{ ...styles.tableTd, textAlign: 'center', padding: '30px 10px', color: '#64748B', fontSize: '12px' }}>
-                              No active tasks found.
-                            </td>
-                          </tr>
-                        ) : (
-                          tasks.map(t => (
-                            <tr key={t.id} style={styles.tableRow}>
-                              <td style={styles.tableTd}><strong>{t.title}</strong></td>
-                              <td style={styles.tableTd}>{t.assignedToName}</td>
-                              <td style={styles.tableTd}>
-                                <span style={{ fontSize: '10px', fontWeight: 800, color: t.priority === 'Critical' ? '#EF4444' : '#F59E0B' }}>{t.priority}</span>
-                              </td>
-                              <td style={styles.tableTd}>{t.deadline}</td>
-                              <td style={styles.tableTd}>
-                                <span style={{ ...styles.statusBadge, background: t.status === 'Completed' ? '#D1FAE5' : '#065F46', color: t.status === 'Completed' ? '#065F46' : '#D97706' }}>{t.status}</span>
-                              </td>
-                            </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                  <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px' }}>
-                    <h3 style={{ fontSize: '14px', fontWeight: 800, marginBottom: '14px' }}>Assign New Checklist Task</h3>
-                    <form onSubmit={(e) => {
-                      e.preventDefault();
-                      const assignedEmp = employees.find(emp => emp._id === taskAssignForm.assignedTo) || employees[0];
-                      const newTask = {
-                        id: tasks.length + 1,
-                        title: taskAssignForm.taskTitle,
-                        priority: taskAssignForm.priority,
-                        deadline: taskAssignForm.deadline,
-                        assignedToName: assignedEmp ? assignedEmp.name : 'Platform Admin',
-                        department: taskAssignForm.deptName,
-                        status: 'Pending'
-                      };
-                      setTasks([...tasks, newTask]);
-                      setTaskAssignForm(prev => ({ ...prev, taskTitle: '', deadline: '' }));
-                      showToast && showToast('Task assigned successfully!', 'success');
-                    }} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <span style={{ fontSize: '9px', fontWeight: 800, color: '#64748B' }}>TASK DESCRIPTION</span>
-                        <input
-                          type="text"
-                          style={styles.formInput}
-                          value={taskAssignForm.taskTitle}
-                          onChange={e => setTaskAssignForm({ ...taskAssignForm, taskTitle: e.target.value })}
-                          required
-                        />
-                      </div>
-                      <div style={{ display: 'flex', gap: '10px' }}>
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                          <span style={{ fontSize: '9px', fontWeight: 800, color: '#64748B' }}>PRIORITY</span>
-                          <select
-                            style={styles.filterSelect}
-                            value={taskAssignForm.priority}
-                            onChange={e => setTaskAssignForm({ ...taskAssignForm, priority: e.target.value })}
-                          >
-                            <option value="Low">Low</option>
-                            <option value="Medium">Medium</option>
-                            <option value="High">High</option>
-                            <option value="Critical">Critical</option>
-                          </select>
-                        </div>
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                          <span style={{ fontSize: '9px', fontWeight: 800, color: '#64748B' }}>DEADLINE</span>
-                          <input
-                            type="text"
-                            style={styles.formInput}
-                            value={taskAssignForm.deadline}
-                            onChange={e => setTaskAssignForm({ ...taskAssignForm, deadline: e.target.value })}
-                          />
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex', gap: '10px' }}>
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                          <span style={{ fontSize: '9px', fontWeight: 800, color: '#64748B' }}>ASSIGN TO STAFF</span>
-                          <select
-                            style={styles.filterSelect}
-                            value={taskAssignForm.assignedTo}
-                            onChange={e => {
-                              const empId = e.target.value;
-                              const emp = employees.find(emp => emp._id === empId);
-                              setTaskAssignForm({
-                                ...taskAssignForm,
-                                assignedTo: empId,
-                                deptName: emp ? emp.department : ''
-                              });
-                            }}
-                          >
-                            <option value="">Select Staff...</option>
-                            {employees.map(emp => (
-                              <option key={emp._id} value={emp._id}>{emp.name} ({emp.designation})</option>
-                            ))}
-                          </select>
-                        </div>
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                          <span style={{ fontSize: '9px', fontWeight: 800, color: '#64748B' }}>DEPARTMENT</span>
-                          <input
-                            type="text"
-                            style={styles.formInput}
-                            value={taskAssignForm.deptName}
-                            onChange={e => setTaskAssignForm({ ...taskAssignForm, deptName: e.target.value })}
-                            readOnly
-                          />
-                        </div>
-                      </div>
-                      <button type="submit" style={{ ...styles.btnPrimary, marginTop: '10px' }}>
-                        Assign Checklist Task
-                      </button>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* REVENUE VIEW */}
             {isTabAllowed && activeTab === 'finance-revenue' && (
@@ -7266,7 +7120,6 @@ const SuperAdminDashboard = () => {
                 <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #E2E8F0', paddingBottom: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
                   <button style={activeTab === 'hr-mgmt' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('hr-mgmt')}>Team Directory</button>
                   <button style={activeTab === 'departments' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('departments')}>Departments</button>
-                  <button style={activeTab === 'task-assignments' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('task-assignments')}>Task Desk</button>
                   <button style={activeTab === 'platform-roles' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('platform-roles')}>Security Roles</button>
                   <button style={activeTab === 'platform-audits' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('platform-audits')}>Audit Logs</button>
                 </div>
@@ -7310,7 +7163,6 @@ const SuperAdminDashboard = () => {
                 <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #E2E8F0', paddingBottom: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
                   <button style={activeTab === 'hr-mgmt' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('hr-mgmt')}>Team Directory</button>
                   <button style={activeTab === 'departments' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('departments')}>Departments</button>
-                  <button style={activeTab === 'task-assignments' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('task-assignments')}>Task Desk</button>
                   <button style={activeTab === 'platform-roles' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('platform-roles')}>Security Roles</button>
                   <button style={activeTab === 'platform-audits' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('platform-audits')}>Audit Logs</button>
                 </div>
@@ -8963,7 +8815,6 @@ const SuperAdminDashboard = () => {
                 <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #E2E8F0', paddingBottom: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
                   <button style={activeTab === 'hr-mgmt' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('hr-mgmt')}>Team Directory</button>
                   <button style={activeTab === 'departments' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('departments')}>Departments</button>
-                  <button style={activeTab === 'task-assignments' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('task-assignments')}>Task Desk</button>
                   <button style={activeTab === 'platform-roles' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('platform-roles')}>Security Roles</button>
                   <button style={activeTab === 'platform-audits' ? styles.subNavbarBtnActive : styles.subNavbarBtn} onClick={() => setActiveTab('platform-audits')}>Audit Logs</button>
                 </div>
