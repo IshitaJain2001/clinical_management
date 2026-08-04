@@ -1045,6 +1045,34 @@ const ReceptionistDashboard = () => {
           showToast(`${apptsToCreate.length} Appointment(s) registered & Payment completed successfully!`, "success");
         }
 
+        // Save vitals if any of them are filled in the form
+        if (vitalTemp || vitalPulse || vitalBpSys || vitalBpDia || vitalResp || vitalSpo2 || vitalWeight || vitalHeight) {
+          try {
+            await api.post('/emr/vitals', {
+              patientId: finalPatientId,
+              temperature: vitalTemp ? parseFloat(vitalTemp) : undefined,
+              pulse: vitalPulse ? parseInt(vitalPulse) : undefined,
+              bpSys: vitalBpSys ? parseInt(vitalBpSys) : undefined,
+              bpDia: vitalBpDia ? parseInt(vitalBpDia) : undefined,
+              respiration: vitalResp ? parseInt(vitalResp) : undefined,
+              spo2: vitalSpo2 ? parseInt(vitalSpo2) : undefined,
+              weight: vitalWeight ? parseFloat(vitalWeight) : undefined,
+              height: vitalHeight ? parseFloat(vitalHeight) : undefined
+            });
+            // Clear vitals form fields
+            setVitalTemp('');
+            setVitalPulse('');
+            setVitalBpSys('');
+            setVitalBpDia('');
+            setVitalResp('');
+            setVitalSpo2('');
+            setVitalWeight('');
+            setVitalHeight('');
+          } catch (err) {
+            console.error("Failed to save vitals during registration flow:", err);
+          }
+        }
+
         setPendingRegistrationPayload(null);
         
         // Reset form
@@ -5633,6 +5661,111 @@ const ReceptionistDashboard = () => {
                       </div>
                     </div>
                   )}
+
+                  {/* Patient Vitals (Optional) during Registration / Appointment Booking */}
+                  <div style={{ marginTop: '32px', marginBottom: '40px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
+                      <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#2563EB', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '14px' }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                        </svg>
+                      </div>
+                      <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#1A1D23', margin: 0 }}>Patient Vitals <span style={{ color: '#64748B', fontSize: '14px', fontWeight: 600 }}>(Optional)</span></h2>
+                    </div>
+                    
+                    <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '24px', borderRadius: '12px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px' }}>
+                      <div className="form-group" style={{ margin: 0 }}>
+                        <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Temperature (°F)</label>
+                        <input 
+                          type="number" 
+                          step="0.1"
+                          className="form-control" 
+                          placeholder="e.g. 98.6"
+                          style={{ height: '44px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
+                          value={vitalTemp} 
+                          onChange={e => setVitalTemp(e.target.value)} 
+                        />
+                      </div>
+                      <div className="form-group" style={{ margin: 0 }}>
+                        <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Heart Rate / Pulse (bpm)</label>
+                        <input 
+                          type="number" 
+                          className="form-control" 
+                          placeholder="e.g. 72"
+                          style={{ height: '44px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
+                          value={vitalPulse} 
+                          onChange={e => setVitalPulse(e.target.value)} 
+                        />
+                      </div>
+                      <div className="form-group" style={{ margin: 0 }}>
+                        <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>BP Systolic (mmHg)</label>
+                        <input 
+                          type="number" 
+                          className="form-control" 
+                          placeholder="e.g. 120"
+                          style={{ height: '44px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
+                          value={vitalBpSys} 
+                          onChange={e => setVitalBpSys(e.target.value)} 
+                        />
+                      </div>
+                      <div className="form-group" style={{ margin: 0 }}>
+                        <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>BP Diastolic (mmHg)</label>
+                        <input 
+                          type="number" 
+                          className="form-control" 
+                          placeholder="e.g. 80"
+                          style={{ height: '44px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
+                          value={vitalBpDia} 
+                          onChange={e => setVitalBpDia(e.target.value)} 
+                        />
+                      </div>
+                      <div className="form-group" style={{ margin: 0 }}>
+                        <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Respiration (breaths/min)</label>
+                        <input 
+                          type="number" 
+                          className="form-control" 
+                          placeholder="e.g. 16"
+                          style={{ height: '44px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
+                          value={vitalResp} 
+                          onChange={e => setVitalResp(e.target.value)} 
+                        />
+                      </div>
+                      <div className="form-group" style={{ margin: 0 }}>
+                        <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>SpO2 (%)</label>
+                        <input 
+                          type="number" 
+                          className="form-control" 
+                          placeholder="e.g. 98"
+                          style={{ height: '44px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
+                          value={vitalSpo2} 
+                          onChange={e => setVitalSpo2(e.target.value)} 
+                        />
+                      </div>
+                      <div className="form-group" style={{ margin: 0 }}>
+                        <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Weight (kg)</label>
+                        <input 
+                          type="number" 
+                          step="0.1"
+                          className="form-control" 
+                          placeholder="e.g. 70"
+                          style={{ height: '44px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
+                          value={vitalWeight} 
+                          onChange={e => setVitalWeight(e.target.value)} 
+                        />
+                      </div>
+                      <div className="form-group" style={{ margin: 0 }}>
+                        <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Height (cm)</label>
+                        <input 
+                          type="number" 
+                          className="form-control" 
+                          placeholder="e.g. 175"
+                          style={{ height: '44px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
+                          value={vitalHeight} 
+                          onChange={e => setVitalHeight(e.target.value)} 
+                        />
+                      </div>
+                    </div>
+                  </div>
 
                   {!isExistingPatient && bookingType !== 'lab' && bookingType !== 'service' && (
                     <>
