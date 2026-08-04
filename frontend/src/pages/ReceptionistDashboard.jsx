@@ -686,6 +686,16 @@ const ReceptionistDashboard = () => {
   const [apptTypeFilter, setApptTypeFilter] = useState('All');
   const [staffSearch, setStaffSearch] = useState('');
   const [billingSearch, setBillingSearch] = useState('');
+  const [patientVitals, setPatientVitals] = useState([]);
+  const [showVitalsModal, setShowVitalsModal] = useState(false);
+  const [vitalTemp, setVitalTemp] = useState('');
+  const [vitalPulse, setVitalPulse] = useState('');
+  const [vitalBpSys, setVitalBpSys] = useState('');
+  const [vitalBpDia, setVitalBpDia] = useState('');
+  const [vitalResp, setVitalResp] = useState('');
+  const [vitalSpo2, setVitalSpo2] = useState('');
+  const [vitalWeight, setVitalWeight] = useState('');
+  const [vitalHeight, setVitalHeight] = useState('');
 
 
   const getFormattedPatientId = (patientId) => {
@@ -2480,20 +2490,58 @@ const ReceptionistDashboard = () => {
   const [activePatientMenuId, setActivePatientMenuId] = useState(null);
   const [patientMenuPos, setPatientMenuPos] = useState({ top: 0, right: 0 });
 
-  const handleOpenPatientProfile = (patientIdOrObj) => {
+  const handleOpenPatientProfile = async (patientIdOrObj) => {
     if (!patientIdOrObj) return;
-    // If it's already a full patient object
+    let patObj = null;
     if (patientIdOrObj.gender && patientIdOrObj._id) {
-      setSelectedPatient(patientIdOrObj);
-      switchTab('patient-details', true);
+      patObj = patientIdOrObj;
     } else {
-      // Find in patientsList
       const targetId = patientIdOrObj._id || patientIdOrObj;
-      const pat = patientsList.find(p => p._id.toString() === targetId.toString());
-      if (pat) {
-        setSelectedPatient(pat);
-        switchTab('patient-details', true);
+      patObj = patientsList.find(p => p._id.toString() === targetId.toString());
+    }
+
+    if (patObj) {
+      setSelectedPatient(patObj);
+      switchTab('patient-details', true);
+      
+      try {
+        const res = await api.get(`/emr/vitals/patient/${patObj._id}`);
+        setPatientVitals(res.data || []);
+      } catch (err) {
+        console.error("Failed to fetch patient vitals", err);
+        setPatientVitals([]);
       }
+    }
+  };
+
+  const handleSaveVitals = async (e) => {
+    if (e) e.preventDefault();
+    if (!selectedPatient) return;
+    try {
+      setLoading(true);
+      const payload = {
+        patientId: selectedPatient._id,
+        temperature: vitalTemp ? parseFloat(vitalTemp) : undefined,
+        pulse: vitalPulse ? parseInt(vitalPulse) : undefined,
+        bpSys: vitalBpSys ? parseInt(vitalBpSys) : undefined,
+        bpDia: vitalBpDia ? parseInt(vitalBpDia) : undefined,
+        respiration: vitalResp ? parseInt(vitalResp) : undefined,
+        spo2: vitalSpo2 ? parseInt(vitalSpo2) : undefined,
+        weight: vitalWeight ? parseFloat(vitalWeight) : undefined,
+        height: vitalHeight ? parseFloat(vitalHeight) : undefined
+      };
+
+      await api.post('/emr/vitals', payload);
+      showToast("Vitals recorded successfully", "success");
+      
+      const res = await api.get(`/emr/vitals/patient/${selectedPatient._id}`);
+      setPatientVitals(res.data || []);
+      setShowVitalsModal(false);
+    } catch (err) {
+      console.error("Failed to record vitals:", err);
+      showToast("Failed to record vitals", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -4364,71 +4412,94 @@ const ReceptionistDashboard = () => {
 
 
                   {/* Vitals Summary */}
-                  <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                        </svg>
-                        <h3 style={{ fontSize: '16px', fontWeight: 900, color: '#2563EB', margin: 0 }}>Vitals Summary</h3>
-                      </div>
-                      <span style={{ fontSize: '11px', color: '#2563EB', fontWeight: 800, cursor: 'pointer', textDecoration: 'underline' }}>View Full History</span>
-                    </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                      {/* BP */}
-                      <div style={{ background: '#F0FDF4', borderRadius: '12px', padding: '12px 10px', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid #DCFCE7' }}>
-                        <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#DCFCE7', color: '#16A34A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="12" r="10"/>
-                            <path d="m16 12-4-4-4 4"/>
-                            <path d="M12 16V8"/>
-                          </svg>
-                        </div>
-                        <div>
-                          <div style={{ fontSize: '9px', color: '#16A34A', fontWeight: 800, textTransform: 'uppercase' }}>Blood Pressure</div>
-                          <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#1A1D23', marginTop: '2px' }}>
-                            -- <span style={{ fontSize: '9px', color: '#64748B', fontWeight: 500 }}>mmHg</span>
+                  {(() => {
+                    const latestVital = patientVitals && patientVitals.length > 0 ? patientVitals[0] : null;
+                    return (
+                      <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                            </svg>
+                            <h3 style={{ fontSize: '16px', fontWeight: 900, color: '#2563EB', margin: 0 }}>Vitals Summary</h3>
+                          </div>
+                          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                            <span 
+                              style={{ fontSize: '11px', color: '#2563EB', fontWeight: 800, cursor: 'pointer', textDecoration: 'underline', display: 'flex', alignItems: 'center', gap: '4px' }}
+                              onClick={() => {
+                                setVitalTemp(latestVital?.temperature || '');
+                                setVitalPulse(latestVital?.pulse || '');
+                                setVitalBpSys(latestVital?.bpSys || '');
+                                setVitalBpDia(latestVital?.bpDia || '');
+                                setVitalResp(latestVital?.respiration || '');
+                                setVitalSpo2(latestVital?.spo2 || '');
+                                setVitalWeight(latestVital?.weight || '');
+                                setVitalHeight(latestVital?.height || '');
+                                setShowVitalsModal(true);
+                              }}
+                            >
+                              Edit Vitals
+                            </span>
+                            <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 800, cursor: 'pointer', textDecoration: 'underline' }}>View Full History</span>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Heart Rate */}
-                      <div style={{ background: '#FFF5F5', borderRadius: '12px', padding: '12px 10px', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid #FEE2E2' }}>
-                        <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                          </svg>
-                        </div>
-                        <div>
-                          <div style={{ fontSize: '9px', color: '#EF4444', fontWeight: 800, textTransform: 'uppercase' }}>Heart Rate</div>
-                          <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#1A1D23', marginTop: '2px' }}>
-                            -- <span style={{ fontSize: '9px', color: '#64748B', fontWeight: 500 }}>bpm</span>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                          {/* BP */}
+                          <div style={{ background: '#F0FDF4', borderRadius: '12px', padding: '12px 10px', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid #DCFCE7' }}>
+                            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#DCFCE7', color: '#16A34A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="m16 12-4-4-4 4"/>
+                                <path d="M12 16V8"/>
+                              </svg>
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '9px', color: '#16A34A', fontWeight: 800, textTransform: 'uppercase' }}>Blood Pressure</div>
+                              <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#1A1D23', marginTop: '2px' }}>
+                                {latestVital && latestVital.bpSys ? `${latestVital.bpSys}/${latestVital.bpDia || ''}` : '--'} <span style={{ fontSize: '9px', color: '#64748B', fontWeight: 500 }}>mmHg</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Heart Rate */}
+                          <div style={{ background: '#FFF5F5', borderRadius: '12px', padding: '12px 10px', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid #FEE2E2' }}>
+                            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                              </svg>
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '9px', color: '#EF4444', fontWeight: 800, textTransform: 'uppercase' }}>Heart Rate</div>
+                              <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#1A1D23', marginTop: '2px' }}>
+                                {latestVital && latestVital.pulse ? latestVital.pulse : '--'} <span style={{ fontSize: '9px', color: '#64748B', fontWeight: 500 }}>bpm</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Temp */}
+                          <div style={{ background: '#FFFBEB', borderRadius: '12px', padding: '12px 10px', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid #FEF3C7' }}>
+                            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#FEF3C7', color: '#D97706', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
+                              </svg>
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '9px', color: '#D97706', fontWeight: 800, textTransform: 'uppercase' }}>Temperature</div>
+                              <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#1A1D23', marginTop: '2px' }}>
+                                {latestVital && latestVital.temperature ? latestVital.temperature : '--'} <span style={{ fontSize: '9px', color: '#64748B', fontWeight: 500 }}>°F</span>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Temp */}
-                      <div style={{ background: '#FFFBEB', borderRadius: '12px', padding: '12px 10px', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid #FEF3C7' }}>
-                        <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#FEF3C7', color: '#D97706', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
-                          </svg>
-                        </div>
-                        <div>
-                          <div style={{ fontSize: '9px', color: '#D97706', fontWeight: 800, textTransform: 'uppercase' }}>Temperature</div>
-                          <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#1A1D23', marginTop: '2px' }}>
-                            --<span style={{ fontSize: '9px', color: '#64748B', fontWeight: 500 }}>°F</span>
-                          </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #F1F5F9', paddingTop: '12px', marginTop: '16px', fontSize: '11px', color: '#94A3B8', fontWeight: 700 }}>
+                          <span>Last updated: {latestVital && latestVital.createdAt ? new Date(latestVital.createdAt).toLocaleDateString() : '--'}</span>
+                          <span>By: {latestVital && latestVital.recordedBy?.name ? latestVital.recordedBy.name : '--'}</span>
                         </div>
                       </div>
-                    </div>
-
-                    <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #F1F5F9', paddingTop: '12px', marginTop: '16px', fontSize: '11px', color: '#94A3B8', fontWeight: 700 }}>
-                      <span>Last updated: --</span>
-                      <span>By: --</span>
-                    </div>
-                  </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Appointment History Table */}
@@ -11081,6 +11152,150 @@ const ReceptionistDashboard = () => {
                 Done / Close
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* RECORD / EDIT VITALS MODAL */}
+      {showVitalsModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(4px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div className="glass-card" style={{ background: 'white', borderRadius: '16px', border: '1.5px solid #C4B5FD', padding: '28px', width: '100%', maxWidth: '520px', boxShadow: '0 20px 40px rgba(0,0,0,0.12)', animation: 'slideUp 0.3s ease-out' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid #F1F5F9', paddingBottom: '12px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#1A1D23', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                </svg>
+                Record Patient Vitals
+              </h3>
+              <button 
+                type="button" 
+                onClick={() => setShowVitalsModal(false)}
+                style={{ background: 'none', border: 'none', color: '#64748B', cursor: 'pointer', padding: '4px' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveVitals}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Temperature (°F)</label>
+                  <input 
+                    type="number" 
+                    step="0.1" 
+                    className="form-control" 
+                    placeholder="e.g. 98.6"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    value={vitalTemp}
+                    onChange={e => setVitalTemp(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Heart Rate / Pulse (bpm)</label>
+                  <input 
+                    type="number" 
+                    className="form-control" 
+                    placeholder="e.g. 72"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    value={vitalPulse}
+                    onChange={e => setVitalPulse(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>BP Systolic (mmHg)</label>
+                  <input 
+                    type="number" 
+                    className="form-control" 
+                    placeholder="e.g. 120"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    value={vitalBpSys}
+                    onChange={e => setVitalBpSys(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>BP Diastolic (mmHg)</label>
+                  <input 
+                    type="number" 
+                    className="form-control" 
+                    placeholder="e.g. 80"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    value={vitalBpDia}
+                    onChange={e => setVitalBpDia(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Respiration (breaths/min)</label>
+                  <input 
+                    type="number" 
+                    className="form-control" 
+                    placeholder="e.g. 16"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    value={vitalResp}
+                    onChange={e => setVitalResp(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Oxygen Saturation SpO2 (%)</label>
+                  <input 
+                    type="number" 
+                    className="form-control" 
+                    placeholder="e.g. 98"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    value={vitalSpo2}
+                    onChange={e => setVitalSpo2(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Weight (kg)</label>
+                  <input 
+                    type="number" 
+                    step="0.1" 
+                    className="form-control" 
+                    placeholder="e.g. 68.5"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    value={vitalWeight}
+                    onChange={e => setVitalWeight(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Height (cm)</label>
+                  <input 
+                    type="number" 
+                    className="form-control" 
+                    placeholder="e.g. 170"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    value={vitalHeight}
+                    onChange={e => setVitalHeight(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', borderTop: '1px solid #F1F5F9', paddingTop: '16px' }}>
+                <button 
+                  type="button" 
+                  className="btn btn-secondary" 
+                  style={{ height: '42px', padding: '0 20px', borderRadius: '8px', border: '1.5px solid #CBD5E1', background: 'white', color: '#475569', fontWeight: 700 }}
+                  onClick={() => setShowVitalsModal(false)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="btn btn-primary" 
+                  style={{ height: '42px', padding: '0 24px', borderRadius: '8px', background: '#2563EB', color: 'white', fontWeight: 800, border: 'none' }}
+                  disabled={loading}
+                >
+                  {loading ? 'Saving...' : 'Save Vitals'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
