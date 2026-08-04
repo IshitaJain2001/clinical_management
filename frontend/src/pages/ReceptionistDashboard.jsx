@@ -1926,6 +1926,26 @@ const ReceptionistDashboard = () => {
     });
   }, [patientsList, dashboardFilterStartDate, dashboardFilterEndDate]);
 
+  const totalVisitsCount = useMemo(() => {
+    const apptsCount = filteredAppointments.length;
+    let start = new Date(dashboardFilterStartDate || new Date());
+    let end = new Date(dashboardFilterEndDate || new Date());
+    start.setHours(0, 0, 0, 0);
+    end.setHours(23, 59, 59, 999);
+    
+    const labsCount = (coverageLabRequests || []).filter(lab => {
+      const labDate = lab.rawItem?.createdAt ? new Date(lab.rawItem.createdAt) : null;
+      return labDate && labDate >= start && labDate <= end;
+    }).length;
+
+    const servicesCount = (filteredBills || []).reduce((sum, b) => {
+      const serviceItems = (b.items || []).filter(item => (item.description || '').toLowerCase().includes('clinical procedure:'));
+      return sum + serviceItems.length;
+    }, 0);
+
+    return apptsCount + labsCount + servicesCount;
+  }, [filteredAppointments, coverageLabRequests, filteredBills, dashboardFilterStartDate, dashboardFilterEndDate]);
+
   const getTrendData = () => {
     const today = new Date();
     today.setHours(23, 59, 59, 999);
@@ -3570,7 +3590,7 @@ const ReceptionistDashboard = () => {
                 </div>
                 <div>
                   <div className="modern-kpi-lbl">Total Visits</div>
-                  <div className="modern-kpi-val">{filteredPatientsList.length}</div>
+                  <div className="modern-kpi-val">{totalVisitsCount}</div>
                 </div>
               </div>
 
