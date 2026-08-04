@@ -516,7 +516,7 @@ const SuperAdminDashboard = () => {
 
   // Form states for assignments (HR)
   const [tempRoleForm, setTempRoleForm] = useState({ employeeId: 1, roleName: '', validFrom: '', validTill: '', reason: '', approver: '' });
-  const [taskAssignForm, setTaskAssignForm] = useState({ taskTitle: '', priority: 'High', deadline: '', assignedTo: 1, deptName: '', status: 'Pending' });
+  const [taskAssignForm, setTaskAssignForm] = useState({ taskTitle: '', priority: 'High', deadline: '', assignedTo: '', deptName: '', status: 'Pending' });
   const [empWizardData, setEmpWizardData] = useState({ name: '', email: '', mobile: '', dob: '', address: '', emergencyContact: '', designation: '', department: '', reportingManager: '', salaryGrade: '', location: '', shift: '', empType: '' });
 
   // Support creator form state
@@ -559,11 +559,7 @@ const SuperAdminDashboard = () => {
   };
 
   const [hoveredPoint, setHoveredPoint] = useState(null);
-  const [tasks, setTasks] = useState([
-    { id: 1, title: 'Conduct Hospital Admin Training Session', priority: 'High', deadline: 'July 15, 2026', assignedToName: 'Sarah Connor', department: 'Hospital Onboarding', status: 'Pending' },
-    { id: 2, title: 'Verify CDSCO Drug License for CHARAK MEDICAL', priority: 'Critical', deadline: 'July 18, 2026', assignedToName: 'Sarah Connor', department: 'Hospital Onboarding', status: 'Completed' },
-    { id: 3, title: 'Resolve stripe billing integration latency', priority: 'High', deadline: 'July 20, 2026', assignedToName: 'Platform Admin', department: 'System Administration', status: 'Pending' }
-  ]);
+  const [tasks, setTasks] = useState([]);
   const [hospFilterTab, setHospFilterTab] = useState('All');
   const [hospCurrentPage, setHospCurrentPage] = useState(1);
 
@@ -2081,6 +2077,16 @@ const SuperAdminDashboard = () => {
       });
     }
   }, [isOnboardingWizardOpen, wizardHospital?.contractStartDate]);
+
+  useEffect(() => {
+    if (employees && employees.length > 0 && !taskAssignForm.assignedTo) {
+      setTaskAssignForm(prev => ({
+        ...prev,
+        assignedTo: employees[0]._id,
+        deptName: employees[0].department
+      }));
+    }
+  }, [employees]);
 
   const fetchBroadcasts = async () => {
     try {
@@ -7027,19 +7033,27 @@ const SuperAdminDashboard = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {tasks.map(t => (
-                          <tr key={t.id} style={styles.tableRow}>
-                            <td style={styles.tableTd}><strong>{t.title}</strong></td>
-                            <td style={styles.tableTd}>{t.assignedToName}</td>
-                            <td style={styles.tableTd}>
-                              <span style={{ fontSize: '10px', fontWeight: 800, color: t.priority === 'Critical' ? '#EF4444' : '#F59E0B' }}>{t.priority}</span>
-                            </td>
-                            <td style={styles.tableTd}>{t.deadline}</td>
-                            <td style={styles.tableTd}>
-                              <span style={{ ...styles.statusBadge, background: t.status === 'Completed' ? '#D1FAE5' : '#FEF3C7', color: t.status === 'Completed' ? '#065F46' : '#D97706' }}>{t.status}</span>
+                        {tasks.length === 0 ? (
+                          <tr>
+                            <td colSpan="5" style={{ ...styles.tableTd, textAlign: 'center', padding: '30px 10px', color: '#64748B', fontSize: '12px' }}>
+                              No active tasks found.
                             </td>
                           </tr>
-                        ))}
+                        ) : (
+                          tasks.map(t => (
+                            <tr key={t.id} style={styles.tableRow}>
+                              <td style={styles.tableTd}><strong>{t.title}</strong></td>
+                              <td style={styles.tableTd}>{t.assignedToName}</td>
+                              <td style={styles.tableTd}>
+                                <span style={{ fontSize: '10px', fontWeight: 800, color: t.priority === 'Critical' ? '#EF4444' : '#F59E0B' }}>{t.priority}</span>
+                              </td>
+                              <td style={styles.tableTd}>{t.deadline}</td>
+                              <td style={styles.tableTd}>
+                                <span style={{ ...styles.statusBadge, background: t.status === 'Completed' ? '#D1FAE5' : '#065F46', color: t.status === 'Completed' ? '#065F46' : '#D97706' }}>{t.status}</span>
+                              </td>
+                            </tr>
+                          ))
+                        )}
                       </tbody>
                     </table>
                   </div>
@@ -7047,7 +7061,7 @@ const SuperAdminDashboard = () => {
                     <h3 style={{ fontSize: '14px', fontWeight: 800, marginBottom: '14px' }}>Assign New Checklist Task</h3>
                     <form onSubmit={(e) => {
                       e.preventDefault();
-                      const assignedEmp = employees.find(emp => emp.id === parseInt(taskAssignForm.assignedTo)) || employees[0];
+                      const assignedEmp = employees.find(emp => emp._id === taskAssignForm.assignedTo) || employees[0];
                       const newTask = {
                         id: tasks.length + 1,
                         title: taskAssignForm.taskTitle,
@@ -7058,6 +7072,7 @@ const SuperAdminDashboard = () => {
                         status: 'Pending'
                       };
                       setTasks([...tasks, newTask]);
+                      setTaskAssignForm(prev => ({ ...prev, taskTitle: '', deadline: '' }));
                       showToast && showToast('Task assigned successfully!', 'success');
                     }} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -7100,10 +7115,19 @@ const SuperAdminDashboard = () => {
                           <select
                             style={styles.filterSelect}
                             value={taskAssignForm.assignedTo}
-                            onChange={e => setTaskAssignForm({ ...taskAssignForm, assignedTo: e.target.value })}
+                            onChange={e => {
+                              const empId = e.target.value;
+                              const emp = employees.find(emp => emp._id === empId);
+                              setTaskAssignForm({
+                                ...taskAssignForm,
+                                assignedTo: empId,
+                                deptName: emp ? emp.department : ''
+                              });
+                            }}
                           >
+                            <option value="">Select Staff...</option>
                             {employees.map(emp => (
-                              <option key={emp.id} value={emp.id}>{emp.name} ({emp.designation})</option>
+                              <option key={emp._id} value={emp._id}>{emp.name} ({emp.designation})</option>
                             ))}
                           </select>
                         </div>
@@ -7114,6 +7138,7 @@ const SuperAdminDashboard = () => {
                             style={styles.formInput}
                             value={taskAssignForm.deptName}
                             onChange={e => setTaskAssignForm({ ...taskAssignForm, deptName: e.target.value })}
+                            readOnly
                           />
                         </div>
                       </div>
