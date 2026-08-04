@@ -690,6 +690,7 @@ const ReceptionistDashboard = () => {
   const [globalSearchQuery, setGlobalSearchQuery] = useState('');
   const [showGlobalDropdown, setShowGlobalDropdown] = useState(false);
   const [appointmentSearch, setAppointmentSearch] = useState('');
+  const [apptTypeFilter, setApptTypeFilter] = useState('All');
   const [staffSearch, setStaffSearch] = useState('');
   const [billingSearch, setBillingSearch] = useState('');
 
@@ -1677,32 +1678,98 @@ const ReceptionistDashboard = () => {
     fetchReceptionAvailability();
   }, [formData.doctorId, bookingDate, doctors]);
 
+  const getUnifiedAppointmentsList = () => {
+    const list = [];
+
+    // 1. Doctor appointments
+    if (appointments && Array.isArray(appointments)) {
+      appointments.forEach(app => {
+        list.push({
+          id: app._id || app.id,
+          patientId: app.patientId,
+          patientName: app.patientId?.name || 'Unknown Patient',
+          type: 'Appointment',
+          detailName: app.doctorId?.name || app.doctor || 'OPD Consultation',
+          date: app.date,
+          time: app.time || '',
+          status: app.status || 'Pending',
+          rawItem: app
+        });
+      });
+    }
+
+    // 2. Lab tests (from coverageLabRequests or labs)
+    if (coverageLabRequests && Array.isArray(coverageLabRequests)) {
+      coverageLabRequests.forEach(lab => {
+        const labPatId = lab.rawItem?.patientId || lab.patientId;
+        const patObj = typeof labPatId === 'object' ? labPatId : patientsList.find(p => p._id === String(labPatId));
+        list.push({
+          id: lab.id || lab._id,
+          patientId: patObj || labPatId,
+          patientName: patObj?.name || lab.name || 'Unknown Patient',
+          type: 'Lab Test',
+          detailName: lab.test || 'General Lab Test',
+          date: lab.rawItem?.createdAt ? new Date(lab.rawItem.createdAt).toISOString().split('T')[0] : '',
+          time: lab.rawItem?.createdAt ? new Date(lab.rawItem.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '',
+          status: lab.status || 'Pending',
+          rawItem: lab.rawItem || lab
+        });
+      });
+    }
+
+    // 3. Clinical services (from bills)
+    if (bills && Array.isArray(bills)) {
+      bills.forEach(bill => {
+        const serviceItems = (bill.items || []).filter(item => (item.description || '').toLowerCase().includes('clinical procedure:'));
+        serviceItems.forEach((item, idx) => {
+          const serviceName = item.description.replace('Clinical Procedure:', '').trim();
+          list.push({
+            id: `${bill._id || bill.id}-${idx}`,
+            patientId: bill.patientId,
+            patientName: bill.patientId?.name || 'Unknown Patient',
+            type: 'Clinical Service',
+            detailName: serviceName,
+            date: bill.createdAt ? new Date(bill.createdAt).toISOString().split('T')[0] : '',
+            time: bill.createdAt ? new Date(bill.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '',
+            status: bill.status || 'Paid',
+            rawItem: bill
+          });
+        });
+      });
+    }
+
+    return list;
+  };
+
   const getFilteredAppointments = () => {
-    return appointments.filter(app => {
-      if (app.date) {
-        const appDate = new Date(app.date);
-        const appDateOnly = new Date(appDate.getFullYear(), appDate.getMonth(), appDate.getDate());
+    const unified = getUnifiedAppointmentsList();
+    return unified.filter(item => {
+      // 1. Type Filter
+      if (apptTypeFilter !== 'All' && item.type !== apptTypeFilter) return false;
+
+      // 2. Date Range Filter
+      if (item.date) {
+        const itemDate = new Date(item.date);
+        const itemDateOnly = new Date(itemDate.getFullYear(), itemDate.getMonth(), itemDate.getDate());
 
         if (startDate) {
           const start = new Date(startDate);
           const startOnly = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-          if (appDateOnly < startOnly) return false;
+          if (itemDateOnly < startOnly) return false;
         }
         if (endDate) {
           const end = new Date(endDate);
           const endOnly = new Date(end.getFullYear(), end.getMonth(), end.getDate());
-          if (appDateOnly > endOnly) return false;
+          if (itemDateOnly > endOnly) return false;
         }
       }
 
+      // 3. Search query
       const query = appointmentSearch.toLowerCase().trim();
       if (query) {
-        const patientNameMatch = (app.patientId?.name || '').toLowerCase().includes(query);
-        const doctorNameMatch = (app.doctorId?.name || app.doctor || '').toLowerCase().includes(query);
-        const reasonMatch = (app.reason || '').toLowerCase().includes(query);
-        if (!patientNameMatch && !doctorNameMatch && !reasonMatch) {
-          return false;
-        }
+        const patientNameMatch = (item.patientName || '').toLowerCase().includes(query);
+        const detailMatch = (item.detailName || '').toLowerCase().includes(query);
+        if (!patientNameMatch && !detailMatch) return false;
       }
 
       return true;
@@ -6617,12 +6684,55 @@ const ReceptionistDashboard = () => {
               </div>
             )}
 
+            {(() => {
+              const unifiedList = getUnifiedAppointmentsList();
+              const counts = { All: unifiedList.length, Appointment: 0, 'Lab Test': 0, 'Clinical Service': 0 };
+              unifiedList.forEach(item => {
+                if (counts[item.type] !== undefined) counts[item.type]++;
+              });
+
+              return (
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
+                  {[
+                    { key: 'All', label: 'All Bookings', count: counts.All, color: '#3B82F6', bg: '#EFF6FF' },
+                    { key: 'Appointment', label: 'Appointments (OPD)', count: counts.Appointment, color: '#2563EB', bg: '#EFF6FF' },
+                    { key: 'Lab Test', label: 'Lab Tests', count: counts['Lab Test'], color: '#10B981', bg: '#ECFDF5' },
+                    { key: 'Clinical Service', label: 'Clinical Services', count: counts['Clinical Service'], color: '#8B5CF6', bg: '#F5F3FF' }
+                  ].map(pill => (
+                    <button
+                      key={pill.key}
+                      onClick={() => setApptTypeFilter(pill.key)}
+                      style={{
+                        padding: '8px 16px',
+                        borderRadius: '20px',
+                        fontWeight: 700,
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        border: apptTypeFilter === pill.key ? `2px solid ${pill.color}` : '1.5px solid #E2E8F0',
+                        background: apptTypeFilter === pill.key ? pill.bg : 'white',
+                        color: apptTypeFilter === pill.key ? pill.color : '#64748B',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      {pill.label}
+                      <span style={{ fontSize: '11px', background: apptTypeFilter === pill.key ? 'rgba(255,255,255,0.7)' : '#F1F5F9', padding: '2px 6px', borderRadius: '10px', color: apptTypeFilter === pill.key ? pill.color : '#64748B' }}>
+                        {pill.count}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              );
+            })()}
+
             <div style={{ display: 'flex', gap: '16px', marginBottom: '20px', alignItems: 'center' }}>
               <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center' }}>
                 <i data-lucide="search" style={{ position: 'absolute', left: '16px', color: '#64748B', width: '16px' }}></i>
                 <input 
                   type="text" 
-                  placeholder="Search appointments by patient name, doctor, or reason..." 
+                  placeholder="Search appointments by patient name, doctor, test or service..." 
                   style={{ background: 'white', border: '1px solid #CBD5E1', paddingLeft: '44px', height: '42px', width: '100%', borderRadius: '10px', fontSize: '13px', fontWeight: 600, outline: 'none', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
                   value={appointmentSearch}
                   onChange={(e) => setAppointmentSearch(e.target.value)}
@@ -6636,7 +6746,8 @@ const ReceptionistDashboard = () => {
                   <thead style={{ background: '#F8FAFC' }}>
                     <tr>
                       <th>Patient</th>
-                      <th>Doctor</th>
+                      <th>Type</th>
+                      <th>Doctor / Detail</th>
                       <th>Time</th>
                       <th>Status</th>
                       <th>Action</th>
@@ -6644,21 +6755,34 @@ const ReceptionistDashboard = () => {
                   </thead>
                   <tbody>
                     {getFilteredAppointments().map(app => (
-                      <tr key={app._id || app.id}>
+                      <tr key={app.id}>
                         <td>
                           <div 
                             style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
-                            onClick={() => handleOpenPatientProfile(app.patientId)}
+                            onClick={() => app.patientId && handleOpenPatientProfile(typeof app.patientId === 'object' ? app.patientId : { _id: app.patientId, name: app.patientName })}
                             onMouseEnter={(e) => { e.currentTarget.querySelector('.patient-name-span').style.color = '#2563EB'; }}
                             onMouseLeave={(e) => { e.currentTarget.querySelector('.patient-name-span').style.color = '#1A1D23'; }}
                           >
                             <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '12px' }}>
-                              {getInitials(app.patientId?.name || 'Unknown')}
+                              {getInitials(app.patientName)}
                             </div>
-                            <span className="patient-name-span" style={{ fontWeight: 700, color: '#1A1D23', transition: 'color 0.2s' }}>{app.patientId?.name || 'Unknown Patient'}</span>
+                            <span className="patient-name-span" style={{ fontWeight: 700, color: '#1A1D23', transition: 'color 0.2s' }}>{app.patientName}</span>
                           </div>
                         </td>
-                        <td>{app.doctorId?.name || app.doctor}</td>
+                        <td>
+                          <span style={{
+                            padding: '4px 8px',
+                            borderRadius: '6px',
+                            fontSize: '11.5px',
+                            fontWeight: 700,
+                            background: app.type === 'Appointment' ? '#EFF6FF' : app.type === 'Lab Test' ? '#ECFDF5' : '#F5F3FF',
+                            color: app.type === 'Appointment' ? '#2563EB' : app.type === 'Lab Test' ? '#10B981' : '#8B5CF6',
+                            border: app.type === 'Appointment' ? '1px solid #BFDBFE' : app.type === 'Lab Test' ? '1px solid #A7F3D0' : '1px solid #DDD6FE'
+                          }}>
+                            {app.type}
+                          </span>
+                        </td>
+                        <td style={{ fontWeight: 700, color: '#334155' }}>{app.detailName}</td>
                         <td style={{ fontWeight: 600 }}>
                           {getFormattedDate(app.date)}
                           {app.time}
@@ -6672,13 +6796,27 @@ const ReceptionistDashboard = () => {
                             {app.status}
                           </span>
                         </td>
-                        <td><button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '12px' }} onClick={() => openDetailsModal(app)}>View Details</button></td>
+                        <td>
+                          <button 
+                            className="btn btn-secondary" 
+                            style={{ padding: '6px 12px', fontSize: '12px' }} 
+                            onClick={() => {
+                              if (app.type === 'Appointment') {
+                                openDetailsModal(app.rawItem);
+                              } else {
+                                showToast(`${app.type}: ${app.detailName} (${app.status})`, 'info');
+                              }
+                            }}
+                          >
+                            View Details
+                          </button>
+                        </td>
                       </tr>
                     ))}
                     {getFilteredAppointments().length === 0 && (
                       <tr>
-                        <td colSpan="5" style={{ textAlign: 'center', padding: '40px', color: '#64748B', fontWeight: 600 }}>
-                          {appointmentSearch.trim() ? `No appointments found matching "${appointmentSearch}"` : "No appointments found for the selected range."}
+                        <td colSpan="6" style={{ textAlign: 'center', padding: '40px', color: '#64748B', fontWeight: 600 }}>
+                          {appointmentSearch.trim() ? `No matches found matching "${appointmentSearch}"` : "No bookings found for the selected type / date range."}
                         </td>
                       </tr>
                     )}
