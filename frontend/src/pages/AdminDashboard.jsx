@@ -118,11 +118,7 @@ const AdminDashboard = () => {
       setLetterheadBlobUrl(letterheadPreviewImage);
     }
 
-    return () => {
-      if (activeBlobUrl && activeBlobUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(activeBlobUrl);
-      }
-    };
+    // No cleanup / revoking here to avoid premature revocation due to React double-mounting/strict-mode.
   }, [letterheadPreviewImage]);
 
   const getAbsoluteUrl = (url) => {
