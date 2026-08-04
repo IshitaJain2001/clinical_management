@@ -7150,7 +7150,7 @@ const SuperAdminDashboard = () => {
                     <h3 style={{ fontSize: '14px', fontWeight: 800, marginBottom: '14px' }}>Tenant Role Security Audit</h3>
                     <div style={{ padding: '14px', background: '#EFF6FF', borderRadius: '10px', border: '1px solid #BFDBFE', color: '#1E40AF', fontSize: '12px' }}>
                       <strong>SaaS Shield Compliance Engine Active</strong>
-                      <p style={{ margin: '6px 0 0' }}>All 2 corporate tenants conform to localized clinical staff role separation guidelines (DPDP-compliant rules enforced).</p>
+                      <p style={{ margin: '6px 0 0' }}>All {hospitals.length} corporate tenants conform to localized clinical staff role separation guidelines (DPDP-compliant rules enforced).</p>
                     </div>
                   </div>
                 </div>
