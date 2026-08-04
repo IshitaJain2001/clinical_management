@@ -1928,15 +1928,11 @@ const ReceptionistDashboard = () => {
 
   const totalVisitsCount = useMemo(() => {
     const apptsCount = filteredAppointments.length;
-    let start = new Date(dashboardFilterStartDate || new Date());
-    let end = new Date(dashboardFilterEndDate || new Date());
-    start.setHours(0, 0, 0, 0);
-    end.setHours(23, 59, 59, 999);
-    
-    const labsCount = (coverageLabRequests || []).filter(lab => {
-      const labDate = lab.rawItem?.createdAt ? new Date(lab.rawItem.createdAt) : null;
-      return labDate && labDate >= start && labDate <= end;
-    }).length;
+
+    const labsCount = (filteredBills || []).reduce((sum, b) => {
+      const labItems = (b.items || []).filter(item => (item.description || '').toLowerCase().includes('lab test:'));
+      return sum + labItems.length;
+    }, 0);
 
     const servicesCount = (filteredBills || []).reduce((sum, b) => {
       const serviceItems = (b.items || []).filter(item => (item.description || '').toLowerCase().includes('clinical procedure:'));
@@ -1944,7 +1940,7 @@ const ReceptionistDashboard = () => {
     }, 0);
 
     return apptsCount + labsCount + servicesCount;
-  }, [filteredAppointments, coverageLabRequests, filteredBills, dashboardFilterStartDate, dashboardFilterEndDate]);
+  }, [filteredAppointments, filteredBills]);
 
   const getTrendData = () => {
     const today = new Date();
