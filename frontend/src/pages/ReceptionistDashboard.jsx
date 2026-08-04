@@ -679,6 +679,14 @@ const ReceptionistDashboard = () => {
   const [patientGenderFilter, setPatientGenderFilter] = useState('All');
   const [patientStartRegDate, setPatientStartRegDate] = useState('');
   const [patientEndRegDate, setPatientEndRegDate] = useState('');
+  const [patientApptFilter, setPatientApptFilter] = useState('All');
+  const [patientApptDoctor, setPatientApptDoctor] = useState('All');
+  const [patientApptStatus, setPatientApptStatus] = useState('All');
+  const [patientTestFilter, setPatientTestFilter] = useState('All');
+  const [patientTestName, setPatientTestName] = useState('');
+  const [patientTestStatus, setPatientTestStatus] = useState('All');
+  const [patientServiceFilter, setPatientServiceFilter] = useState('All');
+  const [patientServiceName, setPatientServiceName] = useState('');
   const [globalSearchQuery, setGlobalSearchQuery] = useState('');
   const [showGlobalDropdown, setShowGlobalDropdown] = useState(false);
   const [appointmentSearch, setAppointmentSearch] = useState('');
@@ -742,6 +750,86 @@ const ReceptionistDashboard = () => {
           const endOnly = new Date(end.getFullYear(), end.getMonth(), end.getDate());
           if (regDateOnly > endOnly) return false;
         }
+      }
+
+      // 4. Appointment Filter
+      const patientAppointments = (appointments || []).filter(app => {
+        const appPatId = app.patientId?._id || app.patientId;
+        return appPatId && p._id && appPatId.toString() === p._id.toString();
+      });
+
+      if (patientApptFilter !== 'All') {
+        const matchesAppt = patientAppointments.some(app => {
+          if (patientApptDoctor !== 'All') {
+            const appDocId = app.doctorId?._id || app.doctorId;
+            if (String(appDocId) !== String(patientApptDoctor)) return false;
+          }
+          if (patientApptStatus !== 'All') {
+            if (String(app.status || '').toLowerCase() !== String(patientApptStatus).toLowerCase()) return false;
+          }
+          return true;
+        });
+
+        if (patientApptFilter === 'Yes' && !matchesAppt) return false;
+        if (patientApptFilter === 'No' && matchesAppt) return false;
+      }
+
+      // 5. Lab Test Filter
+      const patientLabs = (coverageLabRequests || []).filter(lab => {
+        const labPatId = lab.rawItem?.patientId?._id || lab.rawItem?.patientId || lab.patientId;
+        return labPatId && p._id && labPatId.toString() === p._id.toString();
+      });
+
+      const patientBills = (bills || []).filter(b => {
+        const billPatId = b.patientId?._id || b.patientId;
+        return billPatId && p._id && billPatId.toString() === p._id.toString();
+      });
+
+      const labBillItems = patientBills.flatMap(b => 
+        (b.items || []).filter(item => (item.description || '').toLowerCase().includes('lab test:'))
+      );
+
+      if (patientTestFilter !== 'All') {
+        const hasMatchingLab = (() => {
+          const matchesReq = patientLabs.some(lab => {
+            if (patientTestName.trim()) {
+              if (!String(lab.test || '').toLowerCase().includes(patientTestName.toLowerCase().trim())) return false;
+            }
+            if (patientTestStatus !== 'All') {
+              if (String(lab.status || '').toLowerCase() !== String(patientTestStatus).toLowerCase()) return false;
+            }
+            return true;
+          });
+
+          const matchesBill = labBillItems.some(item => {
+            if (patientTestName.trim()) {
+              if (!String(item.description || '').toLowerCase().includes(patientTestName.toLowerCase().trim())) return false;
+            }
+            return true;
+          });
+
+          return matchesReq || matchesBill;
+        })();
+
+        if (patientTestFilter === 'Yes' && !hasMatchingLab) return false;
+        if (patientTestFilter === 'No' && hasMatchingLab) return false;
+      }
+
+      // 6. Clinical Service Filter
+      if (patientServiceFilter !== 'All') {
+        const serviceBillItems = patientBills.flatMap(b => 
+          (b.items || []).filter(item => (item.description || '').toLowerCase().includes('clinical procedure:'))
+        );
+
+        const hasMatchingService = serviceBillItems.some(item => {
+          if (patientServiceName.trim()) {
+            if (!String(item.description || '').toLowerCase().includes(patientServiceName.toLowerCase().trim())) return false;
+          }
+          return true;
+        });
+
+        if (patientServiceFilter === 'Yes' && !hasMatchingService) return false;
+        if (patientServiceFilter === 'No' && hasMatchingService) return false;
       }
 
       return true;
@@ -3813,57 +3901,222 @@ const ReceptionistDashboard = () => {
               {/* Sliding Patient Filter Panel */}
               {showPatientFilters && (
                 <div className="glass-card" style={{ padding: '24px', marginBottom: '24px', animation: 'slideDown 0.3s ease-out', border: '1.5px solid #BFDBFE', background: '#F8FAFC', borderRadius: '12px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                    <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#1E293B', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <i data-lucide="calendar" style={{ width: '18px', color: '#2563EB' }}></i> Select Patient Filters
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #E2E8F0', paddingBottom: '12px' }}>
+                    <h4 style={{ fontSize: '16px', fontWeight: 800, color: '#1E293B', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <i data-lucide="filter" style={{ width: '20px', color: '#2563EB' }}></i> Filter Patients Directory
                     </h4>
-                    {(patientGenderFilter !== 'All' || patientStartRegDate || patientEndRegDate) && (
+                    {(patientGenderFilter !== 'All' || patientStartRegDate || patientEndRegDate || patientApptFilter !== 'All' || patientApptDoctor !== 'All' || patientApptStatus !== 'All' || patientTestFilter !== 'All' || patientTestName || patientTestStatus !== 'All' || patientServiceFilter !== 'All' || patientServiceName) && (
                       <button 
                         className="btn" 
-                        style={{ fontSize: '12px', padding: '4px 10px', background: 'transparent', color: '#EF4444', fontWeight: 700, border: 'none', cursor: 'pointer' }}
-                        onClick={() => { setPatientGenderFilter('All'); setPatientStartRegDate(''); setPatientEndRegDate(''); }}
+                        style={{ fontSize: '12px', padding: '6px 12px', background: '#FEE2E2', color: '#EF4444', fontWeight: 700, borderRadius: '6px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        onClick={() => { 
+                          setPatientGenderFilter('All'); 
+                          setPatientStartRegDate(''); 
+                          setPatientEndRegDate(''); 
+                          setPatientApptFilter('All');
+                          setPatientApptDoctor('All');
+                          setPatientApptStatus('All');
+                          setPatientTestFilter('All');
+                          setPatientTestName('');
+                          setPatientTestStatus('All');
+                          setPatientServiceFilter('All');
+                          setPatientServiceName('');
+                        }}
                       >
-                        Clear Filters
+                        Clear All Filters
                       </button>
                     )}
                   </div>
 
-                  <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-                    <div className="form-group" style={{ margin: 0, flex: 1, minWidth: '150px' }}>
-                      <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Gender</label>
-                      <select 
-                        className="form-control" 
-                        style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }}
-                        value={patientGenderFilter}
-                        onChange={e => setPatientGenderFilter(e.target.value)}
-                      >
-                        <option value="All">All Genders</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
-                      </select>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    {/* Section 1: Demographics & Registration */}
+                    <div>
+                      <h5 style={{ fontSize: '13px', fontWeight: 800, color: '#475569', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <i data-lucide="user" style={{ width: '16px', color: '#64748B' }}></i> Basic & Registration Info
+                      </h5>
+                      <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                        <div className="form-group" style={{ margin: 0, flex: 1, minWidth: '150px' }}>
+                          <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Gender</label>
+                          <select 
+                            className="form-control" 
+                            style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }}
+                            value={patientGenderFilter}
+                            onChange={e => setPatientGenderFilter(e.target.value)}
+                          >
+                            <option value="All">All Genders</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                          </select>
+                        </div>
+
+                        <div className="form-group" style={{ margin: 0, flex: 1, minWidth: '180px' }}>
+                          <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Registered From</label>
+                          <input 
+                            type="date" 
+                            className="form-control" 
+                            style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }} 
+                            value={patientStartRegDate} 
+                            onChange={e => setPatientStartRegDate(e.target.value)} 
+                          />
+                        </div>
+
+                        <div className="form-group" style={{ margin: 0, flex: 1, minWidth: '180px' }}>
+                          <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Registered To</label>
+                          <input 
+                            type="date" 
+                            className="form-control" 
+                            style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }} 
+                            value={patientEndRegDate} 
+                            onChange={e => setPatientEndRegDate(e.target.value)} 
+                          />
+                        </div>
+                      </div>
                     </div>
 
-                    <div className="form-group" style={{ margin: 0, flex: 1, minWidth: '180px' }}>
-                      <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Registered From (Calendar)</label>
-                      <input 
-                        type="date" 
-                        className="form-control" 
-                        style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }} 
-                        value={patientStartRegDate} 
-                        onChange={e => setPatientStartRegDate(e.target.value)} 
-                      />
+                    {/* Section 2: Appointment Filters */}
+                    <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: '16px' }}>
+                      <h5 style={{ fontSize: '13px', fontWeight: 800, color: '#475569', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <i data-lucide="calendar" style={{ width: '16px', color: '#2563EB' }}></i> Appointment Filters
+                      </h5>
+                      <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                        <div className="form-group" style={{ margin: 0, flex: 1, minWidth: '150px' }}>
+                          <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Has Appointment</label>
+                          <select 
+                            className="form-control" 
+                            style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }}
+                            value={patientApptFilter}
+                            onChange={e => setPatientApptFilter(e.target.value)}
+                          >
+                            <option value="All">All Patients</option>
+                            <option value="Yes">Yes (Has Appointments)</option>
+                            <option value="No">No (No Appointments)</option>
+                          </select>
+                        </div>
+
+                        {patientApptFilter === 'Yes' && (
+                          <>
+                            <div className="form-group" style={{ margin: 0, flex: 1, minWidth: '180px' }}>
+                              <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>With Doctor</label>
+                              <select 
+                                className="form-control" 
+                                style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }}
+                                value={patientApptDoctor}
+                                onChange={e => setPatientApptDoctor(e.target.value)}
+                              >
+                                <option value="All">All Doctors</option>
+                                {doctors && doctors.map(d => (
+                                  <option key={d._id} value={d._id}>{d.name} ({d.specialization || 'Doctor'})</option>
+                                ))}
+                              </select>
+                            </div>
+
+                            <div className="form-group" style={{ margin: 0, flex: 1, minWidth: '180px' }}>
+                              <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Appointment Status</label>
+                              <select 
+                                className="form-control" 
+                                style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }}
+                                value={patientApptStatus}
+                                onChange={e => setPatientApptStatus(e.target.value)}
+                              >
+                                <option value="All">All Statuses</option>
+                                <option value="Scheduled">Scheduled</option>
+                                <option value="Checked In">Checked In</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                              </select>
+                            </div>
+                          </>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="form-group" style={{ margin: 0, flex: 1, minWidth: '180px' }}>
-                      <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Registered To (Calendar)</label>
-                      <input 
-                        type="date" 
-                        className="form-control" 
-                        style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }} 
-                        value={patientEndRegDate} 
-                        onChange={e => setPatientEndRegDate(e.target.value)} 
-                      />
+                    {/* Section 3: Lab Test Filters */}
+                    <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: '16px' }}>
+                      <h5 style={{ fontSize: '13px', fontWeight: 800, color: '#475569', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <i data-lucide="flask-conical" style={{ width: '16px', color: '#10B981' }}></i> Lab Test Filters
+                      </h5>
+                      <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                        <div className="form-group" style={{ margin: 0, flex: 1, minWidth: '150px' }}>
+                          <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Has Lab Test</label>
+                          <select 
+                            className="form-control" 
+                            style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }}
+                            value={patientTestFilter}
+                            onChange={e => setPatientTestFilter(e.target.value)}
+                          >
+                            <option value="All">All Patients</option>
+                            <option value="Yes">Yes (Has Lab Tests)</option>
+                            <option value="No">No (No Lab Tests)</option>
+                          </select>
+                        </div>
+
+                        {patientTestFilter === 'Yes' && (
+                          <>
+                            <div className="form-group" style={{ margin: 0, flex: 1, minWidth: '180px' }}>
+                              <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Test Name / Description</label>
+                              <input 
+                                type="text" 
+                                className="form-control" 
+                                placeholder="Search test name..."
+                                style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }} 
+                                value={patientTestName} 
+                                onChange={e => setPatientTestName(e.target.value)} 
+                              />
+                            </div>
+
+                            <div className="form-group" style={{ margin: 0, flex: 1, minWidth: '180px' }}>
+                              <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Test Status</label>
+                              <select 
+                                className="form-control" 
+                                style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }}
+                                value={patientTestStatus}
+                                onChange={e => setPatientTestStatus(e.target.value)}
+                              >
+                                <option value="All">All Statuses</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Completed">Completed</option>
+                              </select>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Section 4: Clinical Service Filters */}
+                    <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: '16px' }}>
+                      <h5 style={{ fontSize: '13px', fontWeight: 800, color: '#475569', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <i data-lucide="sparkles" style={{ width: '16px', color: '#8B5CF6' }}></i> Clinical Service Filters
+                      </h5>
+                      <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                        <div className="form-group" style={{ margin: 0, flex: 1, minWidth: '150px' }}>
+                          <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Has Clinical Service</label>
+                          <select 
+                            className="form-control" 
+                            style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }}
+                            value={patientServiceFilter}
+                            onChange={e => setPatientServiceFilter(e.target.value)}
+                          >
+                            <option value="All">All Patients</option>
+                            <option value="Yes">Yes (Has Services)</option>
+                            <option value="No">No (No Services)</option>
+                          </select>
+                        </div>
+
+                        {patientServiceFilter === 'Yes' && (
+                          <div className="form-group" style={{ margin: 0, flex: 1, minWidth: '180px' }}>
+                            <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Service Name / Description</label>
+                            <input 
+                              type="text" 
+                              className="form-control" 
+                              placeholder="Search service name..."
+                              style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }} 
+                              value={patientServiceName} 
+                              onChange={e => setPatientServiceName(e.target.value)} 
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
