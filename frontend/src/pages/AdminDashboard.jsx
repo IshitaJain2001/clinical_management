@@ -88,6 +88,42 @@ const AdminDashboard = () => {
   const [letterheadUrl, setLetterheadUrl] = useState('');
   const [letterheadUploading, setLetterheadUploading] = useState(false);
   const [letterheadPreviewImage, setLetterheadPreviewImage] = useState(null);
+  const [letterheadBlobUrl, setLetterheadBlobUrl] = useState(null);
+
+  useEffect(() => {
+    if (!letterheadPreviewImage) {
+      setLetterheadBlobUrl(null);
+      return;
+    }
+    if (!letterheadPreviewImage.startsWith('data:')) {
+      setLetterheadBlobUrl(letterheadPreviewImage);
+      return;
+    }
+
+    let activeBlobUrl = null;
+    try {
+      const parts = letterheadPreviewImage.split(';base64,');
+      const contentType = parts[0].split(':')[1] || 'application/pdf';
+      const raw = window.atob(parts[1]);
+      const rawLength = raw.length;
+      const uInt8Array = new Uint8Array(rawLength);
+      for (let i = 0; i < rawLength; ++i) {
+        uInt8Array[i] = raw.charCodeAt(i);
+      }
+      const blob = new Blob([uInt8Array], { type: contentType });
+      activeBlobUrl = URL.createObjectURL(blob);
+      setLetterheadBlobUrl(activeBlobUrl);
+    } catch (err) {
+      console.error("Failed to generate Blob URL:", err);
+      setLetterheadBlobUrl(letterheadPreviewImage);
+    }
+
+    return () => {
+      if (activeBlobUrl && activeBlobUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(activeBlobUrl);
+      }
+    };
+  }, [letterheadPreviewImage]);
 
   const getAbsoluteUrl = (url) => {
     if (!url) return '';
@@ -157,6 +193,8 @@ const AdminDashboard = () => {
       showToast("Failed to remove letterhead.", "error");
     }
   };
+
+
 
   const tenantModules = (() => {
     try {
@@ -9934,7 +9972,9 @@ const AdminDashboard = () => {
                         <div style={{ textAlign: 'center' }}>
                           <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                           <div style={{ fontSize: '13px', fontWeight: 700, color: '#334155', marginTop: '10px' }}>Letterhead PDF Uploaded</div>
-                          <a href={letterheadPreviewImage} target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: '#2563EB', textDecoration: 'underline', marginTop: '4px', display: 'block' }}>View Uploaded PDF</a>
+                          {letterheadBlobUrl && (
+                            <a href={letterheadBlobUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: '#2563EB', textDecoration: 'underline', marginTop: '4px', display: 'block' }}>View Uploaded PDF</a>
+                          )}
                         </div>
                       ) : (
                         <img src={letterheadPreviewImage} alt="Letterhead Preview" style={{ maxWidth: '100%', maxHeight: '380px', borderRadius: '8px', objectFit: 'contain', border: '1px solid #E2E8F0' }} />
