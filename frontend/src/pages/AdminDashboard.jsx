@@ -89,6 +89,14 @@ const AdminDashboard = () => {
   const [letterheadUploading, setLetterheadUploading] = useState(false);
   const [letterheadPreviewImage, setLetterheadPreviewImage] = useState(null);
 
+  const getAbsoluteUrl = (url) => {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
+    const apiURL = import.meta.env.VITE_API_URL || '';
+    const backendBase = apiURL ? apiURL.replace('/api', '') : 'http://localhost:5000';
+    return `${backendBase}${url}`;
+  };
+
   // Fetch current letterhead URL when tab changes to letterhead
   useEffect(() => {
     if (activeTab === 'letterhead') {
@@ -96,8 +104,9 @@ const AdminDashboard = () => {
         try {
           const res = await api.get('/admin/letterhead');
           if (res.data && res.data.letterheadUrl) {
-            setLetterheadUrl(res.data.letterheadUrl);
-            setLetterheadPreviewImage(res.data.letterheadUrl);
+            const absoluteUrl = getAbsoluteUrl(res.data.letterheadUrl);
+            setLetterheadUrl(absoluteUrl);
+            setLetterheadPreviewImage(absoluteUrl);
           }
         } catch (err) {
           console.error("Failed to fetch letterhead:", err);
@@ -120,8 +129,9 @@ const AdminDashboard = () => {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       if (res.data && res.data.letterheadUrl) {
-        setLetterheadUrl(res.data.letterheadUrl);
-        setLetterheadPreviewImage(res.data.letterheadUrl);
+        const absoluteUrl = getAbsoluteUrl(res.data.letterheadUrl);
+        setLetterheadUrl(absoluteUrl);
+        setLetterheadPreviewImage(absoluteUrl);
         showToast("Letterhead uploaded successfully!", "success");
       }
     } catch (err) {

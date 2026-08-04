@@ -461,33 +461,9 @@ router.post("/letterhead", isAdmin, uploadLetterhead.single('letterhead'), async
       return res.status(400).json({ error: "No file uploaded." });
     }
 
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const filename = 'letterheads/' + req.tenantId + '-' + uniqueSuffix + '-' + req.file.originalname.replace(/\s+/g, '-');
-    const bucketName = process.env.R2_BUCKET_NAME || 'medicore-uploads';
-
-    let fileUrl = "";
-    try {
-      const command = new PutObjectCommand({
-        Bucket: bucketName,
-        Key: filename,
-        Body: req.file.buffer,
-        ContentType: req.file.mimetype,
-      });
-
-      await r2.send(command);
-      const publicDomain = process.env.R2_PUBLIC_DOMAIN || `https://pub-${process.env.R2_ACCOUNT_ID}.r2.dev`;
-      fileUrl = `${publicDomain}/${filename}`;
-    } catch (r2Err) {
-      console.warn('R2 upload failed or unconfigured, falling back to local file storage for letterhead:', r2Err);
-      const uploadDir = path.join(__dirname, '../uploads');
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-      const localFileName = `letterhead-${req.tenantId}-${uniqueSuffix}-${req.file.originalname.replace(/\s+/g, '-')}`;
-      const localPath = path.join(uploadDir, localFileName);
-      fs.writeFileSync(localPath, req.file.buffer);
-      fileUrl = `/uploads/${localFileName}`;
-    }
+    // Convert directly to base64 Data URL to prevent ephemeral filesystem 404s
+    const base64Data = req.file.buffer.toString('base64');
+    const fileUrl = `data:${req.file.mimetype};base64,${base64Data}`;
 
     const hospital = await SuperAdminHospital.findOneAndUpdate(
       { code: req.tenantId },

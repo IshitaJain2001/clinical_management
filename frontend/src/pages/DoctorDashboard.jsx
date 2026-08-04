@@ -1108,7 +1108,12 @@ const DoctorDashboard = () => {
   const handlePrintPrescription = async (rx, item) => {
     try {
       const res = await api.get('/admin/letterhead');
-      const letterheadUrl = res.data?.letterheadUrl || "";
+      let letterheadUrl = res.data?.letterheadUrl || "";
+      if (letterheadUrl && !letterheadUrl.startsWith('http://') && !letterheadUrl.startsWith('https://') && !letterheadUrl.startsWith('data:')) {
+        const apiURL = import.meta.env.VITE_API_URL || '';
+        const backendBase = apiURL ? apiURL.replace('/api', '') : 'http://localhost:5000';
+        letterheadUrl = `${backendBase}${letterheadUrl}`;
+      }
 
       const printWindow = window.open('', '_blank');
       if (!printWindow) {
