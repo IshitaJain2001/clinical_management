@@ -85,6 +85,66 @@ const AdminCoverageCountdown = ({ expiresAt }) => {
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [letterheadUrl, setLetterheadUrl] = useState('');
+  const [letterheadUploading, setLetterheadUploading] = useState(false);
+  const [letterheadPreviewImage, setLetterheadPreviewImage] = useState(null);
+
+  // Fetch current letterhead URL when tab changes to letterhead
+  useEffect(() => {
+    if (activeTab === 'letterhead') {
+      const fetchLetterhead = async () => {
+        try {
+          const res = await api.get('/admin/letterhead');
+          if (res.data && res.data.letterheadUrl) {
+            setLetterheadUrl(res.data.letterheadUrl);
+            setLetterheadPreviewImage(res.data.letterheadUrl);
+          }
+        } catch (err) {
+          console.error("Failed to fetch letterhead:", err);
+        }
+      };
+      fetchLetterhead();
+    }
+  }, [activeTab]);
+
+  const handleLetterheadFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setLetterheadUploading(true);
+    const formData = new FormData();
+    formData.append('letterhead', file);
+
+    try {
+      const res = await api.post('/admin/letterhead', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (res.data && res.data.letterheadUrl) {
+        setLetterheadUrl(res.data.letterheadUrl);
+        setLetterheadPreviewImage(res.data.letterheadUrl);
+        showToast("Letterhead uploaded successfully!", "success");
+      }
+    } catch (err) {
+      console.error("Failed to upload letterhead:", err);
+      showToast("Failed to upload letterhead. Please try again.", "error");
+    } finally {
+      setLetterheadUploading(false);
+    }
+  };
+
+  const handleRemoveLetterhead = async () => {
+    if (!window.confirm("Are you sure you want to remove the clinic letterhead?")) return;
+    try {
+      await api.post('/admin/letterhead-clear', {});
+      setLetterheadUrl('');
+      setLetterheadPreviewImage(null);
+      showToast("Letterhead removed successfully.", "success");
+    } catch (err) {
+      console.error("Failed to clear letterhead:", err);
+      showToast("Failed to remove letterhead.", "error");
+    }
+  };
+
   const tenantModules = (() => {
     try {
       return JSON.parse(localStorage.getItem('tenantModules') || '{}');
@@ -9767,171 +9827,111 @@ const AdminDashboard = () => {
         )}
 
         {/* Clinic Letterhead Configuration Tab */}
-        {activeTab === 'letterhead' && (() => {
-          const [letterheadUrl, setLetterheadUrl] = useState('');
-          const [uploading, setUploading] = useState(false);
-          const [previewImage, setPreviewImage] = useState(null);
+        {activeTab === 'letterhead' && (
+          <div className="admin-dashboard-content" style={{ display: 'flex', flexDirection: 'column', gap: '24px', animation: 'slideUp 0.4s ease-out' }}>
+            <div className="dashboard-widget-card" style={{ padding: '28px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', margin: '0 0 8px 0' }}>Clinic Letterhead Configuration</h3>
+              <p style={{ color: '#64748B', fontSize: '13px', margin: '0 0 20px 0', lineHeight: 1.5 }}>
+                Upload a premium quality PDF or image (PNG/JPG) of your hospital/clinic letterhead. Doctor prescriptions will be automatically layered onto this letterhead.
+              </p>
 
-          // Fetch current letterhead URL on mount
-          useEffect(() => {
-            const fetchLetterhead = async () => {
-              try {
-                const res = await api.get('/admin/letterhead');
-                if (res.data && res.data.letterheadUrl) {
-                  setLetterheadUrl(res.data.letterheadUrl);
-                  setPreviewImage(res.data.letterheadUrl);
-                }
-              } catch (err) {
-                console.error("Failed to fetch letterhead:", err);
-              }
-            };
-            fetchLetterhead();
-          }, []);
-
-          const handleFileChange = async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            setUploading(true);
-            const formData = new FormData();
-            formData.append('letterhead', file);
-
-            try {
-              const res = await api.post('/admin/letterhead', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-              });
-              if (res.data && res.data.letterheadUrl) {
-                setLetterheadUrl(res.data.letterheadUrl);
-                setPreviewImage(res.data.letterheadUrl);
-                showToast("Letterhead uploaded successfully!", "success");
-              }
-            } catch (err) {
-              console.error("Failed to upload letterhead:", err);
-              showToast("Failed to upload letterhead. Please try again.", "error");
-            } finally {
-              setUploading(false);
-            }
-          };
-
-          const handleRemoveLetterhead = async () => {
-            if (!window.confirm("Are you sure you want to remove the clinic letterhead?")) return;
-            try {
-              await api.post('/admin/letterhead-clear', {});
-              setLetterheadUrl('');
-              setPreviewImage(null);
-              showToast("Letterhead removed successfully.", "success");
-            } catch (err) {
-              console.error("Failed to clear letterhead:", err);
-              showToast("Failed to remove letterhead.", "error");
-            }
-          };
-
-          return (
-            <div className="admin-dashboard-content" style={{ display: 'flex', flexDirection: 'column', gap: '24px', animation: 'slideUp 0.4s ease-out' }}>
-              <div className="dashboard-widget-card" style={{ padding: '28px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', margin: '0 0 8px 0' }}>Clinic Letterhead Configuration</h3>
-                <p style={{ color: '#64748B', fontSize: '13px', margin: '0 0 20px 0', lineHeight: 1.5 }}>
-                  Upload a premium quality PDF or image (PNG/JPG) of your hospital/clinic letterhead. Doctor prescriptions will be automatically layered onto this letterhead.
-                </p>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '30px', alignItems: 'start' }}>
-                  {/* Left Column - Upload Form */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <div style={{
-                      border: '2px dashed #CBD5E1',
-                      borderRadius: '12px',
-                      padding: '40px 20px',
-                      textAlign: 'center',
-                      background: '#F8FAFC',
-                      cursor: 'pointer',
-                      position: 'relative'
-                    }}>
-                      <input 
-                        type="file" 
-                        accept="image/*,application/pdf"
-                        onChange={handleFileChange}
-                        style={{
-                          position: 'absolute',
-                          inset: 0,
-                          opacity: 0,
-                          cursor: 'pointer',
-                          width: '100%',
-                          height: '100%'
-                        }}
-                        disabled={uploading}
-                      />
-                      <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '12px' }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                      <div style={{ fontSize: '14px', fontWeight: 800, color: '#1E293B' }}>
-                        {uploading ? "Uploading file..." : "Click or drag letterhead here to upload"}
-                      </div>
-                      <span style={{ fontSize: '11px', color: '#94A3B8', marginTop: '6px', display: 'block' }}>Supports PDF, PNG, JPG (Max 10MB)</span>
+              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '30px', alignItems: 'start' }}>
+                {/* Left Column - Upload Form */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{
+                    border: '2px dashed #CBD5E1',
+                    borderRadius: '12px',
+                    padding: '40px 20px',
+                    textAlign: 'center',
+                    background: '#F8FAFC',
+                    cursor: 'pointer',
+                    position: 'relative'
+                  }}>
+                    <input 
+                      type="file" 
+                      accept="image/*,application/pdf"
+                      onChange={handleLetterheadFileChange}
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        opacity: 0,
+                        cursor: 'pointer',
+                        width: '100%',
+                        height: '100%'
+                      }}
+                      disabled={letterheadUploading}
+                    />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '12px' }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <div style={{ fontSize: '14px', fontWeight: 800, color: '#1E293B' }}>
+                      {letterheadUploading ? "Uploading file..." : "Click or drag letterhead here to upload"}
                     </div>
-
-                    {letterheadUrl && (
-                      <div style={{ display: 'flex', gap: '12px' }}>
-                        <button 
-                          onClick={handleRemoveLetterhead}
-                          style={{
-                            background: '#FEE2E2',
-                            color: '#DC2626',
-                            border: '1.5px solid #FCA5A5',
-                            borderRadius: '8px',
-                            padding: '8px 16px',
-                            fontWeight: 700,
-                            fontSize: '12.5px',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s'
-                          }}
-                        >
-                          Remove Current Letterhead
-                        </button>
-                      </div>
-                    )}
-
-                    <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '14px', borderRadius: '10px', color: '#1E40AF', fontSize: '12px', lineHeight: 1.5 }}>
-                      <strong>Letterhead Layout Guidelines:</strong>
-                      <ul style={{ margin: '6px 0 0 0', paddingLeft: '18px' }}>
-                        <li>Keep the center area (from 150px top margin to 100px bottom margin) clear for prescription text.</li>
-                        <li>High resolution PNG, JPG, or PDF is highly recommended.</li>
-                      </ul>
-                    </div>
+                    <span style={{ fontSize: '11px', color: '#94A3B8', marginTop: '6px', display: 'block' }}>Supports PDF, PNG, JPG (Max 10MB)</span>
                   </div>
 
-                  {/* Right Column - Preview Area */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <div style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Live Preview</div>
-                    <div style={{
-                      border: '1px solid #E2E8F0',
-                      borderRadius: '12px',
-                      background: '#F1F5F9',
-                      minHeight: '280px',
-                      maxHeight: '400px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      overflow: 'hidden',
-                      padding: '10px'
-                    }}>
-                      {previewImage ? (
-                        previewImage.endsWith('.pdf') || previewImage.includes('.pdf') ? (
-                          <div style={{ textAlign: 'center' }}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                            <div style={{ fontSize: '13px', fontWeight: 700, color: '#334155', marginTop: '10px' }}>Letterhead PDF Uploaded</div>
-                            <a href={previewImage} target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: '#2563EB', textDecoration: 'underline', marginTop: '4px', display: 'block' }}>View Uploaded PDF</a>
-                          </div>
-                        ) : (
-                          <img src={previewImage} alt="Letterhead Preview" style={{ maxWidth: '100%', maxHeight: '380px', borderRadius: '8px', objectFit: 'contain', border: '1px solid #E2E8F0' }} />
-                        )
-                      ) : (
-                        <span style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 600 }}>No letterhead uploaded yet. Fallback template active.</span>
-                      )}
+                  {letterheadUrl && (
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                      <button 
+                        onClick={handleRemoveLetterhead}
+                        style={{
+                          background: '#FEE2E2',
+                          color: '#DC2626',
+                          border: '1.5px solid #FCA5A5',
+                          borderRadius: '8px',
+                          padding: '8px 16px',
+                          fontWeight: 700,
+                          fontSize: '12.5px',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
+                        }}
+                      >
+                        Remove Current Letterhead
+                      </button>
                     </div>
+                  )}
+
+                  <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '14px', borderRadius: '10px', color: '#1E40AF', fontSize: '12px', lineHeight: 1.5 }}>
+                    <strong>Letterhead Layout Guidelines:</strong>
+                    <ul style={{ margin: '6px 0 0 0', paddingLeft: '18px' }}>
+                      <li>Keep the center area (from 150px top margin to 100px bottom margin) clear for prescription text.</li>
+                      <li>High resolution PNG, JPG, or PDF is highly recommended.</li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Right Column - Preview Area */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Live Preview</div>
+                  <div style={{
+                    border: '1px solid #E2E8F0',
+                    borderRadius: '12px',
+                    background: '#F1F5F9',
+                    minHeight: '280px',
+                    maxHeight: '400px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'hidden',
+                    padding: '10px'
+                  }}>
+                    {letterheadPreviewImage ? (
+                      letterheadPreviewImage.endsWith('.pdf') || letterheadPreviewImage.includes('.pdf') ? (
+                        <div style={{ textAlign: 'center' }}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                          <div style={{ fontSize: '13px', fontWeight: 700, color: '#334155', marginTop: '10px' }}>Letterhead PDF Uploaded</div>
+                          <a href={letterheadPreviewImage} target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: '#2563EB', textDecoration: 'underline', marginTop: '4px', display: 'block' }}>View Uploaded PDF</a>
+                        </div>
+                      ) : (
+                        <img src={letterheadPreviewImage} alt="Letterhead Preview" style={{ maxWidth: '100%', maxHeight: '380px', borderRadius: '8px', objectFit: 'contain', border: '1px solid #E2E8F0' }} />
+                      )
+                    ) : (
+                      <span style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 600 }}>No letterhead uploaded yet. Fallback template active.</span>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
-          );
-        })()}
+          </div>
+        )}
 
         {/* 11. Role Coverage / Permissions Management */}
         {activeTab === 'permissions' && (() => {
