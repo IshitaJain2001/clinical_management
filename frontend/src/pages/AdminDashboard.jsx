@@ -107,6 +107,9 @@ const AdminDashboard = () => {
             const absoluteUrl = getAbsoluteUrl(res.data.letterheadUrl);
             setLetterheadUrl(absoluteUrl);
             setLetterheadPreviewImage(absoluteUrl);
+          } else {
+            setLetterheadUrl('');
+            setLetterheadPreviewImage(null);
           }
         } catch (err) {
           console.error("Failed to fetch letterhead:", err);
