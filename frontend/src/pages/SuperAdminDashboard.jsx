@@ -6959,25 +6959,42 @@ const SuperAdminDashboard = () => {
                   <p style={styles.cardHeaderSub}>Monitor SaaS department breakdown, employee workloads, and resource allocation.</p>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginTop: '16px' }}>
-                  {[
-                    { name: 'Hospital Onboarding', count: employees.filter(e => e.department === 'Hospital Onboarding').length, lead: 'Sarah Connor', budget: '₹4,50,000/mo', status: 'Optimal' },
-                    { name: 'Customer Success', count: employees.filter(e => e.department === 'Customer Success').length, lead: 'Michael Chang', budget: '₹3,00,000/mo', status: 'Optimal' },
-                    { name: 'Finance & Billing', count: employees.filter(e => e.department === 'Finance').length, lead: 'Sarah Connor', budget: '₹2,50,000/mo', status: 'Optimal' },
-                    { name: 'System Administration', count: employees.filter(e => e.department === 'System Administration').length, lead: 'Platform Admin', budget: '₹5,00,000/mo', status: 'Optimal' }
-                  ].map((dept, index) => (
-                    <div key={index} style={{ ...styles.glassCard, padding: '20px', border: '1px solid #E2E8F0', borderRadius: '12px', background: '#FFFFFF' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '10px', fontWeight: 800, background: '#EFF6FF', color: '#2563EB', padding: '2px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>Dept</span>
-                        <span style={{ fontSize: '10px', fontWeight: 800, color: '#10B981' }}>{dept.status}</span>
-                      </div>
-                      <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#0F172A', margin: '12px 0 4px' }}>{dept.name}</h3>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '12px', color: '#64748B', marginTop: '10px' }}>
-                        <div><strong>Head:</strong> {dept.lead}</div>
-                        <div><strong>Headcount:</strong> {dept.count} Members</div>
-                        <div><strong>Operational Budget:</strong> {dept.budget}</div>
-                      </div>
-                    </div>
-                  ))}
+                  {(() => {
+                    const defaultDepts = ['Hospital Onboarding', 'Customer Success', 'Finance & Billing', 'System Administration'];
+                    const databaseDepts = Array.from(new Set(employees.map(e => e.department))).filter(Boolean);
+                    const allDepts = Array.from(new Set([...defaultDepts, ...databaseDepts]));
+
+                    return allDepts.map((deptName, index) => {
+                      const deptEmps = employees.filter(e => e.department === deptName || (deptName === 'Finance & Billing' && e.department === 'Finance'));
+                      const count = deptEmps.length;
+                      
+                      let lead = 'Not Assigned';
+                      if (count > 0) {
+                        const leadKeywords = ['head', 'manager', 'lead', 'director', 'admin', 'chief', 'president'];
+                        const foundLead = deptEmps.find(e => 
+                          leadKeywords.some(keyword => e.designation?.toLowerCase().includes(keyword)) ||
+                          leadKeywords.some(keyword => e.platformRole?.toLowerCase().includes(keyword))
+                        );
+                        lead = foundLead ? foundLead.name : deptEmps[0].name;
+                      }
+
+                      const status = count > 0 ? 'Active' : 'Inactive';
+                      
+                      return (
+                        <div key={index} style={{ ...styles.glassCard, padding: '20px', border: '1px solid #E2E8F0', borderRadius: '12px', background: '#FFFFFF' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: '10px', fontWeight: 800, background: '#EFF6FF', color: '#2563EB', padding: '2px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>Dept</span>
+                            <span style={{ fontSize: '10px', fontWeight: 800, color: count > 0 ? '#10B981' : '#64748B' }}>{status}</span>
+                          </div>
+                          <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#0F172A', margin: '12px 0 4px' }}>{deptName}</h3>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '12px', color: '#64748B', marginTop: '10px' }}>
+                            <div><strong>Head:</strong> {lead}</div>
+                            <div><strong>Headcount:</strong> {count} Members</div>
+                          </div>
+                        </div>
+                      );
+                    });
+                  })()}
                 </div>
               </div>
             )}
