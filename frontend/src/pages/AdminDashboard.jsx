@@ -1122,6 +1122,7 @@ const AdminDashboard = () => {
   };
 
   const fetchDpdpRequests = async () => {
+    if (tenantModules.dpdp?.enabled === false) return;
     try {
       const response = await api.get('/emr/consent/dpdp-requests/all');
       setDpdpRequests(response.data);
