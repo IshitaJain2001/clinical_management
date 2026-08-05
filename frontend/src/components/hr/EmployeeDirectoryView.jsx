@@ -104,7 +104,7 @@ export default function EmployeeDirectoryView({
       ctcAnnual: '',
       shiftName: '',
       workLocation: '',
-      doctorSlots: [],
+      doctorSlots: ['09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM'],
       weeklyOff: ''
     });
     setError('');
@@ -143,9 +143,20 @@ export default function EmployeeDirectoryView({
     ctcAnnual: '',
     shiftName: '',
     workLocation: '',
-    doctorSlots: [],
+    doctorSlots: ['09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM'],
     weeklyOff: ''
   });
+
+  const generateRandomPassword = () => {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+    let pass = '';
+    for (let i = 0; i < 10; i++) {
+      pass += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setNewEmp(prev => ({ ...prev, password: pass, confirmPassword: pass }));
+    setShowPassword(true);
+    setShowConfirmPassword(true);
+  };
 
   // Filter logic
   const filteredEmployees = employees.filter(emp => {
@@ -569,11 +580,20 @@ export default function EmployeeDirectoryView({
                 <div className="admin-input-group">
                   <div className="flex justify-between items-center w-full">
                     <label className="admin-input-label mb-0">Login Password *</label>
-                    {newEmp.password && (
-                      <span style={{ fontSize: '10px', fontWeight: 700, color: getPasswordStrength(newEmp.password).color }}>
-                        {getPasswordStrength(newEmp.password).label}
-                      </span>
-                    )}
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={generateRandomPassword}
+                        className="text-[10px] bg-blue-50 hover:bg-blue-100 text-blue-600 px-2 py-0.5 rounded border border-blue-200 font-bold transition-all"
+                      >
+                        Generate
+                      </button>
+                      {newEmp.password && (
+                        <span style={{ fontSize: '10px', fontWeight: 700, color: getPasswordStrength(newEmp.password).color }}>
+                          {getPasswordStrength(newEmp.password).label}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                     <input 
@@ -730,6 +750,37 @@ export default function EmployeeDirectoryView({
                         onChange={(e) => setNewEmp({...newEmp, consultationFee: e.target.value !== '' ? Number(e.target.value) : ''})}
                         className="admin-text-input"
                       />
+                    </div>
+                    
+                    <div className="admin-input-group col-span-2 mt-1">
+                      <label className="admin-input-label">Attending Time Slots (Required) *</label>
+                      <div className="flex flex-wrap gap-1.5 p-3 border border-slate-200 rounded-xl bg-slate-50 max-h-[140px] overflow-y-auto" data-lenis-prevent>
+                        {['09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM'].map(slot => {
+                          const isSelected = (newEmp.doctorSlots || []).includes(slot);
+                          return (
+                            <button
+                              key={slot}
+                              type="button"
+                              onClick={() => {
+                                let currentSlots = [...(newEmp.doctorSlots || [])];
+                                if (currentSlots.includes(slot)) {
+                                  currentSlots = currentSlots.filter(s => s !== slot);
+                                } else {
+                                  currentSlots.push(slot);
+                                }
+                                setNewEmp({...newEmp, doctorSlots: currentSlots});
+                              }}
+                              className={`px-2.5 py-1 rounded text-xs font-bold border transition-all ${
+                                isSelected
+                                  ? 'bg-blue-50 border-blue-500 text-blue-600 shadow-sm'
+                                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                              }`}
+                            >
+                              {slot}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
                   </>
                 )}
