@@ -1530,6 +1530,8 @@ const AdminDashboard = () => {
           avatarColor,
           max_slots: user.max_slots,
           email: user.email || '',
+          phone: user.phone || '',
+          consultationFee: user.consultationFee !== undefined ? user.consultationFee : 500,
           password: '',
           staff_id: user.staff_id || '',
           weeklyOff: user.weeklyOff || ''
@@ -1611,6 +1613,8 @@ const AdminDashboard = () => {
       status: 'On duty',
       active: true,
       email: newStaff.email || '',
+      phone: newStaff.phone || '',
+      consultationFee: newStaff.consultationFee !== undefined ? newStaff.consultationFee : 500,
       password: newStaff.password,
       initials,
       avatarColor
@@ -1685,6 +1689,7 @@ const AdminDashboard = () => {
             max_slots: response.data.max_slots,
             email: response.data.email || '',
             phone: response.data.phone || '',
+            consultationFee: response.data.consultationFee !== undefined ? response.data.consultationFee : 500,
             password: '',
             initials,
             avatarColor
@@ -11699,11 +11704,17 @@ const AdminDashboard = () => {
                   <span className="details-item-label" style={{ fontWeight: 600, color: '#64748B' }}>Last Login</span>
                   <span className="details-item-val" style={{ fontWeight: 800, color: '#10B981' }}>{viewingStaff.lastLogin || 'Never'}</span>
                 </div>
-                {viewingStaff.role === 'doctor' && (
-                  <div className="details-item-row" style={{ padding: '8px 0', display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #F1F5F9' }}>
-                    <span className="details-item-label" style={{ fontWeight: 600, color: '#64748B' }}>Max Daily Appt Slots</span>
-                    <span className="details-item-val" style={{ fontWeight: 800, color: '#0F172A' }}>{viewingStaff.max_slots || 10}</span>
-                  </div>
+                 {viewingStaff.role === 'doctor' && (
+                  <>
+                    <div className="details-item-row" style={{ padding: '8px 0', display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #F1F5F9' }}>
+                      <span className="details-item-label" style={{ fontWeight: 600, color: '#64748B' }}>Max Daily Appt Slots</span>
+                      <span className="details-item-val" style={{ fontWeight: 800, color: '#0F172A' }}>{viewingStaff.max_slots || 10}</span>
+                    </div>
+                    <div className="details-item-row" style={{ padding: '8px 0', display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #F1F5F9' }}>
+                      <span className="details-item-label" style={{ fontWeight: 600, color: '#64748B' }}>Consultation Fee</span>
+                      <span className="details-item-val" style={{ fontWeight: 800, color: '#0F172A' }}>₹{viewingStaff.consultationFee !== undefined ? viewingStaff.consultationFee : 500}</span>
+                    </div>
+                  </>
                 )}
                 <div className="details-item-row" style={{ padding: '8px 0', display: 'flex', justifyContent: 'space-between' }}>
                   <span className="details-item-label" style={{ fontWeight: 600, color: '#64748B' }}>Current Status</span>
@@ -11713,6 +11724,12 @@ const AdminDashboard = () => {
                   <span className="details-item-label" style={{ fontWeight: 600, color: '#64748B' }}>Google Login Email</span>
                   <span className="details-item-val" style={{ fontWeight: 800, color: viewingStaff.email ? '#2563EB' : '#94A3B8' }}>
                     {viewingStaff.email || 'Not configured'}
+                  </span>
+                </div>
+                <div className="details-item-row" style={{ padding: '8px 0', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #F1F5F9' }}>
+                  <span className="details-item-label" style={{ fontWeight: 600, color: '#64748B' }}>Phone Number</span>
+                  <span className="details-item-val" style={{ fontWeight: 800, color: viewingStaff.phone ? '#0F172A' : '#94A3B8' }}>
+                    {viewingStaff.phone || 'Not configured'}
                   </span>
                 </div>
               </div>
@@ -11826,14 +11843,17 @@ const AdminDashboard = () => {
 
               <div className="admin-input-group">
                 <label className="admin-input-label">Phone Number</label>
-                <input 
-                  type="text" 
-                  className="admin-text-input" 
-                  value={editStaffFields.phone || ''} 
-                  onChange={e => setEditStaffFields({...editStaffFields, phone: e.target.value})} 
-                  placeholder="e.g. +919876543210" 
-                  required 
-                />
+                <div style={{ 
+                  padding: '10px 12px', 
+                  background: '#F1F5F9', 
+                  border: '1px solid #E2E8F0', 
+                  borderRadius: '8px', 
+                  fontSize: '13px', 
+                  fontWeight: 700, 
+                  color: '#475569' 
+                }}>
+                  {editStaffFields.phone || 'Not configured'}
+                </div>
               </div>
               
               {editStaffFields.role === 'doctor' && (
