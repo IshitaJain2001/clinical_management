@@ -374,7 +374,8 @@ export default function HRPayroll({ onExit, initialTab = 'Dashboard', initialIsA
         taxBracket: empData.taxBracket,
         leaveBalance: empData.leaveBalance,
         doctorSlots: empData.doctorSlots || [],
-        weeklyOff: empData.weeklyOff || 'Sunday'
+        weeklyOff: empData.weeklyOff || 'Sunday',
+        consultationFee: empData.consultationFee
       });
 
       await fetchData(false);
