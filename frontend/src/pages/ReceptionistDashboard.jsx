@@ -1643,18 +1643,23 @@ const ReceptionistDashboard = () => {
   // Fetch doctor availability when doctor or date changes for reception booking
   useEffect(() => {
     const fetchReceptionAvailability = async () => {
+      console.log("[RECEPTION_AVAIL] Triggered with doctorId:", formData.doctorId, "date:", bookingDate);
       if (!formData.doctorId || !bookingDate) {
         const selectedDoc = doctors.find(d => String(d._id) === String(formData.doctorId));
         const docSlots = selectedDoc?.doctorSlots?.length > 0 ? selectedDoc.doctorSlots : DEFAULT_RECEPTION_SLOTS;
+        console.log("[RECEPTION_AVAIL] Missing doctor or date. Fallback slots:", docSlots);
         setReceptionDoctorAvailability({ available: true, slots: docSlots, reason: null });
         return;
       }
       try {
         const res = await api.get(`/hr/doctor-availability/${formData.doctorId}?date=${bookingDate}`);
+        console.log("[RECEPTION_AVAIL] Success res.data:", res.data);
         setReceptionDoctorAvailability(res.data);
       } catch (err) {
+        console.error("[RECEPTION_AVAIL] Error fetching from API:", err);
         const selectedDoc = doctors.find(d => String(d._id) === String(formData.doctorId));
         const docSlots = selectedDoc?.doctorSlots?.length > 0 ? selectedDoc.doctorSlots : DEFAULT_RECEPTION_SLOTS;
+        console.log("[RECEPTION_AVAIL] Catch fallback slots:", docSlots);
         setReceptionDoctorAvailability({ available: true, slots: docSlots, reason: null });
       }
     };
@@ -5957,7 +5962,7 @@ const ReceptionistDashboard = () => {
                           </div>
                           <div className="form-group">
                               <label>Select Doctor <span style={{ color: '#EF4444' }}>*</span></label>
-                              <select className="form-control" style={{ height: '48px', borderRadius: '8px', background: reschedulingAppointment ? '#F1F5F9' : 'white', cursor: reschedulingAppointment ? 'not-allowed' : 'pointer', fontWeight: reschedulingAppointment ? 700 : 500 }} value={formData.doctorId} onChange={e => setFormData({...formData, doctorId: e.target.value})} disabled={!!reschedulingAppointment}>
+                              <select className="form-control" style={{ height: '48px', borderRadius: '8px', background: reschedulingAppointment ? '#F1F5F9' : 'white', cursor: reschedulingAppointment ? 'not-allowed' : 'pointer', fontWeight: reschedulingAppointment ? 700 : 500 }} value={formData.doctorId} onChange={e => { setFormData({...formData, doctorId: e.target.value}); setSelectedSlot(''); }} disabled={!!reschedulingAppointment}>
                                   <option value="">-- Choose Doctor --</option>
                                   {doctors.map(doc => (
                                       <option key={doc._id} value={doc._id}>{doc.name}</option>

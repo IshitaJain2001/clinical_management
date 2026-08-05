@@ -590,18 +590,23 @@ const PatientDashboard = () => {
   // Fetch doctor availability (slots, weekly off, leave)
   useEffect(() => {
     const fetchAvailability = async () => {
+      console.log("[PATIENT_AVAIL] Triggered with doctorId:", selectedDoctor?._id, "date:", appointmentDate);
       if (!selectedDoctor || !appointmentDate) {
         // Use doctor's slots if available, otherwise defaults
         const docSlots = selectedDoctor?.doctorSlots?.length > 0 ? selectedDoctor.doctorSlots : DEFAULT_TIME_SLOTS;
+        console.log("[PATIENT_AVAIL] Missing doctor or date. Fallback slots:", docSlots);
         setDoctorAvailability({ available: true, slots: docSlots, reason: null });
         return;
       }
       try {
         const res = await api.get(`/hr/doctor-availability/${selectedDoctor._id}?date=${appointmentDate}`);
+        console.log("[PATIENT_AVAIL] Success res.data:", res.data);
         setDoctorAvailability(res.data);
       } catch (err) {
+        console.error("[PATIENT_AVAIL] Error fetching from API:", err);
         // Fallback: use doctor's stored slots or defaults
         const docSlots = selectedDoctor?.doctorSlots?.length > 0 ? selectedDoctor.doctorSlots : DEFAULT_TIME_SLOTS;
+        console.log("[PATIENT_AVAIL] Catch fallback slots:", docSlots);
         setDoctorAvailability({ available: true, slots: docSlots, reason: null });
       }
     };
