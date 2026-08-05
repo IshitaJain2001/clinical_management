@@ -1512,6 +1512,16 @@ const AdminDashboard = () => {
     }
   };
 
+  const generateRandomPassword = () => {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+    let pass = '';
+    for (let i = 0; i < 10; i++) {
+      pass += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setNewStaff(prev => ({ ...prev, password: pass, confirmPassword: pass }));
+    setShowAddStaffPassword(true);
+  };
+
   const handleAddStaff = async (e) => {
     e.preventDefault();
     
@@ -12002,7 +12012,25 @@ const AdminDashboard = () => {
                 )}
               </div>
               <div className="admin-input-group">
-                <label className="admin-input-label">Login Password</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label className="admin-input-label" style={{ margin: 0 }}>Login Password</label>
+                  <button 
+                    type="button" 
+                    onClick={generateRandomPassword} 
+                    style={{ 
+                      background: '#EFF6FF', 
+                      border: '1px solid #3B82F6', 
+                      color: '#2563EB', 
+                      padding: '4px 10px', 
+                      borderRadius: '6px', 
+                      fontSize: '11px', 
+                      fontWeight: 800, 
+                      cursor: 'pointer' 
+                    }}
+                  >
+                    Generate Password
+                  </button>
+                </div>
                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                   <input 
                     type={showAddStaffPassword ? 'text' : 'password'} 
