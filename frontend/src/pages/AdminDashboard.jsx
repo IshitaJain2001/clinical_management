@@ -3169,20 +3169,22 @@ const AdminDashboard = () => {
         }
 
         .admin-modal-close-btn {
-          background: none;
-          border: none;
+          background: #F1F5F9;
+          border: 1px solid #E2E8F0;
           cursor: pointer;
-          color: #64748B;
+          color: #475569;
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 4px;
+          padding: 6px;
           border-radius: 50%;
+          transition: all 0.2s ease;
         }
 
         .admin-modal-close-btn:hover {
-          background-color: #F1F5F9;
+          background-color: #E2E8F0;
           color: #0F172A;
+          transform: rotate(90deg);
         }
 
         .admin-input-group {
