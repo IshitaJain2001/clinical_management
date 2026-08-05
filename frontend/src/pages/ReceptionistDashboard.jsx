@@ -6007,6 +6007,7 @@ const ReceptionistDashboard = () => {
                           <div className="slot-scroll-wrapper">
                             <button
                               className="slot-scroll-arrow left"
+                              style={{ display: 'none' }}
                               onClick={() => {
                                 const grid = document.getElementById('reception-time-grid');
                                 if (grid) grid.scrollBy({ left: -340, behavior: 'smooth' });
@@ -6016,7 +6017,7 @@ const ReceptionistDashboard = () => {
                               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
                             </button>
 
-                            <div id="reception-time-grid" className="time-grid">
+                            <div id="reception-time-grid" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', padding: '8px 0' }}>
                               {(receptionDoctorAvailability.slots || DEFAULT_RECEPTION_SLOTS).map(time => {
                                   let limit = 5;
                                   const match = time.match(/\(Limit:\s*(\d+)\)/i);
@@ -6075,6 +6076,7 @@ const ReceptionistDashboard = () => {
                             </div>
                             <button
                               className="slot-scroll-arrow right"
+                              style={{ display: 'none' }}
                               onClick={() => {
                                 const grid = document.getElementById('reception-time-grid');
                                 if (grid) grid.scrollBy({ left: 340, behavior: 'smooth' });

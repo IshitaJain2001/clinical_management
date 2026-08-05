@@ -4276,6 +4276,7 @@ const PatientDashboard = () => {
                       <div className="slot-scroll-wrapper">
                         <button
                           className="slot-scroll-arrow left"
+                          style={{ display: 'none' }}
                           onClick={() => {
                             const grid = document.getElementById('patient-time-grid');
                             if (grid) grid.scrollBy({ left: -340, behavior: 'smooth' });
@@ -4284,7 +4285,7 @@ const PatientDashboard = () => {
                         >
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
                         </button>
-                        <div id="patient-time-grid" className="time-grid" style={{ overflowX: 'auto', display: 'flex', gap: '10px', padding: '8px 4px', maxWidth: '100%' }}>
+                        <div id="patient-time-grid" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', padding: '8px 0', width: '100%' }}>
                           {(doctorAvailability.slots || DEFAULT_TIME_SLOTS).map(time => {
                             const cleanTimeSlotStr = (s) => s ? s.split(/\(Limit:/i)[0].trim().toLowerCase() : '';
                             const targetTimeClean = cleanTimeSlotStr(time);
@@ -4343,6 +4344,7 @@ const PatientDashboard = () => {
                         </div>
                         <button
                           className="slot-scroll-arrow right"
+                          style={{ display: 'none' }}
                           onClick={() => {
                             const grid = document.getElementById('patient-time-grid');
                             if (grid) grid.scrollBy({ left: 340, behavior: 'smooth' });
