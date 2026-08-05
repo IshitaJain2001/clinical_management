@@ -11556,6 +11556,7 @@ const ReceptionistDashboard = () => {
           <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#22C55E', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '14px' }}>✓</div>
           <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#F8FAFC' }}>{batchSmsSuccessToast}</div>
         </div>
+      )}
       {/* View Lab Report Modal (Rendered globally so it can be opened from any tab) */}
       {labModalOpen && selectedLabRequest && (
         <div onClick={() => setLabModalOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.45)', backdropFilter: 'blur(4px)', zIndex: 9000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
