@@ -288,6 +288,44 @@ const AdminDashboard = () => {
     return realList;
   };
 
+  const getWorkingDaysString = (weeklyOff) => {
+    if (!weeklyOff) return 'Mon-Sat';
+    
+    let offDays = [];
+    if (Array.isArray(weeklyOff)) {
+      offDays = weeklyOff.map(d => String(d).trim().toLowerCase());
+    } else if (typeof weeklyOff === 'string') {
+      offDays = weeklyOff.split(',').map(d => d.trim().toLowerCase());
+    }
+    
+    if (offDays.length === 0) {
+      return 'Mon-Sat';
+    }
+    
+    if (offDays.length === 1 && offDays.includes('sunday')) {
+      return 'Mon-Sat';
+    }
+    if (offDays.length === 2 && offDays.includes('saturday') && offDays.includes('sunday')) {
+      return 'Mon-Fri';
+    }
+    
+    const allDays = [
+      { name: 'monday', abbr: 'Mon' },
+      { name: 'tuesday', abbr: 'Tue' },
+      { name: 'wednesday', abbr: 'Wed' },
+      { name: 'thursday', abbr: 'Thu' },
+      { name: 'friday', abbr: 'Fri' },
+      { name: 'saturday', abbr: 'Sat' },
+      { name: 'sunday', abbr: 'Sun' }
+    ];
+    
+    const workingDays = allDays.filter(d => !offDays.includes(d.name)).map(d => d.abbr);
+    if (workingDays.length === 7) return 'Mon-Sun';
+    if (workingDays.length === 0) return 'None';
+    
+    return workingDays.join(', ');
+  };
+
   useEffect(() => {
     setPmGridSearch('');
   }, [pmSelectedStaffId]);
@@ -1470,7 +1508,7 @@ const AdminDashboard = () => {
           joined: user.createdAt ? new Date(user.createdAt).toLocaleDateString([], { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recently',
           patientsToday: '0',
           lastLogin: formatLastLogin(user.lastLogin),
-          workingDays: 'Mon-Fri',
+          workingDays: getWorkingDaysString(user.weeklyOff),
           status: 'Active',
           active: true,
           initials,
@@ -1567,7 +1605,7 @@ const AdminDashboard = () => {
       joined: 'Today',
       patientsToday: '0',
       lastLogin: 'Never',
-      workingDays: 'Mon-Fri',
+      workingDays: getWorkingDaysString(newStaff.weeklyOff),
       status: 'On duty',
       active: true,
       email: newStaff.email || '',
@@ -1656,6 +1694,7 @@ const AdminDashboard = () => {
             weeklyOff: response.data.weeklyOff || 'Sunday',
             shiftName: response.data.shiftName || 'General Shift',
             doctorSlots: response.data.doctorSlots || [],
+            workingDays: getWorkingDaysString(response.data.weeklyOff),
             password: '',
             initials,
             avatarColor
