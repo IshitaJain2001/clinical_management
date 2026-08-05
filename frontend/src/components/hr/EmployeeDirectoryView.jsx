@@ -200,6 +200,19 @@ export default function EmployeeDirectoryView({
       return;
     }
 
+    if (newEmp.role === 'doctor') {
+      if (!newEmp.specialty) {
+        setError('Please select a Specialization for the doctor.');
+        setTimeout(() => document.getElementById('staff-form-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+        return;
+      }
+      if (!newEmp.doctorSlots || newEmp.doctorSlots.length === 0) {
+        setError('Please select at least one Attending Time Slot for the doctor.');
+        setTimeout(() => document.getElementById('staff-form-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+        return;
+      }
+    }
+
     setError('');
     setIsSubmitting(true);
 
