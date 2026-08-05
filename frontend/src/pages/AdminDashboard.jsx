@@ -720,6 +720,7 @@ const AdminDashboard = () => {
     fetchAuditLogs();
     fetchDpdpRequests();
     fetchPurchaseOrders();
+    fetchGoodsReceipts();
     fetchVendors();
     fetchApprovals();
     fetchWarningAlerts();
@@ -939,6 +940,18 @@ const AdminDashboard = () => {
       setPurchaseOrders(response.data);
     } catch (err) {
       console.error('Failed to fetch purchase orders in Admin', err);
+    }
+  };
+
+  const [goodsReceipts, setGoodsReceipts] = useState([]);
+  const [adminSelectedGrn, setAdminSelectedGrn] = useState(null);
+
+  const fetchGoodsReceipts = async () => {
+    try {
+      const response = await api.get('/goods-receipts');
+      setGoodsReceipts(response.data);
+    } catch (err) {
+      console.error('Failed to fetch goods receipts in Admin', err);
     }
   };
 
@@ -2200,6 +2213,22 @@ const AdminDashboard = () => {
         owner: 'Admin',
         timestamp: wa.rawItem?.createdAt || now,
         actionText: wa.actionText || 'Review',
+      });
+    });
+
+    // GRN delivery notifications
+    goodsReceipts.forEach((grn) => {
+      alerts.push({
+        id: `grn-alert-${grn._id}`,
+        category: 'additional',
+        priority: 'medium',
+        title: `GRN Received: ${grn.grnId}`,
+        description: `Pharmacist ${grn.receivedBy || 'Staff'} processed delivery from ${grn.vendorName} (${grn.items.length} items).`,
+        department: 'Pharmacy',
+        owner: 'Pharmacy Head',
+        timestamp: grn.receivedDate || now,
+        actionText: 'Review GRN',
+        rawItem: grn
       });
     });
 
@@ -7336,6 +7365,8 @@ const AdminDashboard = () => {
                                   if (alert.actionText === 'Review Bills') {
                                     setRevenueTimeframe('all');
                                     setShowRevenueModal(true);
+                                  } else if (alert.actionText === 'Review GRN') {
+                                    setAdminSelectedGrn(alert.rawItem);
                                   } else {
                                     showToast(`Action: ${alert.actionText} — ${alert.title}`, 'success');
                                   }
@@ -13204,6 +13235,90 @@ const AdminDashboard = () => {
                   ✓ Approve
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {adminSelectedGrn && (
+        <div className="admin-modal-overlay" data-lenis-prevent onClick={() => setAdminSelectedGrn(null)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999 }}>
+          <div className="admin-modal-card" onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: '12px', width: '90%', maxWidth: '650px', padding: '24px', maxHeight: '85vh', overflowY: 'auto', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}>
+            <div className="admin-modal-header" style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '12px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span className="admin-modal-title" style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A' }}>
+                Goods Receipt Note Detail: {adminSelectedGrn.grnId}
+              </span>
+              <button className="admin-modal-close-btn" onClick={() => setAdminSelectedGrn(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+              </button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+              <div>
+                <strong style={{ fontSize: '11px', color: '#64748B', display: 'block' }}>SUPPLIER</strong>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: '#1E293B' }}>{adminSelectedGrn.vendorName}</span>
+              </div>
+              <div>
+                <strong style={{ fontSize: '11px', color: '#64748B', display: 'block' }}>RECEIVED BY</strong>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: '#1E293B' }}>{adminSelectedGrn.receivedBy || 'Pharmacy Staff'}</span>
+              </div>
+              <div>
+                <strong style={{ fontSize: '11px', color: '#64748B', display: 'block' }}>RECEIVED DATE</strong>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: '#1E293B' }}>{new Date(adminSelectedGrn.receivedDate).toLocaleString()}</span>
+              </div>
+              <div>
+                <strong style={{ fontSize: '11px', color: '#64748B', display: 'block' }}>REFERENCE PO</strong>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: '#1E293B', fontFamily: 'monospace' }}>{adminSelectedGrn.poNumber || 'Direct Purchase'}</span>
+              </div>
+            </div>
+
+            {adminSelectedGrn.notes && (
+              <div style={{ marginBottom: '20px', padding: '12px', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                <strong style={{ fontSize: '11px', color: '#64748B', display: 'block', marginBottom: '4px' }}>PHARMACIST NOTES</strong>
+                <p style={{ fontSize: '13px', color: '#334155', margin: 0 }}>{adminSelectedGrn.notes}</p>
+              </div>
+            )}
+
+            <strong style={{ fontSize: '12px', color: '#1E293B', display: 'block', marginBottom: '8px' }}>RECEIVED ITEMS LIST</strong>
+            <div style={{ overflowX: 'auto', border: '1px solid #E2E8F0', borderRadius: '8px', marginBottom: '20px' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+                <thead>
+                  <tr style={{ background: '#F1F5F9', borderBottom: '1px solid #E2E8F0', textAlign: 'left' }}>
+                    <th style={{ padding: '8px 12px' }}>Item Name</th>
+                    <th style={{ padding: '8px 12px' }}>SKU</th>
+                    <th style={{ padding: '8px 12px' }}>Ordered Qty</th>
+                    <th style={{ padding: '8px 12px' }}>Received Qty</th>
+                    <th style={{ padding: '8px 12px' }}>Price</th>
+                    <th style={{ padding: '8px 12px' }}>Total (incl. GST)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {adminSelectedGrn.items.map((item, index) => {
+                    const price = item.price || 0;
+                    const qty = item.qtyReceived || 0;
+                    const gst = item.gst || 12;
+                    const total = qty * price * (1 + gst / 100);
+                    return (
+                      <tr key={index} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                        <td style={{ padding: '8px 12px', fontWeight: 700 }}>{item.name}</td>
+                        <td style={{ padding: '8px 12px', fontFamily: 'monospace' }}>{item.sku}</td>
+                        <td style={{ padding: '8px 12px' }}>{item.qtyOrdered || 0}</td>
+                        <td style={{ padding: '8px 12px', fontWeight: 800, color: '#059669' }}>{item.qtyReceived}</td>
+                        <td style={{ padding: '8px 12px' }}>₹{price.toFixed(2)}</td>
+                        <td style={{ padding: '8px 12px', fontWeight: 700 }}>₹{total.toFixed(2)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button 
+                style={{ height: '36px', padding: '0 16px', background: '#3B82F6', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 700, cursor: 'pointer' }}
+                onClick={() => setAdminSelectedGrn(null)}
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
