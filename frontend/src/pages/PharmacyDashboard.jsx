@@ -4520,13 +4520,15 @@ const PharmacyDashboard = () => {
                         reason
                       });
                       
+                      const docObj = coverageDoctors.find(d => String(d._id) === String(doctorId));
+                      const docFee = docObj ? (docObj.consultationFee !== undefined ? docObj.consultationFee : 500) : 500;
                       await api.post('/billing', {
                         patientId,
                         items: [
-                          { description: 'OPD Consultation Fee', amount: 500 },
+                          { description: 'OPD Consultation Fee', amount: docFee },
                           { description: 'Registration Fee', amount: 50 }
                         ],
-                        totalAmount: 550,
+                        totalAmount: docFee + 50,
                         paymentMethod: 'Cash'
                       });
 

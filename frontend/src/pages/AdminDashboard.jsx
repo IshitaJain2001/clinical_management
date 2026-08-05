@@ -347,7 +347,7 @@ const AdminDashboard = () => {
 
   const [staff, setStaff] = useState([]);
   const [staffPage, setStaffPage] = useState(1);
-  const [newStaff, setNewStaff] = useState({ staff_id: '', password: '', confirmPassword: '', role: getAvailableRoles()[0]?.value || 'doctor', name: '', max_slots: '', email: '' });
+  const [newStaff, setNewStaff] = useState({ staff_id: '', password: '', confirmPassword: '', role: getAvailableRoles()[0]?.value || 'doctor', name: '', max_slots: '', email: '', phone: '' });
   const [checkingUsername, setCheckingUsername] = useState(false);
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(null);
 
@@ -411,7 +411,7 @@ const AdminDashboard = () => {
   const [approvalComment, setApprovalComment] = useState('');
   const [editingVendorCatalog, setEditingVendorCatalog] = useState(null);
   const [newCatalogItem, setNewCatalogItem] = useState({ name: '', sku: '', price: '' });
-  const [editStaffFields, setEditStaffFields] = useState({ name: '', role: getAvailableRoles()[0]?.value || 'doctor', specialty: '', max_slots: 10, password: '', email: '' });
+  const [editStaffFields, setEditStaffFields] = useState({ name: '', role: getAvailableRoles()[0]?.value || 'doctor', specialty: '', max_slots: 10, password: '', email: '', phone: '' });
   const [showEditPassword, setShowEditPassword] = useState(false);
   const [showAddStaffPassword, setShowAddStaffPassword] = useState(false);
 
@@ -1620,7 +1620,7 @@ const AdminDashboard = () => {
       await api.post('/admin/users', newStaff);
       setSuccess('Staff account created successfully!');
       setStaff(prev => [...prev.filter(x => x.name.toLowerCase() !== newStaff.name.toLowerCase()), localEntry]);
-      setNewStaff({ staff_id: '', password: '', confirmPassword: '', role: getAvailableRoles()[0]?.value || 'doctor', name: '', max_slots: '', email: '' });
+      setNewStaff({ staff_id: '', password: '', confirmPassword: '', role: getAvailableRoles()[0]?.value || 'doctor', name: '', max_slots: '', email: '', phone: '' });
       setShowAddStaffModal(false);
       setShowAddStaffPassword(false);
       fetchStaff();
@@ -1657,6 +1657,7 @@ const AdminDashboard = () => {
         max_slots: editStaffFields.max_slots,
         consultationFee: editStaffFields.role === 'doctor' ? (editStaffFields.consultationFee !== undefined ? Number(editStaffFields.consultationFee) : 500) : undefined,
         email: editStaffFields.email || '',
+        phone: editStaffFields.phone || '',
       };
       if (editStaffFields.password && editStaffFields.password.trim()) {
         payload.password = editStaffFields.password.trim();
@@ -1683,6 +1684,7 @@ const AdminDashboard = () => {
             dept: response.data.specialty || (response.data.role === 'doctor' ? 'General Medicine' : response.data.role === 'hr' ? 'HR & Administration' : 'Administration'),
             max_slots: response.data.max_slots,
             email: response.data.email || '',
+            phone: response.data.phone || '',
             password: '',
             initials,
             avatarColor
@@ -7017,7 +7019,9 @@ const AdminDashboard = () => {
                                       specialty: item.dept || '',
                                       max_slots: item.max_slots || 10,
                                       password: '',
-                                      email: item.email || ''
+                                      email: item.email || '',
+                                      phone: item.phone || '',
+                                      consultationFee: item.consultationFee !== undefined ? item.consultationFee : 500
                                     });
                                   }}
                                 >
@@ -11726,7 +11730,8 @@ const AdminDashboard = () => {
                       max_slots: viewingStaff.max_slots || 10,
                       consultationFee: viewingStaff.consultationFee !== undefined ? viewingStaff.consultationFee : 500,
                       password: '',
-                      email: viewingStaff.email || ''
+                      email: viewingStaff.email || '',
+                      phone: viewingStaff.phone || ''
                     });
                     setViewingStaff(null);
                   }}
@@ -11817,6 +11822,18 @@ const AdminDashboard = () => {
                 <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 600, marginTop: '4px', display: 'block' }}>
                   Staff can use this email to log in with "Sign in with Google" button
                 </span>
+              </div>
+
+              <div className="admin-input-group">
+                <label className="admin-input-label">Phone Number</label>
+                <input 
+                  type="text" 
+                  className="admin-text-input" 
+                  value={editStaffFields.phone || ''} 
+                  onChange={e => setEditStaffFields({...editStaffFields, phone: e.target.value})} 
+                  placeholder="e.g. +919876543210" 
+                  required 
+                />
               </div>
               
               {editStaffFields.role === 'doctor' && (
@@ -12060,6 +12077,18 @@ const AdminDashboard = () => {
                 <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 600, marginTop: '4px', display: 'block' }}>
                   Staff can use this email to log in with "Sign in with Google" button
                 </span>
+              </div>
+
+              <div className="admin-input-group">
+                <label className="admin-input-label">Phone Number</label>
+                <input 
+                  type="text" 
+                  className="admin-text-input" 
+                  value={newStaff.phone || ''} 
+                  onChange={e => setNewStaff({...newStaff, phone: e.target.value})} 
+                  placeholder="e.g. +919876543210" 
+                  required 
+                />
               </div>
               
               {newStaff.role === 'doctor' && (

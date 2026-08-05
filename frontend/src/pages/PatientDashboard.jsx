@@ -751,14 +751,15 @@ const PatientDashboard = () => {
         source: 'Online'
       });
 
+      const docFee = selectedDoctor.consultationFee !== undefined ? selectedDoctor.consultationFee : 500;
       await api.post('/billing', {
         patientId: patientIdVal,
         appointmentId: appRes.data._id,
         items: [
-          { description: 'Consultation Fee', amount: 500 },
+          { description: 'Consultation Fee', amount: docFee },
           { description: 'Registration Fee', amount: 50 }
         ],
-        totalAmount: 550,
+        totalAmount: docFee + 50,
         status: 'Unpaid',
         paymentMethod: 'Offline'
       });
@@ -4379,10 +4380,10 @@ const PatientDashboard = () => {
                 <div className="glass-card" style={{ padding: '24px' }}>
                   <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#1A1D23', marginBottom: '16px' }}>Billing Summary</h3>
                   <div className="billing-summary" style={{ marginBottom: 0 }}>
-                    <div className="billing-row"><span>Consultation Fee</span> <span>₹500.00</span></div>
+                    <div className="billing-row"><span>Consultation Fee</span> <span>₹{(selectedDoctor.consultationFee !== undefined ? selectedDoctor.consultationFee : 500).toFixed(2)}</span></div>
                     <div className="billing-row"><span>Registration Fee</span> <span>₹50.00</span></div>
                     <div className="billing-total" style={{ marginTop: '16px', paddingTop: '16px', borderTop: '2px dashed var(--border)' }}>
-                      <span>Total Amount</span> <span>₹550.00</span>
+                      <span>Total Amount</span> <span>₹{((selectedDoctor.consultationFee !== undefined ? selectedDoctor.consultationFee : 500) + 50).toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
@@ -4395,7 +4396,7 @@ const PatientDashboard = () => {
                     <div>
                       <div style={{ fontSize: '13px', fontWeight: 800, color: '#92400E' }}>Offline Settlement Required</div>
                       <div style={{ fontSize: '12px', color: '#B45309', marginTop: '4px', fontWeight: 600, lineHeight: 1.4 }}>
-                        You will pay ₹550.00 at the reception desk when you arrive. The doctor will attend you once payment is recorded.
+                        You will pay ₹{((selectedDoctor.consultationFee !== undefined ? selectedDoctor.consultationFee : 500) + 50).toFixed(2)} at the reception desk when you arrive. The doctor will attend you once payment is recorded.
                       </div>
                     </div>
                   </div>

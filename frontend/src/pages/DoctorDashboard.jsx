@@ -2731,8 +2731,9 @@ const DoctorDashboard = () => {
 
       // Create real itemized bill in DB only if one doesn't already exist for this appointment
       // (Receptionist may have already created and paid a bill during check-in)
+      const docFee = user.consultationFee !== undefined ? user.consultationFee : 500;
       const billItems = [
-        { description: 'OPD Clinical Consultation Fee', amount: 500 }
+        { description: 'OPD Clinical Consultation Fee', amount: docFee }
       ];
       if (sendToPharmacy) {
         validMedicines.forEach(m => {
@@ -4274,13 +4275,15 @@ I have scanned the medical reference databases, but couldn't find a direct match
                         reason
                       });
                       
+                      const docObj = coverageDoctors.find(d => String(d._id) === String(doctorId));
+                      const docFee = docObj ? (docObj.consultationFee !== undefined ? docObj.consultationFee : 500) : 500;
                       await api.post('/billing', {
                         patientId,
                         items: [
-                          { description: 'OPD Consultation Fee', amount: 500 },
+                          { description: 'OPD Consultation Fee', amount: docFee },
                           { description: 'Registration Fee', amount: 50 }
                         ],
-                        totalAmount: 550,
+                        totalAmount: docFee + 50,
                         paymentMethod: 'Cash'
                       });
 
