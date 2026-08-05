@@ -3117,6 +3117,8 @@ const AdminDashboard = () => {
           max-width: 460px;
           padding: 32px;
           box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+          max-height: 90vh;
+          overflow-y: auto;
         }
 
         .admin-modal-header {
