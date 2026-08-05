@@ -6844,6 +6844,12 @@ const ReceptionistDashboard = () => {
                             onClick={() => {
                               if (app.type === 'Appointment') {
                                 openDetailsModal(app.rawItem);
+                              } else if (app.type === 'Lab Test') {
+                                setSelectedLabRequest({
+                                  testName: app.rawItem?.testName || app.rawItem?.test || app.detailName,
+                                  results: app.rawItem?.results || ''
+                                });
+                                setLabModalOpen(true);
                               } else {
                                 showToast(`${app.type}: ${app.detailName} (${app.status})`, 'info');
                               }
