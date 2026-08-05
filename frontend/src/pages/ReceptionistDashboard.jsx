@@ -2056,6 +2056,7 @@ const ReceptionistDashboard = () => {
   };
 
   const switchTab = (tabId, bypassReset = false) => {
+    fetchData().catch(e => console.error("Error refreshing data:", e));
     setActiveTab(tabId);
     setMobileSidebarOpen(false);
     if (tabId === 'registration-form' && !bypassReset) {
