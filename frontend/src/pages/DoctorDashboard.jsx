@@ -1043,7 +1043,9 @@ const DoctorDashboard = () => {
         if (letterheadUrl && !letterheadUrl.startsWith('http://') && !letterheadUrl.startsWith('https://') && !letterheadUrl.startsWith('data:')) {
           const apiURL = import.meta.env.VITE_API_URL || '';
           const backendBase = apiURL ? apiURL.replace('/api', '') : 'http://localhost:5000';
-          letterheadUrl = `${backendBase}${letterheadUrl}`;
+          const baseClean = backendBase.endsWith('/') ? backendBase.slice(0, -1) : backendBase;
+          const pathClean = letterheadUrl.startsWith('/') ? letterheadUrl : `/${letterheadUrl}`;
+          letterheadUrl = `${baseClean}${pathClean}`;
         }
         if (letterheadUrl) {
           setCustomLetterhead(letterheadUrl);
@@ -1109,7 +1111,9 @@ const DoctorDashboard = () => {
       if (letterheadUrl && !letterheadUrl.startsWith('http://') && !letterheadUrl.startsWith('https://') && !letterheadUrl.startsWith('data:')) {
         const apiURL = import.meta.env.VITE_API_URL || '';
         const backendBase = apiURL ? apiURL.replace('/api', '') : 'http://localhost:5000';
-        letterheadUrl = `${backendBase}${letterheadUrl}`;
+        const baseClean = backendBase.endsWith('/') ? backendBase.slice(0, -1) : backendBase;
+        const pathClean = letterheadUrl.startsWith('/') ? letterheadUrl : `/${letterheadUrl}`;
+        letterheadUrl = `${baseClean}${pathClean}`;
       }
 
       const printWindow = window.open('', '_blank');

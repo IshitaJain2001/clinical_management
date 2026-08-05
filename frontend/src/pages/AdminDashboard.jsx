@@ -126,7 +126,9 @@ const AdminDashboard = () => {
     if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
     const apiURL = import.meta.env.VITE_API_URL || '';
     const backendBase = apiURL ? apiURL.replace('/api', '') : 'http://localhost:5000';
-    return `${backendBase}${url}`;
+    const baseClean = backendBase.endsWith('/') ? backendBase.slice(0, -1) : backendBase;
+    const pathClean = url.startsWith('/') ? url : `/${url}`;
+    return `${baseClean}${pathClean}`;
   };
 
   // Fetch current letterhead URL when tab changes to letterhead
