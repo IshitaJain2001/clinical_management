@@ -1032,31 +1032,28 @@ const DoctorDashboard = () => {
   const [diagnosisText, setDiagnosisText] = useState('');
   const [sendToPharmacy, setSendToPharmacy] = useState(true);
 
-  // Custom Letterhead State for PDF Printing
-  const [customLetterhead, setCustomLetterhead] = useState(() => {
-    try {
-      return localStorage.getItem('curoxa_dr_letterhead') || null;
-    } catch {
-      return null;
-    }
-  });
+  // Custom Letterhead State for PDF Printing (Fetched dynamically from Admin configurations)
+  const [customLetterhead, setCustomLetterhead] = useState(null);
 
-  const handleLetterheadUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        try {
-          localStorage.setItem('curoxa_dr_letterhead', reader.result);
-          setCustomLetterhead(reader.result);
-        } catch (err) {
-          console.error("Local storage full or error saving letterhead", err);
-          alert("Image is too large to save as letterhead.");
+  useEffect(() => {
+    const fetchHospitalLetterhead = async () => {
+      try {
+        const res = await api.get('/admin/letterhead');
+        let letterheadUrl = res.data?.letterheadUrl || "";
+        if (letterheadUrl && !letterheadUrl.startsWith('http://') && !letterheadUrl.startsWith('https://') && !letterheadUrl.startsWith('data:')) {
+          const apiURL = import.meta.env.VITE_API_URL || '';
+          const backendBase = apiURL ? apiURL.replace('/api', '') : 'http://localhost:5000';
+          letterheadUrl = `${backendBase}${letterheadUrl}`;
         }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+        if (letterheadUrl) {
+          setCustomLetterhead(letterheadUrl);
+        }
+      } catch (err) {
+        console.warn("Failed to fetch hospital letterhead:", err);
+      }
+    };
+    fetchHospitalLetterhead();
+  }, []);
 
   // Real-time dynamic stock alerts from database inventory
   const [pharmacyInventoryDb, setPharmacyInventoryDb] = useState([]);
@@ -9397,39 +9394,10 @@ I have scanned the medical reference databases, but couldn't find a direct match
               {/* Modal Footer */}
               <div style={{ padding: '16px 24px', background: '#F8FAFC', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }} className="no-print">
                 <div>
-                  <input type="file" id="upload-letterhead" accept="image/*" onChange={handleLetterheadUpload} style={{ display: 'none' }} />
-                  <label 
-                    htmlFor="upload-letterhead" 
-                    style={{
-                      padding: '8px 16px',
-                      background: '#EFF6FF',
-                      color: '#2563EB',
-                      border: '1px solid #DBEAFE',
-                      borderRadius: '8px',
-                      fontSize: '13px',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      transition: 'all 0.2s ease-in-out'
-                    }}
-                  >
-                    <i data-lucide="image" style={{ width: '14px', height: '14px' }}></i>
-                    {customLetterhead ? 'Change Letterhead' : 'Upload Letterhead'}
-                  </label>
-                  {customLetterhead && (
-                    <button 
-                      type="button"
-                      onClick={() => {
-                        localStorage.removeItem('curoxa_dr_letterhead');
-                        setCustomLetterhead(null);
-                      }}
-                      style={{ marginLeft: '8px', padding: '8px', background: '#FEF2F2', color: '#DC2626', border: '1px solid #FEE2E2', borderRadius: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold' }}
-                    >
-                      Remove
-                    </button>
-                  )}
+                  <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg>
+                    Using official hospital letterhead configured by Admin
+                  </span>
                 </div>
                 <div style={{ display: 'flex', gap: '12px' }}>
                 <button 
