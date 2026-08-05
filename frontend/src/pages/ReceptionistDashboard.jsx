@@ -5045,24 +5045,7 @@ const ReceptionistDashboard = () => {
               </div>
             )}
 
-            {/* View Lab Report Modal */}
-            {labModalOpen && selectedLabRequest && (
-              <div onClick={() => setLabModalOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.45)', backdropFilter: 'blur(4px)', zIndex: 9000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-                <div onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: '20px', padding: '32px', width: '100%', maxWidth: '600px', boxShadow: '0 24px 64px rgba(0,0,0,0.15)', animation: 'slideUp 0.3s ease-out' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                    <div>
-                      <div style={{ fontSize: '20px', fontWeight: 900, color: '#0F172A' }}>Lab Investigation Report</div>
-                      <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600, marginTop: '2px' }}>Test Name: {selectedLabRequest.testName}</div>
-                    </div>
-                    <button onClick={() => setLabModalOpen(false)} style={{ background: '#F1F5F9', border: 'none', borderRadius: '8px', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', fontSize: '16px', fontWeight: 'bold' }}>✕</button>
-                  </div>
-
-                  <div style={{ padding: '20px', background: '#F8FAFC', borderRadius: '12px', border: '1px solid #E2E8F0', whiteSpace: 'pre-wrap', fontFamily: 'monospace', fontSize: '13px', color: '#1E293B', lineHeight: '1.6', maxHeight: '400px', overflowY: 'auto' }}>
-                    {selectedLabRequest.results || 'Report is pending completion.'}
-                  </div>
-                </div>
-              </div>
-            )}
+             {/* View Lab Report Modal is now rendered globally at the end of the file */}
 
             {/* View All Lab Reports Modal */}
             {allLabsModalOpen && selectedPatient && (
@@ -11572,6 +11555,23 @@ const ReceptionistDashboard = () => {
         <div style={{ position: 'fixed', bottom: '28px', right: '28px', background: '#0F172A', color: 'white', padding: '14px 20px', borderRadius: '12px', border: '1px solid #22C55E', boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)', display: 'flex', alignItems: 'center', gap: '12px', zIndex: 999999, animation: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)' }}>
           <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#22C55E', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '14px' }}>✓</div>
           <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#F8FAFC' }}>{batchSmsSuccessToast}</div>
+        </div>
+      {/* View Lab Report Modal (Rendered globally so it can be opened from any tab) */}
+      {labModalOpen && selectedLabRequest && (
+        <div onClick={() => setLabModalOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.45)', backdropFilter: 'blur(4px)', zIndex: 9000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: '20px', padding: '32px', width: '100%', maxWidth: '600px', boxShadow: '0 24px 64px rgba(0,0,0,0.15)', animation: 'slideUp 0.3s ease-out' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <div>
+                <div style={{ fontSize: '20px', fontWeight: 900, color: '#0F172A' }}>Lab Investigation Report</div>
+                <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600, marginTop: '2px' }}>Test Name: {selectedLabRequest.testName}</div>
+              </div>
+              <button onClick={() => setLabModalOpen(false)} style={{ background: '#F1F5F9', border: 'none', borderRadius: '8px', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', fontSize: '16px', fontWeight: 'bold' }}>✕</button>
+            </div>
+
+            <div style={{ padding: '20px', background: '#F8FAFC', borderRadius: '12px', border: '1px solid #E2E8F0', whiteSpace: 'pre-wrap', fontFamily: 'monospace', fontSize: '13px', color: '#1E293B', lineHeight: '1.6', maxHeight: '400px', overflowY: 'auto' }}>
+              {selectedLabRequest.results || 'Report is pending completion.'}
+            </div>
+          </div>
         </div>
       )}
     </>
