@@ -135,7 +135,9 @@ export default function HRPayrollStaff({ onExit }) {
             initials,
             documents: user.documents || [],
             carriedForwardLeaves: user.carriedForwardLeaves || 0,
-            monthlyLeaveAllocation: user.monthlyLeaveAllocation || { sick: 1, casual: 1, annual: 1.25 }
+            monthlyLeaveAllocation: user.monthlyLeaveAllocation || { sick: 1, casual: 1, annual: 1.25 },
+            weeklyOff: user.weeklyOff || 'Sunday',
+            shiftName: user.shiftName || 'General Shift'
           };
         });
         setEmployees(formatted);
@@ -332,6 +334,16 @@ export default function HRPayrollStaff({ onExit }) {
       showToast('Passwords do not match.', 'error');
       return;
     }
+    if (newStaff.role === 'doctor') {
+      const currentOffs = Array.isArray(newStaff.weeklyOff)
+        ? newStaff.weeklyOff
+        : (newStaff.weeklyOff ? newStaff.weeklyOff.split(',').map(d => d.trim()) : []);
+      if (currentOffs.length === 0) {
+        setAddStaffError('Please select at least one Weekly Off day for the doctor.');
+        showToast('Please select at least one Weekly Off day for the doctor.', 'error');
+        return;
+      }
+    }
     setLoading(true);
     setAddStaffError('');
 
@@ -385,7 +397,8 @@ export default function HRPayrollStaff({ onExit }) {
         email: editingStaff.email,
         specialty: editingStaff.dept || editingStaff.specialty,
         max_slots: editingStaff.max_slots,
-        weeklyOff: editingStaff.weeklyOff || 'Sunday'
+        weeklyOff: editingStaff.weeklyOff || 'Sunday',
+        shiftName: editingStaff.shiftName || 'General Shift'
       };
       if (editingStaff.password && editingStaff.password.trim()) {
         payload.password = editingStaff.password.trim();

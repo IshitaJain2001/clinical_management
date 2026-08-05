@@ -227,60 +227,7 @@ const AdminDashboard = () => {
   const [pmGridSearch, setPmGridSearch] = useState('');
   const [dismissedMockCards, setDismissedMockCards] = useState([]);
 
-  const defaultMockDelegations = [
-    {
-      id: 'mock-1',
-      staffName: 'Priya Sharma',
-      initials: 'PS',
-      transition: 'Receptionist → Inventory Manager',
-      badgeText: 'Expiring Soon',
-      badgeType: 'warning',
-      department: 'Pharmacy',
-      assignedBy: 'Admin',
-      duration: '15 Jun - 25 Jun',
-      remaining: '5 days left',
-      color: '#FF7A38'
-    },
-    {
-      id: 'mock-2',
-      staffName: 'Michael Chen',
-      initials: 'MC',
-      transition: 'Lab Technician → Lab Supervisor',
-      badgeText: 'Recently Assigned',
-      badgeType: 'success',
-      department: 'Laboratory',
-      assignedBy: 'Dr. Patel',
-      duration: '10 Jun - 05 Jul',
-      remaining: '14 days left',
-      color: '#10B981'
-    },
-    {
-      id: 'mock-3',
-      staffName: 'Anita Rao',
-      initials: 'AR',
-      transition: 'Nurse → Ward In-charge',
-      badgeText: 'Expired',
-      badgeType: 'danger',
-      department: 'General Ward',
-      assignedBy: 'Admin',
-      duration: '01 Jun - 18 Jun',
-      remaining: 'Ended',
-      color: '#EF4444'
-    },
-    {
-      id: 'mock-4',
-      staffName: 'David Kim',
-      initials: 'DK',
-      transition: 'Junior Doctor → OPD Lead',
-      badgeText: 'Recently Assigned',
-      badgeType: 'success',
-      department: 'OPD',
-      assignedBy: 'Admin',
-      duration: '12 Jun - 28 Jun',
-      remaining: '8 days left',
-      color: '#10B981'
-    }
-  ];
+
 
   const getActiveDelegationsForDashboard = () => {
     const realList = [];
@@ -347,7 +294,7 @@ const AdminDashboard = () => {
 
   const [staff, setStaff] = useState([]);
   const [staffPage, setStaffPage] = useState(1);
-  const [newStaff, setNewStaff] = useState({ staff_id: '', password: '', confirmPassword: '', role: getAvailableRoles()[0]?.value || 'doctor', name: '', max_slots: '', email: '', phone: '' });
+  const [newStaff, setNewStaff] = useState({ staff_id: '', password: '', confirmPassword: '', role: getAvailableRoles()[0]?.value || 'doctor', name: '', max_slots: '', email: '', phone: '', weeklyOff: 'Sunday', shiftName: 'General Shift' });
   const [checkingUsername, setCheckingUsername] = useState(false);
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(null);
 
@@ -411,7 +358,7 @@ const AdminDashboard = () => {
   const [approvalComment, setApprovalComment] = useState('');
   const [editingVendorCatalog, setEditingVendorCatalog] = useState(null);
   const [newCatalogItem, setNewCatalogItem] = useState({ name: '', sku: '', price: '' });
-  const [editStaffFields, setEditStaffFields] = useState({ name: '', role: getAvailableRoles()[0]?.value || 'doctor', specialty: '', max_slots: 10, password: '', email: '', phone: '' });
+  const [editStaffFields, setEditStaffFields] = useState({ name: '', role: getAvailableRoles()[0]?.value || 'doctor', specialty: '', max_slots: 10, password: '', email: '', phone: '', weeklyOff: 'Sunday', shiftName: 'General Shift' });
   const [showEditPassword, setShowEditPassword] = useState(false);
   const [showAddStaffPassword, setShowAddStaffPassword] = useState(false);
 
@@ -1507,7 +1454,6 @@ const AdminDashboard = () => {
         return isToday ? `Today ${timeStr}` : `${date.toLocaleDateString([], { month: 'short', day: 'numeric' })} ${timeStr}`;
       };
 
-      // Merge backend database records with the initial visual mock records
       const dbUsers = response.data.map(user => {
         let initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
         if (!initials) initials = 'ST';
@@ -1615,6 +1561,8 @@ const AdminDashboard = () => {
       email: newStaff.email || '',
       phone: newStaff.phone || '',
       consultationFee: newStaff.consultationFee !== undefined ? newStaff.consultationFee : 500,
+      weeklyOff: newStaff.weeklyOff || 'Sunday',
+      shiftName: newStaff.shiftName || 'General Shift',
       password: newStaff.password,
       initials,
       avatarColor
@@ -1624,7 +1572,7 @@ const AdminDashboard = () => {
       await api.post('/admin/users', newStaff);
       setSuccess('Staff account created successfully!');
       setStaff(prev => [...prev.filter(x => x.name.toLowerCase() !== newStaff.name.toLowerCase()), localEntry]);
-      setNewStaff({ staff_id: '', password: '', confirmPassword: '', role: getAvailableRoles()[0]?.value || 'doctor', name: '', max_slots: '', email: '', phone: '' });
+      setNewStaff({ staff_id: '', password: '', confirmPassword: '', role: getAvailableRoles()[0]?.value || 'doctor', name: '', max_slots: '', email: '', phone: '', weeklyOff: 'Sunday', shiftName: 'General Shift' });
       setShowAddStaffModal(false);
       setShowAddStaffPassword(false);
       fetchStaff();
@@ -1662,6 +1610,8 @@ const AdminDashboard = () => {
         consultationFee: editStaffFields.role === 'doctor' ? (editStaffFields.consultationFee !== undefined ? Number(editStaffFields.consultationFee) : 500) : undefined,
         email: editStaffFields.email || '',
         phone: editStaffFields.phone || '',
+        weeklyOff: editStaffFields.role === 'doctor' ? (editStaffFields.weeklyOff || 'Sunday') : undefined,
+        shiftName: editStaffFields.role === 'doctor' ? (editStaffFields.shiftName || 'General Shift') : undefined
       };
       if (editStaffFields.password && editStaffFields.password.trim()) {
         payload.password = editStaffFields.password.trim();
@@ -1690,6 +1640,8 @@ const AdminDashboard = () => {
             email: response.data.email || '',
             phone: response.data.phone || '',
             consultationFee: response.data.consultationFee !== undefined ? response.data.consultationFee : 500,
+            weeklyOff: response.data.weeklyOff || 'Sunday',
+            shiftName: response.data.shiftName || 'General Shift',
             password: '',
             initials,
             avatarColor
@@ -7028,7 +6980,9 @@ const AdminDashboard = () => {
                                       password: '',
                                       email: item.email || '',
                                       phone: item.phone || '',
-                                      consultationFee: item.consultationFee !== undefined ? item.consultationFee : 500
+                                      consultationFee: item.consultationFee !== undefined ? item.consultationFee : 500,
+                                      weeklyOff: item.weeklyOff || 'Sunday',
+                                      shiftName: item.shiftName || 'General Shift'
                                     });
                                   }}
                                 >
@@ -11750,7 +11704,9 @@ const AdminDashboard = () => {
                       consultationFee: viewingStaff.consultationFee !== undefined ? viewingStaff.consultationFee : 500,
                       password: '',
                       email: viewingStaff.email || '',
-                      phone: viewingStaff.phone || ''
+                      phone: viewingStaff.phone || '',
+                      weeklyOff: viewingStaff.weeklyOff || 'Sunday',
+                      shiftName: viewingStaff.shiftName || 'General Shift'
                     });
                     setViewingStaff(null);
                   }}
@@ -11883,6 +11839,41 @@ const AdminDashboard = () => {
                       onChange={e => setEditStaffFields({...editStaffFields, consultationFee: e.target.value !== '' ? Number(e.target.value) : ''})} 
                       required 
                     />
+                  </div>
+                  
+                  <div className="admin-input-group animate-in">
+                    <label className="admin-input-label">Weekly Off Day</label>
+                    <select 
+                      className="admin-text-input" 
+                      style={{ padding: '0 8px' }}
+                      value={editStaffFields.weeklyOff || 'Sunday'} 
+                      onChange={e => setEditStaffFields({...editStaffFields, weeklyOff: e.target.value})}
+                      required
+                    >
+                      <option value="Sunday">Sunday</option>
+                      <option value="Monday">Monday</option>
+                      <option value="Tuesday">Tuesday</option>
+                      <option value="Wednesday">Wednesday</option>
+                      <option value="Thursday">Thursday</option>
+                      <option value="Friday">Friday</option>
+                      <option value="Saturday">Saturday</option>
+                    </select>
+                  </div>
+                  
+                  <div className="admin-input-group animate-in">
+                    <label className="admin-input-label">Hospital Shift</label>
+                    <select 
+                      className="admin-text-input" 
+                      style={{ padding: '0 8px' }}
+                      value={editStaffFields.shiftName || 'General Shift'} 
+                      onChange={e => setEditStaffFields({...editStaffFields, shiftName: e.target.value})}
+                      required
+                    >
+                      <option value="General Shift">General Shift (09:00 AM - 05:00 PM)</option>
+                      <option value="Morning Shift">Morning Shift (08:00 AM - 02:00 PM)</option>
+                      <option value="Evening Shift">Evening Shift (02:00 PM - 08:00 PM)</option>
+                      <option value="Night Rotation">Night Rotation (08:00 PM - 08:00 AM)</option>
+                    </select>
                   </div>
                 </>
               )}
@@ -12139,6 +12130,41 @@ const AdminDashboard = () => {
                       onChange={e => setNewStaff({...newStaff, consultationFee: e.target.value !== '' ? Number(e.target.value) : ''})} 
                       required 
                     />
+                  </div>
+                  
+                  <div className="admin-input-group animate-in">
+                    <label className="admin-input-label">Weekly Off Day</label>
+                    <select 
+                      className="admin-text-input" 
+                      style={{ padding: '0 8px' }}
+                      value={newStaff.weeklyOff || 'Sunday'} 
+                      onChange={e => setNewStaff({...newStaff, weeklyOff: e.target.value})}
+                      required
+                    >
+                      <option value="Sunday">Sunday</option>
+                      <option value="Monday">Monday</option>
+                      <option value="Tuesday">Tuesday</option>
+                      <option value="Wednesday">Wednesday</option>
+                      <option value="Thursday">Thursday</option>
+                      <option value="Friday">Friday</option>
+                      <option value="Saturday">Saturday</option>
+                    </select>
+                  </div>
+                  
+                  <div className="admin-input-group animate-in">
+                    <label className="admin-input-label">Hospital Shift</label>
+                    <select 
+                      className="admin-text-input" 
+                      style={{ padding: '0 8px' }}
+                      value={newStaff.shiftName || 'General Shift'} 
+                      onChange={e => setNewStaff({...newStaff, shiftName: e.target.value})}
+                      required
+                    >
+                      <option value="General Shift">General Shift (09:00 AM - 05:00 PM)</option>
+                      <option value="Morning Shift">Morning Shift (08:00 AM - 02:00 PM)</option>
+                      <option value="Evening Shift">Evening Shift (02:00 PM - 08:00 PM)</option>
+                      <option value="Night Rotation">Night Rotation (08:00 PM - 08:00 AM)</option>
+                    </select>
                   </div>
                 </>
               )}
