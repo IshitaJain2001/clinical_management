@@ -248,6 +248,27 @@ router.put('/:id/password', async (req, res) => {
   }
 });
 
+// Bulk delete all patients (scoped to tenant - FOR TESTING)
+router.delete('/danger/delete-all-patients', async (req, res) => {
+  try {
+    const patients = await Patient.find({ tenantId: req.tenantId });
+    const patientContacts = patients.map(p => p.contact);
+    
+    await Patient.deleteMany({ tenantId: req.tenantId });
+    await User.deleteMany({ staff_id: { $in: patientContacts }, tenantId: req.tenantId, role: 'patient' });
+    
+    const io = req.app.get("io");
+    if (io && req.tenantId) {
+      io.to(req.tenantId).emit("data_changed", { type: "patients" });
+    }
+    
+    res.json({ message: `Successfully deleted ${patients.length} patient records.` });
+  } catch (error) {
+    console.error("Bulk delete patients error:", error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Delete a patient (scoped to tenant)
 router.delete('/:id', async (req, res) => {
   try {
