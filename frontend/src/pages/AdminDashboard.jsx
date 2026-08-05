@@ -294,7 +294,7 @@ const AdminDashboard = () => {
 
   const [staff, setStaff] = useState([]);
   const [staffPage, setStaffPage] = useState(1);
-  const [newStaff, setNewStaff] = useState({ staff_id: '', password: '', confirmPassword: '', role: getAvailableRoles()[0]?.value || 'doctor', name: '', max_slots: '', email: '', phone: '', weeklyOff: 'Sunday', shiftName: 'General Shift' });
+  const [newStaff, setNewStaff] = useState({ staff_id: '', password: '', confirmPassword: '', role: getAvailableRoles()[0]?.value || 'doctor', name: '', max_slots: '', email: '', phone: '', weeklyOff: 'Sunday', shiftName: 'General Shift', doctorSlots: ['09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM'] });
   const [checkingUsername, setCheckingUsername] = useState(false);
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(null);
 
@@ -358,7 +358,7 @@ const AdminDashboard = () => {
   const [approvalComment, setApprovalComment] = useState('');
   const [editingVendorCatalog, setEditingVendorCatalog] = useState(null);
   const [newCatalogItem, setNewCatalogItem] = useState({ name: '', sku: '', price: '' });
-  const [editStaffFields, setEditStaffFields] = useState({ name: '', role: getAvailableRoles()[0]?.value || 'doctor', specialty: '', max_slots: 10, password: '', email: '', phone: '', weeklyOff: 'Sunday', shiftName: 'General Shift' });
+  const [editStaffFields, setEditStaffFields] = useState({ name: '', role: getAvailableRoles()[0]?.value || 'doctor', specialty: '', max_slots: 10, password: '', email: '', phone: '', weeklyOff: 'Sunday', shiftName: 'General Shift', doctorSlots: [] });
   const [showEditPassword, setShowEditPassword] = useState(false);
   const [showAddStaffPassword, setShowAddStaffPassword] = useState(false);
 
@@ -1478,6 +1478,7 @@ const AdminDashboard = () => {
           email: user.email || '',
           phone: user.phone || '',
           consultationFee: user.consultationFee !== undefined ? user.consultationFee : 500,
+          doctorSlots: user.doctorSlots || [],
           password: '',
           staff_id: user.staff_id || '',
           weeklyOff: user.weeklyOff || ''
@@ -1582,7 +1583,7 @@ const AdminDashboard = () => {
       await api.post('/admin/users', newStaff);
       setSuccess('Staff account created successfully!');
       setStaff(prev => [...prev.filter(x => x.name.toLowerCase() !== newStaff.name.toLowerCase()), localEntry]);
-      setNewStaff({ staff_id: '', password: '', confirmPassword: '', role: getAvailableRoles()[0]?.value || 'doctor', name: '', max_slots: '', email: '', phone: '', weeklyOff: 'Sunday', shiftName: 'General Shift' });
+      setNewStaff({ staff_id: '', password: '', confirmPassword: '', role: getAvailableRoles()[0]?.value || 'doctor', name: '', max_slots: '', email: '', phone: '', weeklyOff: 'Sunday', shiftName: 'General Shift', doctorSlots: ['09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM'] });
       setShowAddStaffModal(false);
       setShowAddStaffPassword(false);
       fetchStaff();
@@ -1621,7 +1622,8 @@ const AdminDashboard = () => {
         email: editStaffFields.email || '',
         phone: editStaffFields.phone || '',
         weeklyOff: editStaffFields.role === 'doctor' ? (editStaffFields.weeklyOff || 'Sunday') : undefined,
-        shiftName: editStaffFields.role === 'doctor' ? (editStaffFields.shiftName || 'General Shift') : undefined
+        shiftName: editStaffFields.role === 'doctor' ? (editStaffFields.shiftName || 'General Shift') : undefined,
+        doctorSlots: editStaffFields.role === 'doctor' ? (editStaffFields.doctorSlots || []) : undefined
       };
       if (editStaffFields.password && editStaffFields.password.trim()) {
         payload.password = editStaffFields.password.trim();
@@ -1652,6 +1654,7 @@ const AdminDashboard = () => {
             consultationFee: response.data.consultationFee !== undefined ? response.data.consultationFee : 500,
             weeklyOff: response.data.weeklyOff || 'Sunday',
             shiftName: response.data.shiftName || 'General Shift',
+            doctorSlots: response.data.doctorSlots || [],
             password: '',
             initials,
             avatarColor
@@ -6992,7 +6995,8 @@ const AdminDashboard = () => {
                                       phone: item.phone || '',
                                       consultationFee: item.consultationFee !== undefined ? item.consultationFee : 500,
                                       weeklyOff: item.weeklyOff || 'Sunday',
-                                      shiftName: item.shiftName || 'General Shift'
+                                      shiftName: item.shiftName || 'General Shift',
+                                      doctorSlots: item.doctorSlots || []
                                     });
                                   }}
                                 >
@@ -11716,7 +11720,8 @@ const AdminDashboard = () => {
                       email: viewingStaff.email || '',
                       phone: viewingStaff.phone || '',
                       weeklyOff: viewingStaff.weeklyOff || 'Sunday',
-                      shiftName: viewingStaff.shiftName || 'General Shift'
+                      shiftName: viewingStaff.shiftName || 'General Shift',
+                      doctorSlots: viewingStaff.doctorSlots || []
                     });
                     setViewingStaff(null);
                   }}
@@ -11884,6 +11889,43 @@ const AdminDashboard = () => {
                       <option value="Evening Shift">Evening Shift (02:00 PM - 08:00 PM)</option>
                       <option value="Night Rotation">Night Rotation (08:00 PM - 08:00 AM)</option>
                     </select>
+                  </div>
+
+                  <div className="admin-input-group animate-in" style={{ gridColumn: 'span 2', marginTop: '8px' }}>
+                    <label className="admin-input-label">Attending Time Slots (Required)</label>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', maxHeight: '160px', overflowY: 'auto', padding: '10px', border: '1px solid #CBD5E1', borderRadius: '8px', background: '#F8FAFC' }} data-lenis-prevent>
+                      {['09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM'].map(slot => {
+                        const isSelected = (editStaffFields.doctorSlots || []).includes(slot);
+                        return (
+                          <button
+                            key={slot}
+                            type="button"
+                            onClick={() => {
+                              let currentSlots = [...(editStaffFields.doctorSlots || [])];
+                              if (currentSlots.includes(slot)) {
+                                currentSlots = currentSlots.filter(s => s !== slot);
+                              } else {
+                                currentSlots.push(slot);
+                              }
+                              setEditStaffFields({...editStaffFields, doctorSlots: currentSlots});
+                            }}
+                            style={{
+                              padding: '6px 12px',
+                              borderRadius: '6px',
+                              fontSize: '12px',
+                              fontWeight: 700,
+                              border: '1px solid ' + (isSelected ? '#3B82F6' : '#CBD5E1'),
+                              background: isSelected ? '#EFF6FF' : '#FFFFFF',
+                              color: isSelected ? '#2563EB' : '#475569',
+                              cursor: 'pointer',
+                              transition: 'all 0.15s ease'
+                            }}
+                          >
+                            {slot}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 </>
               )}
@@ -12193,6 +12235,43 @@ const AdminDashboard = () => {
                       <option value="Evening Shift">Evening Shift (02:00 PM - 08:00 PM)</option>
                       <option value="Night Rotation">Night Rotation (08:00 PM - 08:00 AM)</option>
                     </select>
+                  </div>
+
+                  <div className="admin-input-group animate-in" style={{ gridColumn: 'span 2', marginTop: '8px' }}>
+                    <label className="admin-input-label">Attending Time Slots (Required)</label>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', maxHeight: '160px', overflowY: 'auto', padding: '10px', border: '1px solid #CBD5E1', borderRadius: '8px', background: '#F8FAFC' }} data-lenis-prevent>
+                      {['09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM'].map(slot => {
+                        const isSelected = (newStaff.doctorSlots || []).includes(slot);
+                        return (
+                          <button
+                            key={slot}
+                            type="button"
+                            onClick={() => {
+                              let currentSlots = [...(newStaff.doctorSlots || [])];
+                              if (currentSlots.includes(slot)) {
+                                currentSlots = currentSlots.filter(s => s !== slot);
+                              } else {
+                                currentSlots.push(slot);
+                              }
+                              setNewStaff({...newStaff, doctorSlots: currentSlots});
+                            }}
+                            style={{
+                              padding: '6px 12px',
+                              borderRadius: '6px',
+                              fontSize: '12px',
+                              fontWeight: 700,
+                              border: '1px solid ' + (isSelected ? '#3B82F6' : '#CBD5E1'),
+                              background: isSelected ? '#EFF6FF' : '#FFFFFF',
+                              color: isSelected ? '#2563EB' : '#475569',
+                              cursor: 'pointer',
+                              transition: 'all 0.15s ease'
+                            }}
+                          >
+                            {slot}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 </>
               )}
