@@ -75,6 +75,7 @@ export default function EmployeeDirectoryView({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [customSlotInput, setCustomSlotInput] = useState('');
   const [error, setError] = useState('');
 
   React.useEffect(() => {
@@ -104,7 +105,7 @@ export default function EmployeeDirectoryView({
       ctcAnnual: '',
       shiftName: '',
       workLocation: '',
-      doctorSlots: ['09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM'],
+      doctorSlots: ['09:00 AM - 09:30 AM', '09:30 AM - 10:00 AM', '10:00 AM - 10:30 AM', '10:30 AM - 11:00 AM', '11:00 AM - 11:30 AM', '11:30 AM - 12:00 PM', '12:00 PM - 12:30 PM', '12:30 PM - 01:00 PM', '02:00 PM - 02:30 PM', '02:30 PM - 03:00 PM', '03:00 PM - 03:30 PM', '03:30 PM - 04:00 PM', '04:00 PM - 04:30 PM', '04:30 PM - 05:00 PM', '05:00 PM - 05:30 PM'],
       weeklyOff: ''
     });
     setError('');
@@ -143,7 +144,7 @@ export default function EmployeeDirectoryView({
     ctcAnnual: '',
     shiftName: '',
     workLocation: '',
-    doctorSlots: ['09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM'],
+    doctorSlots: ['09:00 AM - 09:30 AM', '09:30 AM - 10:00 AM', '10:00 AM - 10:30 AM', '10:30 AM - 11:00 AM', '11:00 AM - 11:30 AM', '11:30 AM - 12:00 PM', '12:00 PM - 12:30 PM', '12:30 PM - 01:00 PM', '02:00 PM - 02:30 PM', '02:30 PM - 03:00 PM', '03:00 PM - 03:30 PM', '03:30 PM - 04:00 PM', '04:00 PM - 04:30 PM', '04:30 PM - 05:00 PM', '05:00 PM - 05:30 PM'],
     weeklyOff: ''
   });
 
@@ -482,15 +483,6 @@ export default function EmployeeDirectoryView({
                     >
                       <Eye className="w-4 h-4" />
                     </button>
-                    {emp.status !== 'Exited' && (
-                      <button 
-                        onClick={() => onDeactivateEmployee(emp.id)}
-                        className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Deactivate Staff"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
                   </td>
                 </tr>
               ))}
@@ -767,8 +759,46 @@ export default function EmployeeDirectoryView({
                     
                     <div className="admin-input-group col-span-2 mt-1">
                       <label className="admin-input-label">Attending Time Slots (Required) *</label>
+                      
+                      {/* Add Custom Slot */}
+                      <div className="flex gap-2 mb-3">
+                        <input 
+                          type="text" 
+                          placeholder="e.g. 10:00 AM - 11:00 AM" 
+                          value={customSlotInput}
+                          onChange={e => setCustomSlotInput(e.target.value)}
+                          className="admin-text-input flex-1"
+                          style={{ height: '36px' }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (!customSlotInput.trim()) return;
+                            const newSlot = customSlotInput.trim();
+                            const currentSlots = newEmp.doctorSlots || [];
+                            if (!currentSlots.includes(newSlot)) {
+                              setNewEmp({
+                                ...newEmp,
+                                doctorSlots: [...currentSlots, newSlot]
+                              });
+                            }
+                            setCustomSlotInput('');
+                          }}
+                          className="px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-colors"
+                        >
+                          Add Custom
+                        </button>
+                      </div>
+
                       <div className="flex flex-wrap gap-1.5 p-3 border border-slate-200 rounded-xl bg-slate-50 max-h-[140px] overflow-y-auto" data-lenis-prevent>
-                        {['09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM'].map(slot => {
+                        {Array.from(new Set([
+                          '09:00 AM - 09:30 AM', '09:30 AM - 10:00 AM', '10:00 AM - 10:30 AM',
+                          '10:30 AM - 11:00 AM', '11:00 AM - 11:30 AM', '11:30 AM - 12:00 PM',
+                          '12:00 PM - 12:30 PM', '12:30 PM - 01:00 PM', '02:00 PM - 02:30 PM',
+                          '02:30 PM - 03:00 PM', '03:00 PM - 03:30 PM', '03:30 PM - 04:00 PM',
+                          '04:00 PM - 04:30 PM', '04:30 PM - 05:00 PM', '05:00 PM - 05:30 PM',
+                          ...(newEmp.doctorSlots || [])
+                        ])).map(slot => {
                           const isSelected = (newEmp.doctorSlots || []).includes(slot);
                           return (
                             <button

@@ -294,7 +294,7 @@ const AdminDashboard = () => {
 
   const [staff, setStaff] = useState([]);
   const [staffPage, setStaffPage] = useState(1);
-  const [newStaff, setNewStaff] = useState({ staff_id: '', password: '', confirmPassword: '', role: getAvailableRoles()[0]?.value || 'doctor', name: '', max_slots: '', email: '', phone: '', weeklyOff: 'Sunday', shiftName: 'General Shift', doctorSlots: ['09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM'] });
+  const [newStaff, setNewStaff] = useState({ staff_id: '', password: '', confirmPassword: '', role: getAvailableRoles()[0]?.value || 'doctor', name: '', max_slots: '', email: '', phone: '', weeklyOff: 'Sunday', shiftName: 'General Shift', doctorSlots: ['09:00 AM - 09:30 AM', '09:30 AM - 10:00 AM', '10:00 AM - 10:30 AM', '10:30 AM - 11:00 AM', '11:00 AM - 11:30 AM', '11:30 AM - 12:00 PM', '12:00 PM - 12:30 PM', '12:30 PM - 01:00 PM', '02:00 PM - 02:30 PM', '02:30 PM - 03:00 PM', '03:00 PM - 03:30 PM', '03:30 PM - 04:00 PM', '04:00 PM - 04:30 PM', '04:30 PM - 05:00 PM', '05:00 PM - 05:30 PM'] });
   const [checkingUsername, setCheckingUsername] = useState(false);
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(null);
 
@@ -351,6 +351,7 @@ const AdminDashboard = () => {
   // View & Edit staff modals state
   const [viewingStaff, setViewingStaff] = useState(null);
   const [editingStaff, setEditingStaff] = useState(null);
+  const [adminCustomSlotInput, setAdminCustomSlotInput] = useState('');
   const [viewingApproval, setViewingApproval] = useState(null);
   const [approvalSearchQuery, setApprovalSearchQuery] = useState('');
   const [approvalDateRange, setApprovalDateRange] = useState({ start: '', end: '' });
@@ -1583,7 +1584,7 @@ const AdminDashboard = () => {
       await api.post('/admin/users', newStaff);
       setSuccess('Staff account created successfully!');
       setStaff(prev => [...prev.filter(x => x.name.toLowerCase() !== newStaff.name.toLowerCase()), localEntry]);
-      setNewStaff({ staff_id: '', password: '', confirmPassword: '', role: getAvailableRoles()[0]?.value || 'doctor', name: '', max_slots: '', email: '', phone: '', weeklyOff: 'Sunday', shiftName: 'General Shift', doctorSlots: ['09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM'] });
+      setNewStaff({ staff_id: '', password: '', confirmPassword: '', role: getAvailableRoles()[0]?.value || 'doctor', name: '', max_slots: '', email: '', phone: '', weeklyOff: 'Sunday', shiftName: 'General Shift', doctorSlots: ['09:00 AM - 09:30 AM', '09:30 AM - 10:00 AM', '10:00 AM - 10:30 AM', '10:30 AM - 11:00 AM', '11:00 AM - 11:30 AM', '11:30 AM - 12:00 PM', '12:00 PM - 12:30 PM', '12:30 PM - 01:00 PM', '02:00 PM - 02:30 PM', '02:30 PM - 03:00 PM', '03:00 PM - 03:30 PM', '03:30 PM - 04:00 PM', '04:00 PM - 04:30 PM', '04:30 PM - 05:00 PM', '05:00 PM - 05:30 PM'] });
       setShowAddStaffModal(false);
       setShowAddStaffPassword(false);
       fetchStaff();
@@ -11895,8 +11896,55 @@ const AdminDashboard = () => {
 
                   <div className="admin-input-group animate-in" style={{ gridColumn: 'span 2', marginTop: '8px' }}>
                     <label className="admin-input-label">Attending Time Slots (Required)</label>
+                    
+                    {/* Add Custom Slot */}
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. 10:00 AM - 11:00 AM" 
+                        className="admin-text-input" 
+                        style={{ height: '36px', flex: 1 }}
+                        value={adminCustomSlotInput}
+                        onChange={e => setAdminCustomSlotInput(e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!adminCustomSlotInput.trim()) return;
+                          const newSlot = adminCustomSlotInput.trim();
+                          const currentSlots = editStaffFields.doctorSlots || [];
+                          if (!currentSlots.includes(newSlot)) {
+                            setEditStaffFields({
+                              ...editStaffFields,
+                              doctorSlots: [...currentSlots, newSlot]
+                            });
+                          }
+                          setAdminCustomSlotInput('');
+                        }}
+                        style={{
+                          background: '#3B82F6',
+                          border: 'none',
+                          color: '#FFFFFF',
+                          padding: '0 16px',
+                          borderRadius: '8px',
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Add Custom
+                      </button>
+                    </div>
+
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', maxHeight: '160px', overflowY: 'auto', padding: '10px', border: '1px solid #CBD5E1', borderRadius: '8px', background: '#F8FAFC' }} data-lenis-prevent>
-                      {['09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM'].map(slot => {
+                      {Array.from(new Set([
+                        '09:00 AM - 09:30 AM', '09:30 AM - 10:00 AM', '10:00 AM - 10:30 AM',
+                        '10:30 AM - 11:00 AM', '11:00 AM - 11:30 AM', '11:30 AM - 12:00 PM',
+                        '12:00 PM - 12:30 PM', '12:30 PM - 01:00 PM', '02:00 PM - 02:30 PM',
+                        '02:30 PM - 03:00 PM', '03:00 PM - 03:30 PM', '03:30 PM - 04:00 PM',
+                        '04:00 PM - 04:30 PM', '04:30 PM - 05:00 PM', '05:00 PM - 05:30 PM',
+                        ...(editStaffFields.doctorSlots || [])
+                      ])).map(slot => {
                         const isSelected = (editStaffFields.doctorSlots || []).includes(slot);
                         return (
                           <button
@@ -12241,8 +12289,55 @@ const AdminDashboard = () => {
 
                   <div className="admin-input-group animate-in" style={{ gridColumn: 'span 2', marginTop: '8px' }}>
                     <label className="admin-input-label">Attending Time Slots (Required)</label>
+                    
+                    {/* Add Custom Slot */}
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. 10:00 AM - 11:00 AM" 
+                        className="admin-text-input" 
+                        style={{ height: '36px', flex: 1 }}
+                        value={adminCustomSlotInput}
+                        onChange={e => setAdminCustomSlotInput(e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!adminCustomSlotInput.trim()) return;
+                          const newSlot = adminCustomSlotInput.trim();
+                          const currentSlots = newStaff.doctorSlots || [];
+                          if (!currentSlots.includes(newSlot)) {
+                            setNewStaff({
+                              ...newStaff,
+                              doctorSlots: [...currentSlots, newSlot]
+                            });
+                          }
+                          setAdminCustomSlotInput('');
+                        }}
+                        style={{
+                          background: '#3B82F6',
+                          border: 'none',
+                          color: '#FFFFFF',
+                          padding: '0 16px',
+                          borderRadius: '8px',
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Add Custom
+                      </button>
+                    </div>
+
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', maxHeight: '160px', overflowY: 'auto', padding: '10px', border: '1px solid #CBD5E1', borderRadius: '8px', background: '#F8FAFC' }} data-lenis-prevent>
-                      {['09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM'].map(slot => {
+                      {Array.from(new Set([
+                        '09:00 AM - 09:30 AM', '09:30 AM - 10:00 AM', '10:00 AM - 10:30 AM',
+                        '10:30 AM - 11:00 AM', '11:00 AM - 11:30 AM', '11:30 AM - 12:00 PM',
+                        '12:00 PM - 12:30 PM', '12:30 PM - 01:00 PM', '02:00 PM - 02:30 PM',
+                        '02:30 PM - 03:00 PM', '03:00 PM - 03:30 PM', '03:30 PM - 04:00 PM',
+                        '04:00 PM - 04:30 PM', '04:30 PM - 05:00 PM', '05:00 PM - 05:30 PM',
+                        ...(newStaff.doctorSlots || [])
+                      ])).map(slot => {
                         const isSelected = (newStaff.doctorSlots || []).includes(slot);
                         return (
                           <button
