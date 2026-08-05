@@ -170,6 +170,10 @@ const PharmacyDashboard = () => {
   const [vendors, setVendors] = useState([]);
   const [purchaseOrders, setPurchaseOrders] = useState([]);
   const [goodsReceipts, setGoodsReceipts] = useState([]);
+  const [pharmacyTickets, setPharmacyTickets] = useState([]);
+  const [showResolveTicketModal, setShowResolveTicketModal] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [ticketResolutionReason, setTicketResolutionReason] = useState('');
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [showAddVendorModal, setShowAddVendorModal] = useState(false);
   const [newVendor, setNewVendor] = useState({
@@ -254,6 +258,8 @@ const PharmacyDashboard = () => {
       setPurchaseOrders(poRes.data);
       const grnRes = await api.get('/goods-receipts');
       setGoodsReceipts(grnRes.data);
+      const ticketsRes = await api.get('/pharmacy-tickets');
+      setPharmacyTickets(ticketsRes.data);
     } catch (err) {
       console.error("Failed to fetch procurement data:", err);
     }
@@ -291,6 +297,28 @@ const PharmacyDashboard = () => {
     } catch (err) {
       console.error(err);
       showToast(err.response?.data?.error || 'Failed to update price list', 'error');
+    }
+  };
+
+  const handleResolveTicket = async (e) => {
+    e.preventDefault();
+    if (!selectedTicket || !ticketResolutionReason.trim()) return;
+    try {
+      const res = await api.put(`/pharmacy-tickets/${selectedTicket._id}/resolve`, { reason: ticketResolutionReason });
+      setPharmacyTickets(pharmacyTickets.map(t => t._id === selectedTicket._id ? res.data : t));
+      
+      const medId = selectedTicket.medicineId;
+      const currentQty = selectedTicket.currentStock || 0;
+      await api.put(`/medicines/${medId}`, { stock: currentQty + 100 });
+      
+      showToast('Replenishment ticket resolved & stock updated successfully!');
+      setShowResolveTicketModal(false);
+      setTicketResolutionReason('');
+      fetchProcurementData();
+      fetchInventory();
+    } catch (err) {
+      console.error(err);
+      showToast(err.response?.data?.error || 'Failed to resolve ticket', 'error');
     }
   };
 
@@ -4111,6 +4139,13 @@ const PharmacyDashboard = () => {
                 >
                   Goods Receipts (GRN)
                 </button>
+                <button 
+                  className="btn" 
+                  style={{ padding: '8px 16px', fontSize: '13px', borderRadius: '8px', border: 'none', fontWeight: 700, cursor: 'pointer', background: procurementSubTab === 'tickets' ? 'white' : 'transparent', color: procurementSubTab === 'tickets' ? '#2563EB' : '#64748B', boxShadow: procurementSubTab === 'tickets' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none' }}
+                  onClick={() => setProcurementSubTab('tickets')}
+                >
+                  Replenishment Tickets
+                </button>
               </div>
             </div>
 
@@ -4346,6 +4381,78 @@ const PharmacyDashboard = () => {
                         {goodsReceipts.length === 0 && (
                           <tr>
                             <td colSpan="8" style={{ textAlign: 'center', padding: '24px', color: '#64748B' }}>No Goods Receipt Notes created yet.</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* PROCUREMENT TICKETS VIEW */}
+            {procurementSubTab === 'tickets' && (
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#1E293B', margin: 0 }}>Replenishment Tickets</h3>
+                </div>
+
+                <div className="glass-card">
+                  <div style={{ overflowX: 'auto' }}>
+                    <table className="premium-table">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Medicine</th>
+                          <th>Recorded Stock</th>
+                          <th>Status</th>
+                          <th>Admin Comment</th>
+                          <th>Pharmacy Reason</th>
+                          <th style={{ textAlign: 'center' }}>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {pharmacyTickets.map(ticket => (
+                          <tr key={ticket._id}>
+                            <td style={{ fontWeight: 600, color: '#64748B' }}>{new Date(ticket.createdAt).toLocaleString()}</td>
+                            <td style={{ fontWeight: 800, color: '#0F172A' }}>{ticket.medicineName}</td>
+                            <td style={{ fontWeight: 700, color: '#EF4444' }}>{ticket.currentStock} units</td>
+                            <td>
+                              <span style={{ 
+                                padding: '4px 8px', 
+                                borderRadius: '6px', 
+                                fontSize: '11px', 
+                                fontWeight: 800,
+                                background: ticket.status === 'Resolved' ? '#D1FAE5' : '#FEF3C7',
+                                color: ticket.status === 'Resolved' ? '#065F46' : '#92400E'
+                              }}>
+                                {ticket.status}
+                              </span>
+                            </td>
+                            <td style={{ color: '#475569', fontSize: '12px' }}>{ticket.adminComment}</td>
+                            <td style={{ color: '#059669', fontSize: '12px', fontWeight: 600 }}>{ticket.pharmacyReason || <span style={{ color: '#94A3B8' }}>—</span>}</td>
+                            <td style={{ textAlign: 'center' }}>
+                              {ticket.status === 'Open' ? (
+                                <button 
+                                  className="btn btn-primary" 
+                                  style={{ padding: '6px 12px', fontSize: '12px', cursor: 'pointer', background: '#D97706', border: 'none', color: 'white', fontWeight: 700, borderRadius: '6px' }}
+                                  onClick={() => {
+                                    setSelectedTicket(ticket);
+                                    setTicketResolutionReason('');
+                                    setShowResolveTicketModal(true);
+                                  }}
+                                >
+                                  Resolve
+                                </button>
+                              ) : (
+                                <span style={{ color: '#94A3B8', fontWeight: 600, fontSize: '12px' }}>Completed</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                        {pharmacyTickets.length === 0 && (
+                          <tr>
+                            <td colSpan="7" style={{ textAlign: 'center', padding: '24px', color: '#64748B' }}>No replenishment tickets raised yet.</td>
                           </tr>
                         )}
                       </tbody>
@@ -6860,6 +6967,7 @@ const PharmacyDashboard = () => {
                               <td style={{ padding: '8px 12px' }}>
                                 <input 
                                   type="number" 
+                                  min="0"
                                   value={qty} 
                                   onChange={e => {
                                     const updated = [...grnItems];
@@ -7104,6 +7212,63 @@ const PharmacyDashboard = () => {
                   style={{ flex: 2, height: '44px', fontWeight: 800, borderRadius: '8px', background: (grnItems.length > 0 && (grnFlowType === 'po' || grnInvoiceFileName)) ? '#059669' : '#CBD5E1', color: 'white', border: 'none', cursor: (grnItems.length > 0 && (grnFlowType === 'po' || grnInvoiceFileName)) ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
                   Submit & Verify Goods Note
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: RESOLVE REPLENISHMENT TICKET */}
+      {showResolveTicketModal && selectedTicket && (
+        <div className="modal-overlay" data-lenis-prevent style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999 }} onClick={() => setShowResolveTicketModal(false)}>
+          <div className="modal-box glass-card" style={{ width: '95%', maxWidth: '500px', background: 'white', padding: '28px', borderRadius: '16px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', position: 'relative' }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #F1F5F9', paddingBottom: '12px' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: 900, color: '#0F172A', margin: 0 }}>Resolve Replenishment Ticket</h2>
+              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B' }} onClick={() => setShowResolveTicketModal(false)}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+
+            <form onSubmit={handleResolveTicket}>
+              <div style={{ marginBottom: '16px' }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748B', display: 'block', marginBottom: '4px' }}>MEDICINE NAME</span>
+                <span style={{ fontSize: '16px', fontWeight: 800, color: '#0F172A' }}>{selectedTicket.medicineName}</span>
+              </div>
+
+              <div style={{ marginBottom: '16px' }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748B', display: 'block', marginBottom: '4px' }}>ADMIN COMMENT</span>
+                <p style={{ fontSize: '13px', color: '#334155', background: '#F8FAFC', padding: '10px', borderRadius: '8px', border: '1px solid #E2E8F0', margin: 0 }}>{selectedTicket.adminComment}</p>
+              </div>
+
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ fontSize: '13px', fontWeight: 800, color: '#1E293B', display: 'block', marginBottom: '6px' }}>
+                  Resolution / Sourcing Reason <span style={{ color: '#EF4444' }}>*</span>
+                </label>
+                <textarea
+                  className="form-control"
+                  required
+                  rows="4"
+                  placeholder="e.g. Sourced 100 units from Satyam Distributors. Stock replenished."
+                  value={ticketResolutionReason}
+                  onChange={(e) => setTicketResolutionReason(e.target.value)}
+                  style={{ width: '100%', padding: '10px', fontSize: '13px', borderRadius: '8px', border: '1px solid #CBD5E1', outline: 'none', resize: 'vertical' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowResolveTicketModal(false)}
+                  style={{ height: '38px', padding: '0 16px', borderRadius: '8px', border: '1px solid #CBD5E1', background: 'white', fontWeight: 700, cursor: 'pointer', color: '#475569' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{ height: '38px', padding: '0 20px', borderRadius: '8px', border: 'none', background: '#059669', color: 'white', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  Resolve & Add Stock
                 </button>
               </div>
             </form>

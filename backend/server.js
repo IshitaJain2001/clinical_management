@@ -29,6 +29,7 @@ const returnRoutes = require("./routes/returnRoutes");
 const superAdminRoutes = require("./routes/superAdminRoutes");
 const emrRoutes = require("./routes/emrRoutes");
 const labTestRoutes = require("./routes/labTestRoutes");
+const pharmacyTicketRoutes = require("./routes/pharmacyTicketRoutes");
 const clinicalServiceRoutes = require("./routes/clinicalServiceRoutes");
 
 const app = express();
@@ -204,6 +205,7 @@ app.use("/api/returns", checkModule("inventory"), returnRoutes);
 app.use("/api/superadmin", superAdminRoutes);
 app.use("/api/emr", checkModule("doctor"), emrRoutes);
 app.use("/api/clinical-services", clinicalServiceRoutes);
+app.use("/api/pharmacy-tickets", pharmacyTicketRoutes);
 
 // Create HTTP server and initialize socket.io
 const http = require("http").createServer(app);

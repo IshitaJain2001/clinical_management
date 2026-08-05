@@ -1534,18 +1534,25 @@ const AdminDashboard = () => {
     setError('');
     setSuccess('');
     try {
-      if (alertItem.department === 'Pharmacy') {
-        const currentQty = alertItem.rawItem.stock || 0;
-        await api.put(`/medicines/${alertItem._id}`, { stock: currentQty + 100 });
+      if (alertItem.department === 'Pharmacy' || alertItem.department === 'pharmacy') {
+        const currentQty = alertItem.stock || 0;
+        await api.post('/pharmacy-tickets', {
+          alertId: `alert-${alertItem._id}-${Date.now()}`,
+          medicineId: alertItem._id,
+          medicineName: alertItem.name,
+          currentStock: currentQty,
+          adminComment: `Stock critically low (${currentQty}). Placed replenishment ticket request.`
+        });
+        setSuccess(`Replenishment ticket raised for Pharmacy department!`);
       } else {
         await api.put(`/lab-inventory/${alertItem._id}`, { isRestock: true, addQty: 100 });
+        setSuccess(`Replenished stock for ${alertItem.name} successfully!`);
       }
-      setSuccess(`Replenished stock for ${alertItem.name} successfully!`);
       fetchInventoryAlerts();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       console.error(err);
-      setError('Failed to replenish stock');
+      setError(alertItem.department === 'Pharmacy' ? 'Failed to raise ticket' : 'Failed to replenish stock');
       setTimeout(() => setError(''), 3000);
     } finally {
       setLoading(false);
