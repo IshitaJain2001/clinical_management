@@ -2160,7 +2160,7 @@ const AdminDashboard = () => {
         description: ca.subtext || 'Stock issue detected.',
         department: ca.title.includes('Lab') ? 'Laboratory' : 'Pharmacy',
         owner: ca.title.includes('Lab') ? 'Lab Head' : 'Pharmacy Head',
-        timestamp: now,
+        timestamp: ca.rawItem?.createdAt || now,
         actionText: 'Review Stock',
       });
     });
@@ -2191,7 +2191,7 @@ const AdminDashboard = () => {
         description: wa.subtext || 'Requires attention.',
         department: wa.title?.toLowerCase().includes('lab') ? 'Laboratory' : 'Admin',
         owner: 'Admin',
-        timestamp: now,
+        timestamp: wa.rawItem?.createdAt || now,
         actionText: wa.actionText || 'Review',
       });
     });
