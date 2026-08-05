@@ -505,26 +505,12 @@ export default function EmployeeDirectoryView({
           className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn hr-modal-overlay" 
           style={{ zIndex: 99999 }}
         >
-          <div 
-            className="bg-white rounded-2xl shadow-xl border border-slate-100 max-w-2xl w-full p-6 relative hr-admin-modal max-h-[90vh] overflow-y-auto" 
-            style={{ animation: 'adminFadeIn 0.2s ease-out' }}
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100 sticky top-0 bg-white z-10">
-              <span className="text-lg font-display font-bold text-slate-800">Onboard New Hospital Staff</span>
-              <button 
-                type="button"
-                className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors" 
-                onClick={() => { setIsAdding(false); resetForm(); }}
-                title="Close form"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
             <form 
               onSubmit={handleCreateEmployee}
               autoComplete="off"
+              className="bg-white rounded-2xl shadow-xl border border-slate-100 max-w-2xl w-full relative hr-admin-modal max-h-[90vh] flex flex-col"
+              style={{ animation: 'adminFadeIn 0.2s ease-out' }}
+              onClick={e => e.stopPropagation()}
               onInvalidCapture={(e) => {
                 const target = e.target;
                 if (target) {
@@ -532,6 +518,19 @@ export default function EmployeeDirectoryView({
                 }
               }}
             >
+              <div className="flex items-center justify-between p-6 pb-4 border-b border-slate-100 bg-white">
+                <span className="text-lg font-display font-bold text-slate-800">Onboard New Hospital Staff</span>
+                <button 
+                  type="button"
+                  className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors" 
+                  onClick={() => { setIsAdding(false); resetForm(); }}
+                  title="Close form"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-6 space-y-4" style={{ maxHeight: 'calc(90vh - 160px)' }}>
               {error && (
                 <div id="staff-form-error" style={{
                   gridColumn: 'span 2',
@@ -551,7 +550,7 @@ export default function EmployeeDirectoryView({
                   <span>{error}</span>
                 </div>
               )}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
                 
                 {/* Full name */}
                 <div className="admin-input-group">
@@ -952,9 +951,10 @@ export default function EmployeeDirectoryView({
                     className="admin-text-input" 
                   />
                 </div>
+                </div>
               </div>
 
-              <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100 sticky bottom-0 bg-white z-10">
+              <div className="flex justify-end gap-3 p-6 pt-4 border-t border-slate-100 bg-white">
                 <button 
                   type="button" 
                   disabled={isSubmitting}
@@ -981,7 +981,6 @@ export default function EmployeeDirectoryView({
                 </button>
               </div>
             </form>
-          </div>
         </div>
       , document.body)}
 
