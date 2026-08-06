@@ -1569,7 +1569,7 @@ const PharmacyDashboard = () => {
               width: 210mm;
               height: 297mm;
               z-index: -1;
-              object-fit: cover;
+              object-fit: contain;
             }
             .header { display: flex; justify-content: space-between; border-bottom: 2px solid #E2E8F0; padding-bottom: 20px; margin-bottom: 20px; }
             .title { font-size: 24px; font-weight: 800; color: #2563EB; }

@@ -9257,7 +9257,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                   width: 210mm !important;
                   height: 297mm !important;
                   z-index: -1 !important;
-                  object-fit: cover !important;
+                  object-fit: contain !important;
                   display: block !important;
                 }
                 .print-only {
