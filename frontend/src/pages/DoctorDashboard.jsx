@@ -9243,7 +9243,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                   min-height: 100% !important;
                   width: 100% !important;
                   overflow: hidden !important;
-                  padding: 30mm 15mm 20mm 15mm !important;
+                  padding: 50mm 15mm 20mm 15mm !important;
                   border-radius: 0 !important;
                   background: transparent !important;
                 }
