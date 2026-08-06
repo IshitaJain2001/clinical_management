@@ -606,6 +606,7 @@ const SuperAdminDashboard = () => {
   const [plans, setPlans] = useState([]);
   const [isOnboardingWizardOpen, setIsOnboardingWizardOpen] = useState(false);
   const [isActivating, setIsActivating] = useState(false);
+  const [isExitingWizard, setIsExitingWizard] = useState(false);
   const [wizardHospital, setWizardHospital] = useState(null);
   const [wizardStep, setWizardStep] = useState(1);
   const [isDraftSaved, setIsDraftSaved] = useState(false);
@@ -2352,6 +2353,10 @@ const SuperAdminDashboard = () => {
       const token = localStorage.getItem('token');
       const stepToUse = customStep !== null ? customStep : wizardStep;
       
+      if (exitAfterSaving) {
+        setIsExitingWizard(true);
+      }
+
       const panGstVal = (wizardHospital.panNumber?.trim() && wizardHospital.gstin?.trim()) ? 'Approved' : 'Pending';
       const entityVal = (wizardHospital.corpId?.trim() && wizardHospital.signatoryName?.trim()) ? 'Approved' : 'Pending';
       const sandboxVal = (wizardHospital.sandboxDbUrl?.trim() && wizardHospital.sandboxDbUrl !== 'Pending Provisioning...') ? 'Approved' : 'Pending';
@@ -2416,6 +2421,10 @@ const SuperAdminDashboard = () => {
         console.error(err);
         showToast('Error saving onboarding draft.', 'error');
         return false;
+      } finally {
+        if (exitAfterSaving) {
+          setIsExitingWizard(false);
+        }
       }
     };
 
@@ -2783,10 +2792,43 @@ const SuperAdminDashboard = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <button 
               onClick={() => saveWizardDraft(true)}
-              style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: '1px solid #CBD5E1', borderRadius: '6px', padding: '6px 12px', cursor: 'pointer', fontSize: '12px', fontWeight: 600, color: '#475569' }}
+              disabled={isExitingWizard}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '6px', 
+                background: 'none', 
+                border: '1px solid #CBD5E1', 
+                borderRadius: '6px', 
+                padding: '6px 12px', 
+                cursor: isExitingWizard ? 'not-allowed' : 'pointer', 
+                fontSize: '12px', 
+                fontWeight: 600, 
+                color: '#475569',
+                opacity: isExitingWizard ? 0.7 : 1
+              }}
             >
-              <LucideIcon name="arrow-left" style={{ width: '14px', height: '14px' }} />
-              Exit
+              {isExitingWizard ? (
+                <>
+                  <span 
+                    className="animate-spin" 
+                    style={{ 
+                      width: '12px', 
+                      height: '12px', 
+                      border: '2px solid #64748B', 
+                      borderTopColor: 'transparent', 
+                      borderRadius: '50%', 
+                      display: 'inline-block' 
+                    }} 
+                  />
+                  Exiting...
+                </>
+              ) : (
+                <>
+                  <LucideIcon name="arrow-left" style={{ width: '14px', height: '14px' }} />
+                  Exit
+                </>
+              )}
             </button>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -7252,6 +7294,8 @@ const SuperAdminDashboard = () => {
                                 onChange={async (nextEnabled) => {
                                   const token = localStorage.getItem('token');
                                   const updatedModules = { ...hosp.modules, [mod]: { enabled: nextEnabled, lastMod: new Date().toLocaleDateString() } };
+                                  // Optimistically update frontend state
+                                  setHospitals(prev => prev.map(h => h._id === hosp._id ? { ...h, modules: updatedModules } : h));
                                   try {
                                     const res = await fetch(`/api/superadmin/hospitals/${hosp._id}`, {
                                       method: 'PUT',
@@ -7261,8 +7305,15 @@ const SuperAdminDashboard = () => {
                                     if (res.ok) {
                                       const updated = await res.json();
                                       setHospitals(prev => prev.map(h => h._id === hosp._id ? updated : h));
+                                    } else {
+                                      // Rollback on failure
+                                      setHospitals(prev => prev.map(h => h._id === hosp._id ? hosp : h));
                                     }
-                                  } catch (err) { console.error(err); }
+                                  } catch (err) { 
+                                    console.error(err); 
+                                    // Rollback on failure
+                                    setHospitals(prev => prev.map(h => h._id === hosp._id ? hosp : h));
+                                  }
                                 }}
                               />
                             </div>
@@ -7282,6 +7333,8 @@ const SuperAdminDashboard = () => {
                             onChange={async (val) => {
                               const token = localStorage.getItem('token');
                               const updatedLimits = { ...hosp.limits, staffLimit: val };
+                              // Optimistically update frontend state
+                              setHospitals(prev => prev.map(h => h._id === hosp._id ? { ...h, limits: updatedLimits } : h));
                               try {
                                 const res = await fetch(`/api/superadmin/hospitals/${hosp._id}`, {
                                   method: 'PUT',
@@ -7291,8 +7344,15 @@ const SuperAdminDashboard = () => {
                                 if (res.ok) {
                                   const updated = await res.json();
                                   setHospitals(prev => prev.map(h => h._id === hosp._id ? updated : h));
+                                } else {
+                                  // Rollback on failure
+                                  setHospitals(prev => prev.map(h => h._id === hosp._id ? hosp : h));
                                 }
-                              } catch (err) { console.error(err); }
+                              } catch (err) { 
+                                console.error(err); 
+                                // Rollback on failure
+                                setHospitals(prev => prev.map(h => h._id === hosp._id ? hosp : h));
+                              }
                             }}
                           />
 
@@ -7304,6 +7364,8 @@ const SuperAdminDashboard = () => {
                             onChange={async (val) => {
                               const token = localStorage.getItem('token');
                               const updatedLimits = { ...hosp.limits, storageLimit: val };
+                              // Optimistically update frontend state
+                              setHospitals(prev => prev.map(h => h._id === hosp._id ? { ...h, limits: updatedLimits } : h));
                               try {
                                 const res = await fetch(`/api/superadmin/hospitals/${hosp._id}`, {
                                   method: 'PUT',
@@ -7313,8 +7375,15 @@ const SuperAdminDashboard = () => {
                                 if (res.ok) {
                                   const updated = await res.json();
                                   setHospitals(prev => prev.map(h => h._id === hosp._id ? updated : h));
+                                } else {
+                                  // Rollback on failure
+                                  setHospitals(prev => prev.map(h => h._id === hosp._id ? hosp : h));
                                 }
-                              } catch (err) { console.error(err); }
+                              } catch (err) { 
+                                console.error(err); 
+                                // Rollback on failure
+                                setHospitals(prev => prev.map(h => h._id === hosp._id ? hosp : h));
+                              }
                             }}
                           />
                         </div>
