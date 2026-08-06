@@ -1556,20 +1556,21 @@ const PharmacyDashboard = () => {
             }
             body { font-family: 'Outfit', sans-serif; color: #1E293B; margin: 0; padding: 0; background: white; }
             .invoice-container {
-              width: 210mm;
-              min-height: 297mm;
+              width: 100%;
+              min-height: 100%;
               box-sizing: border-box;
               padding: 40mm 20mm 30mm 20mm; /* Space for letterhead */
               position: relative;
             }
             .print-letterhead-bg {
-              position: fixed;
+              position: absolute;
               top: 0;
               left: 0;
-              width: 210mm;
-              height: 297mm;
+              width: 100%;
+              height: 100%;
               z-index: -1;
               object-fit: contain;
+              object-position: center top;
             }
             .header { display: flex; justify-content: space-between; border-bottom: 2px solid #E2E8F0; padding-bottom: 20px; margin-bottom: 20px; }
             .title { font-size: 24px; font-weight: 800; color: #2563EB; }
@@ -1584,8 +1585,8 @@ const PharmacyDashboard = () => {
             .print-only { display: block; }
             @media print {
               body * { visibility: hidden; }
-              .invoice-container, .invoice-container * { visibility: visible; }
-              .invoice-container { position: absolute; left: 0; top: 0; }
+              .invoice-container, .invoice-container *, .print-letterhead-bg { visibility: visible; }
+              .invoice-container { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
             }
           </style>
         </head>

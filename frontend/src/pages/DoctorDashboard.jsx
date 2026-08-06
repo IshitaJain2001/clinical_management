@@ -9219,9 +9219,9 @@ I have scanned the medical reference databases, but couldn't find a direct match
                   position: absolute !important;
                   left: 0 !important;
                   top: 0 !important;
-                  width: 210mm !important;
-                  height: auto !important;
-                  min-height: 297mm !important;
+                  width: 100% !important;
+                  height: 100% !important;
+                  min-height: 100% !important;
                   background: transparent !important;
                   backdrop-filter: none !important;
                   padding: 0 !important;
@@ -9236,8 +9236,8 @@ I have scanned the medical reference databases, but couldn't find a direct match
                   border: none !important;
                   box-shadow: none !important;
                   max-height: none !important;
-                  min-height: 297mm !important;
-                  width: 210mm !important;
+                  min-height: 100% !important;
+                  width: 100% !important;
                   overflow: hidden !important;
                   padding: 30mm 15mm 20mm 15mm !important;
                   border-radius: 0 !important;
@@ -9251,13 +9251,14 @@ I have scanned the medical reference databases, but couldn't find a direct match
                   background: transparent !important;
                 }
                 .print-letterhead-bg {
-                  position: fixed !important;
+                  position: absolute !important;
                   top: 0 !important;
                   left: 0 !important;
-                  width: 210mm !important;
-                  height: 297mm !important;
+                  width: 100% !important;
+                  height: 100% !important;
                   z-index: -1 !important;
                   object-fit: contain !important;
+                  object-position: center top !important;
                   display: block !important;
                 }
                 .print-only {
