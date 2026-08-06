@@ -859,7 +859,7 @@ router.post('/hospitals', async (req, res) => {
             <p style="margin: 12px 0 0 0; font-size: 12px; color: #6366F1;">Please log in and update your password immediately for safety.</p>
           </div>
           <div style="text-align: center;">
-            <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/login" style="background: #4F46E5; color: #FFFFFF; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 13px; display: inline-block;">Log In to Dashboard</a>
+            <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/admin" style="background: #4F46E5; color: #FFFFFF; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 13px; display: inline-block;">Log In to Dashboard</a>
           </div>
         </div>
       `;
@@ -1005,7 +1005,7 @@ router.put('/hospitals/:id/admin', async (req, res) => {
             ${adminPassword ? `<p style="margin: 4px 0; font-size: 13px; color: #78350F;"><strong>New Password:</strong> ${adminPassword}</p>` : `<p style="margin: 4px 0; font-size: 13px; color: #78350F;"><em>Password was not modified</em></p>`}
           </div>
           <div style="text-align: center;">
-            <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/login" style="background: #4F46E5; color: #FFFFFF; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 13px; display: inline-block;">Log In to Dashboard</a>
+            <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/admin" style="background: #4F46E5; color: #FFFFFF; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 13px; display: inline-block;">Log In to Dashboard</a>
           </div>
         </div>
       `;
