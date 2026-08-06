@@ -2629,6 +2629,10 @@ const DoctorDashboard = () => {
       showToastNotification("Please select a patient first.", "error");
       return;
     }
+    if (!diagnosisText || diagnosisText.trim() === '') {
+      showToastNotification("Clinical Requirement: Primary Diagnosis is mandatory to finalize and lock the encounter.", "error");
+      return;
+    }
     if (!consentGiven && !emergencyBypassActive) {
       showToastNotification("DPDP Compliance error: Patient consent is required to lock record. Use Break-Glass override for emergencies.", "error");
       return;
@@ -9254,8 +9258,10 @@ I have scanned the medical reference databases, but couldn't find a direct match
                   position: fixed !important;
                   top: 0 !important;
                   left: 0 !important;
-                  width: 100vw !important;
-                  height: 100vh !important;
+                  right: 0 !important;
+                  bottom: 0 !important;
+                  width: 100% !important;
+                  height: 100% !important;
                   z-index: -1 !important;
                   object-fit: contain !important;
                   object-position: center top !important;
