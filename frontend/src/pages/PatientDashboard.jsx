@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import { convertPdfToImage } from '../utils/pdfHelper';
 
 // Safeguard React DOM reconciliation against external DOM mutations (e.g. Lucide CDN node replacement)
 if (typeof window !== 'undefined') {
@@ -953,6 +954,9 @@ const PatientDashboard = () => {
         const apiURL = import.meta.env.VITE_API_URL || '';
         const backendBase = apiURL ? apiURL.replace('/api', '') : 'http://localhost:5000';
         letterheadUrl = `${backendBase}${letterheadUrl}`;
+      }
+      if (letterheadUrl) {
+        letterheadUrl = await convertPdfToImage(letterheadUrl);
       }
 
       const printWindow = window.open('', '_blank');

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import HRPayroll from './HRPayroll';
 import SearchableDropdown from '../components/SearchableDropdown';
+import { convertPdfToImage } from '../utils/pdfHelper';
 
 const permissionNames = {
   'dr-consult': 'Patient consultation notes',
@@ -88,13 +89,27 @@ const PharmacyDashboard = () => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        localStorage.setItem('curoxa_pharmacy_letterhead', reader.result);
-        setCustomPharmacyLetterhead(reader.result);
+      reader.onloadend = async () => {
+        const rawResult = reader.result;
+        const imgUrl = await convertPdfToImage(rawResult);
+        localStorage.setItem('curoxa_pharmacy_letterhead', imgUrl);
+        setCustomPharmacyLetterhead(imgUrl);
       };
       reader.readAsDataURL(file);
     }
   };
+
+  useEffect(() => {
+    const checkAndConvertExisting = async () => {
+      const stored = localStorage.getItem('curoxa_pharmacy_letterhead');
+      if (stored && (stored.startsWith('data:application/pdf') || stored.endsWith('.pdf') || stored.includes('application/pdf'))) {
+        const imgUrl = await convertPdfToImage(stored);
+        localStorage.setItem('curoxa_pharmacy_letterhead', imgUrl);
+        setCustomPharmacyLetterhead(imgUrl);
+      }
+    };
+    checkAndConvertExisting();
+  }, []);
 
   useEffect(() => {
     if (showProfileEditModal) {

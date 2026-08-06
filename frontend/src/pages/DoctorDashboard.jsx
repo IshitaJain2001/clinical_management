@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api, { setEmergencyBypass, isEmergencyBypassActive } from '../utils/api';
 import PrescriptionMakerTab from './PrescriptionMakerTab';
 import HRPayroll from './HRPayroll';
+import { convertPdfToImage } from '../utils/pdfHelper';
 
 const permissionNames = {
   'dr-consult': 'Patient consultation notes',
@@ -1048,7 +1049,8 @@ const DoctorDashboard = () => {
           letterheadUrl = `${baseClean}${pathClean}`;
         }
         if (letterheadUrl) {
-          setCustomLetterhead(letterheadUrl);
+          const imgUrl = await convertPdfToImage(letterheadUrl);
+          setCustomLetterhead(imgUrl);
         }
       } catch (err) {
         console.warn("Failed to fetch hospital letterhead:", err);
@@ -1114,6 +1116,9 @@ const DoctorDashboard = () => {
         const baseClean = backendBase.endsWith('/') ? backendBase.slice(0, -1) : backendBase;
         const pathClean = letterheadUrl.startsWith('/') ? letterheadUrl : `/${letterheadUrl}`;
         letterheadUrl = `${baseClean}${pathClean}`;
+      }
+      if (letterheadUrl) {
+        letterheadUrl = await convertPdfToImage(letterheadUrl);
       }
 
       const printWindow = window.open('', '_blank');

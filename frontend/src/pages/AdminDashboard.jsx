@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import HRPayroll from './HRPayroll';
+import { convertPdfToImage } from '../utils/pdfHelper';
 
 // Safeguard React DOM reconciliation against external DOM mutations
 if (typeof window !== 'undefined') {
@@ -140,7 +141,8 @@ const AdminDashboard = () => {
           if (res.data && res.data.letterheadUrl) {
             const absoluteUrl = getAbsoluteUrl(res.data.letterheadUrl);
             setLetterheadUrl(absoluteUrl);
-            setLetterheadPreviewImage(absoluteUrl);
+            const imgPreview = await convertPdfToImage(absoluteUrl);
+            setLetterheadPreviewImage(imgPreview);
           } else {
             setLetterheadUrl('');
             setLetterheadPreviewImage(null);
@@ -168,7 +170,8 @@ const AdminDashboard = () => {
       if (res.data && res.data.letterheadUrl) {
         const absoluteUrl = getAbsoluteUrl(res.data.letterheadUrl);
         setLetterheadUrl(absoluteUrl);
-        setLetterheadPreviewImage(absoluteUrl);
+        const imgPreview = await convertPdfToImage(absoluteUrl);
+        setLetterheadPreviewImage(imgPreview);
         showToast("Letterhead uploaded successfully!", "success");
       }
     } catch (err) {
@@ -10023,20 +10026,15 @@ const AdminDashboard = () => {
                     padding: '10px'
                   }}>
                     {letterheadPreviewImage ? (
-                      (letterheadPreviewImage.toLowerCase().endsWith('.pdf') || 
-                       letterheadPreviewImage.toLowerCase().includes('.pdf') || 
-                       letterheadPreviewImage.toLowerCase().includes('application/pdf') || 
-                       letterheadPreviewImage.startsWith('data:application/pdf')) ? (
-                        <div style={{ textAlign: 'center' }}>
-                          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                          <div style={{ fontSize: '13px', fontWeight: 700, color: '#334155', marginTop: '10px' }}>Letterhead PDF Uploaded</div>
-                          {letterheadBlobUrl && (
-                            <a href={letterheadBlobUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: '#2563EB', textDecoration: 'underline', marginTop: '4px', display: 'block' }}>View Uploaded PDF</a>
-                          )}
-                        </div>
-                      ) : (
-                        <img src={letterheadPreviewImage} alt="Letterhead Preview" style={{ maxWidth: '100%', maxHeight: '380px', borderRadius: '8px', objectFit: 'contain', border: '1px solid #E2E8F0' }} />
-                      )
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                        <img src={letterheadPreviewImage} alt="Letterhead Preview" style={{ maxWidth: '100%', maxHeight: '340px', borderRadius: '8px', objectFit: 'contain', border: '1px solid #E2E8F0' }} />
+                        {letterheadUrl && (letterheadUrl.toLowerCase().endsWith('.pdf') || letterheadUrl.toLowerCase().includes('.pdf') || letterheadUrl.toLowerCase().includes('application/pdf') || letterheadUrl.startsWith('data:application/pdf')) && (
+                          <a href={letterheadUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: '#2563EB', textDecoration: 'underline', marginTop: '8px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            View Original PDF Letterhead
+                          </a>
+                        )}
+                      </div>
                     ) : (
                       <span style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 600 }}>No letterhead uploaded yet. Fallback template active.</span>
                     )}
