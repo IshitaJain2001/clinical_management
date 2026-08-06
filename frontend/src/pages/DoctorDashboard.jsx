@@ -9220,7 +9220,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                   left: 0 !important;
                   top: 0 !important;
                   width: 100% !important;
-                  height: 100% !important;
+                  height: auto !important;
                   min-height: 100% !important;
                   background: transparent !important;
                   backdrop-filter: none !important;
@@ -9251,11 +9251,11 @@ I have scanned the medical reference databases, but couldn't find a direct match
                   background: transparent !important;
                 }
                 .print-letterhead-bg {
-                  position: absolute !important;
+                  position: fixed !important;
                   top: 0 !important;
                   left: 0 !important;
-                  width: 100% !important;
-                  height: 100% !important;
+                  width: 100vw !important;
+                  height: 100vh !important;
                   z-index: -1 !important;
                   object-fit: contain !important;
                   object-position: center top !important;
