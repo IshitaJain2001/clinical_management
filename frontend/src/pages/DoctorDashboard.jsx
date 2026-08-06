@@ -1171,7 +1171,7 @@ const DoctorDashboard = () => {
               box-sizing: border-box;
               position: relative;
               box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-              ${letterheadUrl ? `
+              ${letterheadUrl && !(letterheadUrl.startsWith('data:application/pdf') || letterheadUrl.endsWith('.pdf') || letterheadUrl.includes('application/pdf')) ? `
                 background-image: url('${letterheadUrl}');
                 background-size: contain;
                 background-repeat: no-repeat;
@@ -1183,6 +1183,8 @@ const DoctorDashboard = () => {
               padding-bottom: 100px;
               padding-left: 60px;
               padding-right: 60px;
+              position: relative;
+              z-index: 10;
             }
             .header-info {
               display: flex;
@@ -1236,6 +1238,9 @@ const DoctorDashboard = () => {
         </head>
         <body>
           <div class="page-container">
+            ${letterheadUrl && (letterheadUrl.startsWith('data:application/pdf') || letterheadUrl.endsWith('.pdf') || letterheadUrl.includes('application/pdf')) ? `
+              <embed src="${letterheadUrl}" type="application/pdf" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; border: none;" />
+            ` : ''}
             <div class="content-area">
               ${!letterheadUrl ? `
                 <div class="header-info">
@@ -9261,7 +9266,11 @@ I have scanned the medical reference databases, but couldn't find a direct match
             `}} />
             
             {customLetterhead ? (
-              <img src={customLetterhead} className="print-letterhead-bg" alt="Letterhead" />
+              customLetterhead.startsWith('data:application/pdf') || customLetterhead.endsWith('.pdf') || customLetterhead.includes('application/pdf') ? (
+                <embed src={customLetterhead} type="application/pdf" className="print-letterhead-bg" style={{ border: 'none' }} />
+              ) : (
+                <img src={customLetterhead} className="print-letterhead-bg" alt="Letterhead" />
+              )
             ) : (
               <div className="print-only" style={{ position: 'fixed', top: 0, left: 0, width: '210mm', height: '25mm', background: '#0F172A', color: 'white', padding: '5mm 15mm', boxSizing: 'border-box', zIndex: -1 }}>
                 <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 900 }}>CUROXA HOSPITAL</h1>
@@ -9269,7 +9278,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
               </div>
             )}
 
-            <div className="glass-card" style={{ width: '100%', maxWidth: '850px', background: 'white', padding: '0', borderRadius: '16px', maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', border: '1px solid #E2E8F0' }}>
+            <div className="glass-card" style={{ width: '100%', maxWidth: '850px', background: 'white', padding: '0', borderRadius: '16px', maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', border: '1px solid #E2E8F0', position: 'relative', zIndex: 10 }}>
               
               {/* Modal Header */}
               <div style={{ background: 'linear-gradient(135deg, #10B981, #059669)', padding: '20px 24px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>

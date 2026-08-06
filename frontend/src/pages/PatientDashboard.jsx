@@ -1012,7 +1012,7 @@ const PatientDashboard = () => {
               box-sizing: border-box;
               position: relative;
               box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-              ${letterheadUrl ? `
+              ${letterheadUrl && !(letterheadUrl.startsWith('data:application/pdf') || letterheadUrl.endsWith('.pdf') || letterheadUrl.includes('application/pdf')) ? `
                 background-image: url('${letterheadUrl}');
                 background-size: contain;
                 background-repeat: no-repeat;
@@ -1024,6 +1024,8 @@ const PatientDashboard = () => {
               padding-bottom: 100px;
               padding-left: 60px;
               padding-right: 60px;
+              position: relative;
+              z-index: 10;
             }
             .header-info {
               display: flex;
@@ -1077,6 +1079,9 @@ const PatientDashboard = () => {
         </head>
         <body>
           <div class="page-container">
+            ${letterheadUrl && (letterheadUrl.startsWith('data:application/pdf') || letterheadUrl.endsWith('.pdf') || letterheadUrl.includes('application/pdf')) ? `
+              <embed src="${letterheadUrl}" type="application/pdf" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; border: none;" />
+            ` : ''}
             <div class="content-area">
               ${!letterheadUrl ? `
                 <div class="header-info">

@@ -82,6 +82,19 @@ const PharmacyDashboard = () => {
   const [profileEditLoading, setProfileEditLoading] = useState(false);
   const [profileError, setProfileError] = useState('');
   const [profileSuccess, setProfileSuccess] = useState('');
+  const [customPharmacyLetterhead, setCustomPharmacyLetterhead] = useState(() => localStorage.getItem('curoxa_pharmacy_letterhead') || null);
+
+  const handlePharmacyLetterheadUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        localStorage.setItem('curoxa_pharmacy_letterhead', reader.result);
+        setCustomPharmacyLetterhead(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   useEffect(() => {
     if (showProfileEditModal) {
@@ -1562,13 +1575,19 @@ const PharmacyDashboard = () => {
           </style>
         </head>
         <body>
-          ${customPharmacyLetterhead ? `<img src="${customPharmacyLetterhead}" class="print-letterhead-bg" alt="Letterhead" />` : `
+          ${customPharmacyLetterhead ? (
+            customPharmacyLetterhead.startsWith('data:application/pdf') || customPharmacyLetterhead.endsWith('.pdf') || customPharmacyLetterhead.includes('application/pdf') ? `
+              <embed src="${customPharmacyLetterhead}" type="application/pdf" class="print-letterhead-bg" style="border: none;" />
+            ` : `
+              <img src="${customPharmacyLetterhead}" class="print-letterhead-bg" alt="Letterhead" />
+            `
+          ) : `
           <div class="print-only" style="position: fixed; top: 0; left: 0; width: 210mm; height: 25mm; background: #0F172A; color: white; padding: 5mm 15mm; box-sizing: border-box; z-index: -1;">
             <h1 style="margin: 0; font-size: 20px; font-weight: 900;">CUROXA PHARMACY</h1>
             <p style="margin: 0; font-size: 10px; opacity: 0.8;">Premium Healthcare EMR System</p>
           </div>
           `}
-          <div class="invoice-container">
+          <div class="invoice-container" style="position: relative; z-index: 10;">
             ${!customPharmacyLetterhead ? `
             <div class="header">
               <div>
