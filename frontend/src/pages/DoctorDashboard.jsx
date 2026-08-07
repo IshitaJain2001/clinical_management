@@ -3448,15 +3448,10 @@ const DoctorDashboard = () => {
               page.className = 'page-container';
               
               if (customLetterhead) {
-                const bg = document.createElement('img');
-                bg.src = customLetterhead;
-                bg.style.position = 'absolute';
-                bg.style.top = '0';
-                bg.style.left = '0';
-                bg.style.width = '210mm';
-                bg.style.height = '297mm';
-                bg.style.zIndex = '-1';
-                page.appendChild(bg);
+                page.style.backgroundImage = 'url(' + customLetterhead + ')';
+                page.style.backgroundSize = 'contain';
+                page.style.backgroundPosition = 'center top';
+                page.style.backgroundRepeat = 'no-repeat';
               }
               
               const header = headerTemplate.cloneNode(true);
