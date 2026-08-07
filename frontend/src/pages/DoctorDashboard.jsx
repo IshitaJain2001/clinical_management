@@ -1411,6 +1411,7 @@ const DoctorDashboard = () => {
               page.className = 'page-container';
               
               const header = headerTemplate.cloneNode(true);
+              header.removeAttribute('id');
               header.style.display = 'block';
               
               const contentArea = document.createElement('div');
@@ -1418,6 +1419,7 @@ const DoctorDashboard = () => {
               contentArea.style.marginTop = '10px';
               
               const footer = footerTemplate.cloneNode(true);
+              footer.removeAttribute('id');
               footer.style.display = 'block';
               footer.style.position = 'absolute';
               footer.style.bottom = '15mm';
@@ -3433,6 +3435,7 @@ const DoctorDashboard = () => {
               page.className = 'page-container';
               
               const header = headerTemplate.cloneNode(true);
+              header.removeAttribute('id');
               header.style.display = 'block';
               
               const contentArea = document.createElement('div');
@@ -3440,6 +3443,7 @@ const DoctorDashboard = () => {
               contentArea.style.marginTop = '10px';
               
               const footer = footerTemplate.cloneNode(true);
+              footer.removeAttribute('id');
               footer.style.display = 'block';
               footer.style.position = 'absolute';
               footer.style.bottom = '15mm';
