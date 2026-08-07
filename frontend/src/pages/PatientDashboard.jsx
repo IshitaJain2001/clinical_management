@@ -137,8 +137,24 @@ const HOSPITALS = [
 
 const getHospitalDetails = (tenantId) => {
   const match = HOSPITALS.find(h => h.id === tenantId);
-  return match || { 
-    name: tenantId ? tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'General Hospital',
+  if (match) return match;
+
+  let dynamicName = 'General Hospital';
+  try {
+    const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+    if (storedUser && storedUser.tenantId === tenantId && storedUser.tenantName) {
+      dynamicName = storedUser.tenantName;
+    } else if (tenantId) {
+      dynamicName = tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    }
+  } catch (e) {
+    if (tenantId) {
+      dynamicName = tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    }
+  }
+
+  return { 
+    name: dynamicName,
     location: 'Universal Network', 
     contact: '+1 800 555 0100',
     description: 'Affiliated clinic in the universal medical network.',
@@ -990,6 +1006,7 @@ const PatientDashboard = () => {
       const cleanField = (val) => (val && String(val).trim() !== '') ? String(val).trim() : '—';
       const rxDate = rx.createdAt ? new Date(rx.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
       const doctorObj = rx.doctorId || {};
+      const clinicName = getHospitalDetails(rx.tenantId).name;
 
       const htmlContent = `
         <!DOCTYPE html>
@@ -1044,16 +1061,16 @@ const PatientDashboard = () => {
                 <div style="border: 2px solid #800020; border-radius: 8px; width: 65px; height: 65px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; box-sizing: border-box; flex-shrink: 0;">
                   <span style="font-size: 7px; color: #800020; font-weight: bold; line-height: 1; text-align: center; text-transform: uppercase; letter-spacing: 0.2px;">Care with Devotion</span>
                   <span style="font-family: 'Brush Script MT', 'Lucida Handwriting', cursive, sans-serif; font-size: 20px; color: #800020; font-weight: bold; margin: -2px 0;">
-                    ${rx.tenantId ? rx.tenantId.split('_')[0].charAt(0).toUpperCase() + rx.tenantId.split('_')[0].slice(1, 6) : 'Hospital'}
+                    \${clinicName.split(' ')[0] || 'Hospital'}
                   </span>
                   <span style="font-size: 4px; color: #ffffff; background: #800020; width: 100%; text-align: center; font-weight: bold; padding: 1px 0; border-radius: 2px; text-transform: uppercase;">
-                    ${rx.tenantId ? rx.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital'}
+                    \${clinicName}
                   </span>
                 </div>
                 <div style="flex-grow: 1; text-align: center; padding-right: 65px;">
-                  <h1 style="margin: 0; color: #800020; font-family: 'Outfit', 'Inter', sans-serif; font-size: 20px; font-weight: 900; letter-spacing: 0.5px; line-height: 1.2; text-transform: uppercase;">${rx.tenantId ? rx.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital'}</h1>
-                  <p style="margin: 3px 0; color: #1E293B; font-size: 9px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase;">Official EMR OPD Portal - ${rx.tenantId ? rx.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital'}</p>
-                  <p style="margin: 0; color: #475569; font-size: 8px; font-weight: 600;">Web: ${window.location.origin} &nbsp;&nbsp;•&nbsp;&nbsp; E-mail: info@${rx.tenantId || 'city_hospital'}.com</p>
+                  <h1 style="margin: 0; color: #800020; font-family: 'Outfit', 'Inter', sans-serif; font-size: 20px; font-weight: 900; letter-spacing: 0.5px; line-height: 1.2; text-transform: uppercase;">\${clinicName}</h1>
+                  <p style="margin: 3px 0; color: #1E293B; font-size: 9px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase;">Official EMR OPD Portal - \${clinicName}</p>
+                  <p style="margin: 0; color: #475569; font-size: 8px; font-weight: 600;">Web: \${window.location.origin} &nbsp;&nbsp;•&nbsp;&nbsp; E-mail: info@\${rx.tenantId || 'city_hospital'}.com</p>
                 </div>
               </div>
             `}

@@ -1144,6 +1144,7 @@ const DoctorDashboard = () => {
       window.addEventListener('message', handleMessage);
 
       const cleanField = (val) => (val && String(val).trim() !== '') ? String(val).trim() : '—';
+      const clinicName = user.tenantName || (user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital');
 
       const medicinesHtml = (item.items || []).map((m, idx) => {
         let freq = 'Once a Day';
@@ -1242,16 +1243,16 @@ const DoctorDashboard = () => {
                 <div style="border: 2px solid #800020; border-radius: 8px; width: 65px; height: 65px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; box-sizing: border-box; flex-shrink: 0;">
                   <span style="font-size: 7px; color: #800020; font-weight: bold; line-height: 1; text-align: center; text-transform: uppercase; letter-spacing: 0.2px;">Care with Devotion</span>
                   <span style="font-family: 'Brush Script MT', 'Lucida Handwriting', cursive, sans-serif; font-size: 20px; color: #800020; font-weight: bold; margin: -2px 0;">
-                    ${user.tenantId ? user.tenantId.split('_')[0].charAt(0).toUpperCase() + user.tenantId.split('_')[0].slice(1, 6) : 'Hospital'}
+                    \${clinicName.split(' ')[0] || 'Hospital'}
                   </span>
                   <span style="font-size: 4px; color: #ffffff; background: #800020; width: 100%; text-align: center; font-weight: bold; padding: 1px 0; border-radius: 2px; text-transform: uppercase;">
-                    ${user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital'}
+                    \${clinicName}
                   </span>
                 </div>
                 <div style="flex-grow: 1; text-align: center; padding-right: 65px;">
-                  <h1 style="margin: 0; color: #800020; font-family: 'Outfit', 'Inter', sans-serif; font-size: 20px; font-weight: 900; letter-spacing: 0.5px; line-height: 1.2; text-transform: uppercase;">${user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital'}</h1>
-                  <p style="margin: 3px 0; color: #1E293B; font-size: 9px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase;">Official EMR OPD Portal - ${user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital'}</p>
-                  <p style="margin: 0; color: #475569; font-size: 8px; font-weight: 600;">Web: ${window.location.origin} &nbsp;&nbsp;•&nbsp;&nbsp; E-mail: info@${user.tenantId || 'city_hospital'}.com</p>
+                  <h1 style="margin: 0; color: #800020; font-family: 'Outfit', 'Inter', sans-serif; font-size: 20px; font-weight: 900; letter-spacing: 0.5px; line-height: 1.2; text-transform: uppercase;">\${clinicName}</h1>
+                  <p style="margin: 3px 0; color: #1E293B; font-size: 9px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase;">Official EMR OPD Portal - \${clinicName}</p>
+                  <p style="margin: 0; color: #475569; font-size: 8px; font-weight: 600;">Web: \${window.location.origin} &nbsp;&nbsp;•&nbsp;&nbsp; E-mail: info@\${user.tenantId || 'city_hospital'}.com</p>
                 </div>
               </div>
             `}
@@ -1373,7 +1374,7 @@ const DoctorDashboard = () => {
                 <div style="color: #475569; font-weight: 600; font-size: 10px;">Reg. No. ${user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</div>
                 <div style="color: #800020; font-weight: 800; font-size: 10px; margin-top: 3px; text-transform: uppercase;">(Consultant Physician)</div>
                 <div style="color: #94A3B8; font-size: 9px; margin-top: 3px; font-weight: 550; letter-spacing: 0.2px;">Signature & Seal</div>
-                <div style="color: #800020; font-weight: 800; font-size: 10px; margin-top: 3px; text-transform: uppercase;">${user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital'}</div>
+                <div style="color: #800020; font-weight: 800; font-size: 10px; margin-top: 3px; text-transform: uppercase;">\${clinicName}</div>
               </div>
             </div>
           </div>
@@ -3226,6 +3227,7 @@ const DoctorDashboard = () => {
   const handlePrintSummary = (data) => {
     if (!data) return;
     const { appointment, patient, prescription, labs } = data;
+    const clinicName = user.tenantName || (user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital');
     const iframe = document.createElement('iframe');
     iframe.style.position = 'fixed';
     iframe.style.left = '-9999px';
@@ -3351,16 +3353,16 @@ const DoctorDashboard = () => {
                 <div style="border: 2px solid #800020; border-radius: 8px; width: 65px; height: 65px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; box-sizing: border-box; flex-shrink: 0;">
                   <span style="font-size: 7px; color: #800020; font-weight: bold; line-height: 1; text-align: center; text-transform: uppercase; letter-spacing: 0.2px;">Care with Devotion</span>
                   <span style="font-family: 'Brush Script MT', 'Lucida Handwriting', cursive, sans-serif; font-size: 20px; color: #800020; font-weight: bold; margin: -2px 0;">
-                    ${user.tenantId ? user.tenantId.split('_')[0].charAt(0).toUpperCase() + user.tenantId.split('_')[0].slice(1, 6) : 'Hospital'}
+                    \${clinicName.split(' ')[0] || 'Hospital'}
                   </span>
                   <span style="font-size: 4px; color: #ffffff; background: #800020; width: 100%; text-align: center; font-weight: bold; padding: 1px 0; border-radius: 2px; text-transform: uppercase;">
-                    ${user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital'}
+                    \${clinicName}
                   </span>
                 </div>
                 <div style="flex-grow: 1; text-align: center; padding-right: 65px;">
-                  <h1 style="margin: 0; color: #800020; font-family: 'Outfit', 'Inter', sans-serif; font-size: 20px; font-weight: 900; letter-spacing: 0.5px; line-height: 1.2; text-transform: uppercase;">${user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital'}</h1>
-                  <p style="margin: 3px 0; color: #1E293B; font-size: 9px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase;">Official EMR OPD Portal - ${user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital'}</p>
-                  <p style="margin: 0; color: #475569; font-size: 8px; font-weight: 600;">Web: ${window.location.origin} &nbsp;&nbsp;•&nbsp;&nbsp; E-mail: info@${user.tenantId || 'city_hospital'}.com</p>
+                  <h1 style="margin: 0; color: #800020; font-family: 'Outfit', 'Inter', sans-serif; font-size: 20px; font-weight: 900; letter-spacing: 0.5px; line-height: 1.2; text-transform: uppercase;">\${clinicName}</h1>
+                  <p style="margin: 3px 0; color: #1E293B; font-size: 9px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase;">Official EMR OPD Portal - \${clinicName}</p>
+                  <p style="margin: 0; color: #475569; font-size: 8px; font-weight: 600;">Web: \${window.location.origin} &nbsp;&nbsp;•&nbsp;&nbsp; E-mail: info@\${user.tenantId || 'city_hospital'}.com</p>
                 </div>
               </div>
             `}
@@ -3507,7 +3509,7 @@ const DoctorDashboard = () => {
                 <div style="color: #475569; font-weight: 600; font-size: 10px;">Reg. No. DMC - ${user.staff_id ? (user.staff_id.match(/^\d+$/) ? user.staff_id.slice(-5) : user.staff_id.toUpperCase()) : '12345'}</div>
                 <div style="color: #800020; font-weight: 800; font-size: 10px; margin-top: 3px; text-transform: uppercase;">(Consultant Physician)</div>
                 <div style="color: #94A3B8; font-size: 9px; margin-top: 3px; font-weight: 550; letter-spacing: 0.2px;">Signature & Seal</div>
-                <div style="color: #800020; font-weight: 800; font-size: 10px; margin-top: 3px; text-transform: uppercase;">${user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital'}</div>
+                <div style="color: #800020; font-weight: 800; font-size: 10px; margin-top: 3px; text-transform: uppercase;">\${clinicName}</div>
               </div>
             </div>
           </div>
@@ -9930,15 +9932,15 @@ I have scanned the medical reference databases, but couldn't find a direct match
                       <div style={{ border: '2px solid #800020', borderRadius: '8px', width: '65px', height: '65px', padding: '4px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#ffffff', boxSizing: 'border-box', flexShrink: 0 }}>
                         <span style={{ fontSize: '7px', color: '#800020', fontWeight: 'bold', lineHeight: 1, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.2px' }}>Care with Devotion</span>
                         <span style={{ fontFamily: "'Brush Script MT', 'Lucida Handwriting', cursive, sans-serif", fontSize: '20px', color: '#800020', fontWeight: 'bold', margin: '-2px 0' }}>
-                          {user.tenantId ? user.tenantId.split('_')[0].charAt(0).toUpperCase() + user.tenantId.split('_')[0].slice(1, 6) : 'Hospital'}
+                          {(user.tenantName || user.tenantId || 'Hospital').split(' ')[0]}
                         </span>
                         <span style={{ fontSize: '4px', color: '#ffffff', background: '#800020', width: '100%', textAlign: 'center', fontWeight: 'bold', padding: '1px 0', borderRadius: '2px', textTransform: 'uppercase' }}>
-                          {user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital'}
+                          {user.tenantName || (user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital')}
                         </span>
                       </div>
                       <div style={{ flexGrow: 1, textAlign: 'center', paddingRight: '65px' }}>
-                        <h1 style={{ margin: 0, color: '#800020', fontFamily: "'Outfit', 'Inter', sans-serif", fontSize: '20px', fontWeight: 900, letterSpacing: '0.5px', lineHeight: 1.2, textTransform: 'uppercase' }}>{user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital'}</h1>
-                        <p style={{ margin: '3px 0', color: '#1E293B', fontSize: '9px', fontWeight: 700, letterSpacing: '0.2px', textTransform: 'uppercase' }}>Official EMR OPD Portal - {user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital'}</p>
+                        <h1 style={{ margin: 0, color: '#800020', fontFamily: "'Outfit', 'Inter', sans-serif", fontSize: '20px', fontWeight: 900, letterSpacing: '0.5px', lineHeight: 1.2, textTransform: 'uppercase' }}>{user.tenantName || (user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital')}</h1>
+                        <p style={{ margin: '3px 0', color: '#1E293B', fontSize: '9px', fontWeight: 700, letterSpacing: '0.2px', textTransform: 'uppercase' }}>Official EMR OPD Portal - {user.tenantName || (user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital')}</p>
                         <p style={{ margin: 0, color: '#475569', fontSize: '8px', fontWeight: 600 }}>Web: {window.location.origin} &nbsp;&nbsp;•&nbsp;&nbsp; E-mail: info@{user.tenantId || 'city_hospital'}.com</p>
                       </div>
                     </div>
@@ -9986,15 +9988,15 @@ I have scanned the medical reference databases, but couldn't find a direct match
                       <div style={{ border: '2px solid #800020', borderRadius: '8px', width: '75px', height: '75px', padding: '4px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#ffffff', boxSizing: 'border-box', flexShrink: 0 }}>
                         <span style={{ fontSize: '8px', color: '#800020', fontWeight: 'bold', lineHeight: 1, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Care with Devotion</span>
                         <span style={{ fontFamily: "'Brush Script MT', 'Lucida Handwriting', cursive, sans-serif", fontSize: '26px', color: '#800020', fontWeight: 'bold', margin: '-1px 0' }}>
-                          {user.tenantId ? user.tenantId.split('_')[0].charAt(0).toUpperCase() + user.tenantId.split('_')[0].slice(1, 6) : 'Hospital'}
+                          {(user.tenantName || user.tenantId || 'Hospital').split(' ')[0]}
                         </span>
                         <span style={{ fontSize: '5px', color: '#ffffff', background: '#800020', width: '100%', textAlign: 'center', fontWeight: 'bold', padding: '1.5px 0', borderRadius: '2px', textTransform: 'uppercase' }}>
-                          {user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital'}
+                          {user.tenantName || (user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital')}
                         </span>
                       </div>
                       <div style={{ flexGrow: 1, textAlign: 'center', paddingRight: '75px' }}>
-                        <h1 style={{ margin: 0, color: '#800020', fontFamily: "'Outfit', 'Inter', sans-serif", fontSize: '26px', fontWeight: 900, letterSpacing: '0.5px', textTransform: 'uppercase' }}>{user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital'}</h1>
-                        <p style={{ margin: '5px 0', color: '#1E293B', fontSize: '11.5px', fontWeight: 700, letterSpacing: '0.2px', textTransform: 'uppercase' }}>Official EMR OPD Portal - {user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital'}</p>
+                        <h1 style={{ margin: 0, color: '#800020', fontFamily: "'Outfit', 'Inter', sans-serif", fontSize: '26px', fontWeight: 900, letterSpacing: '0.5px', textTransform: 'uppercase' }}>{user.tenantName || (user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital')}</h1>
+                        <p style={{ margin: '5px 0', color: '#1E293B', fontSize: '11.5px', fontWeight: 700, letterSpacing: '0.2px', textTransform: 'uppercase' }}>Official EMR OPD Portal - {user.tenantName || (user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital')}</p>
                         <p style={{ margin: 0, color: '#475569', fontSize: '10.5px', fontWeight: 600 }}>Web: {window.location.origin} &nbsp;&nbsp;•&nbsp;&nbsp; E-mail: info@{user.tenantId || 'city_hospital'}.com</p>
                       </div>
                     </div>
