@@ -9290,7 +9290,10 @@ I have scanned the medical reference databases, but couldn't find a direct match
                   min-height: 100% !important;
                   width: 100% !important;
                   overflow: hidden !important;
-                  padding: 50mm 15mm 20mm 15mm !important;
+                  padding-top: ${customLetterhead ? '38mm' : '10mm'} !important;
+                  padding-bottom: ${customLetterhead ? '25mm' : '15mm'} !important;
+                  padding-left: 15mm !important;
+                  padding-right: 15mm !important;
                   border-radius: 0 !important;
                   background: transparent !important;
                 }
@@ -9300,6 +9303,30 @@ I have scanned the medical reference databases, but couldn't find a direct match
                   height: auto !important;
                   padding: 0 !important;
                   background: transparent !important;
+                  gap: 12px !important;
+                }
+                .print-prescription-title {
+                  margin: 10px 0 15px 0 !important;
+                }
+                .print-info-grid {
+                  gap: 10px !important;
+                  margin-bottom: 12px !important;
+                }
+                .print-divider {
+                  margin: 10px 0 !important;
+                }
+                .print-diagnosis-box {
+                  margin-bottom: 12px !important;
+                }
+                .print-soap-box {
+                  margin-bottom: 12px !important;
+                }
+                .print-medicines-box {
+                  margin-bottom: 12px !important;
+                }
+                .print-signature-section {
+                  margin-top: 15px !important;
+                  min-height: 80px !important;
                 }
                 .print-letterhead-bg {
                   position: fixed !important;
@@ -9340,7 +9367,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
             <div className="glass-card" style={{ width: '100%', maxWidth: '850px', background: 'white', padding: '0', borderRadius: '16px', maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', border: '1px solid #E2E8F0', position: 'relative', zIndex: 10 }}>
               
               {/* Modal Header */}
-              <div style={{ background: 'linear-gradient(135deg, #10B981, #059669)', padding: '20px 24px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+              <div className="no-print" style={{ background: 'linear-gradient(135deg, #10B981, #059669)', padding: '20px 24px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <i data-lucide="check-circle" style={{ width: '20px', height: '20px' }}></i>
@@ -9384,12 +9411,12 @@ I have scanned the medical reference databases, but couldn't find a direct match
                 )}
 
                 {/* Prescription Title */}
-                <div style={{ textAlign: 'center', margin: '15px 0 25px 0' }}>
+                <div className="print-prescription-title" style={{ textAlign: 'center', margin: '15px 0 25px 0' }}>
                   <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: '18px', fontWeight: 900, color: '#800020', borderBottom: '2.5px solid #800020', borderTop: '2.5px solid #800020', padding: '4px 24px', letterSpacing: '1.5px', textTransform: 'uppercase' }}>Prescription & Clinical Summary</span>
                 </div>
 
                 {/* Patient and Doctor Grid */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', fontSize: '13px', color: '#1E293B', marginBottom: '20px', lineHeight: '1.6', fontFamily: "'Inter', sans-serif" }}>
+                <div className="print-info-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', fontSize: '13px', color: '#1E293B', marginBottom: '20px', lineHeight: '1.6', fontFamily: "'Inter', sans-serif" }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     <div><span style={{ fontWeight: 700, width: '110px', display: 'inline-block', color: '#800020' }}>Patient Name</span><span style={{ fontWeight: 500 }}>: {patient.name || '—'}</span></div>
                     <div><span style={{ fontWeight: 700, width: '110px', display: 'inline-block', color: '#800020' }}>Age / Gender</span><span style={{ fontWeight: 500 }}>: {patient.age ? `${patient.age} Yrs` : '—'} / {patient.gender || '—'}</span></div>
@@ -9406,10 +9433,10 @@ I have scanned the medical reference databases, but couldn't find a direct match
                   </div>
                 </div>
 
-                <hr style={{ border: 'none', borderTop: '1.5px solid #800020', margin: '15px 0 20px 0' }} />
+                <hr className="print-divider" style={{ border: 'none', borderTop: '1.5px solid #800020', margin: '15px 0 20px 0' }} />
 
                 {/* Diagnosis Box */}
-                <div style={{ border: '1.5px solid #800020', borderRadius: '8px', marginBottom: '20px', overflow: 'hidden', background: '#fff' }}>
+                <div className="print-diagnosis-box" style={{ border: '1.5px solid #800020', borderRadius: '8px', marginBottom: '20px', overflow: 'hidden', background: '#fff' }}>
                   <div style={{ background: '#FDF2F4', padding: '8px 12px', borderBottom: '1.5px solid #800020', fontFamily: "'Outfit', sans-serif", fontSize: '13px', fontWeight: 800, color: '#800020', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
                     DIAGNOSIS (Doctor's Observation)
                   </div>
@@ -9432,7 +9459,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
 
                 {/* SOAP Notes if present */}
                 {appointment.notes && (
-                  <div style={{ border: '1.5px solid #800020', borderRadius: '8px', marginBottom: '20px', overflow: 'hidden', background: '#fff' }}>
+                  <div className="print-soap-box" style={{ border: '1.5px solid #800020', borderRadius: '8px', marginBottom: '20px', overflow: 'hidden', background: '#fff' }}>
                     <div style={{ background: '#FDF2F4', padding: '8px 12px', borderBottom: '1.5px solid #800020', fontFamily: "'Outfit', sans-serif", fontSize: '13px', fontWeight: 800, color: '#800020', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
                       Clinical SOAP Notes
                     </div>
@@ -9443,7 +9470,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                 )}
 
                 {/* Medicines Table */}
-                <div style={{ marginBottom: '20px' }}>
+                <div className="print-medicines-box" style={{ marginBottom: '20px' }}>
                   <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: '13px', fontWeight: 800, color: '#800020', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '8px' }}>
                     PRESCRIBED MEDICINES
                   </div>
@@ -9514,7 +9541,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                 )}
 
                 {/* Notes & Signature Section */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '40px', minHeight: '120px' }}>
+                <div className="print-signature-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '40px', minHeight: '120px' }}>
                   <div style={{ fontSize: '11.5px', lineHeight: '1.6', maxWidth: '60%' }}>
                     <div style={{ color: '#800020', fontWeight: 800, fontSize: '12.5px', marginBottom: '4px', textTransform: 'uppercase' }}>Note :</div>
                     <ul style={{ paddingLeft: '12px', margin: 0, listStyleType: 'square', color: '#334155', fontWeight: 600 }}>
