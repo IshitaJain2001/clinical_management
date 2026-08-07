@@ -961,10 +961,10 @@ const PatientDashboard = () => {
 
       const iframe = document.createElement('iframe');
       iframe.style.position = 'fixed';
-      iframe.style.right = '0';
-      iframe.style.bottom = '0';
-      iframe.style.width = '0';
-      iframe.style.height = '0';
+      iframe.style.left = '-9999px';
+      iframe.style.top = '-9999px';
+      iframe.style.width = '1024px';
+      iframe.style.height = '1448px';
       iframe.style.border = '0';
       iframe.style.zIndex = '-9999';
       document.body.appendChild(iframe);
@@ -1151,6 +1151,7 @@ const PatientDashboard = () => {
                 <div style="color: #475569; font-weight: 600; font-size: 10px;">Reg. No. ${doctorObj.staff_id ? doctorObj.staff_id.toUpperCase() : 'DMC - 12345'}</div>
                 <div style="color: #800020; font-weight: 800; font-size: 10px; margin-top: 3px; text-transform: uppercase;">(Consultant Physician)</div>
                 <div style="color: #94A3B8; font-size: 9px; margin-top: 3px; font-weight: 550; letter-spacing: 0.2px;">Signature & Seal</div>
+                <div style="color: #800020; font-weight: 800; font-size: 10px; margin-top: 3px; text-transform: uppercase;">${rx.tenantId ? rx.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital'}</div>
               </div>
             </div>
           </div>
