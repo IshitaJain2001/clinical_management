@@ -609,7 +609,7 @@ const LabDashboard = () => {
       }
 
       // Staff (Doctors) list
-      const staffRes = await api.get('/staff');
+      const staffRes = await api.get('/auth/users/all');
       if (staffRes.data && Array.isArray(staffRes.data)) {
         setCoverageDoctors(staffRes.data.filter(s => s.role === 'doctor'));
       }

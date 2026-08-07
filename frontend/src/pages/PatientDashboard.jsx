@@ -1143,6 +1143,7 @@ const PatientDashboard = () => {
           <div id="pages-container"></div>
 
           <script>
+            const letterheadUrl = "${letterheadUrl || ''}";
             function createMedicineTableTemplate() {
               const table = document.createElement('table');
               table.style.width = '100%';

@@ -796,7 +796,7 @@ const DoctorDashboard = () => {
       }
 
       // Fetch staff list for doctors dropdown in receptionist cover
-      const staffRes = await api.get('/staff');
+      const staffRes = await api.get('/auth/users/all');
       if (staffRes.data && Array.isArray(staffRes.data)) {
         setCoverageDoctors(staffRes.data.filter(s => s.role === 'doctor'));
       }
@@ -1359,6 +1359,7 @@ const DoctorDashboard = () => {
           <div id="pages-container"></div>
 
           <script>
+            const letterheadUrl = "${letterheadUrl || ''}";
             function createMedicineTableTemplate() {
               const table = document.createElement('table');
               table.style.width = '100%';
@@ -3394,6 +3395,7 @@ const DoctorDashboard = () => {
           <div id="pages-container"></div>
 
           <script>
+            const customLetterhead = "${customLetterhead || ''}";
             function createMedicineTableTemplate() {
               const table = document.createElement('table');
               table.style.width = '100%';
@@ -10037,155 +10039,136 @@ I have scanned the medical reference databases, but couldn't find a direct match
                   <hr className="print-divider" style={{ border: 'none', borderTop: '1.5px solid #800020', margin: '15px 0 20px 0' }} />
                 </div>
 
-                {/* Page Layout Table for Print Flow (renders display: table on print, hidden on screen via style) */}
-                <table className="print-layout-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead className="print-header-space">
-                    <tr>
-                      <td><div style={{ height: '62mm' }}>&nbsp;</div></td>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        {/* Diagnosis Box */}
-                        <div className="print-diagnosis-box" style={{ border: '1.5px solid #800020', borderRadius: '8px', marginBottom: '20px', overflow: 'hidden', background: '#fff', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-                          <div style={{ background: '#FDF2F4', padding: '8px 12px', borderBottom: '1.5px solid #800020', fontFamily: "'Outfit', sans-serif", fontSize: '13px', fontWeight: 800, color: '#800020', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                            DIAGNOSIS (Doctor's Observation)
-                          </div>
-                          <div style={{ padding: '12px', fontSize: '13px', color: '#1E293B', lineHeight: '1.6', fontWeight: 500 }}>
-                            {appointment.diagnosis ? (
-                              appointment.diagnosis.split('\n').map((line, lidx) => (
-                                <div key={lidx} style={{ display: 'flex', gap: '8px', marginBottom: '6px', alignItems: 'flex-start' }}>
-                                  <span style={{ color: '#800020', fontSize: '10px', marginTop: '4px' }}>•</span>
-                                  <span>{line.trim()}</span>
-                                </div>
-                              ))
-                            ) : (
-                              <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                                <span style={{ color: '#800020', fontSize: '10px', marginTop: '4px' }}>•</span>
-                                <span>General clinical observation & routine consultation.</span>
-                              </div>
-                            )}
-                          </div>
+                {/* Diagnosis Box */}
+                <div className="print-diagnosis-box" style={{ border: '1.5px solid #800020', borderRadius: '8px', marginBottom: '20px', overflow: 'hidden', background: '#fff' }}>
+                  <div style={{ background: '#FDF2F4', padding: '8px 12px', borderBottom: '1.5px solid #800020', fontFamily: "'Outfit', sans-serif", fontSize: '13px', fontWeight: 800, color: '#800020', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                    DIAGNOSIS (Doctor's Observation)
+                  </div>
+                  <div style={{ padding: '12px', fontSize: '13px', color: '#1E293B', lineHeight: '1.6', fontWeight: 500 }}>
+                    {appointment.diagnosis ? (
+                      appointment.diagnosis.split('\n').map((line, lidx) => (
+                        <div key={lidx} style={{ display: 'flex', gap: '8px', marginBottom: '6px', alignItems: 'flex-start' }}>
+                          <span style={{ color: '#800020', fontSize: '10px', marginTop: '4px' }}>•</span>
+                          <span>{line.trim()}</span>
                         </div>
+                      ))
+                    ) : (
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                        <span style={{ color: '#800020', fontSize: '10px', marginTop: '4px' }}>•</span>
+                        <span>General clinical observation & routine consultation.</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
-                        {/* SOAP Notes if present */}
-                        {appointment.notes && (
-                          <div className="print-soap-box" style={{ border: '1.5px solid #800020', borderRadius: '8px', marginBottom: '20px', overflow: 'hidden', background: '#fff', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-                            <div style={{ background: '#FDF2F4', padding: '8px 12px', borderBottom: '1.5px solid #800020', fontFamily: "'Outfit', sans-serif", fontSize: '13px', fontWeight: 800, color: '#800020', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                              Clinical SOAP Notes
-                            </div>
-                            <div style={{ padding: '12px', fontSize: '13px', color: '#334155', lineHeight: '1.6', fontWeight: 500, whiteSpace: 'pre-wrap' }}>
-                              {appointment.notes}
-                            </div>
-                          </div>
-                        )}
+                {/* SOAP Notes if present */}
+                {appointment.notes && (
+                  <div className="print-soap-box" style={{ border: '1.5px solid #800020', borderRadius: '8px', marginBottom: '20px', overflow: 'hidden', background: '#fff' }}>
+                    <div style={{ background: '#FDF2F4', padding: '8px 12px', borderBottom: '1.5px solid #800020', fontFamily: "'Outfit', sans-serif", fontSize: '13px', fontWeight: 800, color: '#800020', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                      Clinical SOAP Notes
+                    </div>
+                    <div style={{ padding: '12px', fontSize: '13px', color: '#334155', lineHeight: '1.6', fontWeight: 500, whiteSpace: 'pre-wrap' }}>
+                      {appointment.notes}
+                    </div>
+                  </div>
+                )}
 
-                        {/* Medicines Table */}
-                        <div className="print-medicines-box" style={{ marginBottom: '20px' }}>
-                          <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: '13px', fontWeight: 800, color: '#800020', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '8px' }}>
-                            PRESCRIBED MEDICINES
-                          </div>
-                          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12.5px', border: '1.5px solid #800020', borderRadius: '8px', overflow: 'hidden' }}>
-                            <thead>
-                              <tr style={{ background: '#FDF2F4', borderBottom: '1.5px solid #800020' }}>
-                                <th style={{ padding: '10px', color: '#800020', fontWeight: 800, textAlign: 'center', borderRight: '1px solid #800020', width: '60px' }}>S. No.</th>
-                                <th style={{ padding: '10px', color: '#800020', fontWeight: 800, textAlign: 'left', borderRight: '1px solid #800020' }}>Medicine Name</th>
-                                <th style={{ padding: '10px', color: '#800020', fontWeight: 800, textAlign: 'center', borderRight: '1px solid #800020', width: '80px' }}>Dose</th>
-                                <th style={{ padding: '10px', color: '#800020', fontWeight: 800, textAlign: 'center', borderRight: '1px solid #800020', width: '90px' }}>Duration</th>
-                                <th style={{ padding: '10px', color: '#800020', fontWeight: 800, textAlign: 'center', borderRight: '1px solid #800020', width: '120px' }}>Frequency</th>
-                                <th style={{ padding: '10px', color: '#800020', fontWeight: 800, textAlign: 'left' }}>Instructions</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {prescription && prescription.items && prescription.items.length > 0 ? (
-                                prescription.items.map((m, idx) => {
-                                  let freq = 'Once a Day';
-                                  let inst = 'After Food';
-                                  if (m.instructions) {
-                                    const parts = m.instructions.split('(');
-                                    if (parts[0]) freq = parts[0].trim();
-                                    if (parts[1]) inst = parts[1].replace(')', '').trim();
-                                  }
-                                  return (
-                                    <tr key={idx} style={{ borderBottom: '1px solid #800020', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-                                      <td style={{ padding: '10px', textAlign: 'center', borderRight: '1px solid #800020', fontWeight: 600, color: '#800020' }}>{idx + 1}.</td>
-                                      <td style={{ padding: '10px', borderRight: '1px solid #800020', fontWeight: 700, color: '#1E293B' }}>{m.medicine}</td>
-                                      <td style={{ padding: '10px', textAlign: 'center', borderRight: '1px solid #800020', color: '#334155', fontWeight: 500 }}>{m.dosage}</td>
-                                      <td style={{ padding: '10px', textAlign: 'center', borderRight: '1px solid #800020', color: '#334155', fontWeight: 500 }}>{m.duration}</td>
-                                      <td style={{ padding: '10px', textAlign: 'center', borderRight: '1px solid #800020', color: '#800020', fontWeight: 600 }}>{freq}</td>
-                                      <td style={{ padding: '10px', color: '#334155', fontWeight: 500 }}>{inst}</td>
-                                    </tr>
-                                  );
-                                })
-                              ) : (
-                                <tr>
-                                  <td colSpan="6" style={{ padding: '24px', textAlign: 'center', color: '#94A3B8', fontWeight: 600 }}>No medications prescribed for this visit.</td>
-                                </tr>
-                              )}
-                            </tbody>
-                          </table>
-                        </div>
+                {/* Medicines Table */}
+                <div className="print-medicines-box" style={{ marginBottom: '20px' }}>
+                  <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: '13px', fontWeight: 800, color: '#800020', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '8px' }}>
+                    PRESCRIBED MEDICINES
+                  </div>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12.5px', border: '1.5px solid #800020', borderRadius: '8px', overflow: 'hidden' }}>
+                    <thead>
+                      <tr style={{ background: '#FDF2F4', borderBottom: '1.5px solid #800020' }}>
+                        <th style={{ padding: '10px', color: '#800020', fontWeight: 800, textAlign: 'center', borderRight: '1px solid #800020', width: '60px' }}>S. No.</th>
+                        <th style={{ padding: '10px', color: '#800020', fontWeight: 800, textAlign: 'left', borderRight: '1px solid #800020' }}>Medicine Name</th>
+                        <th style={{ padding: '10px', color: '#800020', fontWeight: 800, textAlign: 'center', borderRight: '1px solid #800020', width: '80px' }}>Dose</th>
+                        <th style={{ padding: '10px', color: '#800020', fontWeight: 800, textAlign: 'center', borderRight: '1px solid #800020', width: '90px' }}>Duration</th>
+                        <th style={{ padding: '10px', color: '#800020', fontWeight: 800, textAlign: 'center', borderRight: '1px solid #800020', width: '120px' }}>Frequency</th>
+                        <th style={{ padding: '10px', color: '#800020', fontWeight: 800, textAlign: 'left' }}>Instructions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {prescription && prescription.items && prescription.items.length > 0 ? (
+                        prescription.items.map((m, idx) => {
+                          let freq = 'Once a Day';
+                          let inst = 'After Food';
+                          if (m.instructions) {
+                            const parts = m.instructions.split('(');
+                            if (parts[0]) freq = parts[0].trim();
+                            if (parts[1]) inst = parts[1].replace(')', '').trim();
+                          }
+                          return (
+                            <tr key={idx} style={{ borderBottom: '1px solid #800020' }}>
+                              <td style={{ padding: '10px', textAlign: 'center', borderRight: '1px solid #800020', fontWeight: 600, color: '#800020' }}>{idx + 1}.</td>
+                              <td style={{ padding: '10px', borderRight: '1px solid #800020', fontWeight: 700, color: '#1E293B' }}>{m.medicine}</td>
+                              <td style={{ padding: '10px', textAlign: 'center', borderRight: '1px solid #800020', color: '#334155', fontWeight: 500 }}>{m.dosage}</td>
+                              <td style={{ padding: '10px', textAlign: 'center', borderRight: '1px solid #800020', color: '#334155', fontWeight: 500 }}>{m.duration}</td>
+                              <td style={{ padding: '10px', textAlign: 'center', borderRight: '1px solid #800020', color: '#800020', fontWeight: 600 }}>{freq}</td>
+                              <td style={{ padding: '10px', color: '#334155', fontWeight: 500 }}>{inst}</td>
+                            </tr>
+                          );
+                        })
+                      ) : (
+                        <tr>
+                          <td colSpan="6" style={{ padding: '24px', textAlign: 'center', color: '#94A3B8', fontWeight: 600 }}>No medications prescribed for this visit.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
 
-                        {/* Lab Tests Table */}
-                        {labs && labs.length > 0 && (
-                          <div style={{ marginBottom: '20px', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-                            <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: '13px', fontWeight: 800, color: '#800020', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '8px' }}>
-                              PRESCRIBED TESTS
-                            </div>
-                            <table style={{ width: '50%', borderCollapse: 'collapse', fontSize: '12.5px', border: '1.5px solid #800020', borderRadius: '8px', overflow: 'hidden' }}>
-                              <thead>
-                                <tr style={{ background: '#FDF2F4', borderBottom: '1.5px solid #800020' }}>
-                                  <th style={{ padding: '10px', color: '#800020', fontWeight: 800, textAlign: 'center', borderRight: '1px solid #800020', width: '60px' }}>S. No.</th>
-                                  <th style={{ padding: '10px', color: '#800020', fontWeight: 800, textAlign: 'left' }}>Test Name</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {labs.map((test, idx) => (
-                                  <tr key={idx} style={{ borderBottom: '1px solid #800020', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-                                    <td style={{ padding: '10px', textAlign: 'center', borderRight: '1px solid #800020', fontWeight: 600, color: '#800020' }}>{idx + 1}.</td>
-                                    <td style={{ padding: '10px', fontWeight: 700, color: '#1E293B' }}>{test.testName || test}</td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        )}
+                {/* Lab Tests Table */}
+                {labs && labs.length > 0 && (
+                  <div style={{ marginBottom: '20px' }}>
+                    <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: '13px', fontWeight: 800, color: '#800020', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '8px' }}>
+                      PRESCRIBED TESTS
+                    </div>
+                    <table style={{ width: '50%', borderCollapse: 'collapse', fontSize: '12.5px', border: '1.5px solid #800020', borderRadius: '8px', overflow: 'hidden' }}>
+                      <thead>
+                        <tr style={{ background: '#FDF2F4', borderBottom: '1.5px solid #800020' }}>
+                          <th style={{ padding: '10px', color: '#800020', fontWeight: 800, textAlign: 'center', borderRight: '1px solid #800020', width: '60px' }}>S. No.</th>
+                          <th style={{ padding: '10px', color: '#800020', fontWeight: 800, textAlign: 'left' }}>Test Name</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {labs.map((test, idx) => (
+                          <tr key={idx} style={{ borderBottom: '1px solid #800020' }}>
+                            <td style={{ padding: '10px', textAlign: 'center', borderRight: '1px solid #800020', fontWeight: 600, color: '#800020' }}>{idx + 1}.</td>
+                            <td style={{ padding: '10px', fontWeight: 700, color: '#1E293B' }}>{test.testName || test}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
 
-                        {/* Notes & Signature Section */}
-                        <div className="print-signature-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '40px', minHeight: '120px', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-                          <div style={{ fontSize: '11.5px', lineHeight: '1.6', maxWidth: '60%' }}>
-                            <div style={{ color: '#800020', fontWeight: 800, fontSize: '12.5px', marginBottom: '4px', textTransform: 'uppercase' }}>Note :</div>
-                            <ul style={{ paddingLeft: '12px', margin: 0, listStyleType: 'square', color: '#334155', fontWeight: 600 }}>
-                              <li>Take medicines as prescribed.</li>
-                              <li>Complete the full course of antibiotics.</li>
-                              <li>Avoid cold drinks and oily food.</li>
-                              <li>Drink plenty of fluids and take rest.</li>
-                            </ul>
-                          </div>
-                          
-                          <div style={{ textAlign: 'center', width: '220px', fontSize: '11.5px', fontFamily: "'Inter', sans-serif" }}>
-                            <div style={{ borderBottom: '1.5px solid #800020', marginBottom: '8px', height: '50px', position: 'relative' }}>
-                              <span style={{ fontFamily: "'Brush Script MT', cursive, sans-serif", fontSize: '26px', color: '#800020', position: 'absolute', bottom: '4px', left: '50%', transform: 'translateX(-50%)', fontWeight: 500 }}>
-                                {user.name ? user.name.replace('Dr. ', '') : 'Anil Sharma'}
-                              </span>
-                            </div>
-                            <div style={{ color: '#800020', fontWeight: 700, fontSize: '13px' }}>{user.name || 'Dr. Anil Sharma'}</div>
-                            <div style={{ color: '#475569', fontWeight: 600, fontSize: '11px', marginTop: '2px' }}>{user.designation || 'MBBS, MD (Medicine)'}</div>
-                            <div style={{ color: '#475569', fontWeight: 600, fontSize: '11px' }}>Reg. No. {user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</div>
-                            <div style={{ color: '#800020', fontWeight: 800, fontSize: '11px', marginTop: '4px', textTransform: 'uppercase' }}>(Consultant Physician)</div>
-                            <div style={{ color: '#94A3B8', fontSize: '9.5px', marginTop: '4px', fontWeight: 550, letterSpacing: '0.2px' }}>Signature & Seal</div>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                  <tfoot className="print-footer-space">
-                    <tr>
-                      <td><div style={{ height: '16mm' }}>&nbsp;</div></td>
-                    </tr>
-                  </tfoot>
-                </table>
+                {/* Notes & Signature Section */}
+                <div className="print-signature-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '40px', minHeight: '120px' }}>
+                  <div style={{ fontSize: '11.5px', lineHeight: '1.6', maxWidth: '60%' }}>
+                    <div style={{ color: '#800020', fontWeight: 800, fontSize: '12.5px', marginBottom: '4px', textTransform: 'uppercase' }}>Note :</div>
+                    <ul style={{ paddingLeft: '12px', margin: 0, listStyleType: 'square', color: '#334155', fontWeight: 600 }}>
+                      <li>Take medicines as prescribed.</li>
+                      <li>Complete the full course of antibiotics.</li>
+                      <li>Avoid cold drinks and oily food.</li>
+                      <li>Drink plenty of fluids and take rest.</li>
+                    </ul>
+                  </div>
+                  
+                  <div style={{ textAlign: 'center', width: '220px', fontSize: '11.5px', fontFamily: "'Inter', sans-serif" }}>
+                    <div style={{ borderBottom: '1.5px solid #800020', marginBottom: '8px', height: '50px', position: 'relative' }}>
+                      <span style={{ fontFamily: "'Brush Script MT', cursive, sans-serif", fontSize: '26px', color: '#800020', position: 'absolute', bottom: '4px', left: '50%', transform: 'translateX(-50%)', fontWeight: 500 }}>
+                        {user.name ? user.name.replace('Dr. ', '') : 'Anil Sharma'}
+                      </span>
+                    </div>
+                    <div style={{ color: '#800020', fontWeight: 700, fontSize: '13px' }}>{user.name || 'Dr. Anil Sharma'}</div>
+                    <div style={{ color: '#475569', fontWeight: 600, fontSize: '11px', marginTop: '2px' }}>{user.designation || 'MBBS, MD (Medicine)'}</div>
+                    <div style={{ color: '#475569', fontWeight: 600, fontSize: '11px' }}>Reg. No. {user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</div>
+                    <div style={{ color: '#800020', fontWeight: 800, fontSize: '11px', marginTop: '4px', textTransform: 'uppercase' }}>(Consultant Physician)</div>
+                    <div style={{ color: '#94A3B8', fontSize: '9.5px', marginTop: '4px', fontWeight: 550, letterSpacing: '0.2px' }}>Signature & Seal</div>
+                  </div>
+                </div>
 
                 {/* Repeating Footer for print (repeats bottom-0 fixed position, hidden on screen) */}
                 <div className="print-page-footer print-only">
