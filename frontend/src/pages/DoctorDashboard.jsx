@@ -10179,7 +10179,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                 <button 
                   type="button" 
                   onClick={() => {
-                    window.print();
+                    handlePrintSummary(data);
                   }} 
                   style={{ 
                     padding: '10px 20px', 
