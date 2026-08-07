@@ -9370,8 +9370,8 @@ I have scanned the medical reference databases, but couldn't find a direct match
                 {/* Fallback Letterhead (visible if no admin letterhead is uploaded) */}
                 {!customLetterhead && (
                   <div style={{ display: 'flex', alignItems: 'center', borderBottom: '3px double #800020', paddingBottom: '12px', marginBottom: '20px' }}>
-                    <div style={{ border: '2px solid #800020', borderRadius: '8px', width: '75px', height: '75px', padding: '4px', display: 'flex', flex-direction: 'column', align-items: 'center', justify-content: 'center', background: '#ffffff', boxSizing: 'border-box', flexShrink: 0 }}>
-                      <span style={{ fontSize: '8px', color: '#800020', fontWeight: 'bold', lineHieght: 1, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Care with Devotion</span>
+                    <div style={{ border: '2px solid #800020', borderRadius: '8px', width: '75px', height: '75px', padding: '4px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#ffffff', boxSizing: 'border-box', flexShrink: 0 }}>
+                      <span style={{ fontSize: '8px', color: '#800020', fontWeight: 'bold', lineHeight: 1, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Care with Devotion</span>
                       <span style={{ fontFamily: "'Brush Script MT', 'Lucida Handwriting', cursive, sans-serif", fontSize: '26px', color: '#800020', fontWeight: 'bold', margin: '-1px 0' }}>Charak</span>
                       <span style={{ fontSize: '5px', color: '#ffffff', background: '#800020', width: '100%', textAlign: 'center', fontWeight: 'bold', padding: '1.5px 0', borderRadius: '2px', textTransform: 'uppercase' }}>Charak Charitable Society</span>
                     </div>
