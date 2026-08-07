@@ -450,6 +450,7 @@ const MiniCalendarDropdown = ({ selectedDate, onSelectDate, onClearFilter }) => 
 };
 
 const DoctorDashboard = () => {
+  const cleanField = (val) => (val && String(val).trim() !== '') ? String(val).trim() : '—';
   const tenantModules = (() => {
     try {
       return JSON.parse(localStorage.getItem('tenantModules') || '{}');
@@ -10040,26 +10041,21 @@ I have scanned the medical reference databases, but couldn't find a direct match
                 </div>
 
                 {/* Diagnosis Box */}
-                <div className="print-diagnosis-box" style={{ border: '1.5px solid #800020', borderRadius: '8px', marginBottom: '20px', overflow: 'hidden', background: '#fff' }}>
-                  <div style={{ background: '#FDF2F4', padding: '8px 12px', borderBottom: '1.5px solid #800020', fontFamily: "'Outfit', sans-serif", fontSize: '13px', fontWeight: 800, color: '#800020', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                    DIAGNOSIS (Doctor's Observation)
-                  </div>
-                  <div style={{ padding: '12px', fontSize: '13px', color: '#1E293B', lineHeight: '1.6', fontWeight: 500 }}>
-                    {appointment.diagnosis ? (
-                      appointment.diagnosis.split('\n').map((line, lidx) => (
+                {appointment.diagnosis && (
+                  <div className="print-diagnosis-box" style={{ border: '1.5px solid #800020', borderRadius: '8px', marginBottom: '20px', overflow: 'hidden', background: '#fff' }}>
+                    <div style={{ background: '#FDF2F4', padding: '8px 12px', borderBottom: '1.5px solid #800020', fontFamily: "'Outfit', sans-serif", fontSize: '13px', fontWeight: 800, color: '#800020', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                      DIAGNOSIS (Doctor's Observation)
+                    </div>
+                    <div style={{ padding: '12px', fontSize: '13px', color: '#1E293B', lineHeight: '1.6', fontWeight: 500 }}>
+                      {appointment.diagnosis.split('\n').map((line, lidx) => (
                         <div key={lidx} style={{ display: 'flex', gap: '8px', marginBottom: '6px', alignItems: 'flex-start' }}>
                           <span style={{ color: '#800020', fontSize: '10px', marginTop: '4px' }}>•</span>
                           <span>{line.trim()}</span>
                         </div>
-                      ))
-                    ) : (
-                      <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                        <span style={{ color: '#800020', fontSize: '10px', marginTop: '4px' }}>•</span>
-                        <span>General clinical observation & routine consultation.</span>
-                      </div>
-                    )}
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* SOAP Notes if present */}
                 {appointment.notes && (
@@ -10120,11 +10116,11 @@ I have scanned the medical reference databases, but couldn't find a direct match
                 </div>
 
                 {/* Lab Tests Table */}
-                {labs && labs.length > 0 && (
-                  <div style={{ marginBottom: '20px' }}>
-                    <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: '13px', fontWeight: 800, color: '#800020', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '8px' }}>
-                      PRESCRIBED TESTS
-                    </div>
+                <div style={{ marginBottom: '20px' }}>
+                  <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: '13px', fontWeight: 800, color: '#800020', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '8px' }}>
+                    PRESCRIBED TESTS
+                  </div>
+                  {labs && labs.length > 0 ? (
                     <table style={{ width: '50%', borderCollapse: 'collapse', fontSize: '12.5px', border: '1.5px solid #800020', borderRadius: '8px', overflow: 'hidden' }}>
                       <thead>
                         <tr style={{ background: '#FDF2F4', borderBottom: '1.5px solid #800020' }}>
@@ -10141,8 +10137,12 @@ I have scanned the medical reference databases, but couldn't find a direct match
                         ))}
                       </tbody>
                     </table>
-                  </div>
-                )}
+                  ) : (
+                    <div style={{ padding: '24px', border: '1.5px solid #800020', borderRadius: '8px', background: '#fff', fontSize: '12.5px', color: '#94A3B8', fontWeight: 600, textAlign: 'center' }}>
+                      No tests prescribed for this visit.
+                    </div>
+                  )}
+                </div>
 
                 {/* Notes & Signature Section */}
                 <div className="print-signature-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '40px', minHeight: '120px' }}>
