@@ -176,7 +176,7 @@ const checkSlotCapacity = async (doctorId, date, time, excludeAppointmentId = nu
 
 // Create an appointment (scoped to tenant)
 router.post('/', async (req, res) => {
-  const { patientId, doctorId, date, time, status, reason, notes, diagnosis } = req.body;
+  const { patientId, doctorId, date, time, status, reason, notes, diagnosis, regNo } = req.body;
   try {
     const User = require('../models/User');
     const doctorObj = await User.findById(doctorId);
@@ -230,6 +230,7 @@ router.post('/', async (req, res) => {
       reason,
       notes,
       diagnosis,
+      regNo,
       source: appointmentSource
     });
 

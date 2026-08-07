@@ -3284,13 +3284,14 @@ const DoctorDashboard = () => {
                 <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Date</span><span style="font-weight: 500;">: ${cleanField(dateStr)}</span></div>
                 <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Mobile No.</span><span style="font-weight: 500;">: ${cleanField(patient.contact)}</span></div>
                 <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Address</span><span style="font-weight: 500;">: ${cleanField(patient.address)}</span></div>
+                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Reg. No.</span><span style="font-weight: 500; color: #2563EB; font-weight: bold;">: ${cleanField(appointment.regNo)}</span></div>
               </div>
               <div style="display: flex; flex-direction: column; gap: 4px; word-wrap: break-word; white-space: normal;">
                 <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Doctor Name</span><span style="font-weight: 600;">: ${cleanField(user.name)}</span></div>
                 <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Qualification</span><span style="font-weight: 500;">: ${cleanField(user.designation || 'MBBS, MD (Medicine)')}</span></div>
-                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Reg. No.</span><span style="font-weight: 500;">: ${user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</span></div>
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Reg. No.</span><span style="font-weight: 500;">: DMC - ${user.staff_id ? (user.staff_id.match(/^\d+$/) ? user.staff_id.slice(-5) : user.staff_id.toUpperCase()) : '12345'}</span></div>
                 <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Department</span><span style="font-weight: 500;">: ${cleanField(user.department || 'General Medicine')}</span></div>
-                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Consultation Time</span><span style="font-weight: 500;">: 10:00 AM - 1:00 PM, 6:00 PM - 9:00 PM</span></div>
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Consultation Time</span><span style="font-weight: 500;">: ${user.consultationTime || '10:00 AM - 01:00 PM, 06:00 PM - 09:00 PM'}</span></div>
               </div>
             </div>
 
@@ -3325,57 +3326,82 @@ const DoctorDashboard = () => {
               </div>
             </div>
 
-            <!-- SOAP Notes if present -->
-            ${appointment.notes ? `
-            <div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: #fff;">
+            <!-- Medicines Table Section (Always visible) -->
+            <div style="margin-bottom: 15px; border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff;">
               <div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">
-                Clinical SOAP Notes
+                PRESCRIBED MEDICINES
               </div>
-              <div style="padding: 10px; font-size: 11.5px; color: #334155; line-height: 1.5; font-weight: 500; white-space: pre-wrap;">
-                ${appointment.notes}
-              </div>
+              <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                <thead>
+                  <tr style="background: #FDF2F4; border-bottom: 1.5px solid #800020;">
+                    <th style="padding: 6px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 40px;">S.No.</th>
+                    <th style="padding: 6px; color: #800020; font-weight: 800; text-align: left; border-right: 1px solid #800020;">Medicine Name</th>
+                    <th style="padding: 6px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 60px;">Dose</th>
+                    <th style="padding: 6px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 70px;">Duration</th>
+                    <th style="padding: 6px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 90px;">Frequency</th>
+                    <th style="padding: 6px; color: #800020; font-weight: 800; text-align: left;">Instructions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${prescription && prescription.items && prescription.items.length > 0 ? prescription.items.map((m, idx) => {
+                    let freq = 'Once a Day';
+                    let inst = 'After Food';
+                    if (m.instructions) {
+                      const parts = m.instructions.split('(');
+                      if (parts[0]) freq = parts[0].trim();
+                      if (parts[1]) inst = parts[1].replace(')', '').trim();
+                    }
+                    return `
+                      <tr style="border-bottom: 1px solid #800020;">
+                        <td style="padding: 6px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">${idx + 1}.</td>
+                        <td style="padding: 6px; border-right: 1px solid #800020; font-weight: 700; color: #1E293B; word-break: break-word;">${cleanField(m.medicine)}</td>
+                        <td style="padding: 6px; text-align: center; border-right: 1px solid #800020; color: #334155; font-weight: 500; word-break: break-word;">${cleanField(m.dosage)}</td>
+                        <td style="padding: 6px; text-align: center; border-right: 1px solid #800020; color: #334155; font-weight: 500; word-break: break-word;">${cleanField(m.duration)}</td>
+                        <td style="padding: 6px; text-align: center; border-right: 1px solid #800020; color: #800020; font-weight: 600; word-break: break-word;">${cleanField(freq)}</td>
+                        <td style="padding: 6px; color: #334155; font-weight: 500; word-break: break-word;">${cleanField(inst)}</td>
+                      </tr>
+                    `;
+                  }).join('') : `
+                    <tr>
+                      <td colSpan="6" style="padding: 16px; text-align: center; color: #94A3B8; font-weight: 600;">No medications recommended.</td>
+                    </tr>
+                  `}
+                </tbody>
+              </table>
             </div>
-            ` : ''}
 
-            <!-- Medicines Source Rows -->
-            ${prescription && prescription.items && prescription.items.length > 0 ? prescription.items.map((m, idx) => {
-              let freq = 'Once a Day';
-              let inst = 'After Food';
-              if (m.instructions) {
-                const parts = m.instructions.split('(');
-                if (parts[0]) freq = parts[0].trim();
-                if (parts[1]) inst = parts[1].replace(')', '').trim();
-              }
-              return `
-                <tr class="medicine-row-source">
-                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">${idx + 1}.</td>
-                  <td style="padding: 8px; border-right: 1px solid #800020; font-weight: 700; color: #1E293B; word-break: break-word;">${cleanField(m.medicine)}</td>
-                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; color: #334155; font-weight: 500; word-break: break-word;">${cleanField(m.dosage)}</td>
-                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; color: #334155; font-weight: 500; word-break: break-word;">${cleanField(m.duration)}</td>
-                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; color: #800020; font-weight: 600; word-break: break-word;">${cleanField(freq)}</td>
-                  <td style="padding: 8px; color: #334155; font-weight: 500; word-break: break-word;">${cleanField(inst)}</td>
-                </tr>
-              `;
-            }).join('') : ''}
-
-            <!-- Tests Source Rows -->
-            ${labs && labs.length > 0 ? labs.map((l, idx) => `
-              <tr class="lab-row-source">
-                <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">${idx + 1}.</td>
-                <td style="padding: 8px; font-weight: 700; color: #1E293B;">${cleanField(l.testName || l)}</td>
-              </tr>
-            `).join('') : ''}
+            <!-- Tests Table Section (Always visible) -->
+            <div style="margin-bottom: 15px; border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff;">
+              <div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">
+                PRESCRIBED TESTS
+              </div>
+              <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                <thead>
+                  <tr style="background: #FDF2F4; border-bottom: 1.5px solid #800020;">
+                    <th style="padding: 6px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 50px;">S.No.</th>
+                    <th style="padding: 6px; color: #800020; font-weight: 800; text-align: left;">Test Name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${labs && labs.length > 0 ? labs.map((l, idx) => `
+                    <tr style="border-bottom: 1px solid #800020;">
+                      <td style="padding: 6px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">${idx + 1}.</td>
+                      <td style="padding: 6px; font-weight: 700; color: #1E293B;">${cleanField(l.testName || l)}</td>
+                    </tr>
+                  `).join('') : `
+                    <tr>
+                      <td colSpan="2" style="padding: 16px; text-align: center; color: #94A3B8; font-weight: 600;">No tests recommended.</td>
+                    </tr>
+                  `}
+                </tbody>
+              </table>
+            </div>
 
             <!-- Notes & Signature Container -->
             <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 20px; min-height: 90px;" class="signature-block-source">
               <div style="font-size: 10.5px; line-height: 1.5; max-width: 60%;">
                 <div style="color: #800020; font-weight: 800; font-size: 11px; margin-bottom: 3px; text-transform: uppercase;">Note :</div>
-                <ul style="padding-left: 10px; margin: 0; list-style-type: square; color: #334155; font-weight: 600;">
-                  <li>Take medicines as prescribed.</li>
-                  <li>Complete the full course of antibiotics.</li>
-                  <li>Avoid cold drinks and oily food.</li>
-                  <li>Drink plenty of fluids and take rest.</li>
-                </ul>
+                <div style="color: #334155; font-weight: 600; white-space: pre-wrap;">${appointment.notes ? appointment.notes : `Take medicines as prescribed.\nComplete the full course of antibiotics.\nAvoid cold drinks and oily food.\nDrink plenty of fluids and take rest.`}</div>
               </div>
               
               <div style="text-align: center; width: 200px; font-size: 10.5px; font-family: 'Inter', sans-serif;">
@@ -3386,7 +3412,7 @@ const DoctorDashboard = () => {
                 </div>
                 <div style="color: #800020; font-weight: 700; font-size: 12px;">${user.name || 'Dr. Anil Sharma'}</div>
                 <div style="color: #475569; font-weight: 600; font-size: 10px; margin-top: 2px;">${user.designation || 'MBBS, MD (Medicine)'}</div>
-                <div style="color: #475569; font-weight: 600; font-size: 10px;">Reg. No. ${user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</div>
+                <div style="color: #475569; font-weight: 600; font-size: 10px;">Reg. No. DMC - ${user.staff_id ? (user.staff_id.match(/^\d+$/) ? user.staff_id.slice(-5) : user.staff_id.toUpperCase()) : '12345'}</div>
                 <div style="color: #800020; font-weight: 800; font-size: 10px; margin-top: 3px; text-transform: uppercase;">(Consultant Physician)</div>
                 <div style="color: #94A3B8; font-size: 9px; margin-top: 3px; font-weight: 550; letter-spacing: 0.2px;">Signature & Seal</div>
               </div>
@@ -3397,52 +3423,7 @@ const DoctorDashboard = () => {
 
           <script>
             const customLetterhead = "${customLetterhead || ''}";
-            function createMedicineTableTemplate() {
-              const table = document.createElement('table');
-              table.style.width = '100%';
-              table.style.borderCollapse = 'collapse';
-              table.style.fontSize = '11.5px';
-              table.style.border = '1.5px solid #800020';
-              table.style.borderRadius = '8px';
-              table.style.overflow = 'hidden';
-              table.style.marginBottom = '12px';
-              table.innerHTML = \`
-                <thead>
-                  <tr style="background: #FDF2F4; border-bottom: 1.5px solid #800020;">
-                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 50px;">S. No.</th>
-                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: left; border-right: 1px solid #800020;">Medicine Name</th>
-                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 70px;">Dose</th>
-                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 80px;">Duration</th>
-                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 100px;">Frequency</th>
-                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: left;">Instructions</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              \`;
-              return table;
-            }
-
-            function createLabsTableTemplate() {
-              const table = document.createElement('table');
-              table.style.width = '50%';
-              table.style.borderCollapse = 'collapse';
-              table.style.fontSize = '11.5px';
-              table.style.border = '1.5px solid #800020';
-              table.style.borderRadius = '8px';
-              table.style.overflow = 'hidden';
-              table.style.marginTop = '15px';
-              table.innerHTML = \`
-                <thead>
-                  <tr style="background: #FDF2F4; border-bottom: 1.5px solid #800020;">
-                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 50px;">S. No.</th>
-                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: left;">Test Name</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              \`;
-              return table;
-            }
-
+            
             function createNewPage(headerTemplate, footerTemplate) {
               const page = document.createElement('div');
               page.className = 'page-container';
@@ -3515,115 +3496,16 @@ const DoctorDashboard = () => {
               let currentContentArea = currentPage.querySelector('.content-area');
               let currentSpaceUsed = 0;
               
-              let activeMedicineTable = null;
-              let activeMedicineTbody = null;
-              let activeLabsTable = null;
-              let activeLabsTbody = null;
-              
               for (let child of children) {
-                if (child.classList.contains('medicine-row-source')) {
-                  if (!activeMedicineTable) {
-                    activeMedicineTable = createMedicineTableTemplate();
-                    activeMedicineTbody = activeMedicineTable.querySelector('tbody');
-                    
-                    source.appendChild(activeMedicineTable);
-                    const tableHeaderHeight = activeMedicineTable.offsetHeight;
-                    source.removeChild(activeMedicineTable);
-                    
-                    if (currentSpaceUsed + tableHeaderHeight > availableHeight) {
-                      currentPage = createNewPage(header, footer);
-                      currentContentArea = currentPage.querySelector('.content-area');
-                      currentSpaceUsed = 0;
-                    }
-                    currentContentArea.appendChild(activeMedicineTable);
-                    currentSpaceUsed += tableHeaderHeight;
-                  }
-                  
-                  const tr = document.createElement('tr');
-                  tr.style.borderBottom = '1px solid #800020';
-                  tr.style.pageBreakInside = 'avoid';
-                  tr.innerHTML = child.innerHTML;
-                  activeMedicineTbody.appendChild(tr);
-                  
-                  const trHeight = tr.offsetHeight;
-                  if (currentSpaceUsed + trHeight > availableHeight) {
-                    activeMedicineTbody.removeChild(tr);
-                    
-                    currentPage = createNewPage(header, footer);
-                    currentContentArea = currentPage.querySelector('.content-area');
-                    currentSpaceUsed = 0;
-                    
-                    activeMedicineTable = createMedicineTableTemplate();
-                    activeMedicineTbody = activeMedicineTable.querySelector('tbody');
-                    currentContentArea.appendChild(activeMedicineTable);
-                    
-                    activeMedicineTbody.appendChild(tr);
-                    currentSpaceUsed += activeMedicineTable.offsetHeight;
-                  } else {
-                    currentSpaceUsed += trHeight;
-                  }
+                const blockHeight = child.offsetHeight;
+                
+                if (currentSpaceUsed + blockHeight > availableHeight) {
+                  currentPage = createNewPage(header, footer);
+                  currentContentArea = currentPage.querySelector('.content-area');
+                  currentSpaceUsed = 0;
                 }
-                else if (child.classList.contains('lab-row-source')) {
-                  activeMedicineTable = null;
-                  activeMedicineTbody = null;
-                  
-                  if (!activeLabsTable) {
-                    activeLabsTable = createLabsTableTemplate();
-                    activeLabsTbody = activeLabsTable.querySelector('tbody');
-                    
-                    source.appendChild(activeLabsTable);
-                    const tableHeaderHeight = activeLabsTable.offsetHeight;
-                    source.removeChild(activeLabsTable);
-                    
-                    if (currentSpaceUsed + tableHeaderHeight > availableHeight) {
-                      currentPage = createNewPage(header, footer);
-                      currentContentArea = currentPage.querySelector('.content-area');
-                      currentSpaceUsed = 0;
-                    }
-                    currentContentArea.appendChild(activeLabsTable);
-                    currentSpaceUsed += tableHeaderHeight;
-                  }
-                  
-                  const tr = document.createElement('tr');
-                  tr.style.borderBottom = '1px solid #800020';
-                  tr.style.pageBreakInside = 'avoid';
-                  tr.innerHTML = child.innerHTML;
-                  activeLabsTbody.appendChild(tr);
-                  
-                  const trHeight = tr.offsetHeight;
-                  if (currentSpaceUsed + trHeight > availableHeight) {
-                    activeLabsTbody.removeChild(tr);
-                    
-                    currentPage = createNewPage(header, footer);
-                    currentContentArea = currentPage.querySelector('.content-area');
-                    currentSpaceUsed = 0;
-                    
-                    activeLabsTable = createLabsTableTemplate();
-                    activeLabsTbody = activeLabsTable.querySelector('tbody');
-                    currentContentArea.appendChild(activeLabsTable);
-                    
-                    activeLabsTbody.appendChild(tr);
-                    currentSpaceUsed += activeLabsTable.offsetHeight;
-                  } else {
-                    currentSpaceUsed += trHeight;
-                  }
-                }
-                else {
-                  activeMedicineTable = null;
-                  activeMedicineTbody = null;
-                  activeLabsTable = null;
-                  activeLabsTbody = null;
-                  
-                  const blockHeight = child.offsetHeight;
-                  
-                  if (currentSpaceUsed + blockHeight > availableHeight) {
-                    currentPage = createNewPage(header, footer);
-                    currentContentArea = currentPage.querySelector('.content-area');
-                    currentSpaceUsed = 0;
-                  }
-                  currentContentArea.appendChild(child);
-                  currentSpaceUsed += blockHeight;
-                }
+                currentContentArea.appendChild(child);
+                currentSpaceUsed += blockHeight;
               }
               
               document.body.removeChild(source);
@@ -4835,6 +4717,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                     const doctorId = e.target.elements.docSelect.value;
                     const slot = e.target.elements.patSlot.value;
                     const reason = e.target.elements.patReason.value || 'General Consultation';
+                    const regNo = e.target.elements.patRegNo.value || '';
                     if (!patientId || !doctorId) {
                       showToastNotification("Please select a patient and a doctor", "error");
                       return;
@@ -4846,7 +4729,8 @@ I have scanned the medical reference databases, but couldn't find a direct match
                         doctorId,
                         date: new Date(),
                         time: slot,
-                        reason
+                        reason,
+                        regNo
                       });
                       
                       const docObj = coverageDoctors.find(d => String(d._id) === String(doctorId));
@@ -4886,6 +4770,11 @@ I have scanned the medical reference databases, but couldn't find a direct match
                             <option key={doc._id} value={doc._id}>{doc.name} ({doc.specialty || 'General'})</option>
                           ))}
                         </select>
+                      </div>
+
+                      <div>
+                        <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: '6px', display: 'block' }}>Registration Number</label>
+                        <input type="text" name="patRegNo" style={{ width: '100%', height: '40px', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '0 12px', fontSize: '13px', fontWeight: 650, outline: 'none' }} placeholder="e.g. REG-7894" />
                       </div>
 
                       <div>

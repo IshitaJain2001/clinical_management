@@ -19,6 +19,7 @@ const appointmentSchema = new mongoose.Schema({
   reason: { type: String, required: true },
   notes: { type: String },
   diagnosis: { type: String },
+  regNo: { type: String },
   createdAt: {type: Date, default: Date.now},
 }, { timestamps: true });
 
