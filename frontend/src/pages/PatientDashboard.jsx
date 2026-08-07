@@ -1216,8 +1216,24 @@ const PatientDashboard = () => {
               return page;
             }
 
+            function waitForImages() {
+              const images = Array.from(document.images);
+              const promises = images.map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(resolve => {
+                  img.onload = resolve;
+                  img.onerror = resolve;
+                });
+              });
+              return Promise.all(promises);
+            }
+
             function paginate() {
-              const targetPageHeight = 1000; 
+              const targetPageHeight = 1122.5; 
+              const topPadding = 56.7; 
+              const bottomPadding = 75.6; 
+              const safetyMargin = 45; 
+              
               const header = document.getElementById('print-header-template');
               const footer = document.getElementById('print-footer-template');
               
@@ -1228,8 +1244,7 @@ const PatientDashboard = () => {
               header.style.display = 'none';
               footer.style.display = 'none';
               
-              const paddingOffset = 135; 
-              const availableHeight = targetPageHeight - headerHeight - footerHeight - paddingOffset;
+              const availableHeight = targetPageHeight - topPadding - bottomPadding - headerHeight - footerHeight - safetyMargin;
               
               const source = document.getElementById('temp-source');
               const children = Array.from(source.children);
@@ -1353,9 +1368,11 @@ const PatientDashboard = () => {
             }
 
             window.onload = function() {
-              paginate();
-              window.print();
-              setTimeout(function() { window.close(); }, 500);
+              waitForImages().then(function() {
+                paginate();
+                window.print();
+                setTimeout(function() { window.close(); }, 500);
+              });
             };
           </script>
         </body>
