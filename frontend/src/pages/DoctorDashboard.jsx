@@ -3254,12 +3254,12 @@ const DoctorDashboard = () => {
         <body>
           <!-- Hidden Templates -->
           <div id="print-header-template" style="display: none; box-sizing: border-box;">
-            \${customLetterhead ? \`
+            ${customLetterhead ? `
               <!-- Empty spacer to let the background letterhead's top banner show through -->
               <div style="height: 38mm; width: 100%;"></div>
-            \` : \`
+            ` : `
               <div style="display: flex; align-items: center; border-bottom: 3px double #800020; padding-bottom: 8px; height: 80px; box-sizing: border-box;">
-                <div style="border: 2px solid #800020; border-radius: 8px; width: 65px; height: 65px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; box-sizing: border-box; flex-shrink: 0;">
+                <div style="border: 2px solid #800020; border-radius: 8px; width: 65px; height: 65px; padding: 4px; display: flex; flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#ffffff', boxSizing: 'border-box', flexShrink: 0;">
                   <span style="font-size: 7px; color: #800020; font-weight: bold; line-height: 1; text-align: center; text-transform: uppercase; letter-spacing: 0.2px;">Care with Devotion</span>
                   <span style="font-family: 'Brush Script MT', 'Lucida Handwriting', cursive, sans-serif; font-size: 20px; color: #800020; font-weight: bold; margin: -2px 0;">Charak</span>
                   <span style="font-size: 4px; color: #ffffff; background: #800020; width: 100%; text-align: center; font-weight: bold; padding: 1px 0; border-radius: 2px; text-transform: uppercase;">Charak Charitable Society</span>
@@ -3270,7 +3270,7 @@ const DoctorDashboard = () => {
                   <p style="margin: 0; color: #475569; font-size: 8px; font-weight: 600;">Ph.: 41421738, 40103496 &nbsp;&nbsp;•&nbsp;&nbsp; Web: www.charakmedicall.in &nbsp;&nbsp;•&nbsp;&nbsp; E-mail: maharishicharak@gmail.com</p>
                 </div>
               </div>
-            \`}
+            `}
 
             <div style="text-align: center; margin: 8px 0;">
               <span style="font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 900; color: #800020; border-bottom: 2px solid #800020; border-top: 2px solid #800020; padding: 2px 20px; letter-spacing: 1px; text-transform: uppercase;">Prescription & Clinical Summary</span>
@@ -3278,17 +3278,17 @@ const DoctorDashboard = () => {
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 11px; color: #1E293B; line-height: 1.4; font-family: 'Inter', sans-serif;">
               <div style="display: flex; flex-direction: column; gap: 4px; word-wrap: break-word; white-space: normal;">
-                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Patient Name</span><span style="font-weight: 500;">: \${cleanField(patient.name)}</span></div>
-                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Age / Gender</span><span style="font-weight: 500;">: \${patient.age ? \`\${patient.age} Yrs\` : '—'} / \&nbsp;\${cleanField(patient.gender)}</span></div>
-                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Date</span><span style="font-weight: 500;">: \${cleanField(dateStr)}</span></div>
-                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Mobile No.</span><span style="font-weight: 500;">: \${cleanField(patient.contact)}</span></div>
-                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Address</span><span style="font-weight: 500;">: \${cleanField(patient.address)}</span></div>
+                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Patient Name</span><span style="font-weight: 500;">: ${cleanField(patient.name)}</span></div>
+                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Age / Gender</span><span style="font-weight: 500;">: ${patient.age ? `${patient.age} Yrs` : '—'} / &nbsp;${cleanField(patient.gender)}</span></div>
+                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Date</span><span style="font-weight: 500;">: ${cleanField(dateStr)}</span></div>
+                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Mobile No.</span><span style="font-weight: 500;">: ${cleanField(patient.contact)}</span></div>
+                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Address</span><span style="font-weight: 500;">: ${cleanField(patient.address)}</span></div>
               </div>
               <div style="display: flex; flex-direction: column; gap: 4px; word-wrap: break-word; white-space: normal;">
-                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Doctor Name</span><span style="font-weight: 600;">: \${cleanField(user.name)}</span></div>
-                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Qualification</span><span style="font-weight: 500;">: \${cleanField(user.designation || 'MBBS, MD (Medicine)')}</span></div>
-                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Reg. No.</span><span style="font-weight: 500;">: \${user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</span></div>
-                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Department</span><span style="font-weight: 500;">: \${cleanField(user.department || 'General Medicine')}</span></div>
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Doctor Name</span><span style="font-weight: 600;">: ${cleanField(user.name)}</span></div>
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Qualification</span><span style="font-weight: 500;">: ${cleanField(user.designation || 'MBBS, MD (Medicine)')}</span></div>
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Reg. No.</span><span style="font-weight: 500;">: ${user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</span></div>
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Department</span><span style="font-weight: 500;">: ${cleanField(user.department || 'General Medicine')}</span></div>
                 <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Consultation Time</span><span style="font-weight: 500;">: 10:00 AM - 1:00 PM, 6:00 PM - 9:00 PM</span></div>
               </div>
             </div>
@@ -3310,34 +3310,34 @@ const DoctorDashboard = () => {
                 DIAGNOSIS (Doctor's Observation)
               </div>
               <div style="padding: 10px; font-size: 11.5px; color: #1E293B; line-height: 1.5; font-weight: 500;">
-                \${appointment.diagnosis ? appointment.diagnosis.split('\\n').map(line => \`
+                ${appointment.diagnosis ? appointment.diagnosis.split('\n').map(line => `
                   <div style="display: flex; gap: 8px; margin-bottom: 4px; align-items: flex-start;">
                     <span style="color: #800020; font-size: 8px; margin-top: 3px;">•</span>
-                    <span>\${line.trim()}</span>
+                    <span>${line.trim()}</span>
                   </div>
-                \`).join('') : \`
+                `).join('') : `
                   <div style="display: flex; gap: 8px; align-items: flex-start;">
                     <span style="color: #800020; font-size: 8px; margin-top: 3px;">•</span>
                     <span>General clinical observation & routine consultation.</span>
                   </div>
-                \`}
+                `}
               </div>
             </div>
 
             <!-- SOAP Notes if present -->
-            \${appointment.notes ? \`
+            ${appointment.notes ? `
             <div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: #fff;">
               <div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">
                 Clinical SOAP Notes
               </div>
               <div style="padding: 10px; font-size: 11.5px; color: #334155; line-height: 1.5; font-weight: 500; white-space: pre-wrap;">
-                \${appointment.notes}
+                ${appointment.notes}
               </div>
             </div>
-            \` : ''}
+            ` : ''}
 
             <!-- Medicines Source Rows -->
-            \${prescription && prescription.items && prescription.items.length > 0 ? prescription.items.map((m, idx) => {
+            ${prescription && prescription.items && prescription.items.length > 0 ? prescription.items.map((m, idx) => {
               let freq = 'Once a Day';
               let inst = 'After Food';
               if (m.instructions) {
@@ -3345,25 +3345,25 @@ const DoctorDashboard = () => {
                 if (parts[0]) freq = parts[0].trim();
                 if (parts[1]) inst = parts[1].replace(')', '').trim();
               }
-              return \`
+              return `
                 <tr class="medicine-row-source">
-                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">\${idx + 1}.</td>
-                  <td style="padding: 8px; border-right: 1px solid #800020; font-weight: 700; color: #1E293B; word-break: break-word;">\${cleanField(m.medicine)}</td>
-                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; color: #334155; font-weight: 500; word-break: break-word;">\${cleanField(m.dosage)}</td>
-                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; color: #334155; font-weight: 500; word-break: break-word;">\${cleanField(m.duration)}</td>
-                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; color: #800020; font-weight: 600; word-break: break-word;">\${cleanField(freq)}</td>
-                  <td style="padding: 8px; color: #334155; font-weight: 500; word-break: break-word;">\${cleanField(inst)}</td>
+                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">${idx + 1}.</td>
+                  <td style="padding: 8px; border-right: 1px solid #800020; font-weight: 700; color: #1E293B; word-break: break-word;">${cleanField(m.medicine)}</td>
+                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; color: #334155; font-weight: 500; word-break: break-word;">${cleanField(m.dosage)}</td>
+                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; color: #334155; font-weight: 500; word-break: break-word;">${cleanField(m.duration)}</td>
+                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; color: #800020; font-weight: 600; word-break: break-word;">${cleanField(freq)}</td>
+                  <td style="padding: 8px; color: #334155; font-weight: 500; word-break: break-word;">${cleanField(inst)}</td>
                 </tr>
-              \`;
+              `;
             }).join('') : ''}
 
             <!-- Tests Source Rows -->
-            \${labs && labs.length > 0 ? labs.map((l, idx) => \`
+            ${labs && labs.length > 0 ? labs.map((l, idx) => `
               <tr class="lab-row-source">
-                <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">\${idx + 1}.</td>
-                <td style="padding: 8px; font-weight: 700; color: #1E293B;">\${cleanField(l.testName || l)}</td>
+                <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">${idx + 1}.</td>
+                <td style="padding: 8px; font-weight: 700; color: #1E293B;">${cleanField(l.testName || l)}</td>
               </tr>
-            \`).join('') : ''}
+            `).join('') : ''}
 
             <!-- Notes & Signature Container -->
             <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 20px; min-height: 90px;" class="signature-block-source">
@@ -3380,12 +3380,12 @@ const DoctorDashboard = () => {
               <div style="text-align: center; width: 200px; font-size: 10.5px; font-family: 'Inter', sans-serif;">
                 <div style="border-bottom: 1px solid #800020; margin-bottom: 6px; height: 40px; position: relative;">
                   <span style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 22px; color: #800020; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-weight: 500;">
-                    \${user.name ? user.name.replace('Dr. ', '') : 'Anil Sharma'}
+                    ${user.name ? user.name.replace('Dr. ', '') : 'Anil Sharma'}
                   </span>
                 </div>
-                <div style="color: #800020; font-weight: 700; font-size: 12px;">\${user.name || 'Dr. Anil Sharma'}</div>
-                <div style="color: #475569; font-weight: 600; font-size: 10px; margin-top: 2px;">\${user.designation || 'MBBS, MD (Medicine)'}</div>
-                <div style="color: #475569; font-weight: 600; font-size: 10px;">Reg. No. \${user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</div>
+                <div style="color: #800020; font-weight: 700; font-size: 12px;">${user.name || 'Dr. Anil Sharma'}</div>
+                <div style="color: #475569; font-weight: 600; font-size: 10px; margin-top: 2px;">${user.designation || 'MBBS, MD (Medicine)'}</div>
+                <div style="color: #475569; font-weight: 600; font-size: 10px;">Reg. No. ${user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</div>
                 <div style="color: #800020; font-weight: 800; font-size: 10px; margin-top: 3px; text-transform: uppercase;">(Consultant Physician)</div>
                 <div style="color: #94A3B8; font-size: 9px; margin-top: 3px; font-weight: 550; letter-spacing: 0.2px;">Signature & Seal</div>
               </div>
