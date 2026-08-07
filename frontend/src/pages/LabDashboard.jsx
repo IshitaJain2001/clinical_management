@@ -620,8 +620,11 @@ const LabDashboard = () => {
 
   useEffect(() => {
     fetchData();
-    // Poll coverage data every 10 seconds for real-time updates
-    const pollInterval = setInterval(fetchCoverageData, 10000);
+    // Poll data and coverage data every 5 seconds for real-time updates
+    const pollInterval = setInterval(() => {
+      fetchData();
+      fetchCoverageData();
+    }, 5000);
     return () => clearInterval(pollInterval);
   }, [fetchCoverageData]);
 
