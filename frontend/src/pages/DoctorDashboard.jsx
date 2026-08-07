@@ -1127,21 +1127,47 @@ const DoctorDashboard = () => {
         return;
       }
 
-      const medicinesHtml = (item.items || []).map((m, idx) => `
-        <tr style="border-bottom: 1px solid #E2E8F0;">
-          <td style="padding: 12px; font-weight: bold; color: #1E293B;">${idx + 1}. ${m.medicine}</td>
-          <td style="padding: 12px; color: #475569;">${m.dosage}</td>
-          <td style="padding: 12px; color: #475569;">${m.duration}</td>
-          <td style="padding: 12px; color: #2563EB; font-weight: bold;">${m.instructions}</td>
-        </tr>
-      `).join('');
+      const medicinesHtml = (item.items || []).map((m, idx) => {
+        let freq = 'Once a Day';
+        let inst = 'After Food';
+        if (m.instructions) {
+          const parts = m.instructions.split('(');
+          if (parts[0]) freq = parts[0].trim();
+          if (parts[1]) inst = parts[1].replace(')', '').trim();
+        }
+        return `
+          <tr style="border-bottom: 1px solid #800020;">
+            <td style="padding: 10px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">${idx + 1}.</td>
+            <td style="padding: 10px; border-right: 1px solid #800020; font-weight: 700; color: #1E293B;">${m.medicine}</td>
+            <td style="padding: 10px; text-align: center; border-right: 1px solid #800020; color: #334155; font-weight: 500;">${m.dosage}</td>
+            <td style="padding: 10px; text-align: center; border-right: 1px solid #800020; color: #334155; font-weight: 500;">${m.duration}</td>
+            <td style="padding: 10px; text-align: center; border-right: 1px solid #800020; color: #800020; font-weight: 600;">${freq}</td>
+            <td style="padding: 10px; color: #334155; font-weight: 500;">${inst}</td>
+          </tr>
+        `;
+      }).join('');
 
       const labsHtml = (item.tests || []).length > 0 
         ? `<div style="margin-top: 20px;">
-             <h4 style="margin-bottom: 8px; color: #0F172A; font-family: 'Outfit', sans-serif;">Lab Tests Ordered:</h4>
-             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-               ${item.tests.map(t => `<span style="background: #EFF6FF; color: #1E40AF; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; border: 1px solid #BFDBFE;">${t}</span>`).join('')}
+             <div style="font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px;">
+               PRESCRIBED TESTS
              </div>
+             <table style="width: 50%; border-collapse: collapse; font-size: 12.5px; border: 1.5px solid #800020; border-radius: 8px; overflow: hidden;">
+               <thead>
+                 <tr style="background: #FDF2F4; border-bottom: 1.5px solid #800020;">
+                   <th style="padding: 10px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 60px;">S. No.</th>
+                   <th style="padding: 10px; color: #800020; font-weight: 800; text-align: left;">Test Name</th>
+                 </tr>
+               </thead>
+               <tbody>
+                 ${item.tests.map((test, idx) => `
+                   <tr style="border-bottom: 1px solid #800020;">
+                     <td style="padding: 10px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">${idx + 1}.</td>
+                     <td style="padding: 10px; font-weight: 700; color: #1E293B;">${test}</td>
+                   </tr>
+                 `).join('')}
+               </tbody>
+             </table>
            </div>`
         : '';
 
@@ -1150,7 +1176,7 @@ const DoctorDashboard = () => {
         <html>
         <head>
           <title>Prescription - ${selectedPatient?.name || 'Patient'}</title>
-          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Outfit:wght@800&display=swap" rel="stylesheet">
+          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@800;900&display=swap" rel="stylesheet">
           <style>
             @media print {
               body {
@@ -1176,131 +1202,139 @@ const DoctorDashboard = () => {
               box-sizing: border-box;
               position: relative;
               box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-              ${letterheadUrl && !(letterheadUrl.startsWith('data:application/pdf') || letterheadUrl.endsWith('.pdf') || letterheadUrl.includes('application/pdf')) ? `
-                background-image: url('${letterheadUrl}');
-                background-size: contain;
-                background-repeat: no-repeat;
-                background-position: center top;
-              ` : ''}
-            }
-            .content-area {
-              padding-top: ${letterheadUrl ? '160px' : '40px'};
-              padding-bottom: 100px;
-              padding-left: 60px;
-              padding-right: 60px;
-              position: relative;
-              z-index: 10;
-            }
-            .header-info {
-              display: flex;
-              justify-content: space-between;
-              border-bottom: 2px solid #E2E8F0;
-              padding-bottom: 15px;
-              margin-bottom: 20px;
-            }
-            .patient-details {
-              background: #F8FAFC;
-              border: 1px solid #E2E8F0;
-              border-radius: 12px;
-              padding: 16px;
-              margin-bottom: 25px;
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 10px;
-              font-size: 13px;
-            }
-            .rx-title {
-              font-size: 32px;
-              font-weight: 800;
-              color: #2563EB;
-              font-family: 'Outfit', sans-serif;
-              margin-bottom: 15px;
-              display: flex;
-              align-items: center;
-              gap: 8px;
-            }
-            .med-table {
-              width: 100%;
-              border-collapse: collapse;
-              margin-top: 15px;
-              font-size: 13px;
-            }
-            .med-table th {
-              background: #F1F5F9;
-              text-align: left;
-              padding: 10px;
-              color: #475569;
-              font-weight: bold;
-            }
-            .footer-sign {
-              position: absolute;
-              bottom: 80px;
-              right: 60px;
-              text-align: center;
-              font-size: 12px;
+              padding: 20mm;
             }
           </style>
         </head>
         <body>
           <div class="page-container">
-            ${letterheadUrl && (letterheadUrl.startsWith('data:application/pdf') || letterheadUrl.endsWith('.pdf') || letterheadUrl.includes('application/pdf')) ? `
-              <embed src="${letterheadUrl}" type="application/pdf" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; border: none;" />
-            ` : ''}
-            <div class="content-area">
-              ${!letterheadUrl ? `
-                <div class="header-info">
-                  <div>
-                    <h2 style="margin: 0; color: #0F172A; font-family: 'Outfit', sans-serif; font-size: 20px;">${item.clinic || 'Curoxa Cardiac OPD Center'}</h2>
-                    <p style="margin: 4px 0 0 0; font-size: 12px; color: #64748B;">Digital Prescription Record</p>
-                  </div>
-                  <div style="text-align: right;">
-                    <h3 style="margin: 0; color: #1E293B; font-size: 15px;">${item.doctor || 'Dr. Sarah Jenkins'}</h3>
-                    <p style="margin: 4px 0 0 0; font-size: 12px; color: #64748B;">Cardiology Specialist</p>
-                  </div>
+            <!-- Letterhead Section -->
+            ${letterheadUrl ? `
+              <div style="width: 100%; text-align: center; margin-bottom: 20px; border-bottom: 2.5px solid #800020; padding-bottom: 10px;">
+                <img src="${letterheadUrl}" style="max-width: 100%; max-height: 120px; object-fit: contain;" />
+              </div>
+            ` : `
+              <div style="display: flex; align-items: center; border-bottom: 3px double #800020; padding-bottom: 12px; margin-bottom: 20px;">
+                <div style="border: 2px solid #800020; border-radius: 8px; width: 75px; height: 75px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; box-sizing: border-box; flex-shrink: 0;">
+                  <span style="font-size: 8px; color: #800020; font-weight: bold; line-height: 1; text-align: center; text-transform: uppercase; letter-spacing: 0.5px;">Care with Devotion</span>
+                  <span style="font-family: 'Brush Script MT', 'Lucida Handwriting', cursive, sans-serif; font-size: 26px; color: #800020; font-weight: bold; margin: -1px 0;">Charak</span>
+                  <span style="font-size: 5px; color: #ffffff; background: #800020; width: 100%; text-align: center; font-weight: bold; padding: 1.5px 0; border-radius: 2px; text-transform: uppercase;">Charak Charitable Society</span>
                 </div>
-              ` : ''}
-
-              <div class="rx-title">
-                <span style="font-size: 36px; line-height: 1;">℞</span> Prescription
+                <div style="flex-grow: 1; text-align: center; padding-right: 75px;">
+                  <h1 style="margin: 0; color: #800020; font-family: 'Outfit', 'Inter', sans-serif; font-size: 26px; font-weight: 900; letter-spacing: 0.5px;">MAHARISHI CHARAK CHARITABLE SOCIETY</h1>
+                  <p style="margin: 5px 0; color: #1E293B; font-size: 11.5px; font-weight: 700; letter-spacing: 0.2px;">F-36A, ARYA SAMAJ MANDIR MARG, MANSROVER GARDEN, NEW DELHI-15</p>
+                  <p style="margin: 0; color: #475569; font-size: 10.5px; font-weight: 600;">Ph.: 41421738, 40103496 &nbsp;&nbsp;•&nbsp;&nbsp; Web: www.charakmedicall.in &nbsp;&nbsp;•&nbsp;&nbsp; E-mail: maharishicharak@gmail.com</p>
+                </div>
               </div>
+            `}
 
-              <div class="patient-details">
-                <div><strong>Patient Name:</strong> ${selectedPatient?.name || '—'}</div>
-                <div><strong>Date:</strong> ${item.date}</div>
-                <div><strong>Age / Gender:</strong> ${selectedPatient?.age ? `${selectedPatient.age} Y` : '—'} / ${selectedPatient?.gender || '—'}</div>
-                <div><strong>Vitals:</strong> ${item.vitals !== '--' ? item.vitals : 'Normal'}</div>
+            <!-- Prescription Header Title -->
+            <div style="text-align: center; margin: 15px 0 25px 0;">
+              <span style="font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 900; color: #800020; border-bottom: 2.5px solid #800020; border-top: 2.5px solid #800020; padding: 4px 24px; letter-spacing: 1.5px; text-transform: uppercase;">Prescription</span>
+            </div>
+
+            <!-- Patient and Doctor Details Grid -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 13px; color: #1E293B; margin-bottom: 20px; line-height: 1.6; font-family: 'Inter', sans-serif;">
+              <!-- Left Column (Patient Details) -->
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Patient Name</span><span style="font-weight: 500;">: ${selectedPatient?.name || '—'}</span></div>
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Age / Gender</span><span style="font-weight: 500;">: ${selectedPatient?.age ? `${selectedPatient.age} Yrs` : '—'} / ${selectedPatient?.gender || '—'}</span></div>
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Date</span><span style="font-weight: 500;">: ${item.date || new Date().toLocaleDateString('en-IN')}</span></div>
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Mobile No.</span><span style="font-weight: 500;">: ${selectedPatient?.contact || '—'}</span></div>
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Address</span><span style="font-weight: 500;">: ${selectedPatient?.address || '—'}</span></div>
               </div>
-
-              <div style="margin-bottom: 15px;">
-                <span style="font-size: 10px; background: #FEE2E2; color: #DC2626; padding: 4px 8px; border-radius: 6px; font-weight: 800; letter-spacing: 0.5px;">DIAGNOSIS</span>
-                <div style="font-size: 15px; font-weight: bold; margin-top: 6px; color: #0F172A;">${item.diagnosis}</div>
+              <!-- Right Column (Doctor Details) -->
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <div><span style="font-weight: 700; width: 130px; display: inline-block; color: #800020;">Doctor Name</span><span style="font-weight: 600;">: ${item.doctor || user.name || 'Dr. Anil Sharma'}</span></div>
+                <div><span style="font-weight: 700; width: 130px; display: inline-block; color: #800020;">Qualification</span><span style="font-weight: 500;">: ${user.designation || 'MBBS, MD (Medicine)'}</span></div>
+                <div><span style="font-weight: 700; width: 130px; display: inline-block; color: #800020;">Reg. No.</span><span style="font-weight: 500;">: ${user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</span></div>
+                <div><span style="font-weight: 700; width: 130px; display: inline-block; color: #800020;">Department</span><span style="font-weight: 500;">: ${user.department || 'General Medicine'}</span></div>
+                <div><span style="font-weight: 700; width: 130px; display: inline-block; color: #800020;">Consultation Time</span><span style="font-weight: 500;">: 10:00 AM - 1:00 PM, 6:00 PM - 9:00 PM</span></div>
               </div>
+            </div>
 
-              <table class="med-table">
+            <!-- Divider line -->
+            <hr style="border: none; border-top: 1.5px solid #800020; margin: 15px 0 20px 0;" />
+
+            <!-- Diagnosis Box -->
+            <div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 20px; overflow: hidden; background: #fff;">
+              <div style="background: #FDF2F4; padding: 8px 12px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">
+                DIAGNOSIS (Doctor's Observation)
+              </div>
+              <div style="padding: 12px; font-size: 13px; color: #1E293B; line-height: 1.6; font-weight: 500;">
+                ${item.diagnosis ? item.diagnosis.split('\n').map(line => `
+                  <div style="display: flex; gap: 8px; margin-bottom: 6px; align-items: flex-start;">
+                    <span style="color: #800020; font-size: 10px; margin-top: 4px;">•</span>
+                    <span>${line.trim()}</span>
+                  </div>
+                `).join('') : `
+                  <div style="display: flex; gap: 8px; align-items: flex-start;">
+                    <span style="color: #800020; font-size: 10px; margin-top: 4px;">•</span>
+                    <span>General clinical observation & routine consultation.</span>
+                  </div>
+                `}
+              </div>
+            </div>
+
+            <!-- Medicines Table -->
+            <div style="margin-bottom: 20px;">
+              <div style="font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px;">
+                PRESCRIBED MEDICINES
+              </div>
+              <table style="width: 100%; border-collapse: collapse; font-size: 12.5px; border: 1.5px solid #800020; border-radius: 8px; overflow: hidden;">
                 <thead>
-                  <tr>
-                    <th>Medicine</th>
-                    <th>Dosage</th>
-                    <th>Duration</th>
-                    <th>Instructions</th>
+                  <tr style="background: #FDF2F4; border-bottom: 1.5px solid #800020;">
+                    <th style="padding: 10px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 60px;">S. No.</th>
+                    <th style="padding: 10px; color: #800020; font-weight: 800; text-align: left; border-right: 1px solid #800020;">Medicine Name</th>
+                    <th style="padding: 10px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 80px;">Dose</th>
+                    <th style="padding: 10px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 90px;">Duration</th>
+                    <th style="padding: 10px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 120px;">Frequency</th>
+                    <th style="padding: 10px; color: #800020; font-weight: 800; text-align: left;">Instructions</th>
                   </tr>
                 </thead>
                 <tbody>
                   ${medicinesHtml}
                 </tbody>
               </table>
+            </div>
 
-              ${labsHtml}
+            <!-- Lab Tests -->
+            ${labsHtml}
 
-              <div class="footer-sign">
-                <div style="border-bottom: 1px solid #94A3B8; width: 150px; margin: 0 auto 8px auto; height: 40px;">
-                  <span style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 20px; color: #64748B; display: block; padding-top: 10px;">${item.doctor}</span>
+            <!-- Notes & Signature Section -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; min-height: 120px;">
+              <!-- Note on the Left -->
+              <div style="font-size: 11.5px; line-height: 1.6; max-width: 60%;">
+                <div style="color: #800020; font-weight: 800; font-size: 12.5px; margin-bottom: 4px; text-transform: uppercase;">Note :</div>
+                <ul style="padding-left: 12px; margin: 0; list-style-type: square; color: #334155; font-weight: 600;">
+                  <li>Take medicines as prescribed.</li>
+                  <li>Complete the full course of antibiotics.</li>
+                  <li>Avoid cold drinks and oily food.</li>
+                  <li>Drink plenty of fluids and take rest.</li>
+                </ul>
+              </div>
+              
+              <!-- Signature on the Right -->
+              <div style="text-align: center; width: 220px; font-size: 11.5px; font-family: 'Inter', sans-serif;">
+                <div style="border-bottom: 1.5px solid #800020; margin-bottom: 8px; height: 50px; position: relative;">
+                  <span style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 26px; color: #800020; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); font-weight: 500;">
+                    ${item.doctor ? item.doctor.replace('Dr. ', '') : (user.name ? user.name.replace('Dr. ', '') : 'Anil Sharma')}
+                  </span>
                 </div>
-                <strong>Authorized eSign / Signature</strong>
-                <div style="font-size: 10px; color: #94A3B8; margin-top: 4px;">Tamper-proof DPDP Compliant Log</div>
+                <div style="color: #800020; font-weight: 700; font-size: 13px;">${item.doctor || user.name || 'Dr. Anil Sharma'}</div>
+                <div style="color: #475569; font-weight: 600; font-size: 11px; margin-top: 2px;">${user.designation || 'MBBS, MD (Medicine)'}</div>
+                <div style="color: #475569; font-weight: 600; font-size: 11px;">Reg. No. ${user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</div>
+                <div style="color: #800020; font-weight: 800; font-size: 11px; margin-top: 4px; text-transform: uppercase;">(Consultant Physician)</div>
+                <div style="color: #94A3B8; font-size: 9.5px; margin-top: 4px; font-weight: 550; letter-spacing: 0.2px;">Signature & Seal</div>
               </div>
             </div>
+
+            <!-- Get Well Soon Footer -->
+            <div style="position: absolute; bottom: 30px; left: 20mm; right: 20mm; text-align: center; font-family: 'Outfit', sans-serif; font-size: 12.5px; font-weight: bold; color: #800020; border-top: 1px solid #E2E8F0; padding-top: 15px;">
+              Thank you for trusting us with your health. Get well soon!
+            </div>
           </div>
+
           <script>
             window.onload = function() {
               window.print();

@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
         "patientId doctorId items status createdAt updatedAt appointmentId",
       )
       .populate("patientId", "name age contact")
-      .populate("doctorId", "name")
+      .populate("doctorId", "name specialty department designation staff_id")
       .sort({ createdAt: -1 })
       .limit(parseInt(req.query.limit, 10) || 200)
       .lean();
