@@ -1015,9 +1015,8 @@ const PatientDashboard = () => {
           <!-- Hidden Templates -->
           <div id="print-header-template" style="display: none; box-sizing: border-box;">
             ${letterheadUrl ? `
-              <div style="width: 100%; text-align: center; border-bottom: 2.5px solid #800020; padding-bottom: 6px; height: 100px; display: flex; align-items: center; justify-content: center;">
-                <img src="${letterheadUrl}" style="max-width: 100%; max-height: 90px; object-fit: contain;" />
-              </div>
+              <!-- Empty spacer to let the background letterhead's top banner show through -->
+              <div style="height: 38mm; width: 100%;"></div>
             ` : `
               <div style="display: flex; align-items: center; border-bottom: 3px double #800020; padding-bottom: 8px; height: 80px; box-sizing: border-box;">
                 <div style="border: 2px solid #800020; border-radius: 8px; width: 65px; height: 65px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; box-sizing: border-box; flex-shrink: 0;">
@@ -1193,6 +1192,18 @@ const PatientDashboard = () => {
             function createNewPage(headerTemplate, footerTemplate) {
               const page = document.createElement('div');
               page.className = 'page-container';
+              
+              if (letterheadUrl) {
+                const bg = document.createElement('img');
+                bg.src = letterheadUrl;
+                bg.style.position = 'absolute';
+                bg.style.top = '0';
+                bg.style.left = '0';
+                bg.style.width = '210mm';
+                bg.style.height = '297mm';
+                bg.style.zIndex = '-1';
+                page.appendChild(bg);
+              }
               
               const header = headerTemplate.cloneNode(true);
               header.removeAttribute('id');

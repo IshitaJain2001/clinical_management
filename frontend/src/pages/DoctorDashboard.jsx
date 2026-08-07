@@ -1219,9 +1219,8 @@ const DoctorDashboard = () => {
           <!-- Hidden Templates -->
           <div id="print-header-template" style="display: none; box-sizing: border-box;">
             ${letterheadUrl ? `
-              <div style="width: 100%; text-align: center; border-bottom: 2.5px solid #800020; padding-bottom: 6px; height: 100px; display: flex; align-items: center; justify-content: center;">
-                <img src="${letterheadUrl}" style="max-width: 100%; max-height: 90px; object-fit: contain;" />
-              </div>
+              <!-- Empty spacer to let the background letterhead's top banner show through -->
+              <div style="height: 38mm; width: 100%;"></div>
             ` : `
               <div style="display: flex; align-items: center; border-bottom: 3px double #800020; padding-bottom: 8px; height: 80px; box-sizing: border-box;">
                 <div style="border: 2px solid #800020; border-radius: 8px; width: 65px; height: 65px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; box-sizing: border-box; flex-shrink: 0;">
@@ -1409,6 +1408,18 @@ const DoctorDashboard = () => {
             function createNewPage(headerTemplate, footerTemplate) {
               const page = document.createElement('div');
               page.className = 'page-container';
+              
+              if (letterheadUrl) {
+                const bg = document.createElement('img');
+                bg.src = letterheadUrl;
+                bg.style.position = 'absolute';
+                bg.style.top = '0';
+                bg.style.left = '0';
+                bg.style.width = '210mm';
+                bg.style.height = '297mm';
+                bg.style.zIndex = '-1';
+                page.appendChild(bg);
+              }
               
               const header = headerTemplate.cloneNode(true);
               header.removeAttribute('id');
@@ -3243,9 +3254,8 @@ const DoctorDashboard = () => {
           <!-- Hidden Templates -->
           <div id="print-header-template" style="display: none; box-sizing: border-box;">
             \${customLetterhead ? \`
-              <div style="width: 100%; text-align: center; border-bottom: 2.5px solid #800020; padding-bottom: 6px; height: 100px; display: flex; align-items: center; justify-content: center;">
-                <img src="\${customLetterhead}" style="max-width: 100%; max-height: 90px; object-fit: contain;" />
-              </div>
+              <!-- Empty spacer to let the background letterhead's top banner show through -->
+              <div style="height: 38mm; width: 100%;"></div>
             \` : \`
               <div style="display: flex; align-items: center; border-bottom: 3px double #800020; padding-bottom: 8px; height: 80px; box-sizing: border-box;">
                 <div style="border: 2px solid #800020; border-radius: 8px; width: 65px; height: 65px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; box-sizing: border-box; flex-shrink: 0;">
@@ -3433,6 +3443,18 @@ const DoctorDashboard = () => {
             function createNewPage(headerTemplate, footerTemplate) {
               const page = document.createElement('div');
               page.className = 'page-container';
+              
+              if (customLetterhead) {
+                const bg = document.createElement('img');
+                bg.src = customLetterhead;
+                bg.style.position = 'absolute';
+                bg.style.top = '0';
+                bg.style.left = '0';
+                bg.style.width = '210mm';
+                bg.style.height = '297mm';
+                bg.style.zIndex = '-1';
+                page.appendChild(bg);
+              }
               
               const header = headerTemplate.cloneNode(true);
               header.removeAttribute('id');
@@ -9922,9 +9944,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                 {/* Print Page Header (repeating header for print mode, absolute/fixed position on print, hidden on screen) */}
                 <div className="print-page-header print-only">
                   {customLetterhead ? (
-                    <div style={{ width: '100%', textAlign: 'center', borderBottom: '2.5px solid #800020', paddingBottom: '6px', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <img src={customLetterhead} style={{ maxWidth: '100%', maxHeight: '90px', objectFit: 'contain' }} alt="Letterhead" />
-                    </div>
+                    <div style={{ height: '38mm', width: '100%' }}></div>
                   ) : (
                     <div style={{ display: 'flex', alignItems: 'center', borderBottom: '3px double #800020', paddingBottom: '8px', height: '80px', boxSizing: 'border-box' }}>
                       <div style={{ border: '2px solid #800020', borderRadius: '8px', width: '65px', height: '65px', padding: '4px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#ffffff', boxSizing: 'border-box', flexShrink: 0 }}>
@@ -9941,7 +9961,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                   )}
 
                   <div style={{ textAlign: 'center', margin: '8px 0' }}>
-                    <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: '13px', fontWeight: 900, color: '#800020', borderBottom: '2px solid #800020', borderTop: '2px solid #800020', padding: '2px 20px', letterSpacing: '1px', textTransform: 'uppercase' }}>Prescription & Clinical Summary</span>
+                    <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: '13px', fontWeight: 900, color: '#800020', borderBottom: '2px solid #800020', borderTop: '2px solid #800020', padding: '2px 24px', letterSpacing: '1px', textTransform: 'uppercase' }}>Prescription & Clinical Summary</span>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', fontSize: '11px', color: '#1E293B', lineHeight: '1.4', fontFamily: "'Inter', sans-serif" }}>
@@ -9967,8 +9987,14 @@ I have scanned the medical reference databases, but couldn't find a direct match
                 {/* Screen Header (visible on screen only, hidden on print) */}
                 <div className="no-print" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                   {customLetterhead ? (
-                    <div style={{ width: '100%', textAlign: 'center', borderBottom: '2.5px solid #800020', paddingBottom: '10px' }}>
-                      <img src={customLetterhead} style={{ maxWidth: '100%', maxHeight: '120px', objectFit: 'contain' }} alt="Letterhead" />
+                    <div style={{ borderBottom: '2.5px solid #800020', paddingBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <h2 style={{ margin: 0, color: '#800020', fontFamily: "'Outfit', sans-serif", fontSize: '22px', fontWeight: 900 }}>{user.department?.toUpperCase() || 'GENERAL MEDICINE'}</h2>
+                        <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>Using Admin Configured Custom Letterhead Background</span>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 700, padding: '4px 8px', background: '#F8FAFC', borderRadius: '4px', border: '1px dashed #E2E8F0' }}>PDF Letterhead Active</span>
+                      </div>
                     </div>
                   ) : (
                     <div style={{ display: 'flex', alignItems: 'center', borderBottom: '3px double #800020', paddingBottom: '12px' }}>
