@@ -1122,11 +1122,26 @@ const DoctorDashboard = () => {
         letterheadUrl = await convertPdfToImage(letterheadUrl);
       }
 
-      const printWindow = window.open('', '_blank');
-      if (!printWindow) {
-        showToastNotification("Pop-up blocker active. Please allow pop-ups to print.", "error");
-        return;
-      }
+      const iframe = document.createElement('iframe');
+      iframe.style.position = 'fixed';
+      iframe.style.right = '0';
+      iframe.style.bottom = '0';
+      iframe.style.width = '0';
+      iframe.style.height = '0';
+      iframe.style.border = '0';
+      iframe.style.zIndex = '-9999';
+      document.body.appendChild(iframe);
+      const printWindow = iframe.contentWindow;
+
+      const handleMessage = (e) => {
+        if (e.data === 'close-print-prescription-iframe') {
+          try {
+            document.body.removeChild(iframe);
+          } catch (err) {}
+          window.removeEventListener('message', handleMessage);
+        }
+      };
+      window.addEventListener('message', handleMessage);
 
       const cleanField = (val) => (val && String(val).trim() !== '') ? String(val).trim() : '—';
 
@@ -1603,7 +1618,7 @@ const DoctorDashboard = () => {
               waitForImages().then(function() {
                 paginate();
                 window.print();
-                setTimeout(function() { window.close(); }, 500);
+                setTimeout(function() { window.parent.postMessage('close-print-prescription-iframe', '*'); }, 500);
               });
             };
           </script>
@@ -3154,11 +3169,26 @@ const DoctorDashboard = () => {
   const handlePrintSummary = (data) => {
     if (!data) return;
     const { appointment, patient, prescription, labs } = data;
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      showToastNotification("Popup blocked. Please allow popups for this site.", "error");
-      return;
-    }
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    iframe.style.zIndex = '-9999';
+    document.body.appendChild(iframe);
+    const printWindow = iframe.contentWindow;
+
+    const handleMessage = (e) => {
+      if (e.data === 'close-print-summary-iframe') {
+        try {
+          document.body.removeChild(iframe);
+        } catch (err) {}
+        window.removeEventListener('message', handleMessage);
+      }
+    };
+    window.addEventListener('message', handleMessage);
     
     const dateStr = new Date(appointment.date).toLocaleDateString('en-IN', {
       day: 'numeric',
@@ -3516,7 +3546,7 @@ const DoctorDashboard = () => {
               waitForImages().then(function() {
                 paginate();
                 window.print();
-                setTimeout(function() { window.close(); }, 500);
+                setTimeout(function() { window.parent.postMessage('close-print-summary-iframe', '*'); }, 500);
               });
             };
           </script>
