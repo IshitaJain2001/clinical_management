@@ -1435,7 +1435,7 @@ const DoctorDashboard = () => {
               footer.removeAttribute('id');
               footer.style.display = 'block';
               footer.style.position = 'absolute';
-              footer.style.bottom = '15mm';
+              footer.style.bottom = '28mm';
               footer.style.left = '15mm';
               footer.style.right = '15mm';
               
@@ -3153,7 +3153,7 @@ const DoctorDashboard = () => {
   const handlePrintSummary = (data) => {
     if (!data) return;
     const { appointment, patient, prescription, labs } = data;
-    const printWindow = window.open('', '_blank', 'width=800,height=900');
+    const printWindow = window.open('', '_blank');
     if (!printWindow) {
       showToastNotification("Popup blocked. Please allow popups for this site.", "error");
       return;
@@ -3466,7 +3466,7 @@ const DoctorDashboard = () => {
               footer.removeAttribute('id');
               footer.style.display = 'block';
               footer.style.position = 'absolute';
-              footer.style.bottom = '15mm';
+              footer.style.bottom = '28mm';
               footer.style.left = '15mm';
               footer.style.right = '15mm';
               

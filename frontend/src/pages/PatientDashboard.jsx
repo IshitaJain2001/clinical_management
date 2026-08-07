@@ -1218,7 +1218,7 @@ const PatientDashboard = () => {
               footer.removeAttribute('id');
               footer.style.display = 'block';
               footer.style.position = 'absolute';
-              footer.style.bottom = '15mm';
+              footer.style.bottom = '28mm';
               footer.style.left = '15mm';
               footer.style.right = '15mm';
               
