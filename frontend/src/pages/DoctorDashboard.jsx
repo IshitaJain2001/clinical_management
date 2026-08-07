@@ -1248,13 +1248,14 @@ const DoctorDashboard = () => {
                 <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Date</span><span style="font-weight: 500;">: ${cleanField(item.date || new Date().toLocaleDateString('en-IN'))}</span></div>
                 <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Mobile No.</span><span style="font-weight: 500;">: ${cleanField(selectedPatient?.contact)}</span></div>
                 <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Address</span><span style="font-weight: 500;">: ${cleanField(selectedPatient?.address)}</span></div>
+                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Reg. No.</span><span style="font-weight: 500; color: #2563EB; font-weight: bold;">: ${cleanField(item.originalApp?.regNo)}</span></div>
               </div>
               <div style="display: flex; flex-direction: column; gap: 4px; word-wrap: break-word; white-space: normal;">
                 <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Doctor Name</span><span style="font-weight: 600;">: ${cleanField(item.doctor || user.name)}</span></div>
                 <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Qualification</span><span style="font-weight: 500;">: ${cleanField(user.designation || 'MBBS, MD (Medicine)')}</span></div>
-                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Reg. No.</span><span style="font-weight: 500;">: ${user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</span></div>
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Reg. No.</span><span style="font-weight: 500;">: DMC - ${user.staff_id ? (user.staff_id.match(/^\d+$/) ? user.staff_id.slice(-5) : user.staff_id.toUpperCase()) : '12345'}</span></div>
                 <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Department</span><span style="font-weight: 500;">: ${cleanField(user.department || 'General Medicine')}</span></div>
-                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Consultation Time</span><span style="font-weight: 500;">: 10:00 AM - 1:00 PM, 6:00 PM - 9:00 PM</span></div>
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Consultation Time</span><span style="font-weight: 500;">: ${user.shiftName || '10:00 AM - 01:00 PM, 06:00 PM - 09:00 PM'}</span></div>
               </div>
             </div>
 
@@ -3291,7 +3292,7 @@ const DoctorDashboard = () => {
                 <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Qualification</span><span style="font-weight: 500;">: ${cleanField(user.designation || 'MBBS, MD (Medicine)')}</span></div>
                 <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Reg. No.</span><span style="font-weight: 500;">: DMC - ${user.staff_id ? (user.staff_id.match(/^\d+$/) ? user.staff_id.slice(-5) : user.staff_id.toUpperCase()) : '12345'}</span></div>
                 <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Department</span><span style="font-weight: 500;">: ${cleanField(user.department || 'General Medicine')}</span></div>
-                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Consultation Time</span><span style="font-weight: 500;">: ${user.consultationTime || '10:00 AM - 01:00 PM, 06:00 PM - 09:00 PM'}</span></div>
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Consultation Time</span><span style="font-weight: 500;">: ${user.shiftName || '10:00 AM - 01:00 PM, 06:00 PM - 09:00 PM'}</span></div>
               </div>
             </div>
 
@@ -9858,13 +9859,14 @@ I have scanned the medical reference databases, but couldn't find a direct match
                       <div><span style={{ fontWeight: 700, width: '85px', display: 'inline-block', color: '#800020' }}>Date</span><span style={{ fontWeight: 500 }}>: {appointment.date ? new Date(appointment.date).toLocaleDateString('en-IN') : new Date().toLocaleDateString('en-IN')}</span></div>
                       <div><span style={{ fontWeight: 700, width: '85px', display: 'inline-block', color: '#800020' }}>Mobile No.</span><span style={{ fontWeight: 500 }}>: {patient.contact || '—'}</span></div>
                       <div><span style={{ fontWeight: 700, width: '85px', display: 'inline-block', color: '#800020' }}>Address</span><span style={{ fontWeight: 500 }}>: {patient.address || '—'}</span></div>
+                      <div><span style={{ fontWeight: 700, width: '85px', display: 'inline-block', color: '#800020' }}>Reg. No.</span><span style={{ color: '#2563EB', fontWeight: 'bold' }}>: {appointment.regNo || '—'}</span></div>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', wordWrap: 'break-word', whiteSpace: 'normal' }}>
                       <div><span style={{ fontWeight: 700, width: '110px', display: 'inline-block', color: '#800020' }}>Doctor Name</span><span style={{ fontWeight: 600 }}>: {user.name || 'Dr. Anil Sharma'}</span></div>
                       <div><span style={{ fontWeight: 700, width: '110px', display: 'inline-block', color: '#800020' }}>Qualification</span><span style={{ fontWeight: 500 }}>: {user.designation || 'MBBS, MD (Medicine)'}</span></div>
-                      <div><span style={{ fontWeight: 700, width: '110px', display: 'inline-block', color: '#800020' }}>Reg. No.</span><span style={{ fontWeight: 500 }}>: {user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</span></div>
+                      <div><span style={{ fontWeight: 700, width: '110px', display: 'inline-block', color: '#800020' }}>Reg. No.</span><span style={{ fontWeight: 500 }}>: DMC - {user.staff_id ? (user.staff_id.match(/^\d+$/) ? user.staff_id.slice(-5) : user.staff_id.toUpperCase()) : '12345'}</span></div>
                       <div><span style={{ fontWeight: 700, width: '110px', display: 'inline-block', color: '#800020' }}>Department</span><span style={{ fontWeight: 500 }}>: {user.department || 'General Medicine'}</span></div>
-                      <div><span style={{ fontWeight: 700, width: '110px', display: 'inline-block', color: '#800020' }}>Consultation Time</span><span style={{ fontWeight: 500 }}>: 10:00 AM - 1:00 PM, 6:00 PM - 9:00 PM</span></div>
+                      <div><span style={{ fontWeight: 700, width: '110px', display: 'inline-block', color: '#800020' }}>Consultation Time</span><span style={{ fontWeight: 500 }}>: {user.shiftName || '10:00 AM - 01:00 PM, 06:00 PM - 09:00 PM'}</span></div>
                     </div>
                   </div>
 
@@ -9911,13 +9913,14 @@ I have scanned the medical reference databases, but couldn't find a direct match
                       <div><span style={{ fontWeight: 700, width: '110px', display: 'inline-block', color: '#800020' }}>Date</span><span style={{ fontWeight: 500 }}>: {appointment.date ? new Date(appointment.date).toLocaleDateString('en-IN') : new Date().toLocaleDateString('en-IN')}</span></div>
                       <div><span style={{ fontWeight: 700, width: '110px', display: 'inline-block', color: '#800020' }}>Mobile No.</span><span style={{ fontWeight: 500 }}>: {patient.contact || '—'}</span></div>
                       <div><span style={{ fontWeight: 700, width: '110px', display: 'inline-block', color: '#800020' }}>Address</span><span style={{ fontWeight: 500 }}>: {patient.address || '—'}</span></div>
+                      <div><span style={{ fontWeight: 700, width: '110px', display: 'inline-block', color: '#800020' }}>Reg. No.</span><span style={{ color: '#2563EB', fontWeight: 'bold' }}>: {appointment.regNo || '—'}</span></div>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                       <div><span style={{ fontWeight: 700, width: '130px', display: 'inline-block', color: '#800020' }}>Doctor Name</span><span style={{ fontWeight: 600 }}>: {user.name || 'Dr. Anil Sharma'}</span></div>
                       <div><span style={{ fontWeight: 700, width: '130px', display: 'inline-block', color: '#800020' }}>Qualification</span><span style={{ fontWeight: 500 }}>: {user.designation || 'MBBS, MD (Medicine)'}</span></div>
-                      <div><span style={{ fontWeight: 700, width: '130px', display: 'inline-block', color: '#800020' }}>Reg. No.</span><span style={{ fontWeight: 500 }}>: {user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</span></div>
+                      <div><span style={{ fontWeight: 700, width: '130px', display: 'inline-block', color: '#800020' }}>Reg. No.</span><span style={{ fontWeight: 500 }}>: DMC - {user.staff_id ? (user.staff_id.match(/^\d+$/) ? user.staff_id.slice(-5) : user.staff_id.toUpperCase()) : '12345'}</span></div>
                       <div><span style={{ fontWeight: 700, width: '130px', display: 'inline-block', color: '#800020' }}>Department</span><span style={{ fontWeight: 500 }}>: {user.department || 'General Medicine'}</span></div>
-                      <div><span style={{ fontWeight: 700, width: '130px', display: 'inline-block', color: '#800020' }}>Consultation Time</span><span style={{ fontWeight: 500 }}>: 10:00 AM - 1:00 PM, 6:00 PM - 9:00 PM</span></div>
+                      <div><span style={{ fontWeight: 700, width: '130px', display: 'inline-block', color: '#800020' }}>Consultation Time</span><span style={{ fontWeight: 500 }}>: {user.shiftName || '10:00 AM - 01:00 PM, 06:00 PM - 09:00 PM'}</span></div>
                     </div>
                   </div>
 
