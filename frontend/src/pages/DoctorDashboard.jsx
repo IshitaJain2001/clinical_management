@@ -8835,7 +8835,40 @@ I have scanned the medical reference databases, but couldn't find a direct match
               <button className="btn-cu outline" onClick={() => setShowPdf(false)}>
                 Close Preview
               </button>
-              <button className="btn-cu primary" onClick={() => window.print()}>
+              <button className="btn-cu primary" onClick={() => {
+                const formattedData = {
+                  appointment: {
+                    date: new Date(),
+                    diagnosis: diagnoses.join('\n') || soap.subjective || 'General consultation.',
+                    notes: [
+                      soap.subjective ? `S: ${soap.subjective}` : '',
+                      soap.objective ? `O: ${soap.objective}` : '',
+                      soap.assessment ? `A: ${soap.assessment}` : '',
+                      soap.plan ? `P: ${soap.plan}` : '',
+                      advice.diet ? `Diet: ${advice.diet}` : '',
+                      advice.exercise ? `Exercise: ${advice.exercise}` : '',
+                      advice.followUp ? `Follow Up: ${advice.followUp}` : ''
+                    ].filter(Boolean).join('\n')
+                  },
+                  patient: {
+                    name: selectedPatient?.name,
+                    age: selectedPatient?.age,
+                    gender: selectedPatient?.gender,
+                    contact: selectedPatient?.contact,
+                    address: selectedPatient?.address
+                  },
+                  prescription: {
+                    items: medicines.map(m => ({
+                      medicine: m.name,
+                      dosage: m.dose,
+                      duration: m.duration,
+                      instructions: `${m.freq} (${m.timing})`
+                    }))
+                  },
+                  labs: labs
+                };
+                handlePrintSummary(formattedData);
+              }}>
                 Print Prescription
               </button>
             </div>
