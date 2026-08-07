@@ -3049,6 +3049,34 @@ const DoctorDashboard = () => {
         if (rxRes && rxRes.data) {
           setAllPrescriptions(prev => prev.map(r => r._id === editingPrescriptionId ? rxRes.data : r));
         }
+
+        // Delete all old lab requests for this appointment and re-create updated ones!
+        try {
+          await api.delete(`/labs/appointment/${resolvedAppId}`);
+          const createdLabs = [];
+          for (const test of validLabs) {
+            const labRes = await api.post('/labs', {
+              appointmentId: resolvedAppId,
+              patientId: patientId,
+              doctorId: user.id,
+              testName: test.trim(),
+              notes: 'Requested from Prescription Maker EMR (Updated)'
+            });
+            if (labRes && labRes.data) {
+              createdLabs.push(labRes.data);
+            }
+          }
+          // Optimistically update allLabs state
+          setAllLabs(prev => {
+            const filtered = prev.filter(l => {
+              const lid = l.appointmentId?._id || l.appointmentId;
+              return lid !== resolvedAppId;
+            });
+            return [...createdLabs, ...filtered];
+          });
+        } catch (labSyncErr) {
+          console.error("Failed to sync labs on edit:", labSyncErr);
+        }
       } else {
         // Create flow
         const rxRes = await api.post('/prescriptions', {
@@ -3063,14 +3091,21 @@ const DoctorDashboard = () => {
         }
 
         // Create real lab requests in DB
+        const createdLabs = [];
         for (const test of validLabs) {
-          await api.post('/labs', {
+          const labRes = await api.post('/labs', {
             appointmentId: resolvedAppId,
             patientId: patientId,
             doctorId: user.id,
             testName: test.trim(),
             notes: 'Requested from Prescription Maker EMR'
           });
+          if (labRes && labRes.data) {
+            createdLabs.push(labRes.data);
+          }
+        }
+        if (createdLabs.length > 0) {
+          setAllLabs(prev => [...createdLabs, ...prev]);
         }
       }
 

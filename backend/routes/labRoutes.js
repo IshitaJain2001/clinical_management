@@ -114,4 +114,21 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+// Delete lab requests for a specific appointment (scoped to tenant)
+router.delete('/appointment/:appointmentId', async (req, res) => {
+  try {
+    await LabRequest.deleteMany({
+      appointmentId: req.params.appointmentId,
+      tenantId: req.tenantId
+    });
+    const io = req.app.get("io");
+    if (io && req.tenantId) {
+      io.to(req.tenantId).emit("data_changed", { type: "labs" });
+    }
+    res.json({ message: 'Lab requests deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
