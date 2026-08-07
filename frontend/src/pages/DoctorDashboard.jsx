@@ -10104,6 +10104,41 @@ I have scanned the medical reference databases, but couldn't find a direct match
                   </span>
                 </div>
                 <div style={{ display: 'flex', gap: '12px' }}>
+                {prescription && (
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      setShowAppOverviewModal(false);
+                      setSelectedOverviewApp(null);
+                      handleLoadPrescriptionForEdit(prescription, labs);
+                    }} 
+                    style={{ 
+                      padding: '10px 20px', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '8px',
+                      background: '#F0FDF4',
+                      border: '1.5px solid #BBF7D0',
+                      borderRadius: '8px',
+                      color: '#15803D',
+                      fontSize: '14px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease-in-out'
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.background = '#DCFCE7';
+                      e.currentTarget.style.borderColor = '#86EFAC';
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.background = '#F0FDF4';
+                      e.currentTarget.style.borderColor = '#BBF7D0';
+                    }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                    <span>Edit Prescription</span>
+                  </button>
+                )}
                 <button 
                   type="button" 
                   onClick={() => {
