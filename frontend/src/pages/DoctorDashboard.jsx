@@ -1638,6 +1638,14 @@ const DoctorDashboard = () => {
   const handleLoadPrescriptionForEdit = (rx, relatedLabs) => {
     setEditingPrescriptionId(rx._id);
     setEditingAppointmentId(rx.appointmentId);
+    if (rx.appointmentId) {
+      setActiveAppointmentId(rx.appointmentId);
+    }
+    const patientRef = rx.patientId?._id || rx.patientId;
+    const relatedPatient = patientRef ? (patients.find(p => p._id === patientRef) || patientsList.find(p => p._id === patientRef)) : null;
+    if (relatedPatient) {
+      setSelectedPatient(relatedPatient);
+    }
 
     if (rx.items && rx.items.length > 0) {
       const loadedMeds = rx.items.map((item, idx) => {
@@ -2269,7 +2277,7 @@ const DoctorDashboard = () => {
         _id: app._id,
         patientIdStr: `#${formattedId}`,
         patientName: pObj?.name || 'Anonymous Patient',
-        timeRange: app.time ? `${app.time} to ${calculateEndTime(app.time)}` : '10:15 AM to 11:00 AM',
+        timeRange: app.time ? (app.time.includes('-') ? app.time : `${app.time} to ${calculateEndTime(app.time)}`) : '10:15 AM to 11:00 AM',
         symptoms: app.reason || 'Fever, Body Pain',
         status: ['Pending', 'In Progress', 'Paid', 'Upcoming'].includes(app.status) ? 'Upcoming' : app.status,
         billingStatus: app.billingStatus || 'Unpaid',
