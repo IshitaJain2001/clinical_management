@@ -3036,7 +3036,7 @@ const DoctorDashboard = () => {
 
       if (editingPrescriptionId) {
         // Edit flow
-        await api.put(`/prescriptions/${editingPrescriptionId}`, {
+        const rxRes = await api.put(`/prescriptions/${editingPrescriptionId}`, {
           appointmentId: resolvedAppId,
           patientId: patientId,
           doctorId: user.id,
@@ -3046,15 +3046,21 @@ const DoctorDashboard = () => {
           diagnosis: cleanDiagnosisText,
           notes: soap.assessment || ''
         });
+        if (rxRes && rxRes.data) {
+          setAllPrescriptions(prev => prev.map(r => r._id === editingPrescriptionId ? rxRes.data : r));
+        }
       } else {
         // Create flow
-        await api.post('/prescriptions', {
+        const rxRes = await api.post('/prescriptions', {
           appointmentId: resolvedAppId,
           patientId: patientId,
           doctorId: user.id,
           status: rxStatus,
           items: validMedicines
         });
+        if (rxRes && rxRes.data) {
+          setAllPrescriptions(prev => [rxRes.data, ...prev]);
+        }
 
         // Create real lab requests in DB
         for (const test of validLabs) {
