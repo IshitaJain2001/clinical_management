@@ -1180,6 +1180,10 @@ const DoctorDashboard = () => {
           <title>Prescription - ${cleanField(selectedPatient?.name)}</title>
           <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@800;900&display=swap" rel="stylesheet">
           <style>
+            @page {
+              size: A4;
+              margin: 0;
+            }
             @media print {
               body {
                 margin: 0;
@@ -1188,10 +1192,9 @@ const DoctorDashboard = () => {
                 print-color-adjust: exact;
               }
               .page-container {
-                width: 210mm;
-                margin: 0;
-                box-shadow: none;
-                padding: 0;
+                margin: 0 !important;
+                box-shadow: none !important;
+                page-break-after: always !important;
               }
             }
             body {
@@ -1203,160 +1206,370 @@ const DoctorDashboard = () => {
             }
             .page-container {
               width: 210mm;
+              height: 297mm;
               margin: 0 auto;
               background-color: #ffffff;
               box-sizing: border-box;
               position: relative;
-              padding-left: 15mm;
-              padding-right: 15mm;
+              padding: 15mm 15mm 20mm 15mm;
             }
           </style>
         </head>
         <body>
-          <div class="page-container">
-            <!-- Repeating Header -->
-            <div class="page-header" style="position: fixed; top: 0; left: 15mm; right: 15mm; height: 60mm; box-sizing: border-box; background: white; z-index: 1000;">
-              ${letterheadUrl ? `
-                <div style="width: 100%; text-align: center; border-bottom: 2.5px solid #800020; padding-bottom: 6px; height: 100px; display: flex; align-items: center; justify-content: center;">
-                  <img src="${letterheadUrl}" style="max-width: 100%; max-height: 90px; object-fit: contain;" />
-                </div>
-              ` : `
-                <div style="display: flex; align-items: center; border-bottom: 3px double #800020; padding-bottom: 8px; height: 80px; box-sizing: border-box;">
-                  <div style="border: 2px solid #800020; border-radius: 8px; width: 65px; height: 65px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; box-sizing: border-box; flex-shrink: 0;">
-                    <span style="font-size: 7px; color: #800020; font-weight: bold; line-height: 1; text-align: center; text-transform: uppercase; letter-spacing: 0.2px;">Care with Devotion</span>
-                    <span style="font-family: 'Brush Script MT', 'Lucida Handwriting', cursive, sans-serif; font-size: 20px; color: #800020; font-weight: bold; margin: -2px 0;">Charak</span>
-                    <span style="font-size: 4px; color: #ffffff; background: #800020; width: 100%; text-align: center; font-weight: bold; padding: 1px 0; border-radius: 2px; text-transform: uppercase;">Charak Charitable Society</span>
-                  </div>
-                  <div style="flex-grow: 1; text-align: center; padding-right: 65px;">
-                    <h1 style="margin: 0; color: #800020; font-family: 'Outfit', 'Inter', sans-serif; font-size: 20px; font-weight: 900; letter-spacing: 0.5px; line-height: 1.2;">MAHARISHI CHARAK CHARITABLE SOCIETY</h1>
-                    <p style="margin: 3px 0; color: #1E293B; font-size: 9px; font-weight: 700; letter-spacing: 0.2px;">F-36A, ARYA SAMAJ MANDIR MARG, MANSROVER GARDEN, NEW DELHI-15</p>
-                    <p style="margin: 0; color: #475569; font-size: 8px; font-weight: 600;">Ph.: 41421738, 40103496 &nbsp;&nbsp;•&nbsp;&nbsp; Web: www.charakmedicall.in &nbsp;&nbsp;•&nbsp;&nbsp; E-mail: maharishicharak@gmail.com</p>
-                  </div>
-                </div>
-              `}
-
-              <div style="text-align: center; margin: 8px 0;">
-                <span style="font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 900; color: #800020; border-bottom: 2px solid #800020; border-top: 2px solid #800020; padding: 2px 20px; letter-spacing: 1px; text-transform: uppercase;">Prescription</span>
+          <!-- Hidden Templates -->
+          <div id="print-header-template" style="display: none; box-sizing: border-box;">
+            ${letterheadUrl ? `
+              <div style="width: 100%; text-align: center; border-bottom: 2.5px solid #800020; padding-bottom: 6px; height: 100px; display: flex; align-items: center; justify-content: center;">
+                <img src="${letterheadUrl}" style="max-width: 100%; max-height: 90px; object-fit: contain;" />
               </div>
-
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 11px; color: #1E293B; line-height: 1.4; font-family: 'Inter', sans-serif;">
-                <div style="display: flex; flex-direction: column; gap: 4px; word-wrap: break-word; white-space: normal;">
-                  <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Patient Name</span><span style="font-weight: 500;">: ${cleanField(selectedPatient?.name)}</span></div>
-                  <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Age / Gender</span><span style="font-weight: 500;">: ${selectedPatient?.age ? `${selectedPatient.age} Yrs` : '—'} / ${cleanField(selectedPatient?.gender)}</span></div>
-                  <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Date</span><span style="font-weight: 500;">: ${cleanField(item.date || new Date().toLocaleDateString('en-IN'))}</span></div>
-                  <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Mobile No.</span><span style="font-weight: 500;">: ${cleanField(selectedPatient?.contact)}</span></div>
-                  <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Address</span><span style="font-weight: 500;">: ${cleanField(selectedPatient?.address)}</span></div>
+            ` : `
+              <div style="display: flex; align-items: center; border-bottom: 3px double #800020; padding-bottom: 8px; height: 80px; box-sizing: border-box;">
+                <div style="border: 2px solid #800020; border-radius: 8px; width: 65px; height: 65px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; box-sizing: border-box; flex-shrink: 0;">
+                  <span style="font-size: 7px; color: #800020; font-weight: bold; line-height: 1; text-align: center; text-transform: uppercase; letter-spacing: 0.2px;">Care with Devotion</span>
+                  <span style="font-family: 'Brush Script MT', 'Lucida Handwriting', cursive, sans-serif; font-size: 20px; color: #800020; font-weight: bold; margin: -2px 0;">Charak</span>
+                  <span style="font-size: 4px; color: #ffffff; background: #800020; width: 100%; text-align: center; font-weight: bold; padding: 1px 0; border-radius: 2px; text-transform: uppercase;">Charak Charitable Society</span>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 4px; word-wrap: break-word; white-space: normal;">
-                  <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Doctor Name</span><span style="font-weight: 600;">: ${cleanField(item.doctor || user.name)}</span></div>
-                  <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Qualification</span><span style="font-weight: 500;">: ${cleanField(user.designation || 'MBBS, MD (Medicine)')}</span></div>
-                  <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Reg. No.</span><span style="font-weight: 500;">: ${user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</span></div>
-                  <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Department</span><span style="font-weight: 500;">: ${cleanField(user.department || 'General Medicine')}</span></div>
-                  <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Consultation Time</span><span style="font-weight: 500;">: 10:00 AM - 1:00 PM, 6:00 PM - 9:00 PM</span></div>
+                <div style="flex-grow: 1; text-align: center; padding-right: 65px;">
+                  <h1 style="margin: 0; color: #800020; font-family: 'Outfit', 'Inter', sans-serif; font-size: 20px; font-weight: 900; letter-spacing: 0.5px; line-height: 1.2;">MAHARISHI CHARAK CHARITABLE SOCIETY</h1>
+                  <p style="margin: 3px 0; color: #1E293B; font-size: 9px; font-weight: 700; letter-spacing: 0.2px;">F-36A, ARYA SAMAJ MANDIR MARG, MANSROVER GARDEN, NEW DELHI-15</p>
+                  <p style="margin: 0; color: #475569; font-size: 8px; font-weight: 600;">Ph.: 41421738, 40103496 &nbsp;&nbsp;•&nbsp;&nbsp; Web: www.charakmedicall.in &nbsp;&nbsp;•&nbsp;&nbsp; E-mail: maharishicharak@gmail.com</p>
                 </div>
               </div>
+            `}
 
-              <hr style="border: none; border-top: 1px solid #800020; margin: 8px 0;" />
+            <div style="text-align: center; margin: 8px 0;">
+              <span style="font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 900; color: #800020; border-bottom: 2px solid #800020; border-top: 2px solid #800020; padding: 2px 20px; letter-spacing: 1px; text-transform: uppercase;">Prescription</span>
             </div>
 
-            <!-- Page Layout Table -->
-            <table style="width: 100%; border-collapse: collapse;">
-              <thead>
-                <tr>
-                  <td><div style="height: 62mm;">&nbsp;</div></td>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <!-- Diagnosis Box -->
-                    <div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: #fff; page-break-inside: avoid; break-inside: avoid;">
-                      <div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">
-                        DIAGNOSIS (Doctor's Observation)
-                      </div>
-                      <div style="padding: 10px; font-size: 11.5px; color: #1E293B; line-height: 1.5; font-weight: 500;">
-                        ${item.diagnosis ? item.diagnosis.split('\n').map(line => `
-                          <div style="display: flex; gap: 8px; margin-bottom: 4px; align-items: flex-start;">
-                            <span style="color: #800020; font-size: 8px; margin-top: 3px;">•</span>
-                            <span>${line.trim()}</span>
-                          </div>
-                        `).join('') : `
-                          <div style="display: flex; gap: 8px; align-items: flex-start;">
-                            <span style="color: #800020; font-size: 8px; margin-top: 3px;">•</span>
-                            <span>General clinical observation & routine consultation.</span>
-                          </div>
-                        `}
-                      </div>
-                    </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 11px; color: #1E293B; line-height: 1.4; font-family: 'Inter', sans-serif;">
+              <div style="display: flex; flex-direction: column; gap: 4px; word-wrap: break-word; white-space: normal;">
+                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Patient Name</span><span style="font-weight: 500;">: ${cleanField(selectedPatient?.name)}</span></div>
+                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Age / Gender</span><span style="font-weight: 500;">: ${selectedPatient?.age ? `${selectedPatient.age} Yrs` : '—'} / ${cleanField(selectedPatient?.gender)}</span></div>
+                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Date</span><span style="font-weight: 500;">: ${cleanField(item.date || new Date().toLocaleDateString('en-IN'))}</span></div>
+                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Mobile No.</span><span style="font-weight: 500;">: ${cleanField(selectedPatient?.contact)}</span></div>
+                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Address</span><span style="font-weight: 500;">: ${cleanField(selectedPatient?.address)}</span></div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 4px; word-wrap: break-word; white-space: normal;">
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Doctor Name</span><span style="font-weight: 600;">: ${cleanField(item.doctor || user.name)}</span></div>
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Qualification</span><span style="font-weight: 500;">: ${cleanField(user.designation || 'MBBS, MD (Medicine)')}</span></div>
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Reg. No.</span><span style="font-weight: 500;">: ${user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</span></div>
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Department</span><span style="font-weight: 500;">: ${cleanField(user.department || 'General Medicine')}</span></div>
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Consultation Time</span><span style="font-weight: 500;">: 10:00 AM - 1:00 PM, 6:00 PM - 9:00 PM</span></div>
+              </div>
+            </div>
 
-                    <!-- Medicines Table -->
-                    <div style="margin-bottom: 12px;">
-                      <div style="font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px;">
-                        PRESCRIBED MEDICINES
-                      </div>
-                      <table style="width: 100%; border-collapse: collapse; font-size: 11.5px; border: 1.5px solid #800020; border-radius: 8px; overflow: hidden;">
-                        <thead>
-                          <tr style="background: #FDF2F4; border-bottom: 1.5px solid #800020;">
-                            <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 50px;">S. No.</th>
-                            <th style="padding: 8px; color: #800020; font-weight: 800; text-align: left; border-right: 1px solid #800020;">Medicine Name</th>
-                            <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 70px;">Dose</th>
-                            <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 80px;">Duration</th>
-                            <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 100px;">Frequency</th>
-                            <th style="padding: 8px; color: #800020; font-weight: 800; text-align: left;">Instructions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          ${medicinesHtml}
-                        </tbody>
-                      </table>
-                    </div>
+            <hr style="border: none; border-top: 1px solid #800020; margin: 8px 0;" />
+          </div>
 
-                    <!-- Lab Tests -->
-                    ${labsHtml}
-
-                    <!-- Notes & Signature Container -->
-                    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 20px; min-height: 90px; page-break-inside: avoid; break-inside: avoid;">
-                      <div style="font-size: 10.5px; line-height: 1.5; max-width: 60%;">
-                        <div style="color: #800020; font-weight: 800; font-size: 11px; margin-bottom: 3px; text-transform: uppercase;">Note :</div>
-                        <ul style="padding-left: 10px; margin: 0; list-style-type: square; color: #334155; font-weight: 600;">
-                          <li>Take medicines as prescribed.</li>
-                          <li>Complete the full course of antibiotics.</li>
-                          <li>Avoid cold drinks and oily food.</li>
-                          <li>Drink plenty of fluids and take rest.</li>
-                        </ul>
-                      </div>
-                      
-                      <div style="text-align: center; width: 200px; font-size: 10.5px; font-family: 'Inter', sans-serif;">
-                        <div style="border-bottom: 1px solid #800020; margin-bottom: 6px; height: 40px; position: relative;">
-                          <span style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 22px; color: #800020; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-weight: 500;">
-                            ${item.doctor ? item.doctor.replace('Dr. ', '') : (user.name ? user.name.replace('Dr. ', '') : 'Anil Sharma')}
-                          </span>
-                        </div>
-                        <div style="color: #800020; font-weight: 700; font-size: 12px;">${item.doctor || user.name || 'Dr. Anil Sharma'}</div>
-                        <div style="color: #475569; font-weight: 600; font-size: 10px; margin-top: 2px;">${user.designation || 'MBBS, MD (Medicine)'}</div>
-                        <div style="color: #475569; font-weight: 600; font-size: 10px;">Reg. No. ${user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</div>
-                        <div style="color: #800020; font-weight: 800; font-size: 10px; margin-top: 3px; text-transform: uppercase;">(Consultant Physician)</div>
-                        <div style="color: #94A3B8; font-size: 9px; margin-top: 3px; font-weight: 550; letter-spacing: 0.2px;">Signature & Seal</div>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td><div style="height: 16mm;">&nbsp;</div></td>
-                </tr>
-              </tfoot>
-            </table>
-
-            <!-- Repeating Footer -->
-            <div class="page-footer" style="position: fixed; bottom: 0; left: 15mm; right: 15mm; height: 15mm; box-sizing: border-box; text-align: center; font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: bold; color: #800020; border-top: 1px solid #E2E8F0; padding-top: 10px; background: white; z-index: 1000;">
+          <div id="print-footer-template" style="display: none;">
+            <div style="text-align: center; font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: bold; color: #800020; border-top: 1px solid #E2E8F0; padding-top: 8px; background: white; box-sizing: border-box;">
               Thank you for trusting us with your health. Get well soon!
             </div>
           </div>
 
+          <!-- Temp source container for measurement (width exactly 180mm content printable area) -->
+          <div id="temp-source" style="width: 180mm; position: absolute; left: -9999px; top: -9999px; box-sizing: border-box;">
+            <!-- Diagnosis Box -->
+            <div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: #fff;">
+              <div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">
+                DIAGNOSIS (Doctor's Observation)
+              </div>
+              <div style="padding: 10px; font-size: 11.5px; color: #1E293B; line-height: 1.5; font-weight: 500;">
+                ${item.diagnosis ? item.diagnosis.split('\n').map(line => `
+                  <div style="display: flex; gap: 8px; margin-bottom: 4px; align-items: flex-start;">
+                    <span style="color: #800020; font-size: 8px; margin-top: 3px;">•</span>
+                    <span>${line.trim()}</span>
+                  </div>
+                `).join('') : `
+                  <div style="display: flex; gap: 8px; align-items: flex-start;">
+                    <span style="color: #800020; font-size: 8px; margin-top: 3px;">•</span>
+                    <span>General clinical observation & routine consultation.</span>
+                  </div>
+                `}
+              </div>
+            </div>
+
+            <!-- SOAP Notes if present -->
+            ${appointment && appointment.notes ? `
+            <div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: #fff;">
+              <div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">
+                Clinical SOAP Notes
+              </div>
+              <div style="padding: 10px; font-size: 11.5px; color: #334155; line-height: 1.5; font-weight: 500; white-space: pre-wrap;">
+                ${appointment.notes}
+              </div>
+            </div>
+            ` : ''}
+
+            <!-- Medicines Source Rows -->
+            ${(item.items || []).map((m, idx) => {
+              let freq = 'Once a Day';
+              let inst = 'After Food';
+              if (m.instructions) {
+                const parts = m.instructions.split('(');
+                if (parts[0]) freq = parts[0].trim();
+                if (parts[1]) inst = parts[1].replace(')', '').trim();
+              }
+              return `
+                <tr class="medicine-row-source">
+                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">${idx + 1}.</td>
+                  <td style="padding: 8px; border-right: 1px solid #800020; font-weight: 700; color: #1E293B; word-break: break-word;">${cleanField(m.medicine)}</td>
+                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; color: #334155; font-weight: 500; word-break: break-word;">${cleanField(m.dosage)}</td>
+                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; color: #334155; font-weight: 500; word-break: break-word;">${cleanField(m.duration)}</td>
+                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; color: #800020; font-weight: 600; word-break: break-word;">${cleanField(freq)}</td>
+                  <td style="padding: 8px; color: #334155; font-weight: 500; word-break: break-word;">${cleanField(inst)}</td>
+                </tr>
+              `;
+            }).join('')}
+
+            <!-- Tests Source Rows -->
+            ${(item.tests || []).map((test, idx) => `
+              <tr class="lab-row-source">
+                <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">${idx + 1}.</td>
+                <td style="padding: 8px; font-weight: 700; color: #1E293B;">${cleanField(test)}</td>
+              </tr>
+            `).join('')}
+
+            <!-- Notes & Signature Container -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 20px; min-height: 90px;" class="signature-block-source">
+              <div style="font-size: 10.5px; line-height: 1.5; max-width: 60%;">
+                <div style="color: #800020; font-weight: 800; font-size: 11px; margin-bottom: 3px; text-transform: uppercase;">Note :</div>
+                <ul style="padding-left: 10px; margin: 0; list-style-type: square; color: #334155; font-weight: 600;">
+                  <li>Take medicines as prescribed.</li>
+                  <li>Complete the full course of antibiotics.</li>
+                  <li>Avoid cold drinks and oily food.</li>
+                  <li>Drink plenty of fluids and take rest.</li>
+                </ul>
+              </div>
+              
+              <div style="text-align: center; width: 200px; font-size: 10.5px; font-family: 'Inter', sans-serif;">
+                <div style="border-bottom: 1px solid #800020; margin-bottom: 6px; height: 40px; position: relative;">
+                  <span style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 22px; color: #800020; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-weight: 500;">
+                    ${item.doctor ? item.doctor.replace('Dr. ', '') : (user.name ? user.name.replace('Dr. ', '') : 'Anil Sharma')}
+                  </span>
+                </div>
+                <div style="color: #800020; font-weight: 700; font-size: 12px;">${item.doctor || user.name || 'Dr. Anil Sharma'}</div>
+                <div style="color: #475569; font-weight: 600; font-size: 10px; margin-top: 2px;">${user.designation || 'MBBS, MD (Medicine)'}</div>
+                <div style="color: #475569; font-weight: 600; font-size: 10px;">Reg. No. ${user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</div>
+                <div style="color: #800020; font-weight: 800; font-size: 10px; margin-top: 3px; text-transform: uppercase;">(Consultant Physician)</div>
+                <div style="color: #94A3B8; font-size: 9px; margin-top: 3px; font-weight: 550; letter-spacing: 0.2px;">Signature & Seal</div>
+              </div>
+            </div>
+          </div>
+
+          <div id="pages-container"></div>
+
           <script>
+            function createMedicineTableTemplate() {
+              const table = document.createElement('table');
+              table.style.width = '100%';
+              table.style.borderCollapse = 'collapse';
+              table.style.fontSize = '11.5px';
+              table.style.border = '1.5px solid #800020';
+              table.style.borderRadius = '8px';
+              table.style.overflow = 'hidden';
+              table.style.marginBottom = '12px';
+              table.innerHTML = \`
+                <thead>
+                  <tr style="background: #FDF2F4; border-bottom: 1.5px solid #800020;">
+                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 50px;">S. No.</th>
+                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: left; border-right: 1px solid #800020;">Medicine Name</th>
+                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 70px;">Dose</th>
+                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 80px;">Duration</th>
+                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 100px;">Frequency</th>
+                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: left;">Instructions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              \`;
+              return table;
+            }
+
+            function createLabsTableTemplate() {
+              const table = document.createElement('table');
+              table.style.width = '50%';
+              table.style.borderCollapse = 'collapse';
+              table.style.fontSize = '11.5px';
+              table.style.border = '1.5px solid #800020';
+              table.style.borderRadius = '8px';
+              table.style.overflow = 'hidden';
+              table.style.marginTop = '15px';
+              table.innerHTML = \`
+                <thead>
+                  <tr style="background: #FDF2F4; border-bottom: 1.5px solid #800020;">
+                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 50px;">S. No.</th>
+                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: left;">Test Name</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              \`;
+              return table;
+            }
+
+            function createNewPage(headerTemplate, footerTemplate) {
+              const page = document.createElement('div');
+              page.className = 'page-container';
+              
+              const header = headerTemplate.cloneNode(true);
+              header.style.display = 'block';
+              
+              const contentArea = document.createElement('div');
+              contentArea.className = 'content-area';
+              contentArea.style.marginTop = '10px';
+              
+              const footer = footerTemplate.cloneNode(true);
+              footer.style.display = 'block';
+              footer.style.position = 'absolute';
+              footer.style.bottom = '15mm';
+              footer.style.left = '15mm';
+              footer.style.right = '15mm';
+              
+              page.appendChild(header);
+              page.appendChild(contentArea);
+              page.appendChild(footer);
+              
+              document.getElementById('pages-container').appendChild(page);
+              return page;
+            }
+
+            function paginate() {
+              const targetPageHeight = 1000; 
+              const header = document.getElementById('print-header-template');
+              const footer = document.getElementById('print-footer-template');
+              
+              header.style.display = 'block';
+              footer.style.display = 'block';
+              const headerHeight = header.offsetHeight;
+              const footerHeight = footer.offsetHeight;
+              header.style.display = 'none';
+              footer.style.display = 'none';
+              
+              const paddingOffset = 135; 
+              const availableHeight = targetPageHeight - headerHeight - footerHeight - paddingOffset;
+              
+              const source = document.getElementById('temp-source');
+              const children = Array.from(source.children);
+              
+              let currentPage = createNewPage(header, footer);
+              let currentContentArea = currentPage.querySelector('.content-area');
+              let currentSpaceUsed = 0;
+              
+              let activeMedicineTable = null;
+              let activeMedicineTbody = null;
+              let activeLabsTable = null;
+              let activeLabsTbody = null;
+              
+              for (let child of children) {
+                if (child.classList.contains('medicine-row-source')) {
+                  if (!activeMedicineTable) {
+                    activeMedicineTable = createMedicineTableTemplate();
+                    activeMedicineTbody = activeMedicineTable.querySelector('tbody');
+                    
+                    source.appendChild(activeMedicineTable);
+                    const tableHeaderHeight = activeMedicineTable.offsetHeight;
+                    source.removeChild(activeMedicineTable);
+                    
+                    if (currentSpaceUsed + tableHeaderHeight > availableHeight) {
+                      currentPage = createNewPage(header, footer);
+                      currentContentArea = currentPage.querySelector('.content-area');
+                      currentSpaceUsed = 0;
+                    }
+                    currentContentArea.appendChild(activeMedicineTable);
+                    currentSpaceUsed += tableHeaderHeight;
+                  }
+                  
+                  const tr = document.createElement('tr');
+                  tr.style.borderBottom = '1px solid #800020';
+                  tr.style.pageBreakInside = 'avoid';
+                  tr.innerHTML = child.innerHTML;
+                  activeMedicineTbody.appendChild(tr);
+                  
+                  const trHeight = tr.offsetHeight;
+                  if (currentSpaceUsed + trHeight > availableHeight) {
+                    activeMedicineTbody.removeChild(tr);
+                    
+                    currentPage = createNewPage(header, footer);
+                    currentContentArea = currentPage.querySelector('.content-area');
+                    currentSpaceUsed = 0;
+                    
+                    activeMedicineTable = createMedicineTableTemplate();
+                    activeMedicineTbody = activeMedicineTable.querySelector('tbody');
+                    currentContentArea.appendChild(activeMedicineTable);
+                    
+                    activeMedicineTbody.appendChild(tr);
+                    currentSpaceUsed += activeMedicineTable.offsetHeight;
+                  } else {
+                    currentSpaceUsed += trHeight;
+                  }
+                }
+                else if (child.classList.contains('lab-row-source')) {
+                  activeMedicineTable = null;
+                  activeMedicineTbody = null;
+                  
+                  if (!activeLabsTable) {
+                    activeLabsTable = createLabsTableTemplate();
+                    activeLabsTbody = activeLabsTable.querySelector('tbody');
+                    
+                    source.appendChild(activeLabsTable);
+                    const tableHeaderHeight = activeLabsTable.offsetHeight;
+                    source.removeChild(activeLabsTable);
+                    
+                    if (currentSpaceUsed + tableHeaderHeight > availableHeight) {
+                      currentPage = createNewPage(header, footer);
+                      currentContentArea = currentPage.querySelector('.content-area');
+                      currentSpaceUsed = 0;
+                    }
+                    currentContentArea.appendChild(activeLabsTable);
+                    currentSpaceUsed += tableHeaderHeight;
+                  }
+                  
+                  const tr = document.createElement('tr');
+                  tr.style.borderBottom = '1px solid #800020';
+                  tr.style.pageBreakInside = 'avoid';
+                  tr.innerHTML = child.innerHTML;
+                  activeLabsTbody.appendChild(tr);
+                  
+                  const trHeight = tr.offsetHeight;
+                  if (currentSpaceUsed + trHeight > availableHeight) {
+                    activeLabsTbody.removeChild(tr);
+                    
+                    currentPage = createNewPage(header, footer);
+                    currentContentArea = currentPage.querySelector('.content-area');
+                    currentSpaceUsed = 0;
+                    
+                    activeLabsTable = createLabsTableTemplate();
+                    activeLabsTbody = activeLabsTable.querySelector('tbody');
+                    currentContentArea.appendChild(activeLabsTable);
+                    
+                    activeLabsTbody.appendChild(tr);
+                    currentSpaceUsed += activeLabsTable.offsetHeight;
+                  } else {
+                    currentSpaceUsed += trHeight;
+                  }
+                }
+                else {
+                  activeMedicineTable = null;
+                  activeMedicineTbody = null;
+                  activeLabsTable = null;
+                  activeLabsTbody = null;
+                  
+                  const blockHeight = child.offsetHeight;
+                  
+                  if (currentSpaceUsed + blockHeight > availableHeight) {
+                    currentPage = createNewPage(header, footer);
+                    currentContentArea = currentPage.querySelector('.content-area');
+                    currentSpaceUsed = 0;
+                  }
+                  currentContentArea.appendChild(child);
+                  currentSpaceUsed += blockHeight;
+                }
+              }
+              
+              document.body.removeChild(source);
+            }
+
             window.onload = function() {
+              paginate();
               window.print();
               setTimeout(function() { window.close(); }, 500);
             };
@@ -2969,9 +3182,13 @@ const DoctorDashboard = () => {
     printWindow.document.write(`
       <html>
         <head>
-          <title>Clinical Summary - ${cleanField(patient.name)}</title>
+          <title>Clinical Summary - \${cleanField(patient.name)}</title>
           <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@800;900&display=swap" rel="stylesheet">
           <style>
+            @page {
+              size: A4;
+              margin: 0;
+            }
             @media print {
               body {
                 margin: 0;
@@ -2980,10 +3197,9 @@ const DoctorDashboard = () => {
                 print-color-adjust: exact;
               }
               .page-container {
-                width: 210mm;
-                margin: 0;
-                box-shadow: none;
-                padding: 0;
+                margin: 0 !important;
+                box-shadow: none !important;
+                page-break-after: always !important;
               }
             }
             body {
@@ -2995,172 +3211,370 @@ const DoctorDashboard = () => {
             }
             .page-container {
               width: 210mm;
+              height: 297mm;
               margin: 0 auto;
               background-color: #ffffff;
               box-sizing: border-box;
               position: relative;
-              padding-left: 15mm;
-              padding-right: 15mm;
+              padding: 15mm 15mm 20mm 15mm;
             }
           </style>
         </head>
         <body>
-          <div class="page-container">
-            <!-- Repeating Header -->
-            <div class="page-header" style="position: fixed; top: 0; left: 15mm; right: 15mm; height: 60mm; box-sizing: border-box; background: white; z-index: 1000;">
-              ${customLetterhead ? `
-                <div style="width: 100%; text-align: center; border-bottom: 2.5px solid #800020; padding-bottom: 6px; height: 100px; display: flex; align-items: center; justify-content: center;">
-                  <img src="${customLetterhead}" style="max-width: 100%; max-height: 90px; object-fit: contain;" />
-                </div>
-              ` : `
-                <div style="display: flex; align-items: center; border-bottom: 3px double #800020; padding-bottom: 8px; height: 80px; box-sizing: border-box;">
-                  <div style="border: 2px solid #800020; border-radius: 8px; width: 65px; height: 65px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; box-sizing: border-box; flex-shrink: 0;">
-                    <span style="font-size: 7px; color: #800020; font-weight: bold; line-height: 1; text-align: center; text-transform: uppercase; letter-spacing: 0.2px;">Care with Devotion</span>
-                    <span style="font-family: 'Brush Script MT', 'Lucida Handwriting', cursive, sans-serif; font-size: 20px; color: #800020; font-weight: bold; margin: -2px 0;">Charak</span>
-                    <span style="font-size: 4px; color: #ffffff; background: #800020; width: 100%; text-align: center; font-weight: bold; padding: 1px 0; border-radius: 2px; text-transform: uppercase;">Charak Charitable Society</span>
-                  </div>
-                  <div style="flex-grow: 1; text-align: center; padding-right: 65px;">
-                    <h1 style="margin: 0; color: #800020; font-family: 'Outfit', 'Inter', sans-serif; font-size: 20px; font-weight: 900; letter-spacing: 0.5px; line-height: 1.2;">MAHARISHI CHARAK CHARITABLE SOCIETY</h1>
-                    <p style="margin: 3px 0; color: #1E293B; font-size: 9px; font-weight: 700; letter-spacing: 0.2px;">F-36A, ARYA SAMAJ MANDIR MARG, MANSROVER GARDEN, NEW DELHI-15</p>
-                    <p style="margin: 0; color: #475569; font-size: 8px; font-weight: 600;">Ph.: 41421738, 40103496 &nbsp;&nbsp;•&nbsp;&nbsp; Web: www.charakmedicall.in &nbsp;&nbsp;•&nbsp;&nbsp; E-mail: maharishicharak@gmail.com</p>
-                  </div>
-                </div>
-              `}
-
-              <div style="text-align: center; margin: 8px 0;">
-                <span style="font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 900; color: #800020; border-bottom: 2px solid #800020; border-top: 2px solid #800020; padding: 2px 20px; letter-spacing: 1px; text-transform: uppercase;">Prescription & Clinical Summary</span>
+          <!-- Hidden Templates -->
+          <div id="print-header-template" style="display: none; box-sizing: border-box;">
+            \${customLetterhead ? \`
+              <div style="width: 100%; text-align: center; border-bottom: 2.5px solid #800020; padding-bottom: 6px; height: 100px; display: flex; align-items: center; justify-content: center;">
+                <img src="\${customLetterhead}" style="max-width: 100%; max-height: 90px; object-fit: contain;" />
               </div>
-
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 11px; color: #1E293B; line-height: 1.4; font-family: 'Inter', sans-serif;">
-                <div style="display: flex; flex-direction: column; gap: 4px; word-wrap: break-word; white-space: normal;">
-                  <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Patient Name</span><span style="font-weight: 500;">: ${cleanField(patient.name)}</span></div>
-                  <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Age / Gender</span><span style="font-weight: 500;">: ${patient.age ? `${patient.age} Yrs` : '—'} / ${cleanField(patient.gender)}</span></div>
-                  <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Date</span><span style="font-weight: 500;">: ${cleanField(dateStr)}</span></div>
-                  <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Mobile No.</span><span style="font-weight: 500;">: ${cleanField(patient.contact)}</span></div>
-                  <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Address</span><span style="font-weight: 500;">: ${cleanField(patient.address)}</span></div>
+            \` : \`
+              <div style="display: flex; align-items: center; border-bottom: 3px double #800020; padding-bottom: 8px; height: 80px; box-sizing: border-box;">
+                <div style="border: 2px solid #800020; border-radius: 8px; width: 65px; height: 65px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; box-sizing: border-box; flex-shrink: 0;">
+                  <span style="font-size: 7px; color: #800020; font-weight: bold; line-height: 1; text-align: center; text-transform: uppercase; letter-spacing: 0.2px;">Care with Devotion</span>
+                  <span style="font-family: 'Brush Script MT', 'Lucida Handwriting', cursive, sans-serif; font-size: 20px; color: #800020; font-weight: bold; margin: -2px 0;">Charak</span>
+                  <span style="font-size: 4px; color: #ffffff; background: #800020; width: 100%; text-align: center; font-weight: bold; padding: 1px 0; border-radius: 2px; text-transform: uppercase;">Charak Charitable Society</span>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 4px; word-wrap: break-word; white-space: normal;">
-                  <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Doctor Name</span><span style="font-weight: 600;">: ${cleanField(user.name)}</span></div>
-                  <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Qualification</span><span style="font-weight: 500;">: ${cleanField(user.designation || 'MBBS, MD (Medicine)')}</span></div>
-                  <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Reg. No.</span><span style="font-weight: 500;">: ${user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</span></div>
-                  <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Department</span><span style="font-weight: 500;">: ${cleanField(user.department || 'General Medicine')}</span></div>
-                  <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Consultation Time</span><span style="font-weight: 500;">: 10:00 AM - 1:00 PM, 6:00 PM - 9:00 PM</span></div>
+                <div style="flex-grow: 1; text-align: center; padding-right: 65px;">
+                  <h1 style="margin: 0; color: #800020; font-family: 'Outfit', 'Inter', sans-serif; font-size: 20px; font-weight: 900; letter-spacing: 0.5px; line-height: 1.2;">MAHARISHI CHARAK CHARITABLE SOCIETY</h1>
+                  <p style="margin: 3px 0; color: #1E293B; font-size: 9px; font-weight: 700; letter-spacing: 0.2px;">F-36A, ARYA SAMAJ MANDIR MARG, MANSROVER GARDEN, NEW DELHI-15</p>
+                  <p style="margin: 0; color: #475569; font-size: 8px; font-weight: 600;">Ph.: 41421738, 40103496 &nbsp;&nbsp;•&nbsp;&nbsp; Web: www.charakmedicall.in &nbsp;&nbsp;•&nbsp;&nbsp; E-mail: maharishicharak@gmail.com</p>
                 </div>
               </div>
+            \`}
 
-              <hr style="border: none; border-top: 1px solid #800020; margin: 8px 0;" />
+            <div style="text-align: center; margin: 8px 0;">
+              <span style="font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 900; color: #800020; border-bottom: 2px solid #800020; border-top: 2px solid #800020; padding: 2px 20px; letter-spacing: 1px; text-transform: uppercase;">Prescription & Clinical Summary</span>
             </div>
 
-            <!-- Page Layout Table -->
-            <table style="width: 100%; border-collapse: collapse;">
-              <thead>
-                <tr>
-                  <td><div style="height: 62mm;">&nbsp;</div></td>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <!-- Diagnosis Box -->
-                    <div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: #fff; page-break-inside: avoid; break-inside: avoid;">
-                      <div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">
-                        DIAGNOSIS (Doctor's Observation)
-                      </div>
-                      <div style="padding: 10px; font-size: 11.5px; color: #1E293B; line-height: 1.5; font-weight: 500;">
-                        ${appointment.diagnosis ? appointment.diagnosis.split('\n').map(line => `
-                          <div style="display: flex; gap: 8px; margin-bottom: 4px; align-items: flex-start;">
-                            <span style="color: #800020; font-size: 8px; margin-top: 3px;">•</span>
-                            <span>${line.trim()}</span>
-                          </div>
-                        `).join('') : `
-                          <div style="display: flex; gap: 8px; align-items: flex-start;">
-                            <span style="color: #800020; font-size: 8px; margin-top: 3px;">•</span>
-                            <span>General clinical observation & routine consultation.</span>
-                          </div>
-                        `}
-                      </div>
-                    </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 11px; color: #1E293B; line-height: 1.4; font-family: 'Inter', sans-serif;">
+              <div style="display: flex; flex-direction: column; gap: 4px; word-wrap: break-word; white-space: normal;">
+                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Patient Name</span><span style="font-weight: 500;">: \${cleanField(patient.name)}</span></div>
+                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Age / Gender</span><span style="font-weight: 500;">: \${patient.age ? \`\${patient.age} Yrs\` : '—'} / \&nbsp;\${cleanField(patient.gender)}</span></div>
+                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Date</span><span style="font-weight: 500;">: \${cleanField(dateStr)}</span></div>
+                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Mobile No.</span><span style="font-weight: 500;">: \${cleanField(patient.contact)}</span></div>
+                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Address</span><span style="font-weight: 500;">: \${cleanField(patient.address)}</span></div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 4px; word-wrap: break-word; white-space: normal;">
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Doctor Name</span><span style="font-weight: 600;">: \${cleanField(user.name)}</span></div>
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Qualification</span><span style="font-weight: 500;">: \${cleanField(user.designation || 'MBBS, MD (Medicine)')}</span></div>
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Reg. No.</span><span style="font-weight: 500;">: \${user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</span></div>
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Department</span><span style="font-weight: 500;">: \${cleanField(user.department || 'General Medicine')}</span></div>
+                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Consultation Time</span><span style="font-weight: 500;">: 10:00 AM - 1:00 PM, 6:00 PM - 9:00 PM</span></div>
+              </div>
+            </div>
 
-                    <!-- SOAP Notes if present -->
-                    ${appointment.notes ? `
-                    <div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: #fff; page-break-inside: avoid; break-inside: avoid;">
-                      <div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">
-                        Clinical SOAP Notes
-                      </div>
-                      <div style="padding: 10px; font-size: 11.5px; color: #334155; line-height: 1.5; font-weight: 500; white-space: pre-wrap;">
-                        ${appointment.notes}
-                      </div>
-                    </div>
-                    ` : ''}
+            <hr style="border: none; border-top: 1px solid #800020; margin: 8px 0;" />
+          </div>
 
-                    <!-- Medicines Table -->
-                    <div style="margin-bottom: 12px;">
-                      <div style="font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px;">
-                        PRESCRIBED MEDICINES
-                      </div>
-                      <table style="width: 100%; border-collapse: collapse; font-size: 11.5px; border: 1.5px solid #800020; border-radius: 8px; overflow: hidden;">
-                        <thead>
-                          <tr style="background: #FDF2F4; border-bottom: 1.5px solid #800020;">
-                            <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 50px;">S. No.</th>
-                            <th style="padding: 8px; color: #800020; font-weight: 800; text-align: left; border-right: 1px solid #800020;">Medicine Name</th>
-                            <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 70px;">Dose</th>
-                            <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 80px;">Duration</th>
-                            <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 100px;">Frequency</th>
-                            <th style="padding: 8px; color: #800020; font-weight: 800; text-align: left;">Instructions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          ${medicinesHtml}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    <!-- Lab Tests -->
-                    ${labsHtml}
-
-                    <!-- Notes & Signature Container -->
-                    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 20px; min-height: 90px; page-break-inside: avoid; break-inside: avoid;">
-                      <div style="font-size: 10.5px; line-height: 1.5; max-width: 60%;">
-                        <div style="color: #800020; font-weight: 800; font-size: 11px; margin-bottom: 3px; text-transform: uppercase;">Note :</div>
-                        <ul style="padding-left: 10px; margin: 0; list-style-type: square; color: #334155; font-weight: 600;">
-                          <li>Take medicines as prescribed.</li>
-                          <li>Complete the full course of antibiotics.</li>
-                          <li>Avoid cold drinks and oily food.</li>
-                          <li>Drink plenty of fluids and take rest.</li>
-                        </ul>
-                      </div>
-                      
-                      <div style="text-align: center; width: 200px; font-size: 10.5px; font-family: 'Inter', sans-serif;">
-                        <div style="border-bottom: 1px solid #800020; margin-bottom: 6px; height: 40px; position: relative;">
-                          <span style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 22px; color: #800020; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-weight: 500;">
-                            ${user.name ? user.name.replace('Dr. ', '') : 'Anil Sharma'}
-                          </span>
-                        </div>
-                        <div style="color: #800020; font-weight: 700; font-size: 12px;">${user.name || 'Dr. Anil Sharma'}</div>
-                        <div style="color: #475569; font-weight: 600; font-size: 10px; margin-top: 2px;">${user.designation || 'MBBS, MD (Medicine)'}</div>
-                        <div style="color: #475569; font-weight: 600; font-size: 10px;">Reg. No. ${user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</div>
-                        <div style="color: #800020; font-weight: 800; font-size: 10px; margin-top: 3px; text-transform: uppercase;">(Consultant Physician)</div>
-                        <div style="color: #94A3B8; font-size: 9px; margin-top: 3px; font-weight: 550; letter-spacing: 0.2px;">Signature & Seal</div>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td><div style="height: 16mm;">&nbsp;</div></td>
-                </tr>
-              </tfoot>
-            </table>
-
-            <!-- Repeating Footer -->
-            <div class="page-footer" style="position: fixed; bottom: 0; left: 15mm; right: 15mm; height: 15mm; box-sizing: border-box; text-align: center; font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: bold; color: #800020; border-top: 1px solid #E2E8F0; padding-top: 10px; background: white; z-index: 1000;">
+          <div id="print-footer-template" style="display: none;">
+            <div style="text-align: center; font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: bold; color: #800020; border-top: 1px solid #E2E8F0; padding-top: 8px; background: white; box-sizing: border-box;">
               Thank you for trusting us with your health. Get well soon!
             </div>
           </div>
 
+          <!-- Temp source container for measurement (width exactly 180mm content printable area) -->
+          <div id="temp-source" style="width: 180mm; position: absolute; left: -9999px; top: -9999px; box-sizing: border-box;">
+            <!-- Diagnosis Box -->
+            <div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: #fff;">
+              <div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">
+                DIAGNOSIS (Doctor's Observation)
+              </div>
+              <div style="padding: 10px; font-size: 11.5px; color: #1E293B; line-height: 1.5; font-weight: 500;">
+                \${appointment.diagnosis ? appointment.diagnosis.split('\\n').map(line => \`
+                  <div style="display: flex; gap: 8px; margin-bottom: 4px; align-items: flex-start;">
+                    <span style="color: #800020; font-size: 8px; margin-top: 3px;">•</span>
+                    <span>\${line.trim()}</span>
+                  </div>
+                \`).join('') : \`
+                  <div style="display: flex; gap: 8px; align-items: flex-start;">
+                    <span style="color: #800020; font-size: 8px; margin-top: 3px;">•</span>
+                    <span>General clinical observation & routine consultation.</span>
+                  </div>
+                \`}
+              </div>
+            </div>
+
+            <!-- SOAP Notes if present -->
+            \${appointment.notes ? \`
+            <div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: #fff;">
+              <div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">
+                Clinical SOAP Notes
+              </div>
+              <div style="padding: 10px; font-size: 11.5px; color: #334155; line-height: 1.5; font-weight: 500; white-space: pre-wrap;">
+                \${appointment.notes}
+              </div>
+            </div>
+            \` : ''}
+
+            <!-- Medicines Source Rows -->
+            \${prescription && prescription.items && prescription.items.length > 0 ? prescription.items.map((m, idx) => {
+              let freq = 'Once a Day';
+              let inst = 'After Food';
+              if (m.instructions) {
+                const parts = m.instructions.split('(');
+                if (parts[0]) freq = parts[0].trim();
+                if (parts[1]) inst = parts[1].replace(')', '').trim();
+              }
+              return \`
+                <tr class="medicine-row-source">
+                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">\${idx + 1}.</td>
+                  <td style="padding: 8px; border-right: 1px solid #800020; font-weight: 700; color: #1E293B; word-break: break-word;">\${cleanField(m.medicine)}</td>
+                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; color: #334155; font-weight: 500; word-break: break-word;">\${cleanField(m.dosage)}</td>
+                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; color: #334155; font-weight: 500; word-break: break-word;">\${cleanField(m.duration)}</td>
+                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; color: #800020; font-weight: 600; word-break: break-word;">\${cleanField(freq)}</td>
+                  <td style="padding: 8px; color: #334155; font-weight: 500; word-break: break-word;">\${cleanField(inst)}</td>
+                </tr>
+              \`;
+            }).join('') : ''}
+
+            <!-- Tests Source Rows -->
+            \${labs && labs.length > 0 ? labs.map((l, idx) => \`
+              <tr class="lab-row-source">
+                <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">\${idx + 1}.</td>
+                <td style="padding: 8px; font-weight: 700; color: #1E293B;">\${cleanField(l.testName || l)}</td>
+              </tr>
+            \`).join('') : ''}
+
+            <!-- Notes & Signature Container -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 20px; min-height: 90px;" class="signature-block-source">
+              <div style="font-size: 10.5px; line-height: 1.5; max-width: 60%;">
+                <div style="color: #800020; font-weight: 800; font-size: 11px; margin-bottom: 3px; text-transform: uppercase;">Note :</div>
+                <ul style="padding-left: 10px; margin: 0; list-style-type: square; color: #334155; font-weight: 600;">
+                  <li>Take medicines as prescribed.</li>
+                  <li>Complete the full course of antibiotics.</li>
+                  <li>Avoid cold drinks and oily food.</li>
+                  <li>Drink plenty of fluids and take rest.</li>
+                </ul>
+              </div>
+              
+              <div style="text-align: center; width: 200px; font-size: 10.5px; font-family: 'Inter', sans-serif;">
+                <div style="border-bottom: 1px solid #800020; margin-bottom: 6px; height: 40px; position: relative;">
+                  <span style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 22px; color: #800020; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-weight: 500;">
+                    \${user.name ? user.name.replace('Dr. ', '') : 'Anil Sharma'}
+                  </span>
+                </div>
+                <div style="color: #800020; font-weight: 700; font-size: 12px;">\${user.name || 'Dr. Anil Sharma'}</div>
+                <div style="color: #475569; font-weight: 600; font-size: 10px; margin-top: 2px;">\${user.designation || 'MBBS, MD (Medicine)'}</div>
+                <div style="color: #475569; font-weight: 600; font-size: 10px;">Reg. No. \${user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</div>
+                <div style="color: #800020; font-weight: 800; font-size: 10px; margin-top: 3px; text-transform: uppercase;">(Consultant Physician)</div>
+                <div style="color: #94A3B8; font-size: 9px; margin-top: 3px; font-weight: 550; letter-spacing: 0.2px;">Signature & Seal</div>
+              </div>
+            </div>
+          </div>
+
+          <div id="pages-container"></div>
+
           <script>
+            function createMedicineTableTemplate() {
+              const table = document.createElement('table');
+              table.style.width = '100%';
+              table.style.borderCollapse = 'collapse';
+              table.style.fontSize = '11.5px';
+              table.style.border = '1.5px solid #800020';
+              table.style.borderRadius = '8px';
+              table.style.overflow = 'hidden';
+              table.style.marginBottom = '12px';
+              table.innerHTML = \`
+                <thead>
+                  <tr style="background: #FDF2F4; border-bottom: 1.5px solid #800020;">
+                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 50px;">S. No.</th>
+                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: left; border-right: 1px solid #800020;">Medicine Name</th>
+                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 70px;">Dose</th>
+                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 80px;">Duration</th>
+                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 100px;">Frequency</th>
+                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: left;">Instructions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              \`;
+              return table;
+            }
+
+            function createLabsTableTemplate() {
+              const table = document.createElement('table');
+              table.style.width = '50%';
+              table.style.borderCollapse = 'collapse';
+              table.style.fontSize = '11.5px';
+              table.style.border = '1.5px solid #800020';
+              table.style.borderRadius = '8px';
+              table.style.overflow = 'hidden';
+              table.style.marginTop = '15px';
+              table.innerHTML = \`
+                <thead>
+                  <tr style="background: #FDF2F4; border-bottom: 1.5px solid #800020;">
+                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 50px;">S. No.</th>
+                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: left;">Test Name</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              \`;
+              return table;
+            }
+
+            function createNewPage(headerTemplate, footerTemplate) {
+              const page = document.createElement('div');
+              page.className = 'page-container';
+              
+              const header = headerTemplate.cloneNode(true);
+              header.style.display = 'block';
+              
+              const contentArea = document.createElement('div');
+              contentArea.className = 'content-area';
+              contentArea.style.marginTop = '10px';
+              
+              const footer = footerTemplate.cloneNode(true);
+              footer.style.display = 'block';
+              footer.style.position = 'absolute';
+              footer.style.bottom = '15mm';
+              footer.style.left = '15mm';
+              footer.style.right = '15mm';
+              
+              page.appendChild(header);
+              page.appendChild(contentArea);
+              page.appendChild(footer);
+              
+              document.getElementById('pages-container').appendChild(page);
+              return page;
+            }
+
+            function paginate() {
+              const targetPageHeight = 1000; 
+              const header = document.getElementById('print-header-template');
+              const footer = document.getElementById('print-footer-template');
+              
+              header.style.display = 'block';
+              footer.style.display = 'block';
+              const headerHeight = header.offsetHeight;
+              const footerHeight = footer.offsetHeight;
+              header.style.display = 'none';
+              footer.style.display = 'none';
+              
+              const paddingOffset = 135; 
+              const availableHeight = targetPageHeight - headerHeight - footerHeight - paddingOffset;
+              
+              const source = document.getElementById('temp-source');
+              const children = Array.from(source.children);
+              
+              let currentPage = createNewPage(header, footer);
+              let currentContentArea = currentPage.querySelector('.content-area');
+              let currentSpaceUsed = 0;
+              
+              let activeMedicineTable = null;
+              let activeMedicineTbody = null;
+              let activeLabsTable = null;
+              let activeLabsTbody = null;
+              
+              for (let child of children) {
+                if (child.classList.contains('medicine-row-source')) {
+                  if (!activeMedicineTable) {
+                    activeMedicineTable = createMedicineTableTemplate();
+                    activeMedicineTbody = activeMedicineTable.querySelector('tbody');
+                    
+                    source.appendChild(activeMedicineTable);
+                    const tableHeaderHeight = activeMedicineTable.offsetHeight;
+                    source.removeChild(activeMedicineTable);
+                    
+                    if (currentSpaceUsed + tableHeaderHeight > availableHeight) {
+                      currentPage = createNewPage(header, footer);
+                      currentContentArea = currentPage.querySelector('.content-area');
+                      currentSpaceUsed = 0;
+                    }
+                    currentContentArea.appendChild(activeMedicineTable);
+                    currentSpaceUsed += tableHeaderHeight;
+                  }
+                  
+                  const tr = document.createElement('tr');
+                  tr.style.borderBottom = '1px solid #800020';
+                  tr.style.pageBreakInside = 'avoid';
+                  tr.innerHTML = child.innerHTML;
+                  activeMedicineTbody.appendChild(tr);
+                  
+                  const trHeight = tr.offsetHeight;
+                  if (currentSpaceUsed + trHeight > availableHeight) {
+                    activeMedicineTbody.removeChild(tr);
+                    
+                    currentPage = createNewPage(header, footer);
+                    currentContentArea = currentPage.querySelector('.content-area');
+                    currentSpaceUsed = 0;
+                    
+                    activeMedicineTable = createMedicineTableTemplate();
+                    activeMedicineTbody = activeMedicineTable.querySelector('tbody');
+                    currentContentArea.appendChild(activeMedicineTable);
+                    
+                    activeMedicineTbody.appendChild(tr);
+                    currentSpaceUsed += activeMedicineTable.offsetHeight;
+                  } else {
+                    currentSpaceUsed += trHeight;
+                  }
+                }
+                else if (child.classList.contains('lab-row-source')) {
+                  activeMedicineTable = null;
+                  activeMedicineTbody = null;
+                  
+                  if (!activeLabsTable) {
+                    activeLabsTable = createLabsTableTemplate();
+                    activeLabsTbody = activeLabsTable.querySelector('tbody');
+                    
+                    source.appendChild(activeLabsTable);
+                    const tableHeaderHeight = activeLabsTable.offsetHeight;
+                    source.removeChild(activeLabsTable);
+                    
+                    if (currentSpaceUsed + tableHeaderHeight > availableHeight) {
+                      currentPage = createNewPage(header, footer);
+                      currentContentArea = currentPage.querySelector('.content-area');
+                      currentSpaceUsed = 0;
+                    }
+                    currentContentArea.appendChild(activeLabsTable);
+                    currentSpaceUsed += tableHeaderHeight;
+                  }
+                  
+                  const tr = document.createElement('tr');
+                  tr.style.borderBottom = '1px solid #800020';
+                  tr.style.pageBreakInside = 'avoid';
+                  tr.innerHTML = child.innerHTML;
+                  activeLabsTbody.appendChild(tr);
+                  
+                  const trHeight = tr.offsetHeight;
+                  if (currentSpaceUsed + trHeight > availableHeight) {
+                    activeLabsTbody.removeChild(tr);
+                    
+                    currentPage = createNewPage(header, footer);
+                    currentContentArea = currentPage.querySelector('.content-area');
+                    currentSpaceUsed = 0;
+                    
+                    activeLabsTable = createLabsTableTemplate();
+                    activeLabsTbody = activeLabsTable.querySelector('tbody');
+                    currentContentArea.appendChild(activeLabsTable);
+                    
+                    activeLabsTbody.appendChild(tr);
+                    currentSpaceUsed += activeLabsTable.offsetHeight;
+                  } else {
+                    currentSpaceUsed += trHeight;
+                  }
+                }
+                else {
+                  activeMedicineTable = null;
+                  activeMedicineTbody = null;
+                  activeLabsTable = null;
+                  activeLabsTbody = null;
+                  
+                  const blockHeight = child.offsetHeight;
+                  
+                  if (currentSpaceUsed + blockHeight > availableHeight) {
+                    currentPage = createNewPage(header, footer);
+                    currentContentArea = currentPage.querySelector('.content-area');
+                    currentSpaceUsed = 0;
+                  }
+                  currentContentArea.appendChild(child);
+                  currentSpaceUsed += blockHeight;
+                }
+              }
+              
+              document.body.removeChild(source);
+            }
+
             window.onload = function() {
+              paginate();
               window.print();
               setTimeout(function() { window.close(); }, 500);
             };
