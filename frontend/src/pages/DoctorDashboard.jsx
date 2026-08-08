@@ -1343,10 +1343,10 @@ const DoctorDashboard = () => {
                 return '<div class="spacer-header"></div>';
               }
               
-              let presetClass = '';
-              let logoHTML = '✚';
-              let accentColor = '#800020';
-              let subtitle = 'Official EMR OPD Portal';
+              var presetClass = '';
+              var logoHTML = '✚';
+              var accentColor = '#800020';
+              var subtitle = 'Official EMR OPD Portal';
               
               if (digitalPreset === 'teal') {
                 presetClass = 'preset-teal';
@@ -1367,72 +1367,68 @@ const DoctorDashboard = () => {
                 return '<div class="spacer-header"></div>';
               }
 
-              return \`
-                <div class="letterhead-digital-container">
-                  <div class="\${presetClass}">
-                    \${logoHTML}
-                    <div style="flex-grow: 1;">
-                      <h1 style="margin: 0; color: \${accentColor}; font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 900; text-transform: uppercase;">\${clinicName}</h1>
-                      <p style="margin: 2px 0; color: #334155; font-size: 9px; font-weight: 700; text-transform: uppercase;">\${subtitle}</p>
-                      <p style="margin: 0; color: #64748b; font-size: 8px; font-weight: 600;">E-mail: info@\${clinicName.toLowerCase().replace(/\\\\s+/g, '')}.com &nbsp;&nbsp;•&nbsp;&nbsp; OPD Portal</p>
-                    </div>
-                    <div style="text-align: right; font-size: 8.5px; color: #475569; font-weight: 600;">
-                      <div>Date: \${rxDate}</div>
-                      <div>Reg. No: \${regNo}</div>
-                    </div>
-                  </div>
-                </div>
-              \`;
+              return '<div class="letterhead-digital-container">' +
+                '<div class="' + presetClass + '">' +
+                  logoHTML +
+                  '<div style="flex-grow: 1;">' +
+                    '<h1 style="margin: 0; color: ' + accentColor + '; font-family: \'Outfit\', sans-serif; font-size: 20px; font-weight: 900; text-transform: uppercase;">' + clinicName + '</h1>' +
+                    '<p style="margin: 2px 0; color: #334155; font-size: 9px; font-weight: 700; text-transform: uppercase;">' + subtitle + '</p>' +
+                    '<p style="margin: 0; color: #64748b; font-size: 8px; font-weight: 600;">E-mail: info@' + clinicName.toLowerCase().replace(/\s+/g, '') + '.com &nbsp;&nbsp;•&nbsp;&nbsp; OPD Portal</p>' +
+                  '</div>' +
+                  '<div style="text-align: right; font-size: 8.5px; color: #475569; font-weight: 600;">' +
+                    '<div>Date: ' + rxDate + '</div>' +
+                    '<div>Reg. No: ' + regNo + '</div>' +
+                  '</div>' +
+                '</div>' +
+              '</div>';
             }
 
             function getPatientDetailsHTML() {
-              return \`
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 11px; color: #1E293B; line-height: 1.4; margin-bottom: 8px;">
-                  <div style="display: flex; flex-direction: column; gap: 3px;">
-                    <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Patient Name</span><span style="font-weight: 500;">: \${patientName}</span></div>
-                    <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Age / Gender</span><span style="font-weight: 500;">: \${patientAge} / \${patientGender}</span></div>
-                    <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Mobile / Addr</span><span style="font-weight: 500;">: \${patientContact} / \${patientAddress}</span></div>
-                    \${vitalsText && vitalsText !== '—' ? \`<div><span style="font-weight: 700; width: 85px; display: inline-block; color: #059669;">Vitals</span><span style="font-weight: 600; color: #059669;">: \${vitalsText}</span></div>\` : ''}
-                  </div>
-                  <div style="display: flex; flex-direction: column; gap: 3px;">
-                    <div><span style="font-weight: 700; width: 100px; display: inline-block; color: #800020;">Doctor Name</span><span style="font-weight: 600;">: \${doctorName}</span></div>
-                    <div><span style="font-weight: 700; width: 100px; display: inline-block; color: #800020;">Specialty / Reg</span><span style="font-weight: 500;">: \${doctorDept} / DMC-\${doctorReg}</span></div>
-                    <div><span style="font-weight: 700; width: 100px; display: inline-block; color: #800020;">Consultation</span><span style="font-weight: 500;">: \${doctorShift}</span></div>
-                  </div>
-                </div>
-                <hr style="border: none; border-top: 1.5px solid #800020; margin: 6px 0 10px 0;" />
-              \`;
+              var vitalsHTML = '';
+              if (vitalsText && vitalsText !== '—') {
+                vitalsHTML = '<div><span style="font-weight: 700; width: 85px; display: inline-block; color: #059669;">Vitals</span><span style="font-weight: 600; color: #059669;">: ' + vitalsText + '</span></div>';
+              }
+              return '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 11px; color: #1E293B; line-height: 1.4; margin-bottom: 8px;">' +
+                '<div style="display: flex; flex-direction: column; gap: 3px;">' +
+                  '<div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Patient Name</span><span style="font-weight: 500;">: ' + patientName + '</span></div>' +
+                  '<div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Age / Gender</span><span style="font-weight: 500;">: ' + patientAge + ' / ' + patientGender + '</span></div>' +
+                  '<div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Mobile / Addr</span><span style="font-weight: 500;">: ' + patientContact + ' / ' + patientAddress + '</span></div>' +
+                  vitalsHTML +
+                '</div>' +
+                '<div style="display: flex; flex-direction: column; gap: 3px;">' +
+                  '<div><span style="font-weight: 700; width: 100px; display: inline-block; color: #800020;">Doctor Name</span><span style="font-weight: 600;">: ' + doctorName + '</span></div>' +
+                  '<div><span style="font-weight: 700; width: 100px; display: inline-block; color: #800020;">Specialty / Reg</span><span style="font-weight: 500;">: ' + doctorDept + ' / DMC-' + doctorReg + '</span></div>' +
+                  '<div><span style="font-weight: 700; width: 100px; display: inline-block; color: #800020;">Consultation</span><span style="font-weight: 500;">: ' + doctorShift + '</span></div>' +
+                '</div>' +
+              '</div>' +
+              '<hr style="border: none; border-top: 1.5px solid #800020; margin: 6px 0 10px 0;" />';
             }
 
             function getFooterHTML() {
-              return \`
-                <div style="text-align: center; font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: bold; color: #800020; border-top: 1px solid #E2E8F0; padding-top: 6px; background: white;">
-                  Thank you for trusting us with your health. Get well soon!
-                </div>
-              \`;
+              return '<div style="text-align: center; font-family: \'Outfit\', sans-serif; font-size: 10px; font-weight: bold; color: #800020; border-top: 1px solid #E2E8F0; padding-top: 6px; background: white;">' +
+                'Thank you for trusting us with your health. Get well soon!' +
+              '</div>';
             }
 
             function getSignatureBlockHTML() {
-              return \`
-                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 25px; min-height: 80px; page-break-inside: avoid; break-inside: avoid;">
-                  <div style="font-size: 10px; line-height: 1.4; max-width: 60%;">
-                    <div style="color: #800020; font-weight: 800; font-size: 10.5px; margin-bottom: 2px; text-transform: uppercase;">Note :</div>
-                    <ul style="padding-left: 10px; margin: 0; list-style-type: square; color: #334155; font-weight: 600;">
-                      <li>Take medicines as prescribed.</li>
-                      <li>Complete full course of antibiotics.</li>
-                      <li>Drink plenty of fluids and rest.</li>
-                    </ul>
-                  </div>
-                  <div style="text-align: center; width: 180px; font-size: 10px;">
-                    <div style="border-bottom: 1px solid #800020; margin-bottom: 4px; height: 35px; position: relative;">
-                      <span style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 20px; color: #800020; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);">\${doctorName.replace('Dr. ', '')}</span>
-                    </div>
-                    <div style="color: #800020; font-weight: 700; font-size: 11px;">\${doctorName}</div>
-                    <div style="color: #475569; font-weight: 600; font-size: 9px;">\${doctorDesignation}</div>
-                    <div style="color: #94A3B8; font-size: 8.5px; margin-top: 2px; font-weight: bold;">Signature & Seal</div>
-                  </div>
-                </div>
-              \`;
+              return '<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 25px; min-height: 80px; page-break-inside: avoid; break-inside: avoid;">' +
+                '<div style="font-size: 10px; line-height: 1.4; max-width: 60%;">' +
+                  '<div style="color: #800020; font-weight: 800; font-size: 10.5px; margin-bottom: 2px; text-transform: uppercase;">Note :</div>' +
+                  '<ul style="padding-left: 10px; margin: 0; list-style-type: square; color: #334155; font-weight: 600;">' +
+                    '<li>Take medicines as prescribed.</li>' +
+                    '<li>Complete full course of antibiotics.</li>' +
+                    '<li>Drink plenty of fluids and rest.</li>' +
+                  '</ul>' +
+                '</div>' +
+                '<div style="text-align: center; width: 180px; font-size: 10px;">' +
+                  '<div style="border-bottom: 1px solid #800020; margin-bottom: 4px; height: 35px; position: relative;">' +
+                    '<span style="font-family: \'Brush Script MT\', cursive, sans-serif; font-size: 20px; color: #800020; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);">' + doctorName.replace('Dr. ', '') + '</span>' +
+                  '</div>' +
+                  '<div style="color: #800020; font-weight: 700; font-size: 11px;">' + doctorName + '</div>' +
+                  '<div style="color: #475569; font-weight: 600; font-size: 9px;">' + doctorDesignation + '</div>' +
+                  '<div style="color: #94A3B8; font-size: 8.5px; margin-top: 2px; font-weight: bold;">Signature & Seal</div>' +
+                '</div>' +
+              '</div>';
             }
 
             function createNewPage() {
@@ -1481,7 +1477,6 @@ const DoctorDashboard = () => {
               const contentArea = page.querySelector('.content-area');
 
               if (activeTemplate === 'two-column') {
-                // Two-Column Layout
                 const container = document.createElement('div');
                 container.style.display = 'flex';
                 container.style.gap = '20px';
@@ -1499,306 +1494,255 @@ const DoctorDashboard = () => {
                 rightCol.style.flexDirection = 'column';
                 rightCol.style.gap = '12px';
                 
-                // Left Column: Diagnosis & Labs
-                let diagnosisHTML = \`
-                  <div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff;">
-                    <div style="background: #FDF2F4; padding: 5px 8px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Diagnosis</div>
-                    <div style="padding: 8px; font-size: 10.5px; font-weight: 600; color: #1E293B;">\${diagnosis !== '—' ? diagnosis : 'General Clinical Observation'}</div>
-                  </div>
-                \`;
+                var diagnosisHTML = '<div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff;">' +
+                  '<div style="background: #FDF2F4; padding: 5px 8px; border-bottom: 1.5px solid #800020; font-family: \'Outfit\', sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Diagnosis</div>' +
+                  '<div style="padding: 8px; font-size: 10.5px; font-weight: 600; color: #1E293B;">' + (diagnosis !== '—' ? diagnosis : 'General Clinical Observation') + '</div>' +
+                '</div>';
                 leftCol.innerHTML += diagnosisHTML;
 
                 if (soapNotes && soapNotes !== '—') {
-                  let soapHTML = \`
-                    <div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff;">
-                      <div style="background: #FDF2F4; padding: 5px 8px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Clinical Notes</div>
-                      <div style="padding: 8px; font-size: 10px; font-weight: 500; color: #334155; white-space: pre-wrap;">\${soapNotes}</div>
-                    </div>
-                  \`;
+                  var soapHTML = '<div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff;">' +
+                    '<div style="background: #FDF2F4; padding: 5px 8px; border-bottom: 1.5px solid #800020; font-family: \'Outfit\', sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Clinical Notes</div>' +
+                    '<div style="padding: 8px; font-size: 10px; font-weight: 500; color: #334155; white-space: pre-wrap;">' + soapNotes + '</div>' +
+                  '</div>';
                   leftCol.innerHTML += soapHTML;
                 }
 
                 if (tests.length > 0) {
-                  let labsHTML = \`
-                    <div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff;">
-                      <div style="background: #FDF2F4; padding: 5px 8px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Prescribed Tests</div>
-                      <div style="padding: 6px; font-size: 10px;">
-                        \${tests.map((t, i) => \`<div style="font-weight: 700; color: #1E293B; margin-bottom: 4px;">\${i+1}. \${t}</div>\`).join('')}
-                      </div>
-                    </div>
-                  \`;
+                  var testItemsHTML = '';
+                  for (var i = 0; i < tests.length; i++) {
+                    testItemsHTML += '<div style="font-weight: 700; color: #1E293B; margin-bottom: 4px;">' + (i+1) + '. ' + tests[i] + '</div>';
+                  }
+                  var labsHTML = '<div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff;">' +
+                    '<div style="background: #FDF2F4; padding: 5px 8px; border-bottom: 1.5px solid #800020; font-family: \'Outfit\', sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Prescribed Tests</div>' +
+                    '<div style="padding: 6px; font-size: 10px;">' + testItemsHTML + '</div>' +
+                  '</div>';
                   leftCol.innerHTML += labsHTML;
                 }
 
-                // Right Column: Medicines
-                let medContainer = document.createElement('div');
+                var medContainer = document.createElement('div');
                 medContainer.style.border = '1.5px solid #800020';
                 medContainer.style.borderRadius = '8px';
                 medContainer.style.overflow = 'hidden';
                 medContainer.style.background = '#fff';
-                medContainer.innerHTML = \`
-                  <div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 850; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">Rx (Prescribed Medicines)</div>
-                  <div style="padding: 10px; display: flex; flex-direction: column; gap: 8px;">
-                    \${medicines.map((m, idx) => {
-                      let freq = 'Once a Day';
-                      let inst = 'After Food';
-                      if (m.instructions) {
-                        const parts = m.instructions.split('(');
-                        if (parts[0]) freq = parts[0].trim();
-                        if (parts[1]) inst = parts[1].replace(')', '').trim();
-                      }
-                      return \`
-                        <div style="border-bottom: 1px dashed #E2E8F0; padding-bottom: 6px; font-size: 11px; line-height: 1.4;">
-                          <div style="display: flex; justify-content: space-between; font-weight: 750; color: #1E293B;">
-                            <span>\${idx + 1}. \${m.medicine}</span>
-                            <span style="color: #800020;">\${m.dosage}</span>
-                          </div>
-                          <div style="display: flex; gap: 12px; color: #475569; font-size: 9.5px; font-weight: 600; margin-top: 3px;">
-                            <span>Duration: \${m.duration}</span>
-                            <span>Freq: \${freq}</span>
-                          </div>
-                          <div style="color: #64748b; font-size: 9px; font-style: italic; margin-top: 2px;">Timing: \${inst}</div>
-                        </div>
-                      \`;
-                    }).join('')}
-                  </div>
-                \`;
+                
+                var medItemsHTML = '';
+                for (var i = 0; i < medicines.length; i++) {
+                  var m = medicines[i];
+                  var freq = 'Once a Day';
+                  var inst = 'After Food';
+                  if (m.instructions) {
+                    var parts = m.instructions.split('(');
+                    if (parts[0]) freq = parts[0].trim();
+                    if (parts[1]) inst = parts[1].replace(')', '').trim();
+                  }
+                  medItemsHTML += '<div style="border-bottom: 1px dashed #E2E8F0; padding-bottom: 6px; font-size: 11px; line-height: 1.4;">' +
+                    '<div style="display: flex; justify-content: space-between; font-weight: 750; color: #1E293B;">' +
+                      '<span>' + (i + 1) + '. ' + m.medicine + '</span>' +
+                      '<span style="color: #800020;">' + m.dosage + '</span>' +
+                    '</div>' +
+                    '<div style="display: flex; gap: 12px; color: #475569; font-size: 9.5px; font-weight: 600; margin-top: 3px;">' +
+                      '<span>Duration: ' + m.duration + '</span>' +
+                      '<span>Freq: ' + freq + '</span>' +
+                    '</div>' +
+                    '<div style="color: #64748b; font-size: 9px; font-style: italic; margin-top: 2px;">Timing: ' + inst + '</div>' +
+                  '</div>';
+                }
+
+                medContainer.innerHTML = '<div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: \'Outfit\', sans-serif; font-size: 12px; font-weight: 850; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">Rx (Prescribed Medicines)</div>' +
+                  '<div style="padding: 10px; display: flex; flex-direction: column; gap: 8px;">' + medItemsHTML + '</div>';
                 rightCol.appendChild(medContainer);
                 
                 container.appendChild(leftCol);
                 container.appendChild(rightCol);
                 contentArea.appendChild(container);
                 
-                // Signature block
-                const sigBlock = document.createElement('div');
+                var sigBlock = document.createElement('div');
                 sigBlock.innerHTML = getSignatureBlockHTML();
                 contentArea.appendChild(sigBlock.firstElementChild || sigBlock);
 
               } else if (activeTemplate === 'rx-list') {
-                // Elegant Rx List Layout
-                let header = document.createElement('div');
-                header.innerHTML = \`<div style="font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 900; color: #800020; border-bottom: 2px solid #800020; padding: 2px 0 6px 0; margin-bottom: 12px; letter-spacing: 0.5px; text-transform: uppercase;">Clinical Rx List</div>\`;
+                var header = document.createElement('div');
+                header.innerHTML = '<div style="font-family: \'Outfit\', sans-serif; font-size: 13px; font-weight: 900; color: #800020; border-bottom: 2px solid #800020; padding: 2px 0 6px 0; margin-bottom: 12px; letter-spacing: 0.5px; text-transform: uppercase;">Clinical Rx List</div>';
                 contentArea.appendChild(header);
 
                 if (diagnosis !== '—') {
-                  let diag = document.createElement('div');
-                  diag.innerHTML = \`<div style="font-size: 11.5px; color: #475569; margin-bottom: 12px; font-weight: 600;"><b>Diagnosis:</b> \${diagnosis}</div>\`;
+                  var diag = document.createElement('div');
+                  diag.innerHTML = '<div style="font-size: 11.5px; color: #475569; margin-bottom: 12px; font-weight: 600;"><b>Diagnosis:</b> ' + diagnosis + '</div>';
                   contentArea.appendChild(diag);
                 }
 
-                // Medicines List
-                medicines.forEach((m, idx) => {
-                  let freq = 'Once a Day';
-                  let inst = 'After Food';
+                for (var i = 0; i < medicines.length; i++) {
+                  var m = medicines[i];
+                  var freq = 'Once a Day';
+                  var inst = 'After Food';
                   if (m.instructions) {
-                    const parts = m.instructions.split('(');
+                    var parts = m.instructions.split('(');
                     if (parts[0]) freq = parts[0].trim();
                     if (parts[1]) inst = parts[1].replace(')', '').trim();
                   }
                   
-                  let medRow = document.createElement('div');
+                  var medRow = document.createElement('div');
                   medRow.style.marginBottom = '10px';
                   medRow.style.display = 'flex';
                   medRow.style.gap = '10px';
                   medRow.style.fontSize = '12px';
-                  medRow.innerHTML = \`
-                    <span style="font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 900; color: #800020; line-height: 1;">℞</span>
-                    <div style="flex-grow: 1; border-bottom: 1px solid #F1F5F9; padding-bottom: 6px;">
-                      <div style="display: flex; justify-content: space-between; font-weight: 800; color: #1E293B;">
-                        <span>\${m.medicine}</span>
-                        <span style="color: #800020;">\${m.dosage}</span>
-                      </div>
-                      <div style="font-size: 10px; color: #475569; font-weight: 600; margin-top: 3px; display: flex; gap: 15px;">
-                        <span>Duration: <b>\${m.duration}</b></span>
-                        <span>Frequency: <b>\${freq}</b></span>
-                        <span>Timing: <b>\${inst}</b></span>
-                      </div>
-                    </div>
-                  \`;
+                  medRow.innerHTML = '<span style="font-family: \'Outfit\', sans-serif; font-size: 16px; font-weight: 900; color: #800020; line-height: 1;">℞</span>' +
+                    '<div style="flex-grow: 1; border-bottom: 1px solid #F1F5F9; padding-bottom: 6px;">' +
+                      '<div style="display: flex; justify-content: space-between; font-weight: 800; color: #1E293B;">' +
+                        '<span>' + m.medicine + '</span>' +
+                        '<span style="color: #800020;">' + m.dosage + '</span>' +
+                      '</div>' +
+                      '<div style="font-size: 10px; color: #475569; font-weight: 600; margin-top: 3px; display: flex; gap: 15px;">' +
+                        '<span>Duration: <b>' + m.duration + '</b></span>' +
+                        '<span>Frequency: <b>' + freq + '</b></span>' +
+                        '<span>Timing: <b>' + inst + '</b></span>' +
+                      '</div>' +
+                    '</div>';
                   contentArea.appendChild(medRow);
-                });
+                }
 
                 if (tests.length > 0) {
-                  let testsBox = document.createElement('div');
+                  var testItemsHTML = '';
+                  for (var i = 0; i < tests.length; i++) {
+                    testItemsHTML += '<div style="font-size: 11px; font-weight: 700; color: #334155;">' + (i+1) + '. ' + tests[i] + '</div>';
+                  }
+                  var testsBox = document.createElement('div');
                   testsBox.style.marginTop = '16px';
-                  testsBox.innerHTML = \`
-                    <div style="font-weight: 800; font-size: 11px; color: #800020; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px;">Recommended Investigations</div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                      \${tests.map((t, i) => \`<div style="font-size: 11px; font-weight: 700; color: #334155;">\${i+1}. \${t}</div>\`).join('')}
-                    </div>
-                  \`;
+                  testsBox.innerHTML = '<div style="font-weight: 800; font-size: 11px; color: #800020; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px;">Recommended Investigations</div>' +
+                    '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">' + testItemsHTML + '</div>';
                   contentArea.appendChild(testsBox);
                 }
 
-                const sigBlock = document.createElement('div');
+                var sigBlock = document.createElement('div');
                 sigBlock.innerHTML = getSignatureBlockHTML();
                 contentArea.appendChild(sigBlock.firstElementChild || sigBlock);
 
               } else if (activeTemplate === 'dense-grid') {
-                // Dense Grid Layout
-                let mainHeader = document.createElement('div');
-                mainHeader.innerHTML = \`<div style="font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 900; color: #800020; margin-bottom: 10px; text-transform: uppercase;">Itemized Prescription Grid</div>\`;
+                var mainHeader = document.createElement('div');
+                mainHeader.innerHTML = '<div style="font-family: \'Outfit\', sans-serif; font-size: 12px; font-weight: 900; color: #800020; margin-bottom: 10px; text-transform: uppercase;">Itemized Prescription Grid</div>';
                 contentArea.appendChild(mainHeader);
 
-                // Diagnosis & Soap Bar
-                let infoBar = document.createElement('div');
+                var infoBar = document.createElement('div');
                 infoBar.style.background = '#F8FAFC';
                 infoBar.style.padding = '8px 12px';
                 infoBar.style.borderRadius = '6px';
                 infoBar.style.fontSize = '10.5px';
                 infoBar.style.marginBottom = '12px';
                 infoBar.style.border = '1px solid #E2E8F0';
-                infoBar.innerHTML = \`<b>Diagnosis:</b> \${diagnosis} \${soapNotes && soapNotes !== '—' ? \` | <b>Notes:</b> \${soapNotes}\` : ''}\`;
+                var notesText = soapNotes && soapNotes !== '—' ? ' | <b>Notes:</b> ' + soapNotes : '';
+                infoBar.innerHTML = '<b>Diagnosis:</b> ' + diagnosis + notesText;
                 contentArea.appendChild(infoBar);
 
-                // Grid Container
-                let grid = document.createElement('div');
+                var grid = document.createElement('div');
                 grid.style.display = 'grid';
                 grid.style.gridTemplateColumns = '1fr 1fr';
                 grid.style.gap = '8px';
                 
-                medicines.forEach((m, idx) => {
-                  let freq = 'Once a Day';
-                  let inst = 'After Food';
+                for (var i = 0; i < medicines.length; i++) {
+                  var m = medicines[i];
+                  var freq = 'Once a Day';
+                  var inst = 'After Food';
                   if (m.instructions) {
-                    const parts = m.instructions.split('(');
+                    var parts = m.instructions.split('(');
                     if (parts[0]) freq = parts[0].trim();
                     if (parts[1]) inst = parts[1].replace(')', '').trim();
                   }
                   
-                  let card = document.createElement('div');
+                  var card = document.createElement('div');
                   card.style.border = '1px solid #E2E8F0';
                   card.style.borderRadius = '6px';
                   card.style.padding = '6px 8px';
                   card.style.background = '#fff';
                   card.style.fontSize = '10.5px';
-                  card.innerHTML = \`
-                    <div style="font-weight: 800; color: #1E293B; display: flex; justify-content: space-between;">
-                      <span>\${idx+1}. \${m.medicine}</span>
-                      <span style="color: #800020;">\${m.dosage}</span>
-                    </div>
-                    <div style="margin-top: 3px; color: #475569; display: flex; gap: 8px;">
-                      <span>\${m.duration}</span>
-                      <span>\${freq}</span>
-                    </div>
-                    <div style="margin-top: 1px; color: #64748b; font-size: 9px;">\${inst}</div>
-                  \`;
+                  card.innerHTML = '<div style="font-weight: 800; color: #1E293B; display: flex; justify-content: space-between;">' +
+                      '<span>' + (i+1) + '. ' + m.medicine + '</span>' +
+                      '<span style="color: #800020;">' + m.dosage + '</span>' +
+                    '</div>' +
+                    '<div style="margin-top: 3px; color: #475569; display: flex; gap: 8px;">' +
+                      '<span>' + m.duration + '</span>' +
+                      '<span>' + freq + '</span>' +
+                    '</div>' +
+                    '<div style="margin-top: 1px; color: #64748b; font-size: 9px;">' + inst + '</div>';
                   grid.appendChild(card);
-                });
+                }
                 contentArea.appendChild(grid);
 
                 if (tests.length > 0) {
-                  let testsBox = document.createElement('div');
+                  var testItemsHTML = '';
+                  for (var i = 0; i < tests.length; i++) {
+                    testItemsHTML += '<div style="font-weight: 700; color: #334155;">' + (i+1) + '. ' + tests[i] + '</div>';
+                  }
+                  var testsBox = document.createElement('div');
                   testsBox.style.marginTop = '12px';
-                  testsBox.innerHTML = \`
-                    <div style="font-weight: 800; font-size: 10px; color: #800020; text-transform: uppercase; margin-bottom: 4px;">Tests Ordered</div>
-                    <div style="display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 10px;">
-                      \${tests.map((t, i) => \`<div style="font-weight: 700; color: #334155;">\${i+1}. \${t}</div>\`).join('')}
-                    </div>
-                  \`;
+                  testsBox.innerHTML = '<div style="font-weight: 800; font-size: 10px; color: #800020; text-transform: uppercase; margin-bottom: 4px;">Tests Ordered</div>' +
+                    '<div style="display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 10px;">' + testItemsHTML + '</div>';
                   contentArea.appendChild(testsBox);
                 }
 
-                const sigBlock = document.createElement('div');
+                var sigBlock = document.createElement('div');
                 sigBlock.innerHTML = getSignatureBlockHTML();
                 contentArea.appendChild(sigBlock.firstElementChild || sigBlock);
 
               } else {
-                // Classic standard table layout
-                let diagnosisHTML = \`
-                  <div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: #fff;">
-                    <div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">
-                      DIAGNOSIS (Doctor's Observation)
-                    </div>
-                    <div style="padding: 10px; font-size: 11.5px; color: #1E293B; line-height: 1.5; font-weight: 500;">
-                      \${diagnosis !== '—' ? diagnosis : 'General clinical observation & routine consultation.'}
-                    </div>
-                  </div>
-                \`;
-                contentArea.innerHTML += diagnosisHTML;
+                var diagHTML = '<div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: #fff;">' +
+                  '<div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: \'Outfit\', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">DIAGNOSIS (Doctor\'s Observation)</div>' +
+                  '<div style="padding: 10px; font-size: 11.5px; color: #1E293B; line-height: 1.5; font-weight: 500;">' + (diagnosis !== '—' ? diagnosis : 'General clinical observation & routine consultation.') + '</div>' +
+                '</div>';
+                contentArea.innerHTML += diagHTML;
 
                 if (soapNotes && soapNotes !== '—') {
-                  let soapHTML = \`
-                    <div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: #fff;">
-                      <div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">
-                        Clinical SOAP Notes
-                      </div>
-                      <div style="padding: 10px; font-size: 11.5px; color: #334155; line-height: 1.5; font-weight: 500; white-space: pre-wrap;">
-                        \${soapNotes}
-                      </div>
-                    </div>
-                  \`;
+                  var soapHTML = '<div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: #fff;">' +
+                    '<div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: \'Outfit\', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">Clinical SOAP Notes</div>' +
+                    '<div style="padding: 10px; font-size: 11.5px; color: #334155; line-height: 1.5; font-weight: 500; white-space: pre-wrap;">' + soapNotes + '</div>' +
+                  '</div>';
                   contentArea.innerHTML += soapHTML;
                 }
 
-                // Table of medicines
-                let medTable = document.createElement('table');
+                var medTable = document.createElement('table');
                 medTable.className = 'rx-table';
                 medTable.style.marginBottom = '15px';
-                medTable.innerHTML = \`
-                  <thead>
-                    <tr>
-                      <th style="width: 50px;">S. No.</th>
-                      <th>Medicine Name</th>
-                      <th style="width: 70px;">Dose</th>
-                      <th style="width: 80px;">Duration</th>
-                      <th style="width: 100px;">Frequency</th>
-                      <th>Instructions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    \${medicines.map((m, idx) => {
-                      let freq = 'Once a Day';
-                      let inst = 'After Food';
-                      if (m.instructions) {
-                        const parts = m.instructions.split('(');
-                        if (parts[0]) freq = parts[0].trim();
-                        if (parts[1]) inst = parts[1].replace(')', '').trim();
-                      }
-                      return \`
-                        <tr>
-                          <td style="text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">\${idx + 1}.</td>
-                          <td style="border-right: 1px solid #800020; font-weight: 700; color: #1E293B;">\${m.medicine}</td>
-                          <td style="text-align: center; border-right: 1px solid #800020; color: #334155;">\${m.dosage}</td>
-                          <td style="text-align: center; border-right: 1px solid #800020; color: #334155;">\${m.duration}</td>
-                          <td style="text-align: center; border-right: 1px solid #800020; color: #800020; font-weight: 600;">\${freq}</td>
-                          <td style="color: #334155;">\${inst}</td>
-                        </tr>
-                      \`;
-                    }).join('')}
-                  </tbody>
-                \`;
+                
+                var medRowsHTML = '';
+                for (var i = 0; i < medicines.length; i++) {
+                  var m = medicines[i];
+                  var freq = 'Once a Day';
+                  var inst = 'After Food';
+                  if (m.instructions) {
+                    var parts = m.instructions.split('(');
+                    if (parts[0]) freq = parts[0].trim();
+                    if (parts[1]) inst = parts[1].replace(')', '').trim();
+                  }
+                  medRowsHTML += '<tr>' +
+                    '<td style="text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">' + (i + 1) + '.</td>' +
+                    '<td style="border-right: 1px solid #800020; font-weight: 700; color: #1E293B;">' + m.medicine + '</td>' +
+                    '<td style="text-align: center; border-right: 1px solid #800020; color: #334155;">' + m.dosage + '</td>' +
+                    '<td style="text-align: center; border-right: 1px solid #800020; color: #334155;">' + m.duration + '</td>' +
+                    '<td style="text-align: center; border-right: 1px solid #800020; color: #800020; font-weight: 600;">' + freq + '</td>' +
+                    '<td style="color: #334155;">' + inst + '</td>' +
+                  '</tr>';
+                }
+                
+                medTable.innerHTML = '<thead><tr><th style="width: 50px;">S. No.</th><th>Medicine Name</th><th style="width: 70px;">Dose</th><th style="width: 80px;">Duration</th><th style="width: 100px;">Frequency</th><th>Instructions</th></tr></thead><tbody>' + medRowsHTML + '</tbody>';
                 contentArea.appendChild(medTable);
 
-                // Labs Table if present
                 if (tests.length > 0) {
-                  let labsBox = document.createElement('div');
+                  var labRowsHTML = '';
+                  for (var i = 0; i < tests.length; i++) {
+                    labRowsHTML += '<tr>' +
+                      '<td style="text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">' + (i + 1) + '.</td>' +
+                      '<td style="font-weight: 700; color: #1E293B;">' + tests[i] + '</td>' +
+                    '</tr>';
+                  }
+                  
+                  var labsBox = document.createElement('div');
                   labsBox.style.marginTop = '15px';
-                  labsBox.innerHTML = \`
-                    <div style="font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px;">
-                      PRESCRIBED TESTS
-                    </div>
-                    <table class="rx-table" style="width: 50%;">
-                      <thead>
-                        <tr>
-                          <th style="width: 50px;">S. No.</th>
-                          <th style="text-align: left;">Test Name</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        \${tests.map((test, idx) => \`
-                          <tr>
-                            <td style="text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">\${idx + 1}.</td>
-                            <td style="font-weight: 700; color: #1E293B;">\${test}</td>
-                          </tr>
-                        \`).join('')}
-                      </tbody>
-                    </table>
-                  \`;
+                  labsBox.innerHTML = '<div style="font-family: \'Outfit\', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px;">PRESCRIBED TESTS</div>' +
+                    '<table class="rx-table" style="width: 50%;"><thead><tr><th style="width: 50px;">S. No.</th><th style="text-align: left;">Test Name</th></tr></thead><tbody>' + labRowsHTML + '</tbody></table>';
                   contentArea.appendChild(labsBox);
                 }
 
-                const sigBlock = document.createElement('div');
+                var sigBlock = document.createElement('div');
                 sigBlock.innerHTML = getSignatureBlockHTML();
                 contentArea.appendChild(sigBlock.firstElementChild || sigBlock);
               }
@@ -1826,15 +1770,6 @@ const DoctorDashboard = () => {
           </script>
         </body>
         </html>
-      `;
-
-      printWindow.document.write(htmlContent);
-      printWindow.document.close();
-    } catch (err) {
-      console.error("Print prescription error:", err);
-      showToastNotification("Failed to prepare print view.", "error");
-    }
-  };tml>
       `;
 
       printWindow.document.write(htmlContent);
