@@ -1105,9 +1105,7 @@ const DoctorDashboard = () => {
     } catch (e) {
       console.warn("Failed to fetch past prescriptions from backend", e);
     }
-  };
-
-  const handlePrintPrescription = async (rx, item) => {
+  };  const handlePrintPrescription = async (rx, item, customSettings = printSettings) => {
     try {
       const res = await api.get('/admin/letterhead');
       let letterheadUrl = res.data?.letterheadUrl || "";
@@ -1146,49 +1144,22 @@ const DoctorDashboard = () => {
       const cleanField = (val) => (val && String(val).trim() !== '') ? String(val).trim() : '—';
       const clinicName = user.tenantName || (user.tenantId ? user.tenantId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'City Hospital');
 
-      const medicinesHtml = (item.items || []).map((m, idx) => {
-        let freq = 'Once a Day';
-        let inst = 'After Food';
-        if (m.instructions) {
-          const parts = m.instructions.split('(');
-          if (parts[0]) freq = parts[0].trim();
-          if (parts[1]) inst = parts[1].replace(')', '').trim();
-        }
-        return `
-          <tr style="border-bottom: 1px solid #800020; page-break-inside: avoid; break-inside: avoid;">
-            <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">${idx + 1}.</td>
-            <td style="padding: 8px; border-right: 1px solid #800020; font-weight: 700; color: #1E293B; word-break: break-word;">${cleanField(m.medicine)}</td>
-            <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; color: #334155; font-weight: 500; word-break: break-word;">${cleanField(m.dosage)}</td>
-            <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; color: #334155; font-weight: 500; word-break: break-word;">${cleanField(m.duration)}</td>
-            <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; color: #800020; font-weight: 600; word-break: break-word;">${cleanField(freq)}</td>
-            <td style="padding: 8px; color: #334155; font-weight: 500; word-break: break-word;">${cleanField(inst)}</td>
-          </tr>
-        `;
-      }).join('');
+      // Process vitals
+      let vitalsString = '—';
+      if (item.vitals) {
+        vitalsString = item.vitals;
+      } else if (vitals && (vitals.bpSys || vitals.pulse || vitals.temp || vitals.weight)) {
+        vitalsString = [
+          vitals.bpSys ? `BP: ${vitals.bpSys}/${vitals.bpDia} mmHg` : '',
+          vitals.pulse ? `Pulse: ${vitals.pulse} bpm` : '',
+          vitals.temp ? `Temp: ${vitals.temp} °F` : '',
+          vitals.weight ? `Weight: ${vitals.weight} kg` : ''
+        ].filter(Boolean).join(' | ');
+      }
 
-      const labsHtml = (item.tests || []).length > 0 
-        ? `<div style="margin-top: 15px; page-break-inside: avoid; break-inside: avoid;">
-             <div style="font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px;">
-               PRESCRIBED TESTS
-             </div>
-             <table style="width: 50%; border-collapse: collapse; font-size: 11.5px; border: 1.5px solid #800020; border-radius: 8px; overflow: hidden;">
-               <thead>
-                 <tr style="background: #FDF2F4; border-bottom: 1.5px solid #800020;">
-                   <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 50px;">S. No.</th>
-                   <th style="padding: 8px; color: #800020; font-weight: 800; text-align: left;">Test Name</th>
-                 </tr>
-               </thead>
-               <tbody>
-                 ${item.tests.map((test, idx) => `
-                   <tr style="border-bottom: 1px solid #800020; page-break-inside: avoid; break-inside: avoid;">
-                     <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">${idx + 1}.</td>
-                     <td style="padding: 8px; font-weight: 700; color: #1E293B;">${cleanField(test)}</td>
-                   </tr>
-                 `).join('')}
-               </tbody>
-             </table>
-           </div>`
-        : '';
+      // Convert details to JSON
+      const jsonItems = JSON.stringify(item.items || []);
+      const jsonTests = JSON.stringify(item.tests || []);
 
       const htmlContent = `
         <!DOCTYPE html>
@@ -1220,6 +1191,7 @@ const DoctorDashboard = () => {
               margin: 0;
               padding: 0;
               background-color: #ffffff;
+              font-size: ${customSettings.fontSize}%;
             }
             .page-container {
               width: 210mm;
@@ -1229,211 +1201,245 @@ const DoctorDashboard = () => {
               box-sizing: border-box;
               position: relative;
               padding: 15mm 15mm 20mm 15mm;
+              display: flex;
+              flex-direction: column;
+            }
+            .content-area {
+              flex: 1;
+              margin-top: 10px;
+              margin-bottom: ${customSettings.bottomSpacer}mm;
+            }
+            .spacer-header {
+              height: ${customSettings.topSpacer}mm;
+              width: 100%;
+            }
+
+            /* Preset Letterheads */
+            .letterhead-digital-container {
+              width: 100%;
+              box-sizing: border-box;
+            }
+            .preset-teal {
+              display: flex;
+              align-items: center;
+              border-bottom: 3.5px solid #0d9488;
+              padding-bottom: 10px;
+              margin-bottom: 15px;
+              height: 80px;
+            }
+            .preset-teal .logo-box {
+              background: #f0fdfa;
+              border-radius: 12px;
+              width: 55px;
+              height: 55px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              border: 2.5px solid #0d9488;
+              margin-right: 14px;
+              font-size: 26px;
+              color: #0d9488;
+              font-weight: bold;
+            }
+            .preset-burgundy {
+              display: flex;
+              align-items: center;
+              border-bottom: 4px double #800020;
+              padding-bottom: 10px;
+              margin-bottom: 15px;
+              height: 80px;
+            }
+            .preset-burgundy .logo-box {
+              border: 2.5px solid #800020;
+              border-radius: 12px;
+              width: 58px;
+              height: 58px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-right: 14px;
+              color: #800020;
+              font-family: 'Brush Script MT', cursive, sans-serif;
+              font-size: 22px;
+              font-weight: 900;
+              text-align: center;
+              line-height: 1;
+            }
+            .preset-navy {
+              display: flex;
+              align-items: center;
+              border-bottom: 3.5px solid #1e3a8a;
+              padding-bottom: 10px;
+              margin-bottom: 15px;
+              height: 80px;
+            }
+            .preset-navy .logo-box {
+              background: #1e3a8a;
+              border-radius: 12px;
+              width: 55px;
+              height: 55px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-right: 14px;
+              font-size: 26px;
+              color: white;
+              font-weight: bold;
+            }
+
+            /* Tables & Lists style */
+            .rx-table {
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 11.5px;
+              border: 1.5px solid #800020;
+              border-radius: 8px;
+              overflow: hidden;
+            }
+            .rx-table th {
+              background: #FDF2F4;
+              color: #800020;
+              font-weight: 800;
+              padding: 8px;
+              border-bottom: 1.5px solid #800020;
+            }
+            .rx-table td {
+              padding: 8px;
+              border-bottom: 1px solid #800020;
             }
           </style>
         </head>
         <body>
-          <!-- Hidden Templates -->
-          <div id="print-header-template" style="display: none; box-sizing: border-box;">
-            ${letterheadUrl ? `
-              <!-- Empty spacer to let the background letterhead's top banner show through -->
-              <div style="height: 38mm; width: 100%;"></div>
-            ` : `
-              <div style="display: flex; align-items: center; border-bottom: 3px double #800020; padding-bottom: 8px; height: 80px; box-sizing: border-box;">
-                <div style="border: 2px solid #800020; border-radius: 8px; width: 65px; height: 65px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; box-sizing: border-box; flex-shrink: 0;">
-                  <span style="font-size: 7px; color: #800020; font-weight: bold; line-height: 1; text-align: center; text-transform: uppercase; letter-spacing: 0.2px;">Care with Devotion</span>
-                  <span style="font-family: 'Brush Script MT', 'Lucida Handwriting', cursive, sans-serif; font-size: 20px; color: #800020; font-weight: bold; margin: -2px 0;">
-                    \${clinicName.split(' ')[0] || 'Hospital'}
-                  </span>
-                  <span style="font-size: 4px; color: #ffffff; background: #800020; width: 100%; text-align: center; font-weight: bold; padding: 1px 0; border-radius: 2px; text-transform: uppercase;">
-                    \${clinicName}
-                  </span>
-                </div>
-                <div style="flex-grow: 1; text-align: center; padding-right: 65px;">
-                  <h1 style="margin: 0; color: #800020; font-family: 'Outfit', 'Inter', sans-serif; font-size: 20px; font-weight: 900; letter-spacing: 0.5px; line-height: 1.2; text-transform: uppercase;">\${clinicName}</h1>
-                  <p style="margin: 3px 0; color: #1E293B; font-size: 9px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase;">Official EMR OPD Portal - \${clinicName}</p>
-                  <p style="margin: 0; color: #475569; font-size: 8px; font-weight: 600;">Web: \${window.location.origin} &nbsp;&nbsp;•&nbsp;&nbsp; E-mail: info@\${user.tenantId || 'city_hospital'}.com</p>
-                </div>
-              </div>
-            `}
-
-            <div style="text-align: center; margin: 8px 0;">
-              <span style="font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 900; color: #800020; border-bottom: 2px solid #800020; border-top: 2px solid #800020; padding: 2px 20px; letter-spacing: 1px; text-transform: uppercase;">Prescription</span>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 11px; color: #1E293B; line-height: 1.4; font-family: 'Inter', sans-serif;">
-              <div style="display: flex; flex-direction: column; gap: 4px; word-wrap: break-word; white-space: normal;">
-                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Patient Name</span><span style="font-weight: 500;">: ${cleanField(selectedPatient?.name)}</span></div>
-                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Age / Gender</span><span style="font-weight: 500;">: ${selectedPatient?.age ? `${selectedPatient.age} Yrs` : '—'} / ${cleanField(selectedPatient?.gender)}</span></div>
-                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Date</span><span style="font-weight: 500;">: ${cleanField(item.date || new Date().toLocaleDateString('en-IN'))}</span></div>
-                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Mobile No.</span><span style="font-weight: 500;">: ${cleanField(selectedPatient?.contact)}</span></div>
-                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Address</span><span style="font-weight: 500;">: ${cleanField(selectedPatient?.address)}</span></div>
-                <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Reg. No.</span><span style="font-weight: 500; color: #2563EB; font-weight: bold;">: ${cleanField(item.originalApp?.regNo)}</span></div>
-              </div>
-              <div style="display: flex; flex-direction: column; gap: 4px; word-wrap: break-word; white-space: normal;">
-                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Doctor Name</span><span style="font-weight: 600;">: ${cleanField(item.doctor || user.name)}</span></div>
-                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Qualification</span><span style="font-weight: 500;">: ${cleanField(user.designation || 'MBBS, MD (Medicine)')}</span></div>
-                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Reg. No.</span><span style="font-weight: 500;">: DMC - ${user.staff_id ? (user.staff_id.match(/^\d+$/) ? user.staff_id.slice(-5) : user.staff_id.toUpperCase()) : '12345'}</span></div>
-                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Department</span><span style="font-weight: 500;">: ${cleanField(user.department || 'General Medicine')}</span></div>
-                <div><span style="font-weight: 700; width: 110px; display: inline-block; color: #800020;">Consultation Time</span><span style="font-weight: 500;">: ${user.shiftName || '10:00 AM - 01:00 PM, 06:00 PM - 09:00 PM'}</span></div>
-              </div>
-            </div>
-
-            <hr style="border: none; border-top: 1px solid #800020; margin: 8px 0;" />
-          </div>
-
-          <div id="print-footer-template" style="display: none;">
-            <div style="text-align: center; font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: bold; color: #800020; border-top: 1px solid #E2E8F0; padding-top: 8px; background: white; box-sizing: border-box;">
-              Thank you for trusting us with your health. Get well soon!
-            </div>
-          </div>
-
-          <!-- Temp source container for measurement (width exactly 180mm content printable area) -->
-          <div id="temp-source" style="width: 180mm; position: absolute; left: -9999px; top: -9999px; box-sizing: border-box;">
-            <!-- Diagnosis Box -->
-            <div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: #fff;">
-              <div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">
-                DIAGNOSIS (Doctor's Observation)
-              </div>
-              <div style="padding: 10px; font-size: 11.5px; color: #1E293B; line-height: 1.5; font-weight: 500;">
-                ${item.diagnosis ? item.diagnosis.split('\n').map(line => `
-                  <div style="display: flex; gap: 8px; margin-bottom: 4px; align-items: flex-start;">
-                    <span style="color: #800020; font-size: 8px; margin-top: 3px;">•</span>
-                    <span>${line.trim()}</span>
-                  </div>
-                `).join('') : `
-                  <div style="display: flex; gap: 8px; align-items: flex-start;">
-                    <span style="color: #800020; font-size: 8px; margin-top: 3px;">•</span>
-                    <span>General clinical observation & routine consultation.</span>
-                  </div>
-                `}
-              </div>
-            </div>
-
-            <!-- SOAP Notes if present -->
-            ${appointment && appointment.notes ? `
-            <div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: #fff;">
-              <div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">
-                Clinical SOAP Notes
-              </div>
-              <div style="padding: 10px; font-size: 11.5px; color: #334155; line-height: 1.5; font-weight: 500; white-space: pre-wrap;">
-                ${appointment.notes}
-              </div>
-            </div>
-            ` : ''}
-
-            <!-- Medicines Source Rows -->
-            ${(item.items || []).map((m, idx) => {
-              let freq = 'Once a Day';
-              let inst = 'After Food';
-              if (m.instructions) {
-                const parts = m.instructions.split('(');
-                if (parts[0]) freq = parts[0].trim();
-                if (parts[1]) inst = parts[1].replace(')', '').trim();
-              }
-              return `
-                <tr class="medicine-row-source">
-                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">${idx + 1}.</td>
-                  <td style="padding: 8px; border-right: 1px solid #800020; font-weight: 700; color: #1E293B; word-break: break-word;">${cleanField(m.medicine)}</td>
-                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; color: #334155; font-weight: 500; word-break: break-word;">${cleanField(m.dosage)}</td>
-                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; color: #334155; font-weight: 500; word-break: break-word;">${cleanField(m.duration)}</td>
-                  <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; color: #800020; font-weight: 600; word-break: break-word;">${cleanField(freq)}</td>
-                  <td style="padding: 8px; color: #334155; font-weight: 500; word-break: break-word;">${cleanField(inst)}</td>
-                </tr>
-              `;
-            }).join('')}
-
-            <!-- Tests Source Rows -->
-            ${(item.tests || []).map((test, idx) => `
-              <tr class="lab-row-source">
-                <td style="padding: 8px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">${idx + 1}.</td>
-                <td style="padding: 8px; font-weight: 700; color: #1E293B;">${cleanField(test)}</td>
-              </tr>
-            `).join('')}
-
-            <!-- Notes & Signature Container -->
-            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 20px; min-height: 90px;" class="signature-block-source">
-              <div style="font-size: 10.5px; line-height: 1.5; max-width: 60%;">
-                <div style="color: #800020; font-weight: 800; font-size: 11px; margin-bottom: 3px; text-transform: uppercase;">Note :</div>
-                <ul style="padding-left: 10px; margin: 0; list-style-type: square; color: #334155; font-weight: 600;">
-                  <li>Take medicines as prescribed.</li>
-                  <li>Complete the full course of antibiotics.</li>
-                  <li>Avoid cold drinks and oily food.</li>
-                  <li>Drink plenty of fluids and take rest.</li>
-                </ul>
-              </div>
-              
-              <div style="text-align: center; width: 200px; font-size: 10.5px; font-family: 'Inter', sans-serif;">
-                <div style="border-bottom: 1px solid #800020; margin-bottom: 6px; height: 40px; position: relative;">
-                  <span style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 22px; color: #800020; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-weight: 500;">
-                    ${item.doctor ? item.doctor.replace('Dr. ', '') : (user.name ? user.name.replace('Dr. ', '') : 'Anil Sharma')}
-                  </span>
-                </div>
-                <div style="color: #800020; font-weight: 700; font-size: 12px;">${item.doctor || user.name || 'Dr. Anil Sharma'}</div>
-                <div style="color: #475569; font-weight: 600; font-size: 10px; margin-top: 2px;">${user.designation || 'MBBS, MD (Medicine)'}</div>
-                <div style="color: #475569; font-weight: 600; font-size: 10px;">Reg. No. ${user.staff_id ? user.staff_id.toUpperCase() : 'DMC - 12345'}</div>
-                <div style="color: #800020; font-weight: 800; font-size: 10px; margin-top: 3px; text-transform: uppercase;">(Consultant Physician)</div>
-                <div style="color: #94A3B8; font-size: 9px; margin-top: 3px; font-weight: 550; letter-spacing: 0.2px;">Signature & Seal</div>
-                <div style="color: #800020; font-weight: 800; font-size: 10px; margin-top: 3px; text-transform: uppercase;">\${clinicName}</div>
-              </div>
-            </div>
-          </div>
-
           <div id="pages-container"></div>
 
           <script>
+            const medicines = ${jsonItems};
+            const tests = ${jsonTests};
+            const activeTemplate = "${customSettings.template}";
+            const digitalPreset = "${customSettings.digitalPreset}";
+            const hasCustomLetterhead = ${letterheadUrl ? 'true' : 'false'};
             const letterheadUrl = "${letterheadUrl || ''}";
-            function createMedicineTableTemplate() {
-              const table = document.createElement('table');
-              table.style.width = '100%';
-              table.style.borderCollapse = 'collapse';
-              table.style.fontSize = '11.5px';
-              table.style.border = '1.5px solid #800020';
-              table.style.borderRadius = '8px';
-              table.style.overflow = 'hidden';
-              table.style.marginBottom = '12px';
-              table.innerHTML = \`
-                <thead>
-                  <tr style="background: #FDF2F4; border-bottom: 1.5px solid #800020;">
-                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 50px;">S. No.</th>
-                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: left; border-right: 1px solid #800020;">Medicine Name</th>
-                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 70px;">Dose</th>
-                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 80px;">Duration</th>
-                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 100px;">Frequency</th>
-                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: left;">Instructions</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
+
+            const patientName = "${cleanField(selectedPatient?.name)}";
+            const patientAge = "${selectedPatient?.age ? `${selectedPatient.age} Yrs` : '—'}";
+            const patientGender = "${cleanField(selectedPatient?.gender)}";
+            const rxDate = "${cleanField(item.date || new Date().toLocaleDateString('en-IN'))}";
+            const patientContact = "${cleanField(selectedPatient?.contact)}";
+            const patientAddress = "${cleanField(selectedPatient?.address)}";
+            const regNo = "${cleanField(item.originalApp?.regNo)}";
+
+            const doctorName = "${cleanField(item.doctor || user.name)}";
+            const doctorDesignation = "${cleanField(user.designation || 'MBBS, MD (Medicine)')}";
+            const doctorReg = "${user.staff_id ? (user.staff_id.match(/^\\d+$/) ? user.staff_id.slice(-5) : user.staff_id.toUpperCase()) : '12345'}";
+            const doctorDept = "${cleanField(user.department || 'General Medicine')}";
+            const doctorShift = "${user.shiftName || '10:00 AM - 01:00 PM, 06:00 PM - 09:00 PM'}";
+            const clinicName = "${clinicName}";
+            const diagnosis = "${cleanField(item.diagnosis)}";
+            const vitalsText = "${vitalsString}";
+            const soapNotes = "${cleanField(item.notes || '')}";
+
+            function getHeaderHTML() {
+              if (hasCustomLetterhead && digitalPreset === 'none') {
+                return '<div class="spacer-header"></div>';
+              }
+              
+              let presetClass = '';
+              let logoHTML = '✚';
+              let accentColor = '#800020';
+              let subtitle = 'Official EMR OPD Portal';
+              
+              if (digitalPreset === 'teal') {
+                presetClass = 'preset-teal';
+                logoHTML = '<div class="logo-box">✚</div>';
+                accentColor = '#0d9488';
+                subtitle = 'Premium Medical Care & Diagnostics';
+              } else if (digitalPreset === 'burgundy') {
+                presetClass = 'preset-burgundy';
+                logoHTML = '<div class="logo-box">Care</div>';
+                accentColor = '#800020';
+                subtitle = 'Care with Devotion & Medical Excellence';
+              } else if (digitalPreset === 'navy') {
+                presetClass = 'preset-navy';
+                logoHTML = '<div class="logo-box">✚</div>';
+                accentColor = '#1e3a8a';
+                subtitle = 'Multi-Specialty EMR Center';
+              } else {
+                return '<div class="spacer-header"></div>';
+              }
+
+              return \`
+                <div class="letterhead-digital-container">
+                  <div class="\${presetClass}">
+                    \${logoHTML}
+                    <div style="flex-grow: 1;">
+                      <h1 style="margin: 0; color: \${accentColor}; font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 900; text-transform: uppercase;">\${clinicName}</h1>
+                      <p style="margin: 2px 0; color: #334155; font-size: 9px; font-weight: 700; text-transform: uppercase;">\${subtitle}</p>
+                      <p style="margin: 0; color: #64748b; font-size: 8px; font-weight: 600;">E-mail: info@\${clinicName.toLowerCase().replace(/\\\\s+/g, '')}.com &nbsp;&nbsp;•&nbsp;&nbsp; OPD Portal</p>
+                    </div>
+                    <div style="text-align: right; font-size: 8.5px; color: #475569; font-weight: 600;">
+                      <div>Date: \${rxDate}</div>
+                      <div>Reg. No: \${regNo}</div>
+                    </div>
+                  </div>
+                </div>
               \`;
-              return table;
             }
 
-            function createLabsTableTemplate() {
-              const table = document.createElement('table');
-              table.style.width = '50%';
-              table.style.borderCollapse = 'collapse';
-              table.style.fontSize = '11.5px';
-              table.style.border = '1.5px solid #800020';
-              table.style.borderRadius = '8px';
-              table.style.overflow = 'hidden';
-              table.style.marginTop = '15px';
-              table.innerHTML = \`
-                <thead>
-                  <tr style="background: #FDF2F4; border-bottom: 1.5px solid #800020;">
-                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: center; border-right: 1px solid #800020; width: 50px;">S. No.</th>
-                    <th style="padding: 8px; color: #800020; font-weight: 800; text-align: left;">Test Name</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
+            function getPatientDetailsHTML() {
+              return \`
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 11px; color: #1E293B; line-height: 1.4; margin-bottom: 8px;">
+                  <div style="display: flex; flex-direction: column; gap: 3px;">
+                    <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Patient Name</span><span style="font-weight: 500;">: \${patientName}</span></div>
+                    <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Age / Gender</span><span style="font-weight: 500;">: \${patientAge} / \${patientGender}</span></div>
+                    <div><span style="font-weight: 700; width: 85px; display: inline-block; color: #800020;">Mobile / Addr</span><span style="font-weight: 500;">: \${patientContact} / \${patientAddress}</span></div>
+                    \${vitalsText && vitalsText !== '—' ? \`<div><span style="font-weight: 700; width: 85px; display: inline-block; color: #059669;">Vitals</span><span style="font-weight: 600; color: #059669;">: \${vitalsText}</span></div>\` : ''}
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 3px;">
+                    <div><span style="font-weight: 700; width: 100px; display: inline-block; color: #800020;">Doctor Name</span><span style="font-weight: 600;">: \${doctorName}</span></div>
+                    <div><span style="font-weight: 700; width: 100px; display: inline-block; color: #800020;">Specialty / Reg</span><span style="font-weight: 500;">: \${doctorDept} / DMC-\${doctorReg}</span></div>
+                    <div><span style="font-weight: 700; width: 100px; display: inline-block; color: #800020;">Consultation</span><span style="font-weight: 500;">: \${doctorShift}</span></div>
+                  </div>
+                </div>
+                <hr style="border: none; border-top: 1.5px solid #800020; margin: 6px 0 10px 0;" />
               \`;
-              return table;
             }
 
-            function createNewPage(headerTemplate, footerTemplate) {
+            function getFooterHTML() {
+              return \`
+                <div style="text-align: center; font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: bold; color: #800020; border-top: 1px solid #E2E8F0; padding-top: 6px; background: white;">
+                  Thank you for trusting us with your health. Get well soon!
+                </div>
+              \`;
+            }
+
+            function getSignatureBlockHTML() {
+              return \`
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 25px; min-height: 80px; page-break-inside: avoid; break-inside: avoid;">
+                  <div style="font-size: 10px; line-height: 1.4; max-width: 60%;">
+                    <div style="color: #800020; font-weight: 800; font-size: 10.5px; margin-bottom: 2px; text-transform: uppercase;">Note :</div>
+                    <ul style="padding-left: 10px; margin: 0; list-style-type: square; color: #334155; font-weight: 600;">
+                      <li>Take medicines as prescribed.</li>
+                      <li>Complete full course of antibiotics.</li>
+                      <li>Drink plenty of fluids and rest.</li>
+                    </ul>
+                  </div>
+                  <div style="text-align: center; width: 180px; font-size: 10px;">
+                    <div style="border-bottom: 1px solid #800020; margin-bottom: 4px; height: 35px; position: relative;">
+                      <span style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 20px; color: #800020; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);">\${doctorName.replace('Dr. ', '')}</span>
+                    </div>
+                    <div style="color: #800020; font-weight: 700; font-size: 11px;">\${doctorName}</div>
+                    <div style="color: #475569; font-weight: 600; font-size: 9px;">\${doctorDesignation}</div>
+                    <div style="color: #94A3B8; font-size: 8.5px; margin-top: 2px; font-weight: bold;">Signature & Seal</div>
+                  </div>
+                </div>
+              \`;
+            }
+
+            function createNewPage() {
               const page = document.createElement('div');
               page.className = 'page-container';
               
-              if (letterheadUrl) {
+              if (hasCustomLetterhead) {
                 const bg = document.createElement('img');
                 bg.src = letterheadUrl;
                 bg.style.position = 'absolute';
@@ -1445,28 +1451,357 @@ const DoctorDashboard = () => {
                 page.appendChild(bg);
               }
               
-              const header = headerTemplate.cloneNode(true);
-              header.removeAttribute('id');
-              header.style.display = 'block';
+              const headerContainer = document.createElement('div');
+              headerContainer.innerHTML = getHeaderHTML();
+              page.appendChild(headerContainer.firstElementChild || headerContainer);
+              
+              const patientContainer = document.createElement('div');
+              patientContainer.innerHTML = getPatientDetailsHTML();
+              page.appendChild(patientContainer);
               
               const contentArea = document.createElement('div');
               contentArea.className = 'content-area';
-              contentArea.style.marginTop = '10px';
+              page.appendChild(contentArea);
               
-              const footer = footerTemplate.cloneNode(true);
-              footer.removeAttribute('id');
-              footer.style.display = 'block';
+              const footerContainer = document.createElement('div');
+              footerContainer.innerHTML = getFooterHTML();
+              const footer = footerContainer.firstElementChild;
               footer.style.position = 'absolute';
-              footer.style.bottom = '28mm';
+              footer.style.bottom = '20mm';
               footer.style.left = '15mm';
               footer.style.right = '15mm';
-              
-              page.appendChild(header);
-              page.appendChild(contentArea);
               page.appendChild(footer);
               
               document.getElementById('pages-container').appendChild(page);
               return page;
+            }
+
+            function buildLayout() {
+              const page = createNewPage();
+              const contentArea = page.querySelector('.content-area');
+
+              if (activeTemplate === 'two-column') {
+                // Two-Column Layout
+                const container = document.createElement('div');
+                container.style.display = 'flex';
+                container.style.gap = '20px';
+                container.style.width = '100%';
+                
+                const leftCol = document.createElement('div');
+                leftCol.style.width = '38%';
+                leftCol.style.display = 'flex';
+                leftCol.style.flexDirection = 'column';
+                leftCol.style.gap = '12px';
+                
+                const rightCol = document.createElement('div');
+                rightCol.style.width = '60%';
+                rightCol.style.display = 'flex';
+                rightCol.style.flexDirection = 'column';
+                rightCol.style.gap = '12px';
+                
+                // Left Column: Diagnosis & Labs
+                let diagnosisHTML = \`
+                  <div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff;">
+                    <div style="background: #FDF2F4; padding: 5px 8px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Diagnosis</div>
+                    <div style="padding: 8px; font-size: 10.5px; font-weight: 600; color: #1E293B;">\${diagnosis !== '—' ? diagnosis : 'General Clinical Observation'}</div>
+                  </div>
+                \`;
+                leftCol.innerHTML += diagnosisHTML;
+
+                if (soapNotes && soapNotes !== '—') {
+                  let soapHTML = \`
+                    <div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff;">
+                      <div style="background: #FDF2F4; padding: 5px 8px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Clinical Notes</div>
+                      <div style="padding: 8px; font-size: 10px; font-weight: 500; color: #334155; white-space: pre-wrap;">\${soapNotes}</div>
+                    </div>
+                  \`;
+                  leftCol.innerHTML += soapHTML;
+                }
+
+                if (tests.length > 0) {
+                  let labsHTML = \`
+                    <div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff;">
+                      <div style="background: #FDF2F4; padding: 5px 8px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Prescribed Tests</div>
+                      <div style="padding: 6px; font-size: 10px;">
+                        \${tests.map((t, i) => \`<div style="font-weight: 700; color: #1E293B; margin-bottom: 4px;">\${i+1}. \${t}</div>\`).join('')}
+                      </div>
+                    </div>
+                  \`;
+                  leftCol.innerHTML += labsHTML;
+                }
+
+                // Right Column: Medicines
+                let medContainer = document.createElement('div');
+                medContainer.style.border = '1.5px solid #800020';
+                medContainer.style.borderRadius = '8px';
+                medContainer.style.overflow = 'hidden';
+                medContainer.style.background = '#fff';
+                medContainer.innerHTML = \`
+                  <div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 850; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">Rx (Prescribed Medicines)</div>
+                  <div style="padding: 10px; display: flex; flex-direction: column; gap: 8px;">
+                    \${medicines.map((m, idx) => {
+                      let freq = 'Once a Day';
+                      let inst = 'After Food';
+                      if (m.instructions) {
+                        const parts = m.instructions.split('(');
+                        if (parts[0]) freq = parts[0].trim();
+                        if (parts[1]) inst = parts[1].replace(')', '').trim();
+                      }
+                      return \`
+                        <div style="border-bottom: 1px dashed #E2E8F0; padding-bottom: 6px; font-size: 11px; line-height: 1.4;">
+                          <div style="display: flex; justify-content: space-between; font-weight: 750; color: #1E293B;">
+                            <span>\${idx + 1}. \${m.medicine}</span>
+                            <span style="color: #800020;">\${m.dosage}</span>
+                          </div>
+                          <div style="display: flex; gap: 12px; color: #475569; font-size: 9.5px; font-weight: 600; margin-top: 3px;">
+                            <span>Duration: \${m.duration}</span>
+                            <span>Freq: \${freq}</span>
+                          </div>
+                          <div style="color: #64748b; font-size: 9px; font-style: italic; margin-top: 2px;">Timing: \${inst}</div>
+                        </div>
+                      \`;
+                    }).join('')}
+                  </div>
+                \`;
+                rightCol.appendChild(medContainer);
+                
+                container.appendChild(leftCol);
+                container.appendChild(rightCol);
+                contentArea.appendChild(container);
+                
+                // Signature block
+                const sigBlock = document.createElement('div');
+                sigBlock.innerHTML = getSignatureBlockHTML();
+                contentArea.appendChild(sigBlock.firstElementChild || sigBlock);
+
+              } else if (activeTemplate === 'rx-list') {
+                // Elegant Rx List Layout
+                let header = document.createElement('div');
+                header.innerHTML = \`<div style="font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 900; color: #800020; border-bottom: 2px solid #800020; padding: 2px 0 6px 0; margin-bottom: 12px; letter-spacing: 0.5px; text-transform: uppercase;">Clinical Rx List</div>\`;
+                contentArea.appendChild(header);
+
+                if (diagnosis !== '—') {
+                  let diag = document.createElement('div');
+                  diag.innerHTML = \`<div style="font-size: 11.5px; color: #475569; margin-bottom: 12px; font-weight: 600;"><b>Diagnosis:</b> \${diagnosis}</div>\`;
+                  contentArea.appendChild(diag);
+                }
+
+                // Medicines List
+                medicines.forEach((m, idx) => {
+                  let freq = 'Once a Day';
+                  let inst = 'After Food';
+                  if (m.instructions) {
+                    const parts = m.instructions.split('(');
+                    if (parts[0]) freq = parts[0].trim();
+                    if (parts[1]) inst = parts[1].replace(')', '').trim();
+                  }
+                  
+                  let medRow = document.createElement('div');
+                  medRow.style.marginBottom = '10px';
+                  medRow.style.display = 'flex';
+                  medRow.style.gap = '10px';
+                  medRow.style.fontSize = '12px';
+                  medRow.innerHTML = \`
+                    <span style="font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 900; color: #800020; line-height: 1;">℞</span>
+                    <div style="flex-grow: 1; border-bottom: 1px solid #F1F5F9; padding-bottom: 6px;">
+                      <div style="display: flex; justify-content: space-between; font-weight: 800; color: #1E293B;">
+                        <span>\${m.medicine}</span>
+                        <span style="color: #800020;">\${m.dosage}</span>
+                      </div>
+                      <div style="font-size: 10px; color: #475569; font-weight: 600; margin-top: 3px; display: flex; gap: 15px;">
+                        <span>Duration: <b>\${m.duration}</b></span>
+                        <span>Frequency: <b>\${freq}</b></span>
+                        <span>Timing: <b>\${inst}</b></span>
+                      </div>
+                    </div>
+                  \`;
+                  contentArea.appendChild(medRow);
+                });
+
+                if (tests.length > 0) {
+                  let testsBox = document.createElement('div');
+                  testsBox.style.marginTop = '16px';
+                  testsBox.innerHTML = \`
+                    <div style="font-weight: 800; font-size: 11px; color: #800020; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px;">Recommended Investigations</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                      \${tests.map((t, i) => \`<div style="font-size: 11px; font-weight: 700; color: #334155;">\${i+1}. \${t}</div>\`).join('')}
+                    </div>
+                  \`;
+                  contentArea.appendChild(testsBox);
+                }
+
+                const sigBlock = document.createElement('div');
+                sigBlock.innerHTML = getSignatureBlockHTML();
+                contentArea.appendChild(sigBlock.firstElementChild || sigBlock);
+
+              } else if (activeTemplate === 'dense-grid') {
+                // Dense Grid Layout
+                let mainHeader = document.createElement('div');
+                mainHeader.innerHTML = \`<div style="font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 900; color: #800020; margin-bottom: 10px; text-transform: uppercase;">Itemized Prescription Grid</div>\`;
+                contentArea.appendChild(mainHeader);
+
+                // Diagnosis & Soap Bar
+                let infoBar = document.createElement('div');
+                infoBar.style.background = '#F8FAFC';
+                infoBar.style.padding = '8px 12px';
+                infoBar.style.borderRadius = '6px';
+                infoBar.style.fontSize = '10.5px';
+                infoBar.style.marginBottom = '12px';
+                infoBar.style.border = '1px solid #E2E8F0';
+                infoBar.innerHTML = \`<b>Diagnosis:</b> \${diagnosis} \${soapNotes && soapNotes !== '—' ? \` | <b>Notes:</b> \${soapNotes}\` : ''}\`;
+                contentArea.appendChild(infoBar);
+
+                // Grid Container
+                let grid = document.createElement('div');
+                grid.style.display = 'grid';
+                grid.style.gridTemplateColumns = '1fr 1fr';
+                grid.style.gap = '8px';
+                
+                medicines.forEach((m, idx) => {
+                  let freq = 'Once a Day';
+                  let inst = 'After Food';
+                  if (m.instructions) {
+                    const parts = m.instructions.split('(');
+                    if (parts[0]) freq = parts[0].trim();
+                    if (parts[1]) inst = parts[1].replace(')', '').trim();
+                  }
+                  
+                  let card = document.createElement('div');
+                  card.style.border = '1px solid #E2E8F0';
+                  card.style.borderRadius = '6px';
+                  card.style.padding = '6px 8px';
+                  card.style.background = '#fff';
+                  card.style.fontSize = '10.5px';
+                  card.innerHTML = \`
+                    <div style="font-weight: 800; color: #1E293B; display: flex; justify-content: space-between;">
+                      <span>\${idx+1}. \${m.medicine}</span>
+                      <span style="color: #800020;">\${m.dosage}</span>
+                    </div>
+                    <div style="margin-top: 3px; color: #475569; display: flex; gap: 8px;">
+                      <span>\${m.duration}</span>
+                      <span>\${freq}</span>
+                    </div>
+                    <div style="margin-top: 1px; color: #64748b; font-size: 9px;">\${inst}</div>
+                  \`;
+                  grid.appendChild(card);
+                });
+                contentArea.appendChild(grid);
+
+                if (tests.length > 0) {
+                  let testsBox = document.createElement('div');
+                  testsBox.style.marginTop = '12px';
+                  testsBox.innerHTML = \`
+                    <div style="font-weight: 800; font-size: 10px; color: #800020; text-transform: uppercase; margin-bottom: 4px;">Tests Ordered</div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 10px;">
+                      \${tests.map((t, i) => \`<div style="font-weight: 700; color: #334155;">\${i+1}. \${t}</div>\`).join('')}
+                    </div>
+                  \`;
+                  contentArea.appendChild(testsBox);
+                }
+
+                const sigBlock = document.createElement('div');
+                sigBlock.innerHTML = getSignatureBlockHTML();
+                contentArea.appendChild(sigBlock.firstElementChild || sigBlock);
+
+              } else {
+                // Classic standard table layout
+                let diagnosisHTML = \`
+                  <div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: #fff;">
+                    <div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">
+                      DIAGNOSIS (Doctor's Observation)
+                    </div>
+                    <div style="padding: 10px; font-size: 11.5px; color: #1E293B; line-height: 1.5; font-weight: 500;">
+                      \${diagnosis !== '—' ? diagnosis : 'General clinical observation & routine consultation.'}
+                    </div>
+                  </div>
+                \`;
+                contentArea.innerHTML += diagnosisHTML;
+
+                if (soapNotes && soapNotes !== '—') {
+                  let soapHTML = \`
+                    <div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: #fff;">
+                      <div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">
+                        Clinical SOAP Notes
+                      </div>
+                      <div style="padding: 10px; font-size: 11.5px; color: #334155; line-height: 1.5; font-weight: 500; white-space: pre-wrap;">
+                        \${soapNotes}
+                      </div>
+                    </div>
+                  \`;
+                  contentArea.innerHTML += soapHTML;
+                }
+
+                // Table of medicines
+                let medTable = document.createElement('table');
+                medTable.className = 'rx-table';
+                medTable.style.marginBottom = '15px';
+                medTable.innerHTML = \`
+                  <thead>
+                    <tr>
+                      <th style="width: 50px;">S. No.</th>
+                      <th>Medicine Name</th>
+                      <th style="width: 70px;">Dose</th>
+                      <th style="width: 80px;">Duration</th>
+                      <th style="width: 100px;">Frequency</th>
+                      <th>Instructions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    \${medicines.map((m, idx) => {
+                      let freq = 'Once a Day';
+                      let inst = 'After Food';
+                      if (m.instructions) {
+                        const parts = m.instructions.split('(');
+                        if (parts[0]) freq = parts[0].trim();
+                        if (parts[1]) inst = parts[1].replace(')', '').trim();
+                      }
+                      return \`
+                        <tr>
+                          <td style="text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">\${idx + 1}.</td>
+                          <td style="border-right: 1px solid #800020; font-weight: 700; color: #1E293B;">\${m.medicine}</td>
+                          <td style="text-align: center; border-right: 1px solid #800020; color: #334155;">\${m.dosage}</td>
+                          <td style="text-align: center; border-right: 1px solid #800020; color: #334155;">\${m.duration}</td>
+                          <td style="text-align: center; border-right: 1px solid #800020; color: #800020; font-weight: 600;">\${freq}</td>
+                          <td style="color: #334155;">\${inst}</td>
+                        </tr>
+                      \`;
+                    }).join('')}
+                  </tbody>
+                \`;
+                contentArea.appendChild(medTable);
+
+                // Labs Table if present
+                if (tests.length > 0) {
+                  let labsBox = document.createElement('div');
+                  labsBox.style.marginTop = '15px';
+                  labsBox.innerHTML = \`
+                    <div style="font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px;">
+                      PRESCRIBED TESTS
+                    </div>
+                    <table class="rx-table" style="width: 50%;">
+                      <thead>
+                        <tr>
+                          <th style="width: 50px;">S. No.</th>
+                          <th style="text-align: left;">Test Name</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        \${tests.map((test, idx) => \`
+                          <tr>
+                            <td style="text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">\${idx + 1}.</td>
+                            <td style="font-weight: 700; color: #1E293B;">\${test}</td>
+                          </tr>
+                        \`).join('')}
+                      </tbody>
+                    </table>
+                  \`;
+                  contentArea.appendChild(labsBox);
+                }
+
+                const sigBlock = document.createElement('div');
+                sigBlock.innerHTML = getSignatureBlockHTML();
+                contentArea.appendChild(sigBlock.firstElementChild || sigBlock);
+              }
             }
 
             function waitForImages() {
@@ -1481,148 +1816,9 @@ const DoctorDashboard = () => {
               return Promise.all(promises);
             }
 
-            function paginate() {
-              const targetPageHeight = 1122.5; 
-              const topPadding = 56.7; 
-              const bottomPadding = 75.6; 
-              const safetyMargin = 45; 
-              
-              const header = document.getElementById('print-header-template');
-              const footer = document.getElementById('print-footer-template');
-              
-              header.style.display = 'block';
-              footer.style.display = 'block';
-              const headerHeight = header.offsetHeight;
-              const footerHeight = footer.offsetHeight;
-              header.style.display = 'none';
-              footer.style.display = 'none';
-              
-              const availableHeight = targetPageHeight - topPadding - bottomPadding - headerHeight - footerHeight - safetyMargin;
-              
-              const source = document.getElementById('temp-source');
-              const children = Array.from(source.children);
-              
-              let currentPage = createNewPage(header, footer);
-              let currentContentArea = currentPage.querySelector('.content-area');
-              let currentSpaceUsed = 0;
-              
-              let activeMedicineTable = null;
-              let activeMedicineTbody = null;
-              let activeLabsTable = null;
-              let activeLabsTbody = null;
-              
-              for (let child of children) {
-                if (child.classList.contains('medicine-row-source')) {
-                  if (!activeMedicineTable) {
-                    activeMedicineTable = createMedicineTableTemplate();
-                    activeMedicineTbody = activeMedicineTable.querySelector('tbody');
-                    
-                    source.appendChild(activeMedicineTable);
-                    const tableHeaderHeight = activeMedicineTable.offsetHeight;
-                    source.removeChild(activeMedicineTable);
-                    
-                    if (currentSpaceUsed + tableHeaderHeight > availableHeight) {
-                      currentPage = createNewPage(header, footer);
-                      currentContentArea = currentPage.querySelector('.content-area');
-                      currentSpaceUsed = 0;
-                    }
-                    currentContentArea.appendChild(activeMedicineTable);
-                    currentSpaceUsed += tableHeaderHeight;
-                  }
-                  
-                  const tr = document.createElement('tr');
-                  tr.style.borderBottom = '1px solid #800020';
-                  tr.style.pageBreakInside = 'avoid';
-                  tr.innerHTML = child.innerHTML;
-                  activeMedicineTbody.appendChild(tr);
-                  
-                  const trHeight = tr.offsetHeight;
-                  if (currentSpaceUsed + trHeight > availableHeight) {
-                    activeMedicineTbody.removeChild(tr);
-                    
-                    currentPage = createNewPage(header, footer);
-                    currentContentArea = currentPage.querySelector('.content-area');
-                    currentSpaceUsed = 0;
-                    
-                    activeMedicineTable = createMedicineTableTemplate();
-                    activeMedicineTbody = activeMedicineTable.querySelector('tbody');
-                    currentContentArea.appendChild(activeMedicineTable);
-                    
-                    activeMedicineTbody.appendChild(tr);
-                    currentSpaceUsed += activeMedicineTable.offsetHeight;
-                  } else {
-                    currentSpaceUsed += trHeight;
-                  }
-                }
-                else if (child.classList.contains('lab-row-source')) {
-                  activeMedicineTable = null;
-                  activeMedicineTbody = null;
-                  
-                  if (!activeLabsTable) {
-                    activeLabsTable = createLabsTableTemplate();
-                    activeLabsTbody = activeLabsTable.querySelector('tbody');
-                    
-                    source.appendChild(activeLabsTable);
-                    const tableHeaderHeight = activeLabsTable.offsetHeight;
-                    source.removeChild(activeLabsTable);
-                    
-                    if (currentSpaceUsed + tableHeaderHeight > availableHeight) {
-                      currentPage = createNewPage(header, footer);
-                      currentContentArea = currentPage.querySelector('.content-area');
-                      currentSpaceUsed = 0;
-                    }
-                    currentContentArea.appendChild(activeLabsTable);
-                    currentSpaceUsed += tableHeaderHeight;
-                  }
-                  
-                  const tr = document.createElement('tr');
-                  tr.style.borderBottom = '1px solid #800020';
-                  tr.style.pageBreakInside = 'avoid';
-                  tr.innerHTML = child.innerHTML;
-                  activeLabsTbody.appendChild(tr);
-                  
-                  const trHeight = tr.offsetHeight;
-                  if (currentSpaceUsed + trHeight > availableHeight) {
-                    activeLabsTbody.removeChild(tr);
-                    
-                    currentPage = createNewPage(header, footer);
-                    currentContentArea = currentPage.querySelector('.content-area');
-                    currentSpaceUsed = 0;
-                    
-                    activeLabsTable = createLabsTableTemplate();
-                    activeLabsTbody = activeLabsTable.querySelector('tbody');
-                    currentContentArea.appendChild(activeLabsTable);
-                    
-                    activeLabsTbody.appendChild(tr);
-                    currentSpaceUsed += activeLabsTable.offsetHeight;
-                  } else {
-                    currentSpaceUsed += trHeight;
-                  }
-                }
-                else {
-                  activeMedicineTable = null;
-                  activeMedicineTbody = null;
-                  activeLabsTable = null;
-                  activeLabsTbody = null;
-                  
-                  const blockHeight = child.offsetHeight;
-                  
-                  if (currentSpaceUsed + blockHeight > availableHeight) {
-                    currentPage = createNewPage(header, footer);
-                    currentContentArea = currentPage.querySelector('.content-area');
-                    currentSpaceUsed = 0;
-                  }
-                  currentContentArea.appendChild(child);
-                  currentSpaceUsed += blockHeight;
-                }
-              }
-              
-              document.body.removeChild(source);
-            }
-
             window.onload = function() {
               waitForImages().then(function() {
-                paginate();
+                buildLayout();
                 window.print();
                 setTimeout(function() { window.parent.postMessage('close-print-prescription-iframe', '*'); }, 500);
               });
@@ -1630,6 +1826,15 @@ const DoctorDashboard = () => {
           </script>
         </body>
         </html>
+      `;
+
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+    } catch (err) {
+      console.error("Print prescription error:", err);
+      showToastNotification("Failed to prepare print view.", "error");
+    }
+  };tml>
       `;
 
       printWindow.document.write(htmlContent);
@@ -1700,6 +1905,36 @@ const DoctorDashboard = () => {
     showToastNotification("Prescription loaded for editing!", "info");
     addLog(`Editing prescription ID: ${rx._id}`);
   };
+
+  // Prescription Print & Formatting Settings
+  const [printSettings, setPrintSettings] = useState(() => {
+    try {
+      const saved = localStorage.getItem('curoxa_rx_print_settings');
+      return saved ? JSON.parse(saved) : {
+        template: 'standard', // standard, two-column, rx-list, dense-grid
+        topSpacer: 38, // in mm
+        bottomSpacer: 28, // in mm
+        fontSize: 100, // in %
+        digitalPreset: 'none', // none, teal, burgundy, navy
+      };
+    } catch {
+      return {
+        template: 'standard',
+        topSpacer: 38,
+        bottomSpacer: 28,
+        fontSize: 100,
+        digitalPreset: 'none',
+      };
+    }
+  });
+
+  const [showPrintSettingsModal, setShowPrintSettingsModal] = useState(false);
+  const [printSettingsTarget, setPrintSettingsTarget] = useState(null); // { rx, item, callback }
+
+  // Auto-save changes to localStorage
+  useEffect(() => {
+    localStorage.setItem('curoxa_rx_print_settings', JSON.stringify(printSettings));
+  }, [printSettings]);
 
   // Vitals State
   const [vitals, setVitals] = useState({
@@ -2989,12 +3224,58 @@ const DoctorDashboard = () => {
       return;
     }
 
+    const validMedicines = medicines
+      .filter(m => m.name && m.name.trim() !== '')
+      .map(m => {
+        const days = parseInt(m.duration, 10) || 5;
+        let dailyFreq = 1;
+        const f = (m.freq || 'Once a day').toLowerCase();
+        if (f.includes('twice') || f.includes('bd') || f.includes('2')) dailyFreq = 2;
+        else if (f.includes('thrice') || f.includes('tds') || f.includes('3')) dailyFreq = 3;
+        else if (f.includes('four') || f.includes('qd') || f.includes('4')) dailyFreq = 4;
+        const qty = days * dailyFreq;
+        return {
+          medicine: m.name.trim(),
+          dosage: m.dose && m.dose.trim() !== '' ? m.dose.trim() : '500 mg',
+          duration: m.duration && m.duration.trim() !== '' ? m.duration.trim() : '5 Days',
+          instructions: `${m.freq || 'Once a day'} (${m.timing || 'After Food'})`,
+          quantity: qty
+        };
+      });
+    const validLabs = labs.filter(test => test && test.trim() !== '');
+
+    // Set target print items and show settings modal
+    setPrintSettingsTarget({
+      rx: null,
+      item: {
+        items: validMedicines,
+        tests: validLabs,
+        diagnosis: diagnosisText ? diagnosisText.trim() : '',
+        date: new Date().toLocaleDateString('en-IN'),
+        doctor: user.name,
+        originalApp: { regNo: activeAppointmentId ? activeAppointmentId.substring(0, 8).toUpperCase() : 'NEW' }
+      },
+      callback: (finalSettings) => {
+        executeSaveAndLockPrescription(finalSettings);
+      }
+    });
+    setShowPrintSettingsModal(true);
+  };
+
+  const executeSaveAndLockPrescription = (finalSettings = printSettings) => {
+    if (isSavingPrescription) return;
     setIsSavingPrescription(true);
     setIsFinalized(true);
     addLog("Prescription final eSign locked. Record marked as tamper-proof.");
 
     const appointmentIdToUse = activeAppointmentId;
     const cleanDiagnosisText = diagnosisText ? diagnosisText.trim() : '';
+    
+    const resolvedPatient = typeof selectedPatient === 'string' 
+      ? (patients.find(p => p._id === selectedPatient) || patientsList.find(p => p._id === selectedPatient) || { _id: selectedPatient })
+      : selectedPatient;
+    const patientId = resolvedPatient?._id;
+
     const validMedicines = medicines
       .filter(m => m.name && m.name.trim() !== '')
       .map(m => {
@@ -3041,6 +3322,7 @@ const DoctorDashboard = () => {
 
       // Create prescription record with conditional status based on sendToPharmacy
       const rxStatus = sendToPharmacy ? 'Pending Pharmacy Dispatch' : 'Direct Patient';
+      let rxRecord = null;
 
       if (editingPrescriptionId) {
         // Edit flow
@@ -3054,6 +3336,7 @@ const DoctorDashboard = () => {
           diagnosis: cleanDiagnosisText,
           notes: soap.assessment || ''
         });
+        rxRecord = rxRes.data;
         if (rxRes && rxRes.data) {
           setAllPrescriptions(prev => prev.map(r => r._id === editingPrescriptionId ? rxRes.data : r));
         }
@@ -3094,6 +3377,7 @@ const DoctorDashboard = () => {
           status: rxStatus,
           items: validMedicines
         });
+        rxRecord = rxRes.data;
         if (rxRes && rxRes.data) {
           setAllPrescriptions(prev => [rxRes.data, ...prev]);
         }
@@ -3118,7 +3402,6 @@ const DoctorDashboard = () => {
       }
 
       // Create real itemized bill in DB only if one doesn't already exist for this appointment
-      // (Receptionist may have already created and paid a bill during check-in)
       const docFee = user.consultationFee !== undefined ? user.consultationFee : 500;
       const billItems = [
         { description: 'OPD Clinical Consultation Fee', amount: docFee }
@@ -3184,7 +3467,6 @@ const DoctorDashboard = () => {
       // Update the appointment status to Completed and add diagnosis
       const appToUpdate = appointmentIdToUse || editingAppointmentId;
       if (appToUpdate) {
-        // Optimistically update states!
         setAppointments(prev => prev.map(a => a._id === appToUpdate ? { ...a, status: 'Completed', diagnosis: cleanDiagnosisText, notes: soap.assessment || '' } : a));
         setCoverageQueue(prev => prev.map(q => q.id === appToUpdate ? { ...q, status: 'Completed' } : q));
         setCoverageAppts(prev => prev.map(a => a.id === appToUpdate ? { ...a, status: 'Completed' } : a));
@@ -3195,12 +3477,25 @@ const DoctorDashboard = () => {
           notes: soap.assessment || ''
         });
       }
+
+      // Trigger Print Automatically with settings
+      if (rxRecord) {
+        const printItem = {
+          items: validMedicines,
+          tests: validLabs,
+          diagnosis: cleanDiagnosisText,
+          notes: soap.assessment || '',
+          date: new Date().toLocaleDateString('en-IN'),
+          doctor: user.name,
+          originalApp: { regNo: resolvedAppId ? resolvedAppId.substring(0, 8).toUpperCase() : 'NEW' }
+        };
+        handlePrintPrescription(rxRecord, printItem, finalSettings);
+      }
     };
 
     saveEncounterData()
       .then(() => {
         addLog("Background EMR sync completed successfully.");
-        // Fetch latest data to reflect changes
         fetchData();
       })
       .catch(err => {
@@ -6839,6 +7134,8 @@ I have scanned the medical reference databases, but couldn't find a direct match
               emergencyBypassActive={emergencyBypassActive}
               setShowBreakGlassModal={setShowBreakGlassModal}
               toggleEmergencyBypass={toggleEmergencyBypass}
+              printSettings={printSettings}
+              setPrintSettings={setPrintSettings}
             />
           ) : (
             <div className="tab-content active" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', padding: '40px', textAlign: 'center', background: '#FFFFFF', borderRadius: '16px', border: '1.5px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.02)', margin: '24px', animation: 'slideUp 0.4s ease-out' }}>
@@ -9062,6 +9359,214 @@ I have scanned the medical reference databases, but couldn't find a direct match
         );
       })()}
 
+      {/* Visual Prescription formatting & Spacing Modal */}
+      {showPrintSettingsModal && printSettingsTarget && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000, padding: '20px' }}>
+          <div className="glass-card" style={{ width: '100%', maxWidth: '680px', background: '#FFFFFF', padding: '0', borderRadius: '24px', maxHeight: '92vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 80px -15px rgba(15, 23, 42, 0.22)', border: '1px solid rgba(241, 245, 249, 0.9)' }}>
+            
+            {/* Modal Header */}
+            <div style={{ background: 'linear-gradient(135deg, #800020, #4A0012)', padding: '20px 28px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 900, fontFamily: "'Outfit', sans-serif", display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#FBCFE8' }}><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                  Prescription Layout & Auto-Spacing Configurator
+                </h3>
+                <p style={{ margin: '4px 0 0 0', fontSize: '11.5px', color: '#FBCFE8', fontWeight: 600, opacity: 0.9 }}>
+                  Ensure your text fits perfectly under any letterhead or page size.
+                </p>
+              </div>
+              <button 
+                onClick={() => {
+                  setShowPrintSettingsModal(false);
+                  setPrintSettingsTarget(null);
+                }} 
+                style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: 'white', width: '32px', height: '32px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '13px', fontWeight: 800 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div data-lenis-prevent style={{ flex: 1, overflowY: 'auto', padding: '24px', background: '#F8FAFC', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              
+              {/* Template / Layout selection */}
+              <div>
+                <label style={{ display: 'block', fontSize: '11.5px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '10px', textTransform: 'uppercase' }}>Select Prescription Template / Rearrangement</label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  
+                  {/* Template Card 1 */}
+                  <div 
+                    onClick={() => setPrintSettings(prev => ({ ...prev, template: 'standard' }))}
+                    style={{
+                      border: printSettings.template === 'standard' ? '2px solid #800020' : '1.5px solid #E2E8F0',
+                      background: printSettings.template === 'standard' ? '#FFF5F6' : '#FFFFFF',
+                      borderRadius: '12px', padding: '12px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '10px'
+                    }}
+                  >
+                    <div style={{ fontSize: '20px', display: 'flex', alignItems: 'center', color: '#800020' }}>📋</div>
+                    <div>
+                      <div style={{ fontWeight: 800, fontSize: '13px', color: '#1E293B' }}>Standard Table (Classic)</div>
+                      <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '2px', fontWeight: 500 }}>Traditional layout: full-width tables for medicines and diagnostics.</div>
+                    </div>
+                  </div>
+
+                  {/* Template Card 2 */}
+                  <div 
+                    onClick={() => setPrintSettings(prev => ({ ...prev, template: 'two-column' }))}
+                    style={{
+                      border: printSettings.template === 'two-column' ? '2px solid #800020' : '1.5px solid #E2E8F0',
+                      background: printSettings.template === 'two-column' ? '#FFF5F6' : '#FFFFFF',
+                      borderRadius: '12px', padding: '12px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '10px'
+                    }}
+                  >
+                    <div style={{ fontSize: '20px', display: 'flex', alignItems: 'center', color: '#800020' }}>📖</div>
+                    <div>
+                      <div style={{ fontWeight: 800, fontSize: '13px', color: '#1E293B' }}>Compact Two-Column</div>
+                      <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '2px', fontWeight: 500 }}>Side-by-side layout: highly compact, prevents overflow onto page 2!</div>
+                    </div>
+                  </div>
+
+                  {/* Template Card 3 */}
+                  <div 
+                    onClick={() => setPrintSettings(prev => ({ ...prev, template: 'rx-list' }))}
+                    style={{
+                      border: printSettings.template === 'rx-list' ? '2px solid #800020' : '1.5px solid #E2E8F0',
+                      background: printSettings.template === 'rx-list' ? '#FFF5F6' : '#FFFFFF',
+                      borderRadius: '12px', padding: '12px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '10px'
+                    }}
+                  >
+                    <div style={{ fontSize: '20px', display: 'flex', alignItems: 'center', color: '#800020' }}>℞</div>
+                    <div>
+                      <div style={{ fontWeight: 800, fontSize: '13px', color: '#1E293B' }}>Elegant Rx List</div>
+                      <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '2px', fontWeight: 500 }}>Minimalist clean list structure. Professional feel with 40% vertical space savings.</div>
+                    </div>
+                  </div>
+
+                  {/* Template Card 4 */}
+                  <div 
+                    onClick={() => setPrintSettings(prev => ({ ...prev, template: 'dense-grid' }))}
+                    style={{
+                      border: printSettings.template === 'dense-grid' ? '2px solid #800020' : '1.5px solid #E2E8F0',
+                      background: printSettings.template === 'dense-grid' ? '#FFF5F6' : '#FFFFFF',
+                      borderRadius: '12px', padding: '12px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '10px'
+                    }}
+                  >
+                    <div style={{ fontSize: '20px', display: 'flex', alignItems: 'center', color: '#800020' }}>🎛️</div>
+                    <div>
+                      <div style={{ fontWeight: 800, fontSize: '13px', color: '#1E293B' }}>Dense Medicine Grid</div>
+                      <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '2px', fontWeight: 500 }}>Double-column grid blocks. Best for handling heavy prescriptions with 10+ medicines.</div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              {/* Letterhead & Footer margin adjusters */}
+              <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '16px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <h4 style={{ margin: 0, fontSize: '12px', color: '#1E293B', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.03em', borderBottom: '1px solid #F1F5F9', paddingBottom: '8px' }}>
+                  Letterhead Fitting & Spacing Calibration
+                </h4>
+                
+                {/* Header spacer slider */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 700, color: '#475569', marginBottom: '6px' }}>
+                    <span>Top Spacer (Header Space)</span>
+                    <span style={{ color: '#800020' }}><b>{printSettings.topSpacer} mm</b></span>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max="100" 
+                    value={printSettings.topSpacer} 
+                    onChange={e => setPrintSettings(prev => ({ ...prev, topSpacer: parseInt(e.target.value, 10) }))}
+                    style={{ width: '100%', accentColor: '#800020', cursor: 'pointer' }}
+                  />
+                  <p style={{ margin: '4px 0 0 0', fontSize: '10px', color: '#94A3B8', fontWeight: 500 }}>Slide to match the height of your physical letterhead header logo banner.</p>
+                </div>
+
+                {/* Footer spacer slider */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 700, color: '#475569', marginBottom: '6px' }}>
+                    <span>Bottom Spacer (Footer Space)</span>
+                    <span style={{ color: '#800020' }}><b>{printSettings.bottomSpacer} mm</b></span>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max="50" 
+                    value={printSettings.bottomSpacer} 
+                    onChange={e => setPrintSettings(prev => ({ ...prev, bottomSpacer: parseInt(e.target.value, 10) }))}
+                    style={{ width: '100%', accentColor: '#800020', cursor: 'pointer' }}
+                  />
+                  <p style={{ margin: '4px 0 0 0', fontSize: '10px', color: '#94A3B8', fontWeight: 500 }}>Ensure signature or footer info doesn't overwrite your pre-printed footers.</p>
+                </div>
+
+                {/* Font size adjuster */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 700, color: '#475569', marginBottom: '6px' }}>
+                    <span>Print Font Size Scale</span>
+                    <span style={{ color: '#800020' }}><b>{printSettings.fontSize}%</b></span>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="80" 
+                    max="120" 
+                    step="5"
+                    value={printSettings.fontSize} 
+                    onChange={e => setPrintSettings(prev => ({ ...prev, fontSize: parseInt(e.target.value, 10) }))}
+                    style={{ width: '100%', accentColor: '#800020', cursor: 'pointer' }}
+                  />
+                  <p style={{ margin: '4px 0 0 0', fontSize: '10px', color: '#94A3B8', fontWeight: 500 }}>Scale down to fit heavily cluttered documents onto a single A4 sheet.</p>
+                </div>
+              </div>
+
+              {/* Digital Backup letterhead preset */}
+              <div>
+                <label style={{ display: 'block', fontSize: '11.5px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '6px' }}>DIGITAL LETTERHEAD PRESET (BACKUP)</label>
+                <select
+                  value={printSettings.digitalPreset}
+                  onChange={e => setPrintSettings(prev => ({ ...prev, digitalPreset: e.target.value }))}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #E2E8F0', fontSize: '13px', fontWeight: 600, color: '#1E293B', background: 'white' }}
+                >
+                  <option value="none">No Digital Header (Print on Pre-printed Physical Paper)</option>
+                  <option value="teal">Preset Style A: Modern Teal Header Banner</option>
+                  <option value="burgundy">Preset Style B: Burgundy Royal Border & Serif Logo</option>
+                  <option value="navy">Preset Style C: High-Tech Navy Clinic Theme</option>
+                </select>
+                <p style={{ margin: '4px 0 0 0', fontSize: '10.5px', color: '#64748B', fontWeight: 500 }}>Select a digital preset style if you want to print a complete digital letterhead layout along with the prescription text.</p>
+              </div>
+
+            </div>
+
+            {/* Modal Footer */}
+            <div style={{ padding: '16px 24px', background: '#F8FAFC', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <button 
+                onClick={() => {
+                  setShowPrintSettingsModal(false);
+                  setPrintSettingsTarget(null);
+                }} 
+                style={{ background: '#E2E8F0', border: 'none', color: '#475569', borderRadius: '10px', padding: '10px 20px', fontSize: '13.0px', fontWeight: 700, cursor: 'pointer' }}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => {
+                  setShowPrintSettingsModal(false);
+                  if (printSettingsTarget.callback) {
+                    printSettingsTarget.callback(printSettings);
+                  }
+                  setPrintSettingsTarget(null);
+                }}
+                style={{ background: 'linear-gradient(135deg, #800020, #600018)', border: 'none', color: '#ffffff', borderRadius: '10px', padding: '10px 24px', fontSize: '13.0px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 10px rgba(128, 0, 32, 0.2)' }}
+              >
+                Confirm & Generate Prescription
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
       {/* Real Interactive Clinical EMR Timeline Modal */}
       {showTimelineModal && selectedPatient && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '20px' }}>
@@ -9425,7 +9930,16 @@ I have scanned the medical reference databases, but couldn't find a direct match
                                       Edit
                                     </button>
                                     <button
-                                      onClick={() => handlePrintPrescription(item.rx, item)}
+                                      onClick={() => {
+                                        setPrintSettingsTarget({
+                                          rx: item.rx,
+                                          item: item,
+                                          callback: (finalSettings) => {
+                                            handlePrintPrescription(item.rx, item, finalSettings);
+                                          }
+                                        });
+                                        setShowPrintSettingsModal(true);
+                                      }}
                                       style={{ margin: 0, padding: '4px 10px', fontSize: '10.5px', background: '#EFF6FF', color: '#1E40AF', border: '1px solid #BFDBFE', cursor: 'pointer', borderRadius: '8px', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '4px', transition: 'all 0.2s ease' }}
                                     >
                                       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>

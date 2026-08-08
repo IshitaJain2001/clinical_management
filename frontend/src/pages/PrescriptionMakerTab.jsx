@@ -26,7 +26,9 @@ export default function PrescriptionMakerTab({
   consentGiven = true,
   emergencyBypassActive = false,
   setShowBreakGlassModal,
-  toggleEmergencyBypass
+  toggleEmergencyBypass,
+  printSettings = { template: 'standard', topSpacer: 38, bottomSpacer: 28, fontSize: 100, digitalPreset: 'none' },
+  setPrintSettings = () => {}
 }) {
   // Sidebar drawer visibility state
   const [showAssignLabDrawer, setShowAssignLabDrawer] = useState(false);
@@ -424,18 +426,38 @@ export default function PrescriptionMakerTab({
         <div style={{ border: '1px solid #E2E8F0', borderRadius: '16px', padding: '16px', background: '#ffffff', boxShadow: '0 1.5px 4px rgba(0,0,0,0.03)' }}>
           
           {/* Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
             <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 900, color: '#1E293B', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <i data-lucide="file-text" style={{ width: '20px', height: '20px', color: '#1E293B' }}></i> Prescription
             </h2>
-            <button 
-              onClick={() => setShowAssignLabDrawer(true)}
-              style={{ border: '1px solid #DBEAFE', background: '#EFF6FF', color: '#2563EB', borderRadius: '8px', padding: '8px 16px', fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', transition: '0.2s' }}
-              onMouseEnter={e => e.currentTarget.style.background = '#DBEAFE'}
-              onMouseLeave={e => e.currentTarget.style.background = '#EFF6FF'}
-            >
-              <span style={{ fontSize: '14px', fontWeight: 'bold' }}>+</span> Assign Lab test
-            </button>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+              {/* Live Template Selector */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '4px 10px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>Print Layout:</span>
+                <select
+                  value={printSettings.template}
+                  onChange={e => setPrintSettings(prev => ({ ...prev, template: e.target.value }))}
+                  style={{
+                    border: 'none', background: 'transparent', fontSize: '12px', fontWeight: 750, color: '#800020', outline: 'none', cursor: 'pointer', paddingRight: '4px'
+                  }}
+                >
+                  <option value="standard">📋 Standard Table (Classic)</option>
+                  <option value="two-column">📖 Compact Two-Column</option>
+                  <option value="rx-list">℞ Elegant Rx List</option>
+                  <option value="dense-grid">🎛️ Dense Medicine Grid</option>
+                </select>
+              </div>
+
+              <button 
+                onClick={() => setShowAssignLabDrawer(true)}
+                style={{ border: '1px solid #DBEAFE', background: '#EFF6FF', color: '#2563EB', borderRadius: '8px', padding: '8px 16px', fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', transition: '0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.background = '#DBEAFE'}
+                onMouseLeave={e => e.currentTarget.style.background = '#EFF6FF'}
+              >
+                <span style={{ fontSize: '14px', fontWeight: 'bold' }}>+</span> Assign Lab test
+              </button>
+            </div>
           </div>
 
           {/* Diagnosis Section */}
