@@ -9335,13 +9335,34 @@ I have scanned the medical reference databases, but couldn't find a direct match
                     style={{
                       border: printSettings.template === 'standard' ? '2px solid #800020' : '1.5px solid #E2E8F0',
                       background: printSettings.template === 'standard' ? '#FFF5F6' : '#FFFFFF',
-                      borderRadius: '12px', padding: '12px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '10px'
+                      borderRadius: '16px', padding: '14px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '14px', alignItems: 'center', boxShadow: printSettings.template === 'standard' ? '0 8px 16px -4px rgba(128, 0, 32, 0.12)' : 'none'
                     }}
                   >
-                    <div style={{ fontSize: '20px', display: 'flex', alignItems: 'center', color: '#800020' }}>📋</div>
+                    {/* Visual Preview Miniature */}
+                    <div style={{ width: '60px', height: '80px', border: printSettings.template === 'standard' ? '1.5px solid #800020' : '1.5px solid #CBD5E1', borderRadius: '6px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', padding: '4px', boxSizing: 'border-box', flexShrink: 0, gap: '3px' }}>
+                      <div style={{ height: '12px', borderBottom: '1px dashed #E2E8F0', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ width: '22px', height: '2px', background: '#E2E8F0', borderRadius: '1px' }}></div>
+                      </div>
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                        <div style={{ height: '3px', background: '#E2E8F0', width: '50%', borderRadius: '1px' }}></div>
+                        <div style={{ height: '8px', border: '1.5px solid #800020', background: '#FFF5F6', borderRadius: '2px', display: 'flex', flexDirection: 'column', gap: '1.5px', padding: '1.5px' }}>
+                          <div style={{ height: '1.5px', background: '#800020', width: '100%' }}></div>
+                          <div style={{ height: '1px', background: '#E2E8F0', width: '80%' }}></div>
+                        </div>
+                        <div style={{ height: '14px', border: '1.5px solid #E2E8F0', background: '#F8FAFC', borderRadius: '2px', display: 'flex', flexDirection: 'column', gap: '1.5px', padding: '1.5px' }}>
+                          <div style={{ height: '1.5px', background: '#94A3B8', width: '100%' }}></div>
+                          <div style={{ height: '1px', background: '#E2E8F0', width: '90%' }}></div>
+                          <div style={{ height: '1px', background: '#E2E8F0', width: '70%' }}></div>
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1px' }}>
+                        <div style={{ width: '12px', height: '2px', background: '#E2E8F0', borderRadius: '0.5px' }}></div>
+                        <div style={{ width: '14px', height: '2px', background: '#800020', borderRadius: '0.5px' }}></div>
+                      </div>
+                    </div>
                     <div>
                       <div style={{ fontWeight: 800, fontSize: '13px', color: '#1E293B' }}>Standard Table (Classic)</div>
-                      <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '2px', fontWeight: 500 }}>Traditional layout: full-width tables for medicines and diagnostics.</div>
+                      <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '2px', fontWeight: 500, lineHeight: '1.3' }}>Traditional layout: full-width tables for medicines and diagnostics.</div>
                     </div>
                   </div>
 
@@ -9351,13 +9372,36 @@ I have scanned the medical reference databases, but couldn't find a direct match
                     style={{
                       border: printSettings.template === 'two-column' ? '2px solid #800020' : '1.5px solid #E2E8F0',
                       background: printSettings.template === 'two-column' ? '#FFF5F6' : '#FFFFFF',
-                      borderRadius: '12px', padding: '12px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '10px'
+                      borderRadius: '16px', padding: '14px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '14px', alignItems: 'center', boxShadow: printSettings.template === 'two-column' ? '0 8px 16px -4px rgba(128, 0, 32, 0.12)' : 'none'
                     }}
                   >
-                    <div style={{ fontSize: '20px', display: 'flex', alignItems: 'center', color: '#800020' }}>📖</div>
+                    {/* Visual Preview Miniature */}
+                    <div style={{ width: '60px', height: '80px', border: printSettings.template === 'two-column' ? '1.5px solid #800020' : '1.5px solid #CBD5E1', borderRadius: '6px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', padding: '4px', boxSizing: 'border-box', flexShrink: 0, gap: '3px' }}>
+                      <div style={{ height: '12px', borderBottom: '1px dashed #E2E8F0', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ width: '22px', height: '2px', background: '#E2E8F0', borderRadius: '1px' }}></div>
+                      </div>
+                      <div style={{ flex: 1, display: 'flex', gap: '4px' }}>
+                        {/* Left split column */}
+                        <div style={{ width: '40%', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                          <div style={{ height: '8px', border: '1px solid #E2E8F0', background: '#F8FAFC', borderRadius: '1px' }}></div>
+                          <div style={{ height: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC', borderRadius: '1px' }}></div>
+                        </div>
+                        {/* Right split column */}
+                        <div style={{ width: '55%', border: '1.5px solid #800020', background: '#FFF5F6', borderRadius: '2px', padding: '1.5px', display: 'flex', flexDirection: 'column', gap: '1.5px' }}>
+                          <div style={{ height: '1.5px', background: '#800020', width: '100%' }}></div>
+                          <div style={{ height: '1px', background: '#E2E8F0', width: '90%' }}></div>
+                          <div style={{ height: '1px', background: '#E2E8F0', width: '80%' }}></div>
+                          <div style={{ height: '1px', background: '#E2E8F0', width: '90%' }}></div>
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1px' }}>
+                        <div style={{ width: '12px', height: '2px', background: '#E2E8F0', borderRadius: '0.5px' }}></div>
+                        <div style={{ width: '14px', height: '2px', background: '#800020', borderRadius: '0.5px' }}></div>
+                      </div>
+                    </div>
                     <div>
                       <div style={{ fontWeight: 800, fontSize: '13px', color: '#1E293B' }}>Compact Two-Column</div>
-                      <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '2px', fontWeight: 500 }}>Side-by-side layout: highly compact, prevents overflow onto page 2!</div>
+                      <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '2px', fontWeight: 500, lineHeight: '1.3' }}>Side-by-side layout: highly compact, prevents overflow onto page 2!</div>
                     </div>
                   </div>
 
@@ -9367,13 +9411,33 @@ I have scanned the medical reference databases, but couldn't find a direct match
                     style={{
                       border: printSettings.template === 'rx-list' ? '2px solid #800020' : '1.5px solid #E2E8F0',
                       background: printSettings.template === 'rx-list' ? '#FFF5F6' : '#FFFFFF',
-                      borderRadius: '12px', padding: '12px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '10px'
+                      borderRadius: '16px', padding: '14px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '14px', alignItems: 'center', boxShadow: printSettings.template === 'rx-list' ? '0 8px 16px -4px rgba(128, 0, 32, 0.12)' : 'none'
                     }}
                   >
-                    <div style={{ fontSize: '20px', display: 'flex', alignItems: 'center', color: '#800020' }}>℞</div>
+                    {/* Visual Preview Miniature */}
+                    <div style={{ width: '60px', height: '80px', border: printSettings.template === 'rx-list' ? '1.5px solid #800020' : '1.5px solid #CBD5E1', borderRadius: '6px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', padding: '4px', boxSizing: 'border-box', flexShrink: 0, gap: '3px' }}>
+                      <div style={{ height: '12px', borderBottom: '1px dashed #E2E8F0', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ width: '22px', height: '2px', background: '#E2E8F0', borderRadius: '1px' }}></div>
+                      </div>
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                        <div style={{ height: '3px', background: '#E2E8F0', width: '70%', borderRadius: '1px' }}></div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', paddingLeft: '2px' }}>
+                          {[1, 2, 3].map(idx => (
+                            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                              <span style={{ fontSize: '6px', color: '#800020', lineHeight: 1, fontWeight: '900' }}>℞</span>
+                              <div style={{ flex: 1, height: '1.5px', background: '#94A3B8', borderRadius: '0.5px' }}></div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1px' }}>
+                        <div style={{ width: '12px', height: '2px', background: '#E2E8F0', borderRadius: '0.5px' }}></div>
+                        <div style={{ width: '14px', height: '2px', background: '#800020', borderRadius: '0.5px' }}></div>
+                      </div>
+                    </div>
                     <div>
                       <div style={{ fontWeight: 800, fontSize: '13px', color: '#1E293B' }}>Elegant Rx List</div>
-                      <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '2px', fontWeight: 500 }}>Minimalist clean list structure. Professional feel with 40% vertical space savings.</div>
+                      <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '2px', fontWeight: 500, lineHeight: '1.3' }}>Minimalist clean list structure. Professional feel with 40% vertical space savings.</div>
                     </div>
                   </div>
 
@@ -9383,13 +9447,30 @@ I have scanned the medical reference databases, but couldn't find a direct match
                     style={{
                       border: printSettings.template === 'dense-grid' ? '2px solid #800020' : '1.5px solid #E2E8F0',
                       background: printSettings.template === 'dense-grid' ? '#FFF5F6' : '#FFFFFF',
-                      borderRadius: '12px', padding: '12px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '10px'
+                      borderRadius: '16px', padding: '14px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '14px', alignItems: 'center', boxShadow: printSettings.template === 'dense-grid' ? '0 8px 16px -4px rgba(128, 0, 32, 0.12)' : 'none'
                     }}
                   >
-                    <div style={{ fontSize: '20px', display: 'flex', alignItems: 'center', color: '#800020' }}>🎛️</div>
+                    {/* Visual Preview Miniature */}
+                    <div style={{ width: '60px', height: '80px', border: printSettings.template === 'dense-grid' ? '1.5px solid #800020' : '1.5px solid #CBD5E1', borderRadius: '6px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', padding: '4px', boxSizing: 'border-box', flexShrink: 0, gap: '3px' }}>
+                      <div style={{ height: '12px', borderBottom: '1px dashed #E2E8F0', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ width: '22px', height: '2px', background: '#E2E8F0', borderRadius: '1px' }}></div>
+                      </div>
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                        <div style={{ height: '2.5px', background: '#E2E8F0', width: '60%', borderRadius: '1px' }}></div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px' }}>
+                          {[1, 2, 3, 4].map(idx => (
+                            <div key={idx} style={{ height: '8px', border: '1px solid #800020', background: '#FFF5F6', borderRadius: '1px' }}></div>
+                          ))}
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1px' }}>
+                        <div style={{ width: '12px', height: '2px', background: '#E2E8F0', borderRadius: '0.5px' }}></div>
+                        <div style={{ width: '14px', height: '2px', background: '#800020', borderRadius: '0.5px' }}></div>
+                      </div>
+                    </div>
                     <div>
                       <div style={{ fontWeight: 800, fontSize: '13px', color: '#1E293B' }}>Dense Medicine Grid</div>
-                      <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '2px', fontWeight: 500 }}>Double-column grid blocks. Best for handling heavy prescriptions with 10+ medicines.</div>
+                      <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '2px', fontWeight: 500, lineHeight: '1.3' }}>Double-column grid blocks. Best for handling heavy prescriptions with 10+ medicines.</div>
                     </div>
                   </div>
 
