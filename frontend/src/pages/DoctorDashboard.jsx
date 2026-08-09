@@ -1441,7 +1441,7 @@ const DoctorDashboard = () => {
               '</div>';
             }
 
-            function createNewPage() {
+            function createNewPage(isFirstPage = true) {
               const page = document.createElement('div');
               page.className = 'page-container';
               
@@ -1452,13 +1452,20 @@ const DoctorDashboard = () => {
                 page.style.backgroundRepeat = 'no-repeat';
               }
               
-              const headerContainer = document.createElement('div');
-              headerContainer.innerHTML = getHeaderHTML();
-              page.appendChild(headerContainer.firstElementChild || headerContainer);
-              
-              const patientContainer = document.createElement('div');
-              patientContainer.innerHTML = getPatientDetailsHTML();
-              page.appendChild(patientContainer);
+              if (isFirstPage) {
+                const headerContainer = document.createElement('div');
+                headerContainer.innerHTML = getHeaderHTML();
+                page.appendChild(headerContainer.firstElementChild || headerContainer);
+                
+                const patientContainer = document.createElement('div');
+                patientContainer.innerHTML = getPatientDetailsHTML();
+                page.appendChild(patientContainer);
+              } else {
+                const spacer = document.createElement('div');
+                spacer.className = 'spacer-header';
+                spacer.style.height = topSpacer + 'mm';
+                page.appendChild(spacer);
+              }
               
               const contentArea = document.createElement('div');
               contentArea.className = 'content-area';
@@ -1490,9 +1497,8 @@ const DoctorDashboard = () => {
 
               const topSpacerPx = topSpacer * 3.78;
               const bottomSpacerPx = bottomSpacer * 3.78;
-
               // We need to measure how much height patientDetails + digital header takes
-              const tempPage = createNewPage();
+              const tempPage = createNewPage(true);
               tempPage.style.visibility = 'hidden';
               tempPage.style.position = 'absolute';
               tempPage.style.top = '-9999px';
@@ -1505,8 +1511,10 @@ const DoctorDashboard = () => {
               
               document.getElementById('pages-container').removeChild(tempPage);
 
-              // Available content height per page
-              const contentHeightLimit = a4Height - topSpacerPx - bottomSpacerPx - patientDetailsHeight - digitalHeaderHeight - 35; // 35px safety padding
+              // Available content height limits
+              const page1ContentLimit = a4Height - topSpacerPx - bottomSpacerPx - patientDetailsHeight - digitalHeaderHeight - 35;
+              const pageNContentLimit = a4Height - topSpacerPx - bottomSpacerPx - 35;
+              const contentHeightLimit = page1ContentLimit; // For measureHeight to use conservatively // 35px safety padding
 
               // Helpers to generate HTML content blocks
               function getDiagnosisHTML() {
@@ -1724,7 +1732,7 @@ const DoctorDashboard = () => {
               document.body.style.fontSize = bestFontSize + '%';
 
               // 3. Render content into contentArea with page-break checks
-              var activePage = createNewPage();
+              var activePage = createNewPage(true);
               var activeContentArea = activePage.querySelector('.content-area');
 
               const elementsContainer = document.createElement('div');
@@ -1734,18 +1742,21 @@ const DoctorDashboard = () => {
 
               const children = Array.from(elementsContainer.children);
               var pageSpaceUsed = 0;
+              var isFirst = true;
 
               for (var idx = 0; idx < children.length; idx++) {
                 const child = children[idx];
                 activeContentArea.appendChild(child);
                 
                 const childHeight = child.offsetHeight;
+                const limit = isFirst ? page1ContentLimit : pageNContentLimit;
                 
-                if (pageSpaceUsed + childHeight > contentHeightLimit) {
+                if (pageSpaceUsed + childHeight > limit) {
                   // Overflow occurred! Move it to a new page
                   activeContentArea.removeChild(child);
                   
-                  activePage = createNewPage();
+                  activePage = createNewPage(false);
+                  isFirst = false;
                   activeContentArea = activePage.querySelector('.content-area');
                   activeContentArea.appendChild(child);
                   pageSpaceUsed = childHeight;
