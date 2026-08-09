@@ -1324,23 +1324,23 @@ const DoctorDashboard = () => {
             const bottomSpacer = ${parseInt(customSettings.bottomSpacer, 10) || 28};
             const initialFontSize = ${parseInt(customSettings.fontSize, 10) || 100};
 
-            const patientName = "${cleanField(item.patient?.name || selectedPatient?.name)}";
-            const patientAge = "${item.patient?.age ? item.patient.age + ' Yrs' : (selectedPatient?.age ? selectedPatient.age + ' Yrs' : '—')}";
-            const patientGender = "${cleanField(item.patient?.gender || selectedPatient?.gender)}";
-            const rxDate = "${cleanField(item.date || new Date().toLocaleDateString('en-IN'))}";
-            const patientContact = "${cleanField(item.patient?.contact || selectedPatient?.contact)}";
-            const patientAddress = "${cleanField(item.patient?.address || selectedPatient?.address)}";
-            const regNo = "${cleanField(item.originalApp?.regNo)}";
+            const patientName = ${JSON.stringify(cleanField(item.patient?.name || selectedPatient?.name))};
+            const patientAge = ${JSON.stringify(item.patient?.age ? item.patient.age + ' Yrs' : (selectedPatient?.age ? selectedPatient.age + ' Yrs' : '—'))};
+            const patientGender = ${JSON.stringify(cleanField(item.patient?.gender || selectedPatient?.gender))};
+            const rxDate = ${JSON.stringify(cleanField(item.date || new Date().toLocaleDateString('en-IN')))};
+            const patientContact = ${JSON.stringify(cleanField(item.patient?.contact || selectedPatient?.contact))};
+            const patientAddress = ${JSON.stringify(cleanField(item.patient?.address || selectedPatient?.address))};
+            const regNo = ${JSON.stringify(cleanField(item.originalApp?.regNo))};
 
-            const doctorName = "${cleanField(item.doctor || user.name)}";
-            const doctorDesignation = "${cleanField(user.designation || 'MBBS, MD (Medicine)')}";
-            const doctorReg = "${user.staff_id ? (user.staff_id.match(/^\\d+$/) ? user.staff_id.slice(-5) : user.staff_id.toUpperCase()) : '12345'}";
-            const doctorDept = "${cleanField(user.department || 'General Medicine')}";
-            const doctorShift = "${user.shiftName || '10:00 AM - 01:00 PM, 06:00 PM - 09:00 PM'}";
-            const clinicName = "${clinicName}";
-            const diagnosis = "${cleanField(item.diagnosis)}";
-            const vitalsText = "${vitalsString}";
-            const soapNotes = "${cleanField(item.notes || '')}";
+            const doctorName = ${JSON.stringify(cleanField(item.doctor || user.name))};
+            const doctorDesignation = ${JSON.stringify(cleanField(user.designation || 'MBBS, MD (Medicine)'))};
+            const doctorReg = ${JSON.stringify(user.staff_id ? (user.staff_id.match(/^\d+$/) ? user.staff_id.slice(-5) : user.staff_id.toUpperCase()) : '12345')};
+            const doctorDept = ${JSON.stringify(cleanField(user.department || 'General Medicine'))};
+            const doctorShift = ${JSON.stringify(user.shiftName || '10:00 AM - 01:00 PM, 06:00 PM - 09:00 PM')};
+            const clinicName = ${JSON.stringify(clinicName)};
+            const diagnosis = ${JSON.stringify(cleanField(item.diagnosis))};
+            const vitalsText = ${JSON.stringify(vitalsString)};
+            const soapNotes = ${JSON.stringify(cleanField(item.notes || ''))};
 
             function getHeaderHTML() {
               if (hasCustomLetterhead && digitalPreset === 'none') {
