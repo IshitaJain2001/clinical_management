@@ -1325,7 +1325,7 @@ const DoctorDashboard = () => {
             const initialFontSize = ${parseInt(customSettings.fontSize, 10) || 100};
 
             const patientName = "${cleanField(item.patient?.name || selectedPatient?.name)}";
-            const patientAge = "${item.patient?.age ? `${item.patient.age} Yrs` : (selectedPatient?.age ? `${selectedPatient.age} Yrs` : '—')}";
+            const patientAge = "${item.patient?.age ? item.patient.age + ' Yrs' : (selectedPatient?.age ? selectedPatient.age + ' Yrs' : '—')}";
             const patientGender = "${cleanField(item.patient?.gender || selectedPatient?.gender)}";
             const rxDate = "${cleanField(item.date || new Date().toLocaleDateString('en-IN'))}";
             const patientContact = "${cleanField(item.patient?.contact || selectedPatient?.contact)}";
