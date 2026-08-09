@@ -1525,96 +1525,115 @@ const DoctorDashboard = () => {
                 '</div>';
               }
 
-              function getTestsHTML(cols) {
-                if (!tests || tests.length === 0) return '';
-                var itemsHTML = '';
-                if (cols === 1) {
-                  for (var i = 0; i < tests.length; i++) {
-                    var testName = (typeof tests[i] === 'object' && tests[i] !== null) ? (tests[i].testName || tests[i].name || '') : tests[i];
-                    itemsHTML += '<tr style="border-bottom: 1px solid #800020;">' +
-                      '<td style="padding: 4px 8px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020; width: 40px;">' + (i+1) + '</td>' +
-                      '<td style="padding: 4px 8px; font-weight: 700; color: #1E293B;">' + testName + '</td>' +
-                    '</tr>';
-                  }
-                  return '<div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff; margin-bottom: 8px; page-break-inside: avoid; break-inside: avoid;">' +
-                    '<div style="background: #FDF2F4; padding: 4px 8px; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Prescribed Tests</div>' +
-                    '<table class="rx-table" style="width: 100%; border: none;">' +
-                      '<tbody>' + itemsHTML + '</tbody>' +
-                    '</table>' +
-                  '</div>';
-                } else {
-                  for (var i = 0; i < tests.length; i++) {
-                    var testName = (typeof tests[i] === 'object' && tests[i] !== null) ? (tests[i].testName || tests[i].name || '') : tests[i];
-                    itemsHTML += '<div style="font-size: 10px; font-weight: 700; color: #334155; display: flex; gap: 6px; align-items: flex-start; padding: 2px 4px; border-bottom: 1px dashed #E2E8F0;">' +
-                      '<span style="color: #800020;">' + (i+1) + '.</span>' +
-                      '<span style="word-break: break-word;">' + testName + '</span>' +
+              function getTestsBlocks(cols) {
+                if (!tests || tests.length === 0) return [];
+                var blocks = [];
+                var chunkSize = cols === 1 ? 8 : 16;
+                
+                for (var start = 0; start < tests.length; start += chunkSize) {
+                  var chunk = tests.slice(start, start + chunkSize);
+                  var blockHTML = '';
+                  var itemsHTML = '';
+                  
+                  if (cols === 1) {
+                    for (var i = 0; i < chunk.length; i++) {
+                      var testName = (typeof chunk[i] === 'object' && chunk[i] !== null) ? (chunk[i].testName || chunk[i].name || '') : chunk[i];
+                      itemsHTML += '<tr style="border-bottom: 1px solid #800020;">' +
+                        '<td style="padding: 4px 8px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020; width: 40px;">' + (start + i + 1) + '</td>' +
+                        '<td style="padding: 4px 8px; font-weight: 700; color: #1E293B;">' + testName + '</td>' +
+                      '</tr>';
+                    }
+                    blockHTML = '<div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff; margin-bottom: 8px; page-break-inside: avoid; break-inside: avoid;">' +
+                      '<div style="background: #FDF2F4; padding: 4px 8px; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Prescribed Tests ' + (start > 0 ? '(Contd.)' : '') + '</div>' +
+                      '<table class="rx-table" style="width: 100%; border: none;">' +
+                        '<tbody>' + itemsHTML + '</tbody>' +
+                      '</table>' +
+                    '</div>';
+                  } else {
+                    for (var i = 0; i < chunk.length; i++) {
+                      var testName = (typeof chunk[i] === 'object' && chunk[i] !== null) ? (chunk[i].testName || chunk[i].name || '') : chunk[i];
+                      itemsHTML += '<div style="font-size: 10px; font-weight: 700; color: #334155; display: flex; gap: 6px; align-items: flex-start; padding: 2px 4px; border-bottom: 1px dashed #E2E8F0;">' +
+                        '<span style="color: #800020;">' + (start + i + 1) + '.</span>' +
+                        '<span style="word-break: break-word;">' + testName + '</span>' +
+                      '</div>';
+                    }
+                    blockHTML = '<div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff; margin-bottom: 8px; page-break-inside: avoid; break-inside: avoid;">' +
+                      '<div style="background: #FDF2F4; padding: 4px 8px; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Prescribed Tests ' + (start > 0 ? '(Contd.)' : '') + '</div>' +
+                      '<div style="padding: 6px; display: grid; grid-template-columns: repeat(' + cols + ', 1fr); gap: 6px 12px;">' + itemsHTML + '</div>' +
                     '</div>';
                   }
-                  return '<div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff; margin-bottom: 8px; page-break-inside: avoid; break-inside: avoid;">' +
-                    '<div style="background: #FDF2F4; padding: 4px 8px; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Prescribed Tests</div>' +
-                    '<div style="padding: 6px; display: grid; grid-template-columns: repeat(' + cols + ', 1fr); gap: 6px 12px;">' + itemsHTML + '</div>' +
-                  '</div>';
+                  blocks.push(blockHTML);
                 }
+                return blocks;
               }
 
-              function getMedicinesHTML(cols, compact) {
-                if (!medicines || medicines.length === 0) return '';
+              function getMedicinesBlocks(cols, compact) {
+                if (!medicines || medicines.length === 0) return [];
+                var blocks = [];
+                var chunkSize = cols === 1 ? 8 : (cols === 2 ? 12 : 18);
                 
-                if (cols === 1) {
-                  var rows = '';
-                  for (var i = 0; i < medicines.length; i++) {
-                    var m = medicines[i];
-                    var freq = 'Once a Day';
-                    var inst = 'After Food';
-                    if (m.instructions) {
-                      var parts = m.instructions.split('(');
-                      if (parts[0]) freq = parts[0].trim();
-                      if (parts[1]) inst = parts[1].replace(')', '').trim();
+                for (var start = 0; start < medicines.length; start += chunkSize) {
+                  var chunk = medicines.slice(start, start + chunkSize);
+                  var blockHTML = '';
+                  
+                  if (cols === 1) {
+                    var rows = '';
+                    for (var i = 0; i < chunk.length; i++) {
+                      var m = chunk[i];
+                      var freq = 'Once a Day';
+                      var inst = 'After Food';
+                      if (m.instructions) {
+                        var parts = m.instructions.split('(');
+                        if (parts[0]) freq = parts[0].trim();
+                        if (parts[1]) inst = parts[1].replace(')', '').trim();
+                      }
+                      rows += '<tr style="border-bottom: 1px solid #800020; font-size: ' + (compact ? '10px' : '11px') + ';">' +
+                        '<td style="padding: ' + (compact ? '4px 6px' : '6px 8px') + '; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">' + (start + i + 1) + '</td>' +
+                        '<td style="padding: ' + (compact ? '4px 6px' : '6px 8px') + '; border-right: 1px solid #800020; font-weight: 700; color: #1E293B; word-wrap: break-word; word-break: break-word; min-width: 150px;">' + m.medicine + '</td>' +
+                        '<td style="padding: ' + (compact ? '4px 6px' : '6px 8px') + '; text-align: center; border-right: 1px solid #800020; color: #334155;">' + m.dosage + '</td>' +
+                        '<td style="padding: ' + (compact ? '4px 6px' : '6px 8px') + '; text-align: center; border-right: 1px solid #800020; color: #334155;">' + m.duration + '</td>' +
+                        '<td style="padding: ' + (compact ? '4px 6px' : '6px 8px') + '; text-align: center; border-right: 1px solid #800020; color: #800020; font-weight: 600;">' + freq + '</td>' +
+                        '<td style="padding: ' + (compact ? '4px 6px' : '6px 8px') + '; color: #334155; word-wrap: break-word; word-break: break-word;">' + inst + '</td>' +
+                      '</tr>';
                     }
-                    rows += '<tr style="border-bottom: 1px solid #800020; font-size: ' + (compact ? '10px' : '11px') + ';">' +
-                      '<td style="padding: ' + (compact ? '4px 6px' : '6px 8px') + '; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">' + (i+1) + '</td>' +
-                      '<td style="padding: ' + (compact ? '4px 6px' : '6px 8px') + '; border-right: 1px solid #800020; font-weight: 700; color: #1E293B; word-wrap: break-word; word-break: break-word; min-width: 150px;">' + m.medicine + '</td>' +
-                      '<td style="padding: ' + (compact ? '4px 6px' : '6px 8px') + '; text-align: center; border-right: 1px solid #800020; color: #334155;">' + m.dosage + '</td>' +
-                      '<td style="padding: ' + (compact ? '4px 6px' : '6px 8px') + '; text-align: center; border-right: 1px solid #800020; color: #334155;">' + m.duration + '</td>' +
-                      '<td style="padding: ' + (compact ? '4px 6px' : '6px 8px') + '; text-align: center; border-right: 1px solid #800020; color: #800020; font-weight: 600;">' + freq + '</td>' +
-                      '<td style="padding: ' + (compact ? '4px 6px' : '6px 8px') + '; color: #334155; word-wrap: break-word; word-break: break-word;">' + inst + '</td>' +
-                    '</tr>';
-                  }
-                  return '<div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff; margin-bottom: 8px; page-break-inside: avoid; break-inside: avoid;">' +
-                    '<div style="background: #FDF2F4; padding: ' + (compact ? '4px 8px' : '6px 10px') + '; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: ' + (compact ? '11px' : '12px') + '; font-weight: 850; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">Rx (Prescribed Medicines)</div>' +
-                    '<table class="rx-table" style="width: 100%; border: none;">' +
-                      '<thead><tr style="background: #FDF2F4; border-bottom: 1.5px solid #800020; font-size: ' + (compact ? '10px' : '11px') + ';"><th style="width: 40px; padding: 4px;">S.No.</th><th style="padding: 4px; text-align: left;">Medicine Name</th><th style="width: 60px; padding: 4px;">Dose</th><th style="width: 70px; padding: 4px;">Duration</th><th style="width: 90px; padding: 4px;">Frequency</th><th style="padding: 4px; text-align: left;">Instructions</th></tr></thead>' +
-                      '<tbody>' + rows + '</tbody>' +
-                    '</table>' +
-                  '</div>';
-                } else {
-                  var cards = '';
-                  for (var i = 0; i < medicines.length; i++) {
-                    var m = medicines[i];
-                    var freq = 'Once a Day';
-                    var inst = 'After Food';
-                    if (m.instructions) {
-                      var parts = m.instructions.split('(');
-                      if (parts[0]) freq = parts[0].trim();
-                      if (parts[1]) inst = parts[1].replace(')', '').trim();
+                    blockHTML = '<div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff; margin-bottom: 8px; page-break-inside: avoid; break-inside: avoid;">' +
+                      '<div style="background: #FDF2F4; padding: ' + (compact ? '4px 8px' : '6px 10px') + '; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: ' + (compact ? '11px' : '12px') + '; font-weight: 850; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">Rx (Prescribed Medicines) ' + (start > 0 ? '(Contd.)' : '') + '</div>' +
+                      '<table class="rx-table" style="width: 100%; border: none;">' +
+                        '<thead><tr style="background: #FDF2F4; border-bottom: 1.5px solid #800020; font-size: ' + (compact ? '10px' : '11px') + ';"><th style="width: 40px; padding: 4px;">S.No.</th><th style="padding: 4px; text-align: left;">Medicine Name</th><th style="width: 60px; padding: 4px;">Dose</th><th style="width: 70px; padding: 4px;">Duration</th><th style="width: 90px; padding: 4px;">Frequency</th><th style="padding: 4px; text-align: left;">Instructions</th></tr></thead>' +
+                        '<tbody>' + rows + '</tbody>' +
+                      '</table>' +
+                    '</div>';
+                  } else {
+                    var cards = '';
+                    for (var i = 0; i < chunk.length; i++) {
+                      var m = chunk[i];
+                      var freq = 'Once a Day';
+                      var inst = 'After Food';
+                      if (m.instructions) {
+                        var parts = m.instructions.split('(');
+                        if (parts[0]) freq = parts[0].trim();
+                        if (parts[1]) inst = parts[1].replace(')', '').trim();
+                      }
+                      cards += '<div style="border: 1px solid #E2E8F0; border-radius: 6px; padding: ' + (compact ? '4px 6px' : '6px 8px') + '; background: #fff; font-size: ' + (compact ? '10px' : '10.5px') + '; display: flex; flex-direction: column; gap: 2px; page-break-inside: avoid; break-inside: avoid;">' +
+                        '<div style="font-weight: 800; color: #1E293B; display: flex; justify-content: space-between; gap: 4px; border-bottom: 1px solid #F1F5F9; padding-bottom: 3px;">' +
+                          '<span style="word-wrap: break-word; word-break: break-word;">' + (start + i + 1) + '. ' + m.medicine + '</span>' +
+                          '<span style="color: #800020; flex-shrink: 0;">' + m.dosage + '</span>' +
+                        '</div>' +
+                        '<div style="display: flex; justify-content: space-between; font-size: 9px; color: #475569; font-weight: 600; margin-top: 2px;">' +
+                          '<span>' + m.duration + '</span>' +
+                          '<span>' + freq + '</span>' +
+                        '</div>' +
+                        '<div style="color: #64748b; font-size: 8.5px; font-style: italic; word-wrap: break-word; word-break: break-word;">' + inst + '</div>' +
+                      '</div>';
                     }
-                    cards += '<div style="border: 1px solid #E2E8F0; border-radius: 6px; padding: ' + (compact ? '4px 6px' : '6px 8px') + '; background: #fff; font-size: ' + (compact ? '10px' : '10.5px') + '; display: flex; flex-direction: column; gap: 2px; page-break-inside: avoid; break-inside: avoid;">' +
-                      '<div style="font-weight: 800; color: #1E293B; display: flex; justify-content: space-between; gap: 4px; border-bottom: 1px solid #F1F5F9; padding-bottom: 3px;">' +
-                        '<span style="word-wrap: break-word; word-break: break-word;">' + (i+1) + '. ' + m.medicine + '</span>' +
-                        '<span style="color: #800020; flex-shrink: 0;">' + m.dosage + '</span>' +
-                      '</div>' +
-                      '<div style="display: flex; justify-content: space-between; font-size: 9px; color: #475569; font-weight: 600; margin-top: 2px;">' +
-                        '<span>' + m.duration + '</span>' +
-                        '<span>' + freq + '</span>' +
-                      '</div>' +
-                      '<div style="color: #64748b; font-size: 8.5px; font-style: italic; word-wrap: break-word; word-break: break-word;">' + inst + '</div>' +
+                    blockHTML = '<div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff; margin-bottom: 8px; page-break-inside: avoid; break-inside: avoid;">' +
+                      '<div style="background: #FDF2F4; padding: ' + (compact ? '4px 8px' : '6px 10px') + '; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: ' + (compact ? '11px' : '12px') + '; font-weight: 850; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">Rx (Prescribed Medicines) ' + (start > 0 ? '(Contd.)' : '') + '</div>' +
+                      '<div style="padding: 8px; display: grid; grid-template-columns: repeat(' + cols + ', 1fr); gap: 6px;">' + cards + '</div>' +
                     '</div>';
                   }
-                  return '<div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff; margin-bottom: 8px; page-break-inside: avoid; break-inside: avoid;">' +
-                    '<div style="background: #FDF2F4; padding: ' + (compact ? '4px 8px' : '6px 10px') + '; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: ' + (compact ? '11px' : '12px') + '; font-weight: 850; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">Rx (Prescribed Medicines)</div>' +
-                    '<div style="padding: 8px; display: grid; grid-template-columns: repeat(' + cols + ', 1fr); gap: 6px;">' + cards + '</div>' +
-                  '</div>';
+                  blocks.push(blockHTML);
                 }
+                return blocks;
               }
 
               // Function to dynamically measure standard and compact layout heights
@@ -1627,7 +1646,10 @@ const DoctorDashboard = () => {
                 measureContainer.style.fontSize = globalFontSizePct + '%';
                 document.body.appendChild(measureContainer);
 
-                measureContainer.innerHTML = getDiagnosisHTML() + getSoapNotesHTML() + getMedicinesHTML(colsMed, compact) + getTestsHTML(colsTest) + getSignatureBlockHTML();
+                var medHTML = getMedicinesBlocks(colsMed, compact).join('');
+                var testHTML = getTestsBlocks(colsTest).join('');
+
+                measureContainer.innerHTML = getDiagnosisHTML() + medHTML + testHTML + getSignatureBlockHTML();
 
                 const h = measureContainer.offsetHeight;
                 document.body.removeChild(measureContainer);
@@ -1705,9 +1727,10 @@ const DoctorDashboard = () => {
               var activePage = createNewPage();
               var activeContentArea = activePage.querySelector('.content-area');
 
-              // Create temporary container for parsing elements
               const elementsContainer = document.createElement('div');
-              elementsContainer.innerHTML = getDiagnosisHTML() + getMedicinesHTML(bestColsMed, bestCompact) + getTestsHTML(bestColsTest) + getSignatureBlockHTML();
+              var medHTML = getMedicinesBlocks(bestColsMed, bestCompact).join('');
+              var testHTML = getTestsBlocks(bestColsTest).join('');
+              elementsContainer.innerHTML = getDiagnosisHTML() + medHTML + testHTML + getSignatureBlockHTML();
 
               const children = Array.from(elementsContainer.children);
               var pageSpaceUsed = 0;
