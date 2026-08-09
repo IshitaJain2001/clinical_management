@@ -1371,7 +1371,7 @@ const DoctorDashboard = () => {
                 '<div class="' + presetClass + '">' +
                   logoHTML +
                   '<div style="flex-grow: 1;">' +
-                    '<h1 style="margin: 0; color: ' + accentColor + '; font-family: \'Outfit\', sans-serif; font-size: 20px; font-weight: 900; text-transform: uppercase;">' + clinicName + '</h1>' +
+                    '<h1 style="margin: 0; color: ' + accentColor + '; font-family: \"Outfit\", sans-serif; font-size: 20px; font-weight: 900; text-transform: uppercase;">' + clinicName + '</h1>' +
                     '<p style="margin: 2px 0; color: #334155; font-size: 9px; font-weight: 700; text-transform: uppercase;">' + subtitle + '</p>' +
                     '<p style="margin: 0; color: #64748b; font-size: 8px; font-weight: 600;">E-mail: info@' + clinicName.toLowerCase().replace(/\s+/g, '') + '.com &nbsp;&nbsp;•&nbsp;&nbsp; OPD Portal</p>' +
                   '</div>' +
@@ -1405,7 +1405,7 @@ const DoctorDashboard = () => {
             }
 
             function getFooterHTML() {
-              return '<div style="text-align: center; font-family: \'Outfit\', sans-serif; font-size: 10px; font-weight: bold; color: #800020; border-top: 1px solid #E2E8F0; padding-top: 6px; background: white;">' +
+              return '<div style="text-align: center; font-family: \"Outfit\", sans-serif; font-size: 10px; font-weight: bold; color: #800020; border-top: 1px solid #E2E8F0; padding-top: 6px; background: white;">' +
                 'Thank you for trusting us with your health. Get well soon!' +
               '</div>';
             }
@@ -1422,7 +1422,7 @@ const DoctorDashboard = () => {
                 '</div>' +
                 '<div style="text-align: center; width: 180px; font-size: 10px;">' +
                   '<div style="border-bottom: 1px solid #800020; margin-bottom: 4px; height: 35px; position: relative;">' +
-                    '<span style="font-family: \'Brush Script MT\', cursive, sans-serif; font-size: 20px; color: #800020; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);">' + doctorName.replace('Dr. ', '') + '</span>' +
+                    '<span style="font-family: \"Brush Script MT\", cursive, sans-serif; font-size: 20px; color: #800020; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);">' + doctorName.replace('Dr. ', '') + '</span>' +
                   '</div>' +
                   '<div style="color: #800020; font-weight: 700; font-size: 11px;">' + doctorName + '</div>' +
                   '<div style="color: #475569; font-weight: 600; font-size: 9px;">' + doctorDesignation + '</div>' +
@@ -1495,14 +1495,14 @@ const DoctorDashboard = () => {
                 rightCol.style.gap = '12px';
                 
                 var diagnosisHTML = '<div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff;">' +
-                  '<div style="background: #FDF2F4; padding: 5px 8px; border-bottom: 1.5px solid #800020; font-family: \'Outfit\', sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Diagnosis</div>' +
+                  '<div style="background: #FDF2F4; padding: 5px 8px; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Diagnosis</div>' +
                   '<div style="padding: 8px; font-size: 10.5px; font-weight: 600; color: #1E293B;">' + (diagnosis !== '—' ? diagnosis : 'General Clinical Observation') + '</div>' +
                 '</div>';
                 leftCol.innerHTML += diagnosisHTML;
 
                 if (soapNotes && soapNotes !== '—') {
                   var soapHTML = '<div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff;">' +
-                    '<div style="background: #FDF2F4; padding: 5px 8px; border-bottom: 1.5px solid #800020; font-family: \'Outfit\', sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Clinical Notes</div>' +
+                    '<div style="background: #FDF2F4; padding: 5px 8px; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Clinical Notes</div>' +
                     '<div style="padding: 8px; font-size: 10px; font-weight: 500; color: #334155; white-space: pre-wrap;">' + soapNotes + '</div>' +
                   '</div>';
                   leftCol.innerHTML += soapHTML;
@@ -1514,7 +1514,7 @@ const DoctorDashboard = () => {
                     testItemsHTML += '<div style="font-weight: 700; color: #1E293B; margin-bottom: 4px;">' + (i+1) + '. ' + tests[i] + '</div>';
                   }
                   var labsHTML = '<div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff;">' +
-                    '<div style="background: #FDF2F4; padding: 5px 8px; border-bottom: 1.5px solid #800020; font-family: \'Outfit\', sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Prescribed Tests</div>' +
+                    '<div style="background: #FDF2F4; padding: 5px 8px; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Prescribed Tests</div>' +
                     '<div style="padding: 6px; font-size: 10px;">' + testItemsHTML + '</div>' +
                   '</div>';
                   leftCol.innerHTML += labsHTML;
@@ -1549,7 +1549,7 @@ const DoctorDashboard = () => {
                   '</div>';
                 }
 
-                medContainer.innerHTML = '<div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: \'Outfit\', sans-serif; font-size: 12px; font-weight: 850; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">Rx (Prescribed Medicines)</div>' +
+                medContainer.innerHTML = '<div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: 12px; font-weight: 850; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">Rx (Prescribed Medicines)</div>' +
                   '<div style="padding: 10px; display: flex; flex-direction: column; gap: 8px;">' + medItemsHTML + '</div>';
                 rightCol.appendChild(medContainer);
                 
@@ -1563,7 +1563,7 @@ const DoctorDashboard = () => {
 
               } else if (activeTemplate === 'rx-list') {
                 var header = document.createElement('div');
-                header.innerHTML = '<div style="font-family: \'Outfit\', sans-serif; font-size: 13px; font-weight: 900; color: #800020; border-bottom: 2px solid #800020; padding: 2px 0 6px 0; margin-bottom: 12px; letter-spacing: 0.5px; text-transform: uppercase;">Clinical Rx List</div>';
+                header.innerHTML = '<div style="font-family: \"Outfit\", sans-serif; font-size: 13px; font-weight: 900; color: #800020; border-bottom: 2px solid #800020; padding: 2px 0 6px 0; margin-bottom: 12px; letter-spacing: 0.5px; text-transform: uppercase;">Clinical Rx List</div>';
                 contentArea.appendChild(header);
 
                 if (diagnosis !== '—') {
@@ -1587,7 +1587,7 @@ const DoctorDashboard = () => {
                   medRow.style.display = 'flex';
                   medRow.style.gap = '10px';
                   medRow.style.fontSize = '12px';
-                  medRow.innerHTML = '<span style="font-family: \'Outfit\', sans-serif; font-size: 16px; font-weight: 900; color: #800020; line-height: 1;">℞</span>' +
+                  medRow.innerHTML = '<span style="font-family: \"Outfit\", sans-serif; font-size: 16px; font-weight: 900; color: #800020; line-height: 1;">℞</span>' +
                     '<div style="flex-grow: 1; border-bottom: 1px solid #F1F5F9; padding-bottom: 6px;">' +
                       '<div style="display: flex; justify-content: space-between; font-weight: 800; color: #1E293B;">' +
                         '<span>' + m.medicine + '</span>' +
@@ -1620,7 +1620,7 @@ const DoctorDashboard = () => {
 
               } else if (activeTemplate === 'dense-grid') {
                 var mainHeader = document.createElement('div');
-                mainHeader.innerHTML = '<div style="font-family: \'Outfit\', sans-serif; font-size: 12px; font-weight: 900; color: #800020; margin-bottom: 10px; text-transform: uppercase;">Itemized Prescription Grid</div>';
+                mainHeader.innerHTML = '<div style="font-family: \"Outfit\", sans-serif; font-size: 12px; font-weight: 900; color: #800020; margin-bottom: 10px; text-transform: uppercase;">Itemized Prescription Grid</div>';
                 contentArea.appendChild(mainHeader);
 
                 var infoBar = document.createElement('div');
@@ -1686,14 +1686,14 @@ const DoctorDashboard = () => {
 
               } else {
                 var diagHTML = '<div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: #fff;">' +
-                  '<div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: \'Outfit\', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">DIAGNOSIS (Doctor\'s Observation)</div>' +
+                  '<div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">DIAGNOSIS (Doctor\'s Observation)</div>' +
                   '<div style="padding: 10px; font-size: 11.5px; color: #1E293B; line-height: 1.5; font-weight: 500;">' + (diagnosis !== '—' ? diagnosis : 'General clinical observation & routine consultation.') + '</div>' +
                 '</div>';
                 contentArea.innerHTML += diagHTML;
 
                 if (soapNotes && soapNotes !== '—') {
                   var soapHTML = '<div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: #fff;">' +
-                    '<div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: \'Outfit\', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">Clinical SOAP Notes</div>' +
+                    '<div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">Clinical SOAP Notes</div>' +
                     '<div style="padding: 10px; font-size: 11.5px; color: #334155; line-height: 1.5; font-weight: 500; white-space: pre-wrap;">' + soapNotes + '</div>' +
                   '</div>';
                   contentArea.innerHTML += soapHTML;
@@ -1737,7 +1737,7 @@ const DoctorDashboard = () => {
                   
                   var labsBox = document.createElement('div');
                   labsBox.style.marginTop = '15px';
-                  labsBox.innerHTML = '<div style="font-family: \'Outfit\', sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px;">PRESCRIBED TESTS</div>' +
+                  labsBox.innerHTML = '<div style="font-family: \"Outfit\", sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px;">PRESCRIBED TESTS</div>' +
                     '<table class="rx-table" style="width: 50%;"><thead><tr><th style="width: 50px;">S. No.</th><th style="text-align: left;">Test Name</th></tr></thead><tbody>' + labRowsHTML + '</tbody></table>';
                   contentArea.appendChild(labsBox);
                 }
