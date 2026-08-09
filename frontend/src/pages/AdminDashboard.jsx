@@ -7035,80 +7035,57 @@ const AdminDashboard = () => {
 
                           {/* Actions Footer */}
                           <div className="staff-actions-footer">
-                            {isInactive ? (
-                              <>
-                                <button 
-                                  className="staff-action-pill-btn arrange-btn"
-                                  onClick={() => {
-                                    showFeedback(`Scheduling cover for ${item.name}...`, 'success');
-                                  }}
-                                >
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px' }}><polyline points="20 6 9 17 4 12"/></svg>
-                                  Arrange cover
-                                </button>
-                                <button 
-                                  className="staff-action-pill-btn"
-                                  onClick={() => setViewingStaff(item)}
-                                >
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px' }}><circle cx="12" cy="12" r="10"/><line x1="12" x2="12.01" y1="16" y2="16"/><path d="M12 8a2 2 0 0 1 2 2c0 .991-.807 1.312-1.32 1.637C12.16 12.014 12 12.518 12 13"/></svg>
-                                  View
-                                </button>
-                              </>
-                            ) : (
-                              <>
-                                <button className="staff-action-pill-btn" onClick={() => showFeedback(`Sending notification ping to ${item.name}...`, 'success')}>
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-                                  Notify
-                                </button>
-                                <button className="staff-action-pill-btn" onClick={() => setViewingStaff(item)}>
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-                                  View profile
-                                </button>
-                                <button 
-                                  className="staff-action-pill-btn" 
-                                  onClick={() => {
-                                    setEditingStaff(item);
-                                    setEditStaffFields({
-                                      name: item.name,
-                                      role: item.role,
-                                      specialty: item.dept || '',
-                                      max_slots: item.max_slots || 10,
-                                      password: '',
-                                      email: item.email || '',
-                                      phone: item.phone || '',
-                                      consultationFee: item.consultationFee !== undefined ? item.consultationFee : 500,
-                                      weeklyOff: item.weeklyOff || 'Sunday',
-                                      shiftName: item.shiftName || 'General Shift',
-                                      doctorSlots: item.doctorSlots || []
-                                    });
-                                  }}
-                                >
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                                  Edit
-                                </button>
-                                <button 
-                                  className="staff-action-pill-btn" 
-                                  onClick={() => {
-                                    setPmSelectedStaffId(item.name);
-                                    setActiveTab('permissions');
-                                  }}
-                                >
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-                                  Permissions
-                                </button>
-                                {item.role !== 'admin' && (
-                                  <button 
-                                    className="staff-action-pill-btn deactivate-btn"
-                                    onClick={() => {
-                                      setSelectedStaffToRevoke({ id: item.id || item._id, name: item.name });
-                                      setShowRevokeConfirm(true);
-                                    }}
-                                  >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" x2="19.07" y1="4.93" y2="19.07"/></svg>
-                                    Deactivate
-                                  </button>
-                                )}
-                              </>
+                            <button className="staff-action-pill-btn" onClick={() => showFeedback(`Sending notification ping to ${item.name}...`, 'success')}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                              Notify
+                            </button>
+                            <button className="staff-action-pill-btn" onClick={() => setViewingStaff(item)}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                              View profile
+                            </button>
+                            <button 
+                              className="staff-action-pill-btn" 
+                              onClick={() => {
+                                setEditingStaff(item);
+                                setEditStaffFields({
+                                  name: item.name,
+                                  role: item.role,
+                                  specialty: item.dept || '',
+                                  max_slots: item.max_slots || 10,
+                                  password: '',
+                                  email: item.email || '',
+                                  phone: item.phone || '',
+                                  consultationFee: item.consultationFee !== undefined ? item.consultationFee : 500,
+                                  weeklyOff: item.weeklyOff || 'Sunday',
+                                  shiftName: item.shiftName || 'General Shift',
+                                  doctorSlots: item.doctorSlots || []
+                                });
+                              }}
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                              Edit
+                            </button>
+                            <button 
+                              className="staff-action-pill-btn" 
+                              onClick={() => {
+                                setPmSelectedStaffId(item.name);
+                                setActiveTab('permissions');
+                              }}
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                              Permissions
+                            </button>
+                            {item.role !== 'admin' && (
+                              <button 
+                                className="staff-action-pill-btn deactivate-btn"
+                                onClick={() => {
+                                  setSelectedStaffToRevoke({ id: item.id || item._id, name: item.name });
+                                  setShowRevokeConfirm(true);
+                                }}
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" x2="19.07" y1="4.93" y2="19.07"/></svg>
+                                Deactivate
+                              </button>
                             )}
                           </div>
                         </div>
