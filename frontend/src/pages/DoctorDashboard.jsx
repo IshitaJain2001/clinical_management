@@ -1686,7 +1686,7 @@ const DoctorDashboard = () => {
 
               } else {
                 var diagHTML = '<div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: #fff;">' +
-                  '<div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">DIAGNOSIS (Doctor\'s Observation)</div>' +
+                  '<div style="background: #FDF2F4; padding: 6px 10px; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: 12px; font-weight: 800; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">DIAGNOSIS (Clinical Observation)</div>' +
                   '<div style="padding: 10px; font-size: 11.5px; color: #1E293B; line-height: 1.5; font-weight: 500;">' + (diagnosis !== '—' ? diagnosis : 'General clinical observation & routine consultation.') + '</div>' +
                 '</div>';
                 contentArea.innerHTML += diagHTML;
