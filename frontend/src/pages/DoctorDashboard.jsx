@@ -1109,6 +1109,7 @@ const DoctorDashboard = () => {
     try {
       const res = await api.get('/admin/letterhead');
       let letterheadUrl = res.data?.letterheadUrl || "";
+      letterheadUrl = letterheadUrl.replace(/\\/g, '/');
       if (letterheadUrl && !letterheadUrl.startsWith('http://') && !letterheadUrl.startsWith('https://') && !letterheadUrl.startsWith('data:')) {
         const apiURL = import.meta.env.VITE_API_URL || '';
         const backendBase = apiURL ? apiURL.replace('/api', '') : 'http://localhost:5000';
@@ -1436,15 +1437,10 @@ const DoctorDashboard = () => {
               page.className = 'page-container';
               
               if (hasCustomLetterhead) {
-                const bg = document.createElement('img');
-                bg.src = letterheadUrl;
-                bg.style.position = 'absolute';
-                bg.style.top = '0';
-                bg.style.left = '0';
-                bg.style.width = '210mm';
-                bg.style.height = '297mm';
-                bg.style.zIndex = '-1';
-                page.appendChild(bg);
+                page.style.backgroundImage = 'url(' + letterheadUrl + ')';
+                page.style.backgroundSize = 'contain';
+                page.style.backgroundPosition = 'center top';
+                page.style.backgroundRepeat = 'no-repeat';
               }
               
               const headerContainer = document.createElement('div');
