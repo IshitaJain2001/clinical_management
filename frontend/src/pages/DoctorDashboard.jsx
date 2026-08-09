@@ -1324,12 +1324,12 @@ const DoctorDashboard = () => {
             const bottomSpacer = ${parseInt(customSettings.bottomSpacer, 10) || 28};
             const initialFontSize = ${parseInt(customSettings.fontSize, 10) || 100};
 
-            const patientName = "${cleanField(selectedPatient?.name)}";
-            const patientAge = "${selectedPatient?.age ? `${selectedPatient.age} Yrs` : '—'}";
-            const patientGender = "${cleanField(selectedPatient?.gender)}";
+            const patientName = "${cleanField(item.patient?.name || selectedPatient?.name)}";
+            const patientAge = "${item.patient?.age ? `${item.patient.age} Yrs` : (selectedPatient?.age ? `${selectedPatient.age} Yrs` : '—')}";
+            const patientGender = "${cleanField(item.patient?.gender || selectedPatient?.gender)}";
             const rxDate = "${cleanField(item.date || new Date().toLocaleDateString('en-IN'))}";
-            const patientContact = "${cleanField(selectedPatient?.contact)}";
-            const patientAddress = "${cleanField(selectedPatient?.address)}";
+            const patientContact = "${cleanField(item.patient?.contact || selectedPatient?.contact)}";
+            const patientAddress = "${cleanField(item.patient?.address || selectedPatient?.address)}";
             const regNo = "${cleanField(item.originalApp?.regNo)}";
 
             const doctorName = "${cleanField(item.doctor || user.name)}";
@@ -1415,14 +1415,20 @@ const DoctorDashboard = () => {
             }
 
             function getSignatureBlockHTML() {
-              return '<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 25px; min-height: 80px; page-break-inside: avoid; break-inside: avoid;">' +
-                '<div style="font-size: 10px; line-height: 1.4; max-width: 60%;">' +
-                  '<div style="color: #800020; font-weight: 800; font-size: 10.5px; margin-bottom: 2px; text-transform: uppercase;">Note :</div>' +
-                  '<ul style="padding-left: 10px; margin: 0; list-style-type: square; color: #334155; font-weight: 600;">' +
+              var noteContentHTML = '';
+              if (soapNotes && soapNotes !== '—' && soapNotes.trim() !== '') {
+                noteContentHTML = '<div style=\"color: #334155; font-weight: 600; white-space: pre-wrap; line-height: 1.4;\">' + soapNotes + '</div>';
+              } else {
+                noteContentHTML = '<ul style=\"padding-left: 10px; margin: 0; list-style-type: square; color: #334155; font-weight: 600;\">' +
                     '<li>Take medicines as prescribed.</li>' +
                     '<li>Complete full course of antibiotics.</li>' +
                     '<li>Drink plenty of fluids and rest.</li>' +
-                  '</ul>' +
+                  '</ul>';
+              }
+              return '<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 25px; min-height: 80px; page-break-inside: avoid; break-inside: avoid;">' +
+                '<div style="font-size: 10px; line-height: 1.4; max-width: 60%;">' +
+                  '<div style="color: #800020; font-weight: 800; font-size: 10.5px; margin-bottom: 2px; text-transform: uppercase;">Note :</div>' +
+                  noteContentHTML +
                 '</div>' +
                 '<div style="text-align: center; width: 180px; font-size: 10px;">' +
                   '<div style="border-bottom: 1px solid #800020; margin-bottom: 4px; height: 35px; position: relative;">' +
@@ -1524,9 +1530,10 @@ const DoctorDashboard = () => {
                 var itemsHTML = '';
                 if (cols === 1) {
                   for (var i = 0; i < tests.length; i++) {
+                    var testName = (typeof tests[i] === 'object' && tests[i] !== null) ? (tests[i].testName || tests[i].name || '') : tests[i];
                     itemsHTML += '<tr style="border-bottom: 1px solid #800020;">' +
                       '<td style="padding: 4px 8px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020; width: 40px;">' + (i+1) + '</td>' +
-                      '<td style="padding: 4px 8px; font-weight: 700; color: #1E293B;">' + tests[i] + '</td>' +
+                      '<td style="padding: 4px 8px; font-weight: 700; color: #1E293B;">' + testName + '</td>' +
                     '</tr>';
                   }
                   return '<div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff; margin-bottom: 8px; page-break-inside: avoid; break-inside: avoid;">' +
@@ -1537,9 +1544,10 @@ const DoctorDashboard = () => {
                   '</div>';
                 } else {
                   for (var i = 0; i < tests.length; i++) {
+                    var testName = (typeof tests[i] === 'object' && tests[i] !== null) ? (tests[i].testName || tests[i].name || '') : tests[i];
                     itemsHTML += '<div style="font-size: 10px; font-weight: 700; color: #334155; display: flex; gap: 6px; align-items: flex-start; padding: 2px 4px; border-bottom: 1px dashed #E2E8F0;">' +
                       '<span style="color: #800020;">' + (i+1) + '.</span>' +
-                      '<span style="word-break: break-word;">' + tests[i] + '</span>' +
+                      '<span style="word-break: break-word;">' + testName + '</span>' +
                     '</div>';
                   }
                   return '<div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff; margin-bottom: 8px; page-break-inside: avoid; break-inside: avoid;">' +
@@ -1699,7 +1707,7 @@ const DoctorDashboard = () => {
 
               // Create temporary container for parsing elements
               const elementsContainer = document.createElement('div');
-              elementsContainer.innerHTML = getDiagnosisHTML() + getSoapNotesHTML() + getMedicinesHTML(bestColsMed, bestCompact) + getTestsHTML(bestColsTest) + getSignatureBlockHTML();
+              elementsContainer.innerHTML = getDiagnosisHTML() + getMedicinesHTML(bestColsMed, bestCompact) + getTestsHTML(bestColsTest) + getSignatureBlockHTML();
 
               const children = Array.from(elementsContainer.children);
               var pageSpaceUsed = 0;
@@ -3435,6 +3443,7 @@ const DoctorDashboard = () => {
     const { appointment, patient, prescription, labs } = data;
     
     const printItem = {
+      patient: patient,
       items: (prescription?.items || []).map(m => ({
         medicine: m.medicine || m.name,
         dosage: m.dosage || m.dose,
