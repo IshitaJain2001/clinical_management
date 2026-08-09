@@ -1485,7 +1485,7 @@ const DoctorDashboard = () => {
               dummyPage.style.position = 'absolute';
               dummyPage.style.top = '-9999px';
               document.body.appendChild(dummyPage);
-              const a4Height = dummyPage.offsetHeight || 1122;
+              const a4Height = (dummyPage.offsetHeight > 500) ? dummyPage.offsetHeight : 1122;
               document.body.removeChild(dummyPage);
 
               const topSpacerPx = topSpacer * 3.78;
@@ -1500,8 +1500,8 @@ const DoctorDashboard = () => {
               const patientHeader = tempPage.querySelector('.letterhead-digital-container');
               const patientDetails = tempPage.querySelector('.content-area').previousElementSibling; // Patient details container
               
-              const patientDetailsHeight = (patientDetails ? patientDetails.offsetHeight : 0) + 15;
-              const digitalHeaderHeight = (patientHeader ? patientHeader.offsetHeight : 0);
+              const patientDetailsHeight = (patientDetails && patientDetails.offsetHeight > 20) ? (patientDetails.offsetHeight + 15) : 105;
+              const digitalHeaderHeight = (patientHeader && patientHeader.offsetHeight > 20) ? patientHeader.offsetHeight : 0;
               
               document.getElementById('pages-container').removeChild(tempPage);
 
