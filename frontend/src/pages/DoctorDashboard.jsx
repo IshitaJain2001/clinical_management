@@ -1320,6 +1320,9 @@ const DoctorDashboard = () => {
             const digitalPreset = "${customSettings.digitalPreset}";
             const hasCustomLetterhead = ${letterheadUrl ? 'true' : 'false'};
             const letterheadUrl = "${letterheadUrl || ''}";
+            const topSpacer = ${parseInt(customSettings.topSpacer, 10) || 38};
+            const bottomSpacer = ${parseInt(customSettings.bottomSpacer, 10) || 28};
+            const initialFontSize = ${parseInt(customSettings.fontSize, 10) || 100};
 
             const patientName = "${cleanField(selectedPatient?.name)}";
             const patientAge = "${selectedPatient?.age ? `${selectedPatient.age} Yrs` : '—'}";
@@ -1479,8 +1482,8 @@ const DoctorDashboard = () => {
               const a4Height = dummyPage.offsetHeight || 1122;
               document.body.removeChild(dummyPage);
 
-              const topSpacerPx = (parseInt(customSettings.topSpacer, 10) || 38) * 3.78;
-              const bottomSpacerPx = (parseInt(customSettings.bottomSpacer, 10) || 28) * 3.78;
+              const topSpacerPx = topSpacer * 3.78;
+              const bottomSpacerPx = bottomSpacer * 3.78;
 
               // We need to measure how much height patientDetails + digital header takes
               const tempPage = createNewPage();
@@ -1627,7 +1630,7 @@ const DoctorDashboard = () => {
               var bestColsMed = 1;
               var bestColsTest = 1;
               var bestCompact = false;
-              var bestFontSize = parseInt(customSettings.fontSize, 10) || 100;
+              var bestFontSize = initialFontSize;
               
               // We start with standard single-column and default font size
               var requiredH = measureHeight(1, 1, false, bestFontSize);
