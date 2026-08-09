@@ -1864,6 +1864,7 @@ const DoctorDashboard = () => {
   });
 
   const [showPrintSettingsModal, setShowPrintSettingsModal] = useState(false);
+  const [tempPrintSettings, setTempPrintSettings] = useState(null);
   const [printSettingsTarget, setPrintSettingsTarget] = useState(null); // { rx, item, callback }
 
   // Auto-save changes to localStorage
@@ -3194,6 +3195,7 @@ const DoctorDashboard = () => {
         executeSaveAndLockPrescription(finalSettings);
       }
     });
+    setTempPrintSettings(printSettings);
     setShowPrintSettingsModal(true);
   };
 
@@ -9295,7 +9297,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
       })()}
 
       {/* Visual Prescription formatting & Spacing Modal */}
-      {showPrintSettingsModal && printSettingsTarget && (
+      {showPrintSettingsModal && printSettingsTarget && tempPrintSettings && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000, padding: '20px' }}>
           <div className="glass-card" style={{ width: '100%', maxWidth: '680px', background: '#FFFFFF', padding: '0', borderRadius: '24px', maxHeight: '92vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 80px -15px rgba(15, 23, 42, 0.22)', border: '1px solid rgba(241, 245, 249, 0.9)' }}>
             
@@ -9331,15 +9333,15 @@ I have scanned the medical reference databases, but couldn't find a direct match
                   
                   {/* Template Card 1 */}
                   <div 
-                    onClick={() => setPrintSettings(prev => ({ ...prev, template: 'standard' }))}
+                    onClick={() => setTempPrintSettings(prev => ({ ...prev, template: 'standard' }))}
                     style={{
-                      border: printSettings.template === 'standard' ? '2px solid #800020' : '1.5px solid #E2E8F0',
-                      background: printSettings.template === 'standard' ? '#FFF5F6' : '#FFFFFF',
-                      borderRadius: '16px', padding: '14px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '14px', alignItems: 'center', boxShadow: printSettings.template === 'standard' ? '0 8px 16px -4px rgba(128, 0, 32, 0.12)' : 'none'
+                      border: tempPrintSettings.template === 'standard' ? '2px solid #800020' : '1.5px solid #E2E8F0',
+                      background: tempPrintSettings.template === 'standard' ? '#FFF5F6' : '#FFFFFF',
+                      borderRadius: '16px', padding: '14px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '14px', alignItems: 'center', boxShadow: tempPrintSettings.template === 'standard' ? '0 8px 16px -4px rgba(128, 0, 32, 0.12)' : 'none'
                     }}
                   >
                     {/* Visual Preview Miniature */}
-                    <div style={{ width: '60px', height: '80px', border: printSettings.template === 'standard' ? '1.5px solid #800020' : '1.5px solid #CBD5E1', borderRadius: '6px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', padding: '4px', boxSizing: 'border-box', flexShrink: 0, gap: '3px' }}>
+                    <div style={{ width: '60px', height: '80px', border: tempPrintSettings.template === 'standard' ? '1.5px solid #800020' : '1.5px solid #CBD5E1', borderRadius: '6px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', padding: '4px', boxSizing: 'border-box', flexShrink: 0, gap: '3px' }}>
                       <div style={{ height: '12px', borderBottom: '1px dashed #E2E8F0', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <div style={{ width: '22px', height: '2px', background: '#E2E8F0', borderRadius: '1px' }}></div>
                       </div>
@@ -9368,15 +9370,15 @@ I have scanned the medical reference databases, but couldn't find a direct match
 
                   {/* Template Card 2 */}
                   <div 
-                    onClick={() => setPrintSettings(prev => ({ ...prev, template: 'two-column' }))}
+                    onClick={() => setTempPrintSettings(prev => ({ ...prev, template: 'two-column' }))}
                     style={{
-                      border: printSettings.template === 'two-column' ? '2px solid #800020' : '1.5px solid #E2E8F0',
-                      background: printSettings.template === 'two-column' ? '#FFF5F6' : '#FFFFFF',
-                      borderRadius: '16px', padding: '14px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '14px', alignItems: 'center', boxShadow: printSettings.template === 'two-column' ? '0 8px 16px -4px rgba(128, 0, 32, 0.12)' : 'none'
+                      border: tempPrintSettings.template === 'two-column' ? '2px solid #800020' : '1.5px solid #E2E8F0',
+                      background: tempPrintSettings.template === 'two-column' ? '#FFF5F6' : '#FFFFFF',
+                      borderRadius: '16px', padding: '14px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '14px', alignItems: 'center', boxShadow: tempPrintSettings.template === 'two-column' ? '0 8px 16px -4px rgba(128, 0, 32, 0.12)' : 'none'
                     }}
                   >
                     {/* Visual Preview Miniature */}
-                    <div style={{ width: '60px', height: '80px', border: printSettings.template === 'two-column' ? '1.5px solid #800020' : '1.5px solid #CBD5E1', borderRadius: '6px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', padding: '4px', boxSizing: 'border-box', flexShrink: 0, gap: '3px' }}>
+                    <div style={{ width: '60px', height: '80px', border: tempPrintSettings.template === 'two-column' ? '1.5px solid #800020' : '1.5px solid #CBD5E1', borderRadius: '6px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', padding: '4px', boxSizing: 'border-box', flexShrink: 0, gap: '3px' }}>
                       <div style={{ height: '12px', borderBottom: '1px dashed #E2E8F0', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <div style={{ width: '22px', height: '2px', background: '#E2E8F0', borderRadius: '1px' }}></div>
                       </div>
@@ -9407,15 +9409,15 @@ I have scanned the medical reference databases, but couldn't find a direct match
 
                   {/* Template Card 3 */}
                   <div 
-                    onClick={() => setPrintSettings(prev => ({ ...prev, template: 'rx-list' }))}
+                    onClick={() => setTempPrintSettings(prev => ({ ...prev, template: 'rx-list' }))}
                     style={{
-                      border: printSettings.template === 'rx-list' ? '2px solid #800020' : '1.5px solid #E2E8F0',
-                      background: printSettings.template === 'rx-list' ? '#FFF5F6' : '#FFFFFF',
-                      borderRadius: '16px', padding: '14px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '14px', alignItems: 'center', boxShadow: printSettings.template === 'rx-list' ? '0 8px 16px -4px rgba(128, 0, 32, 0.12)' : 'none'
+                      border: tempPrintSettings.template === 'rx-list' ? '2px solid #800020' : '1.5px solid #E2E8F0',
+                      background: tempPrintSettings.template === 'rx-list' ? '#FFF5F6' : '#FFFFFF',
+                      borderRadius: '16px', padding: '14px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '14px', alignItems: 'center', boxShadow: tempPrintSettings.template === 'rx-list' ? '0 8px 16px -4px rgba(128, 0, 32, 0.12)' : 'none'
                     }}
                   >
                     {/* Visual Preview Miniature */}
-                    <div style={{ width: '60px', height: '80px', border: printSettings.template === 'rx-list' ? '1.5px solid #800020' : '1.5px solid #CBD5E1', borderRadius: '6px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', padding: '4px', boxSizing: 'border-box', flexShrink: 0, gap: '3px' }}>
+                    <div style={{ width: '60px', height: '80px', border: tempPrintSettings.template === 'rx-list' ? '1.5px solid #800020' : '1.5px solid #CBD5E1', borderRadius: '6px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', padding: '4px', boxSizing: 'border-box', flexShrink: 0, gap: '3px' }}>
                       <div style={{ height: '12px', borderBottom: '1px dashed #E2E8F0', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <div style={{ width: '22px', height: '2px', background: '#E2E8F0', borderRadius: '1px' }}></div>
                       </div>
@@ -9443,15 +9445,15 @@ I have scanned the medical reference databases, but couldn't find a direct match
 
                   {/* Template Card 4 */}
                   <div 
-                    onClick={() => setPrintSettings(prev => ({ ...prev, template: 'dense-grid' }))}
+                    onClick={() => setTempPrintSettings(prev => ({ ...prev, template: 'dense-grid' }))}
                     style={{
-                      border: printSettings.template === 'dense-grid' ? '2px solid #800020' : '1.5px solid #E2E8F0',
-                      background: printSettings.template === 'dense-grid' ? '#FFF5F6' : '#FFFFFF',
-                      borderRadius: '16px', padding: '14px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '14px', alignItems: 'center', boxShadow: printSettings.template === 'dense-grid' ? '0 8px 16px -4px rgba(128, 0, 32, 0.12)' : 'none'
+                      border: tempPrintSettings.template === 'dense-grid' ? '2px solid #800020' : '1.5px solid #E2E8F0',
+                      background: tempPrintSettings.template === 'dense-grid' ? '#FFF5F6' : '#FFFFFF',
+                      borderRadius: '16px', padding: '14px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '14px', alignItems: 'center', boxShadow: tempPrintSettings.template === 'dense-grid' ? '0 8px 16px -4px rgba(128, 0, 32, 0.12)' : 'none'
                     }}
                   >
                     {/* Visual Preview Miniature */}
-                    <div style={{ width: '60px', height: '80px', border: printSettings.template === 'dense-grid' ? '1.5px solid #800020' : '1.5px solid #CBD5E1', borderRadius: '6px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', padding: '4px', boxSizing: 'border-box', flexShrink: 0, gap: '3px' }}>
+                    <div style={{ width: '60px', height: '80px', border: tempPrintSettings.template === 'dense-grid' ? '1.5px solid #800020' : '1.5px solid #CBD5E1', borderRadius: '6px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', padding: '4px', boxSizing: 'border-box', flexShrink: 0, gap: '3px' }}>
                       <div style={{ height: '12px', borderBottom: '1px dashed #E2E8F0', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <div style={{ width: '22px', height: '2px', background: '#E2E8F0', borderRadius: '1px' }}></div>
                       </div>
@@ -9487,14 +9489,14 @@ I have scanned the medical reference databases, but couldn't find a direct match
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 700, color: '#475569', marginBottom: '6px' }}>
                     <span>Top Spacer (Header Space)</span>
-                    <span style={{ color: '#800020' }}><b>{printSettings.topSpacer} mm</b></span>
+                    <span style={{ color: '#800020' }}><b>{tempPrintSettings.topSpacer} mm</b></span>
                   </div>
                   <input 
                     type="range" 
                     min="0" 
                     max="100" 
-                    value={printSettings.topSpacer} 
-                    onChange={e => setPrintSettings(prev => ({ ...prev, topSpacer: parseInt(e.target.value, 10) }))}
+                    value={tempPrintSettings.topSpacer} 
+                    onChange={e => setTempPrintSettings(prev => ({ ...prev, topSpacer: parseInt(e.target.value, 10) }))}
                     style={{ width: '100%', accentColor: '#800020', cursor: 'pointer' }}
                   />
                   <p style={{ margin: '4px 0 0 0', fontSize: '10px', color: '#94A3B8', fontWeight: 500 }}>Slide to match the height of your physical letterhead header logo banner.</p>
@@ -9504,14 +9506,14 @@ I have scanned the medical reference databases, but couldn't find a direct match
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 700, color: '#475569', marginBottom: '6px' }}>
                     <span>Bottom Spacer (Footer Space)</span>
-                    <span style={{ color: '#800020' }}><b>{printSettings.bottomSpacer} mm</b></span>
+                    <span style={{ color: '#800020' }}><b>{tempPrintSettings.bottomSpacer} mm</b></span>
                   </div>
                   <input 
                     type="range" 
                     min="0" 
                     max="50" 
-                    value={printSettings.bottomSpacer} 
-                    onChange={e => setPrintSettings(prev => ({ ...prev, bottomSpacer: parseInt(e.target.value, 10) }))}
+                    value={tempPrintSettings.bottomSpacer} 
+                    onChange={e => setTempPrintSettings(prev => ({ ...prev, bottomSpacer: parseInt(e.target.value, 10) }))}
                     style={{ width: '100%', accentColor: '#800020', cursor: 'pointer' }}
                   />
                   <p style={{ margin: '4px 0 0 0', fontSize: '10px', color: '#94A3B8', fontWeight: 500 }}>Ensure signature or footer info doesn't overwrite your pre-printed footers.</p>
@@ -9521,15 +9523,15 @@ I have scanned the medical reference databases, but couldn't find a direct match
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 700, color: '#475569', marginBottom: '6px' }}>
                     <span>Print Font Size Scale</span>
-                    <span style={{ color: '#800020' }}><b>{printSettings.fontSize}%</b></span>
+                    <span style={{ color: '#800020' }}><b>{tempPrintSettings.fontSize}%</b></span>
                   </div>
                   <input 
                     type="range" 
                     min="80" 
                     max="120" 
                     step="5"
-                    value={printSettings.fontSize} 
-                    onChange={e => setPrintSettings(prev => ({ ...prev, fontSize: parseInt(e.target.value, 10) }))}
+                    value={tempPrintSettings.fontSize} 
+                    onChange={e => setTempPrintSettings(prev => ({ ...prev, fontSize: parseInt(e.target.value, 10) }))}
                     style={{ width: '100%', accentColor: '#800020', cursor: 'pointer' }}
                   />
                   <p style={{ margin: '4px 0 0 0', fontSize: '10px', color: '#94A3B8', fontWeight: 500 }}>Scale down to fit heavily cluttered documents onto a single A4 sheet.</p>
@@ -9540,8 +9542,8 @@ I have scanned the medical reference databases, but couldn't find a direct match
               <div>
                 <label style={{ display: 'block', fontSize: '11.5px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '6px' }}>DIGITAL LETTERHEAD PRESET (BACKUP)</label>
                 <select
-                  value={printSettings.digitalPreset}
-                  onChange={e => setPrintSettings(prev => ({ ...prev, digitalPreset: e.target.value }))}
+                  value={tempPrintSettings.digitalPreset}
+                  onChange={e => setTempPrintSettings(prev => ({ ...prev, digitalPreset: e.target.value }))}
                   style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #E2E8F0', fontSize: '13px', fontWeight: 600, color: '#1E293B', background: 'white' }}
                 >
                   <option value="none">No Digital Header (Print on Pre-printed Physical Paper)</option>
@@ -9568,8 +9570,9 @@ I have scanned the medical reference databases, but couldn't find a direct match
               <button 
                 onClick={() => {
                   setShowPrintSettingsModal(false);
+                  setPrintSettings(tempPrintSettings);
                   if (printSettingsTarget.callback) {
-                    printSettingsTarget.callback(printSettings);
+                    printSettingsTarget.callback(tempPrintSettings);
                   }
                   setPrintSettingsTarget(null);
                 }}
@@ -9954,6 +9957,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                                             handlePrintPrescription(item.rx, item, finalSettings);
                                           }
                                         });
+                                        setTempPrintSettings(printSettings);
                                         setShowPrintSettingsModal(true);
                                       }}
                                       style={{ margin: 0, padding: '4px 10px', fontSize: '10.5px', background: '#EFF6FF', color: '#1E40AF', border: '1px solid #BFDBFE', cursor: 'pointer', borderRadius: '8px', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '4px', transition: 'all 0.2s ease' }}
