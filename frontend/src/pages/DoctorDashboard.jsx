@@ -3252,7 +3252,7 @@ const DoctorDashboard = () => {
           reason: cleanDiagnosisText || 'OPD Consultation',
           status: 'Completed',
           diagnosis: cleanDiagnosisText,
-          notes: soap.assessment || ''
+          notes: soap.plan || soap.assessment || ''
         });
         resolvedAppId = appRes.data._id;
       }
@@ -3271,7 +3271,7 @@ const DoctorDashboard = () => {
           items: validMedicines,
           labs: validLabs,
           diagnosis: cleanDiagnosisText,
-          notes: soap.assessment || ''
+          notes: soap.plan || soap.assessment || ''
         });
         rxRecord = rxRes.data;
         if (rxRes && rxRes.data) {
@@ -3404,14 +3404,14 @@ const DoctorDashboard = () => {
       // Update the appointment status to Completed and add diagnosis
       const appToUpdate = appointmentIdToUse || editingAppointmentId;
       if (appToUpdate) {
-        setAppointments(prev => prev.map(a => a._id === appToUpdate ? { ...a, status: 'Completed', diagnosis: cleanDiagnosisText, notes: soap.assessment || '' } : a));
+        setAppointments(prev => prev.map(a => a._id === appToUpdate ? { ...a, status: 'Completed', diagnosis: cleanDiagnosisText, notes: soap.plan || soap.assessment || '' } : a));
         setCoverageQueue(prev => prev.map(q => q.id === appToUpdate ? { ...q, status: 'Completed' } : q));
         setCoverageAppts(prev => prev.map(a => a.id === appToUpdate ? { ...a, status: 'Completed' } : a));
 
         await api.put(`/appointments/${appToUpdate}`, { 
           status: 'Completed', 
           diagnosis: cleanDiagnosisText,
-          notes: soap.assessment || ''
+          notes: soap.plan || soap.assessment || ''
         });
       }
 
@@ -3421,7 +3421,7 @@ const DoctorDashboard = () => {
           items: validMedicines,
           tests: validLabs,
           diagnosis: cleanDiagnosisText,
-          notes: soap.assessment || '',
+          notes: soap.plan || soap.assessment || '',
           date: new Date().toLocaleDateString('en-IN'),
           doctor: user.name,
           originalApp: { regNo: resolvedAppId ? resolvedAppId.substring(0, 8).toUpperCase() : 'NEW' }
@@ -9846,6 +9846,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                           doctor: user.name || 'Dr. Sarah Jenkins',
                           diagnosis: diagStr,
                           vitals: `BP: ${vitals.bpSys}/${vitals.bpDia} mmHg | Pulse: ${vitals.pulse} bpm | SpO2: ${vitals.spo2}%`,
+                          notes: rx.notes || relatedApp?.notes || '',
                           items: (rx.items || []).map(item => ({
                             medicine: item.medicine,
                             dosage: item.dosage,
@@ -9873,6 +9874,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                           doctor: 'Dr. Sarah Jenkins',
                           diagnosis: visit.diagnosis,
                           vitals: '--',
+                          notes: visit.notes || '',
                           items: visit.items.map(item => ({
                             medicine: item.medicine,
                             dosage: item.dosage,
