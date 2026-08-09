@@ -3440,7 +3440,20 @@ const DoctorDashboard = () => {
         const detail = err.response?.data?.error || err.response?.data?.message || err.message;
         showToastNotification(`Background EMR sync error: ${detail}`, "error");
       })
-      .fi  // Natively triggers physical print / PDF generation via isolated print window
+      .finally(() => {
+        // Reset states
+        setSelectedPatient(null);
+        setActiveAppointmentId(null);
+        setEditingPrescriptionId(null);
+        setEditingAppointmentId(null);
+        setDiagnosisText('');
+        setMedicines([]);
+        setLabs([]);
+        setSoap({ subjective: '', objective: '', assessment: '', plan: '' });
+        setIsFinalized(false);
+        setIsSavingPrescription(false);
+      });
+  };
   const handlePrintSummary = (data) => {
     if (!data) return;
     const { appointment, patient, prescription, labs } = data;
