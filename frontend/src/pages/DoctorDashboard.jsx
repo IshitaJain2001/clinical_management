@@ -1518,8 +1518,8 @@ const DoctorDashboard = () => {
               document.getElementById('pages-container').removeChild(tempPage);
 
               // Available content height limits
-              const page1ContentLimit = a4Height - topSpacerPx - bottomSpacerPx - patientDetailsHeight - digitalHeaderHeight - 35;
-              const pageNContentLimit = a4Height - topSpacerPx - bottomSpacerPx - 35;
+              const page1ContentLimit = a4Height - topSpacerPx - bottomSpacerPx - patientDetailsHeight - digitalHeaderHeight - 70;
+              const pageNContentLimit = a4Height - topSpacerPx - bottomSpacerPx - 70;
               const contentHeightLimit = page1ContentLimit; // For measureHeight to use conservatively // 35px safety padding
 
               // Helpers to generate HTML content blocks
@@ -1542,7 +1542,7 @@ const DoctorDashboard = () => {
               function getTestsBlocks(cols) {
                 if (!tests || tests.length === 0) return [];
                 var blocks = [];
-                var chunkSize = cols === 1 ? 8 : 16;
+                var chunkSize = cols === 1 ? 6 : 10;
                 
                 for (var start = 0; start < tests.length; start += chunkSize) {
                   var chunk = tests.slice(start, start + chunkSize);
@@ -1584,7 +1584,7 @@ const DoctorDashboard = () => {
               function getMedicinesBlocks(cols, compact) {
                 if (!medicines || medicines.length === 0) return [];
                 var blocks = [];
-                var chunkSize = cols === 1 ? 8 : (cols === 2 ? 12 : 18);
+                var chunkSize = cols === 1 ? 6 : (cols === 2 ? 8 : 12);
                 
                 for (var start = 0; start < medicines.length; start += chunkSize) {
                   var chunk = medicines.slice(start, start + chunkSize);
