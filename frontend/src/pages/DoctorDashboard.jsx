@@ -1105,7 +1105,89 @@ const DoctorDashboard = () => {
     } catch (e) {
       console.warn("Failed to fetch past prescriptions from backend", e);
     }
-  };  const handlePrintPrescription = async (rx, item, customSettings = printSettings) => {
+  };  const detectLetterheadMargins = (url) => {
+    return new Promise((resolve) => {
+      if (!url) {
+        resolve({ top: 38, bottom: 28 });
+        return;
+      }
+      
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.src = url;
+      
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = 210;
+          canvas.height = 297;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, 210, 297);
+          
+          const imgData = ctx.getImageData(0, 0, 210, 297);
+          const data = imgData.data;
+          
+          // Detect Top Spacer (Header Logo/Banner Zone)
+          let lastHeaderY = 0;
+          const maxHeaderY = 130; // Scan top 44% of page
+          for (let y = 0; y < maxHeaderY; y++) {
+            let rowHasPixels = false;
+            for (let x = 0; x < 210; x++) {
+              const idx = (y * 210 + x) * 4;
+              const r = data[idx];
+              const g = data[idx + 1];
+              const b = data[idx + 2];
+              const a = data[idx + 3];
+              // Non-white and non-transparent
+              if (a < 250 || r < 250 || g < 250 || b < 250) {
+                rowHasPixels = true;
+                break;
+              }
+            }
+            if (rowHasPixels) {
+              lastHeaderY = y;
+            }
+          }
+          
+          // Detect Bottom Spacer (Footer Contacts/Design Zone)
+          let firstFooterY = 297;
+          const minFooterY = 200; // Scan bottom 33% of page
+          for (let y = 297; y >= minFooterY; y--) {
+            let rowHasPixels = false;
+            for (let x = 0; x < 210; x++) {
+              const idx = (y * 210 + x) * 4;
+              const r = data[idx];
+              const g = data[idx + 1];
+              const b = data[idx + 2];
+              const a = data[idx + 3];
+              if (a < 250 || r < 250 || g < 250 || b < 250) {
+                rowHasPixels = true;
+                break;
+              }
+            }
+            if (rowHasPixels) {
+              firstFooterY = y;
+            }
+          }
+          
+          // Calculate dynamic mm heights with appropriate safety offsets
+          const topMargin = Math.min(120, Math.max(15, lastHeaderY + 12));
+          const bottomMargin = Math.min(80, Math.max(15, (297 - firstFooterY) + 12));
+          
+          resolve({ top: topMargin, bottom: bottomMargin });
+        } catch (e) {
+          console.warn("Failed to automatically detect margins from canvas, using defaults", e);
+          resolve({ top: 38, bottom: 28 });
+        }
+      };
+      
+      img.onerror = () => {
+        resolve({ top: 38, bottom: 28 });
+      };
+    });
+  };
+
+  const handlePrintPrescription = async (rx, item, customSettings = printSettings) => {
     try {
       const res = await api.get('/admin/letterhead');
       let letterheadUrl = res.data?.letterheadUrl || "";
@@ -1117,6 +1199,17 @@ const DoctorDashboard = () => {
         const pathClean = letterheadUrl.startsWith('/') ? letterheadUrl : `/${letterheadUrl}`;
         letterheadUrl = `${baseClean}${pathClean}`;
       }
+      
+      // Auto-detect spacer margins based on letterhead image graphics
+      let topSpacerDetected = customSettings.topSpacer || 38;
+      let bottomSpacerDetected = customSettings.bottomSpacer || 28;
+      
+      if (letterheadUrl) {
+        const detected = await detectLetterheadMargins(letterheadUrl);
+        topSpacerDetected = detected.top;
+        bottomSpacerDetected = detected.bottom;
+      }
+      
       if (letterheadUrl) {
         letterheadUrl = await convertPdfToImage(letterheadUrl);
       }
@@ -1322,8 +1415,8 @@ const DoctorDashboard = () => {
             const digitalPreset = "${customSettings.digitalPreset}";
             const hasCustomLetterhead = ${letterheadUrl ? 'true' : 'false'};
             const letterheadUrl = "${letterheadUrl || ''}";
-            const topSpacer = ${parseInt(customSettings.topSpacer, 10) || 38};
-            const bottomSpacer = ${parseInt(customSettings.bottomSpacer, 10) || 28};
+            const topSpacer = ${topSpacerDetected};
+            const bottomSpacer = ${bottomSpacerDetected};
             const initialFontSize = ${parseInt(customSettings.fontSize, 10) || 100};
 
             const patientName = ${JSON.stringify(cleanField(item.patient?.name || selectedPatient?.name))};
