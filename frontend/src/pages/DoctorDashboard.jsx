@@ -1212,6 +1212,8 @@ const DoctorDashboard = () => {
             }
             .spacer-header {
               height: ${customSettings.topSpacer}mm;
+              min-height: ${customSettings.topSpacer}mm;
+              flex-shrink: 0;
               width: 100%;
             }
 
@@ -1455,15 +1457,19 @@ const DoctorDashboard = () => {
               if (isFirstPage) {
                 const headerContainer = document.createElement('div');
                 headerContainer.innerHTML = getHeaderHTML();
+                headerContainer.style.flexShrink = '0';
                 page.appendChild(headerContainer.firstElementChild || headerContainer);
                 
                 const patientContainer = document.createElement('div');
                 patientContainer.innerHTML = getPatientDetailsHTML();
+                patientContainer.style.flexShrink = '0';
                 page.appendChild(patientContainer);
               } else {
                 const spacer = document.createElement('div');
                 spacer.className = 'spacer-header';
                 spacer.style.height = topSpacer + 'mm';
+                spacer.style.minHeight = topSpacer + 'mm';
+                spacer.style.flexShrink = '0';
                 page.appendChild(spacer);
               }
               
