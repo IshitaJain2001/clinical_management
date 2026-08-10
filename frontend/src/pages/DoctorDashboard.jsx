@@ -1110,9 +1110,12 @@ const DoctorDashboard = () => {
       if (!url) return { top: 38, bottom: 28 };
       
       let finalSrc = url;
-      if (!url.startsWith('data:')) {
+      if (finalSrc.startsWith('http://') && window.location.protocol === 'https:') {
+        finalSrc = finalSrc.replace('http://', 'https://');
+      }
+      if (!finalSrc.startsWith('data:')) {
         try {
-          const res = await window.fetch(url);
+          const res = await window.fetch(finalSrc);
           const blob = await res.blob();
           finalSrc = await new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -1237,6 +1240,9 @@ const DoctorDashboard = () => {
         const pathClean = letterheadUrl.startsWith('/') ? letterheadUrl : `/${letterheadUrl}`;
         letterheadUrl = `${baseClean}${pathClean}`;
       }
+      if (letterheadUrl && letterheadUrl.startsWith('http://') && window.location.protocol === 'https:') {
+        letterheadUrl = letterheadUrl.replace('http://', 'https://');
+      }
       
       // Auto-detect spacer margins based on letterhead image graphics
       let topSpacerDetected = customSettings.topSpacer || 38;
@@ -1246,6 +1252,10 @@ const DoctorDashboard = () => {
         const detected = await detectLetterheadMargins(letterheadUrl);
         topSpacerDetected = detected.top;
         bottomSpacerDetected = detected.bottom;
+      } else {
+        // If no custom letterhead image is set, fall back to clean compact margins
+        topSpacerDetected = 15;
+        bottomSpacerDetected = 20;
       }
       
       if (letterheadUrl) {
