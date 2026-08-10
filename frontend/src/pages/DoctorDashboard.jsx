@@ -1105,86 +1105,102 @@ const DoctorDashboard = () => {
     } catch (e) {
       console.warn("Failed to fetch past prescriptions from backend", e);
     }
-  };  const detectLetterheadMargins = (url) => {
-    return new Promise((resolve) => {
-      if (!url) {
-        resolve({ top: 38, bottom: 28 });
-        return;
+  };  const detectLetterheadMargins = async (url) => {
+    try {
+      if (!url) return { top: 38, bottom: 28 };
+      
+      let finalSrc = url;
+      if (!url.startsWith('data:')) {
+        try {
+          const res = await api.get(url, { responseType: 'blob' });
+          const blob = res.data;
+          finalSrc = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+        } catch (fetchErr) {
+          console.warn("Failed to fetch letterhead as blob, falling back to direct URL", fetchErr);
+        }
       }
       
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.src = url;
-      
-      img.onload = () => {
-        try {
-          const canvas = document.createElement('canvas');
-          canvas.width = 210;
-          canvas.height = 297;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, 210, 297);
-          
-          const imgData = ctx.getImageData(0, 0, 210, 297);
-          const data = imgData.data;
-          
-          // Detect Top Spacer (Header Logo/Banner Zone)
-          let lastHeaderY = 0;
-          const maxHeaderY = 130; // Scan top 44% of page
-          for (let y = 0; y < maxHeaderY; y++) {
-            let rowHasPixels = false;
-            for (let x = 0; x < 210; x++) {
-              const idx = (y * 210 + x) * 4;
-              const r = data[idx];
-              const g = data[idx + 1];
-              const b = data[idx + 2];
-              const a = data[idx + 3];
-              // Non-white and non-transparent
-              if (a < 250 || r < 250 || g < 250 || b < 250) {
-                rowHasPixels = true;
-                break;
+      return await new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width = 210;
+            canvas.height = 297;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, 210, 297);
+            
+            const imgData = ctx.getImageData(0, 0, 210, 297);
+            const data = imgData.data;
+            
+            // Detect Top Spacer (Header Logo/Banner Zone)
+            let lastHeaderY = 0;
+            const maxHeaderY = 130; // Scan top 44% of page
+            for (let y = 0; y < maxHeaderY; y++) {
+              let rowHasPixels = false;
+              for (let x = 0; x < 210; x++) {
+                const idx = (y * 210 + x) * 4;
+                const r = data[idx];
+                const g = data[idx + 1];
+                const b = data[idx + 2];
+                const a = data[idx + 3];
+                // Non-white and non-transparent
+                if (a < 250 || r < 250 || g < 250 || b < 250) {
+                  rowHasPixels = true;
+                  break;
+                }
+              }
+              if (rowHasPixels) {
+                lastHeaderY = y;
               }
             }
-            if (rowHasPixels) {
-              lastHeaderY = y;
-            }
-          }
-          
-          // Detect Bottom Spacer (Footer Contacts/Design Zone)
-          let firstFooterY = 297;
-          const minFooterY = 200; // Scan bottom 33% of page
-          for (let y = 297; y >= minFooterY; y--) {
-            let rowHasPixels = false;
-            for (let x = 0; x < 210; x++) {
-              const idx = (y * 210 + x) * 4;
-              const r = data[idx];
-              const g = data[idx + 1];
-              const b = data[idx + 2];
-              const a = data[idx + 3];
-              if (a < 250 || r < 250 || g < 250 || b < 250) {
-                rowHasPixels = true;
-                break;
+            
+            // Detect Bottom Spacer (Footer Contacts/Design Zone)
+            let firstFooterY = 297;
+            const minFooterY = 200; // Scan bottom 33% of page
+            for (let y = 297; y >= minFooterY; y--) {
+              let rowHasPixels = false;
+              for (let x = 0; x < 210; x++) {
+                const idx = (y * 210 + x) * 4;
+                const r = data[idx];
+                const g = data[idx + 1];
+                const b = data[idx + 2];
+                const a = data[idx + 3];
+                if (a < 250 || r < 250 || g < 250 || b < 250) {
+                  rowHasPixels = true;
+                  break;
+                }
+              }
+              if (rowHasPixels) {
+                firstFooterY = y;
               }
             }
-            if (rowHasPixels) {
-              firstFooterY = y;
-            }
+            
+            // Calculate dynamic mm heights with appropriate safety offsets
+            const topMargin = Math.min(120, Math.max(15, lastHeaderY + 12));
+            const bottomMargin = Math.min(80, Math.max(15, (297 - firstFooterY) + 12));
+            
+            resolve({ top: topMargin, bottom: bottomMargin });
+          } catch (e) {
+            console.warn("Failed to automatically detect margins from canvas, using defaults", e);
+            resolve({ top: 38, bottom: 28 });
           }
-          
-          // Calculate dynamic mm heights with appropriate safety offsets
-          const topMargin = Math.min(120, Math.max(15, lastHeaderY + 12));
-          const bottomMargin = Math.min(80, Math.max(15, (297 - firstFooterY) + 12));
-          
-          resolve({ top: topMargin, bottom: bottomMargin });
-        } catch (e) {
-          console.warn("Failed to automatically detect margins from canvas, using defaults", e);
+        };
+        
+        img.onerror = () => {
           resolve({ top: 38, bottom: 28 });
-        }
-      };
-      
-      img.onerror = () => {
-        resolve({ top: 38, bottom: 28 });
-      };
-    });
+        };
+        img.src = finalSrc;
+      });
+    } catch (outerErr) {
+      console.warn("Error in detectLetterheadMargins", outerErr);
+      return { top: 38, bottom: 28 };
+    }
   };
 
   const handlePrintPrescription = async (rx, item, customSettings = printSettings) => {
