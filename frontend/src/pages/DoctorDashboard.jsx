@@ -1142,10 +1142,10 @@ const DoctorDashboard = () => {
             const data = imgData.data;
             
             // Sample background color at clean margins (x = 15, y = 148)
-            let bgR = data[(148 * 210 + 15) * 4];
-            let bgG = data[(148 * 210 + 15) * 4 + 1];
-            let bgB = data[(148 * 210 + 15) * 4 + 2];
-            let bgA = data[(148 * 210 + 15) * 4 + 3];
+            let bgR = (data && data[(148 * 210 + 15) * 4] !== undefined) ? data[(148 * 210 + 15) * 4] : 255;
+            let bgG = (data && data[(148 * 210 + 15) * 4 + 1] !== undefined) ? data[(148 * 210 + 15) * 4 + 1] : 255;
+            let bgB = (data && data[(148 * 210 + 15) * 4 + 2] !== undefined) ? data[(148 * 210 + 15) * 4 + 2] : 255;
+            let bgA = (data && data[(148 * 210 + 15) * 4 + 3] !== undefined) ? data[(148 * 210 + 15) * 4 + 3] : 255;
 
             // Detect Top Spacer (Header Logo/Banner Zone)
             let lastHeaderY = 0;
@@ -1249,6 +1249,10 @@ const DoctorDashboard = () => {
       let bottomSpacerDetected = customSettings.bottomSpacer || 28;
       
       if (letterheadUrl) {
+        letterheadUrl = await convertPdfToImage(letterheadUrl);
+      }
+      
+      if (letterheadUrl) {
         const detected = await detectLetterheadMargins(letterheadUrl);
         topSpacerDetected = detected.top;
         bottomSpacerDetected = detected.bottom;
@@ -1256,10 +1260,6 @@ const DoctorDashboard = () => {
         // If no custom letterhead image is set, fall back to clean compact margins
         topSpacerDetected = 15;
         bottomSpacerDetected = 20;
-      }
-      
-      if (letterheadUrl) {
-        letterheadUrl = await convertPdfToImage(letterheadUrl);
       }
 
       const iframe = document.createElement('iframe');
