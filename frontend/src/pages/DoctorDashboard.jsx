@@ -1683,10 +1683,24 @@ const DoctorDashboard = () => {
               function getTestsBlocks(cols) {
                 if (!tests || tests.length === 0) return [];
                 var blocks = [];
-                var chunkSize = cols === 1 ? 6 : 10;
+                var rowHeight = 26; // Approx height per test item row in px
                 
-                for (var start = 0; start < tests.length; start += chunkSize) {
-                  var chunk = tests.slice(start, start + chunkSize);
+                // Available height on page 1 for tests (subtracting diagnosis and header spacer)
+                var page1TestsHeight = page1ContentLimit - (diagnosis ? 80 : 0) - 40;
+                var pageNTestsHeight = pageNContentLimit - 40;
+                
+                var page1Rows = Math.max(1, Math.floor(page1TestsHeight / rowHeight));
+                var page1ChunkSize = page1Rows * cols;
+                
+                var pageNRows = Math.max(1, Math.floor(pageNTestsHeight / rowHeight));
+                var pageNChunkSize = pageNRows * cols;
+                
+                var start = 0;
+                var isFirstBlock = true;
+                
+                while (start < tests.length) {
+                  var currentChunkSize = isFirstBlock ? page1ChunkSize : pageNChunkSize;
+                  var chunk = tests.slice(start, start + currentChunkSize);
                   var blockHTML = '';
                   var itemsHTML = '';
                   
@@ -1718,6 +1732,8 @@ const DoctorDashboard = () => {
                     '</div>';
                   }
                   blocks.push(blockHTML);
+                  start += currentChunkSize;
+                  isFirstBlock = false;
                 }
                 return blocks;
               }
@@ -1725,10 +1741,27 @@ const DoctorDashboard = () => {
               function getMedicinesBlocks(cols, compact) {
                 if (!medicines || medicines.length === 0) return [];
                 var blocks = [];
-                var chunkSize = cols === 1 ? 6 : (cols === 2 ? 8 : 12);
                 
-                for (var start = 0; start < medicines.length; start += chunkSize) {
-                  var chunk = medicines.slice(start, start + chunkSize);
+                // Calculate physical row heights in px based on compact grid configurations
+                var rowHeight = compact ? (cols === 1 ? 28 : 42) : (cols === 1 ? 34 : 50);
+                
+                // Available height on page 1 for medicines (subtracting diagnosis and title block header)
+                var page1MedicinesHeight = page1ContentLimit - (diagnosis ? 80 : 0) - 40;
+                var pageNMedicinesHeight = pageNContentLimit - 40;
+                
+                // Calculate items that fit dynamically on first and subsequent pages
+                var page1Rows = Math.max(1, Math.floor(page1MedicinesHeight / rowHeight));
+                var page1ChunkSize = page1Rows * cols;
+                
+                var pageNRows = Math.max(1, Math.floor(pageNMedicinesHeight / rowHeight));
+                var pageNChunkSize = pageNRows * cols;
+                
+                var start = 0;
+                var isFirstBlock = true;
+                
+                while (start < medicines.length) {
+                  var currentChunkSize = isFirstBlock ? page1ChunkSize : pageNChunkSize;
+                  var chunk = medicines.slice(start, start + currentChunkSize);
                   var blockHTML = '';
                   
                   if (cols === 1) {
@@ -1787,6 +1820,8 @@ const DoctorDashboard = () => {
                     '</div>';
                   }
                   blocks.push(blockHTML);
+                  start += currentChunkSize;
+                  isFirstBlock = false;
                 }
                 return blocks;
               }
