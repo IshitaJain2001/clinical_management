@@ -1659,8 +1659,8 @@ const DoctorDashboard = () => {
               document.getElementById('pages-container').removeChild(tempPage);
 
               // Available content height limits
-              const page1ContentLimit = a4Height - topSpacerPx - bottomSpacerPx - patientDetailsHeight - digitalHeaderHeight - 70;
-              const pageNContentLimit = a4Height - topSpacerPx - bottomSpacerPx - 70;
+              const page1ContentLimit = a4Height - topSpacerPx - bottomSpacerPx - patientDetailsHeight - digitalHeaderHeight - 45;
+              const pageNContentLimit = a4Height - topSpacerPx - bottomSpacerPx - 45;
               const contentHeightLimit = page1ContentLimit; // For measureHeight to use conservatively // 35px safety padding
 
               // Helpers to generate HTML content blocks
@@ -1864,10 +1864,18 @@ const DoctorDashboard = () => {
                           bestFontSize = Math.max(80, bestFontSize - 15);
                         } else {
                           // Unavoidable multi-page prescription. Let's use clean layout and let pagination handle splits.
-                          bestColsMed = medicines.length > 15 ? 2 : 1;
-                          bestColsTest = tests.length > 8 ? 2 : 1;
+                          bestColsMed = medicines.length > 12 ? 2 : 1;
+                          bestColsTest = tests.length > 6 ? 2 : 1;
                           bestCompact = true;
-                          bestFontSize = Math.max(90, bestFontSize - 5);
+                          
+                          // Dynamically scale down font size based on total content height to prevent empty/blank pages
+                          var estTotalH = measureHeight(bestColsMed, bestColsTest, true, initialFontSize);
+                          var totalAvailableH = page1ContentLimit + pageNContentLimit;
+                          if (estTotalH > totalAvailableH) {
+                            bestFontSize = Math.max(80, initialFontSize - 15);
+                          } else {
+                            bestFontSize = Math.max(85, initialFontSize - 10);
+                          }
                         }
                       }
                     }
