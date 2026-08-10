@@ -1112,8 +1112,8 @@ const DoctorDashboard = () => {
       let finalSrc = url;
       if (!url.startsWith('data:')) {
         try {
-          const res = await api.get(url, { responseType: 'blob' });
-          const blob = res.data;
+          const res = await window.fetch(url);
+          const blob = await res.blob();
           finalSrc = await new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result);
@@ -1138,6 +1138,12 @@ const DoctorDashboard = () => {
             const imgData = ctx.getImageData(0, 0, 210, 297);
             const data = imgData.data;
             
+            // Sample background color at clean margins (x = 15, y = 148)
+            let bgR = data[(148 * 210 + 15) * 4];
+            let bgG = data[(148 * 210 + 15) * 4 + 1];
+            let bgB = data[(148 * 210 + 15) * 4 + 2];
+            let bgA = data[(148 * 210 + 15) * 4 + 3];
+
             // Detect Top Spacer (Header Logo/Banner Zone)
             let lastHeaderY = 0;
             const maxHeaderY = 130; // Scan top 44% of page
@@ -1149,8 +1155,16 @@ const DoctorDashboard = () => {
                 const g = data[idx + 1];
                 const b = data[idx + 2];
                 const a = data[idx + 3];
-                // Non-white and non-transparent
-                if (a < 250 || r < 250 || g < 250 || b < 250) {
+                
+                // Distance from sampled background
+                const dist = Math.sqrt(
+                  Math.pow(r - bgR, 2) +
+                  Math.pow(g - bgG, 2) +
+                  Math.pow(b - bgB, 2) +
+                  Math.pow(a - bgA, 2)
+                );
+                
+                if (dist > 18) {
                   rowHasPixels = true;
                   break;
                 }
@@ -1171,7 +1185,15 @@ const DoctorDashboard = () => {
                 const g = data[idx + 1];
                 const b = data[idx + 2];
                 const a = data[idx + 3];
-                if (a < 250 || r < 250 || g < 250 || b < 250) {
+                
+                const dist = Math.sqrt(
+                  Math.pow(r - bgR, 2) +
+                  Math.pow(g - bgG, 2) +
+                  Math.pow(b - bgB, 2) +
+                  Math.pow(a - bgA, 2)
+                );
+                
+                if (dist > 18) {
                   rowHasPixels = true;
                   break;
                 }
@@ -1181,7 +1203,7 @@ const DoctorDashboard = () => {
               }
             }
             
-            // Calculate dynamic mm heights with appropriate safety offsets
+            // Calculate dynamic mm heights with safety offsets
             const topMargin = Math.min(120, Math.max(15, lastHeaderY + 12));
             const bottomMargin = Math.min(80, Math.max(15, (297 - firstFooterY) + 12));
             
@@ -1317,11 +1339,11 @@ const DoctorDashboard = () => {
             .content-area {
               flex: 1;
               margin-top: 10px;
-              margin-bottom: ${customSettings.bottomSpacer}mm;
+              margin-bottom: ${bottomSpacerDetected}mm;
             }
             .spacer-header {
-              height: ${customSettings.topSpacer}mm;
-              min-height: ${customSettings.topSpacer}mm;
+              height: ${topSpacerDetected}mm;
+              min-height: ${topSpacerDetected}mm;
               flex-shrink: 0;
               width: 100%;
             }
