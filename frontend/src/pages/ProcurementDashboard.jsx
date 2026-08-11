@@ -585,8 +585,15 @@ const ProcurementDashboard = () => {
 
   const handleSaveGRN = async (e) => {
     e.preventDefault();
+    if (grnFlowType === 'po') {
+      const overLimitItem = grnItems.find(item => Number(item.qtyReceived) > Number(item.qtyRequired));
+      if (overLimitItem) {
+        showToast(`Received quantity for ${overLimitItem.name} cannot exceed ordered quantity (${overLimitItem.qtyRequired})!`, 'error');
+        return;
+      }
+    }
     try {
-      const grnId = `GRN-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+      const grnId = `GRN-2026-${Math.floor(1000 + Math.random() * 900)}`;
       let vendorId = '';
       let vendorName = '';
       let poId = null;
@@ -4776,8 +4783,13 @@ const ProcurementDashboard = () => {
                             <td>
                               <input type="number" required min="1" className="proc-input" style={{ padding: '6px', width: '70px' }}
                                 value={qty} onChange={e => {
+                                  let val = Number(e.target.value);
+                                  if (grnFlowType === 'po' && val > (item.qtyRequired || 0)) {
+                                    showToast(`Received quantity cannot exceed ordered quantity (${item.qtyRequired})!`, 'error');
+                                    val = item.qtyRequired;
+                                  }
                                   const updated = [...grnItems];
-                                  updated[idx].qtyReceived = Number(e.target.value);
+                                  updated[idx].qtyReceived = val;
                                   setGrnItems(updated);
                                 }} />
                             </td>

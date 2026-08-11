@@ -22,6 +22,17 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const { grnId, poId, poNumber, vendorId, vendorName, items, invoiceUrl, notes, status } = req.body;
   try {
+    // Validate that received quantity does not exceed ordered quantity for PO-linked GRNs
+    if (poId && items) {
+      for (const item of items) {
+        const qtyOrdered = Number(item.qtyOrdered) || 0;
+        const qtyReceived = Number(item.qtyReceived) || 0;
+        if (qtyReceived > qtyOrdered) {
+          return res.status(400).json({ error: `Received quantity for ${item.name} cannot exceed ordered quantity (${qtyOrdered})!` });
+        }
+      }
+    }
+
     // 1. Create the GRN record
     const grn = await GoodsReceipt.create({
       tenantId: req.tenantId,
