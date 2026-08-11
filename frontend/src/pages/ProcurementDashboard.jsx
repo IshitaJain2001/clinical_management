@@ -232,6 +232,17 @@ const ProcurementDashboard = () => {
     }
   };
 
+  const fetchNextPoNumber = async () => {
+    try {
+      const res = await api.get('/purchase-orders/next-number');
+      if (res.data && res.data.nextNumber) {
+        setPoScreenNumber(res.data.nextNumber);
+      }
+    } catch (err) {
+      console.error('Error fetching next PO number:', err);
+    }
+  };
+
   useEffect(() => {
     fetchData();
     // Initialize Lucide icons
@@ -2067,8 +2078,7 @@ const ProcurementDashboard = () => {
                     <p className="proc-subtitle">Overview of vendors, purchase orders, goods receipts and payments.</p>
                   </div>
                   <button className="proc-btn proc-btn-primary" onClick={() => {
-                    const randomSeq = Math.floor(100 + Math.random() * 900);
-                    setPoScreenNumber(`PO-2026-0${140 + randomSeq}`);
+                    fetchNextPoNumber();
                     setPoScreenOrderDate(new Date().toISOString().split('T')[0]);
                     setPoScreenExpectedDelivery(new Date(Date.now() + 4*24*60*60*1000).toISOString().split('T')[0]);
                     setPoScreenDefaultVendor('');
@@ -3503,8 +3513,7 @@ const ProcurementDashboard = () => {
                       <p className="proc-subtitle">Create POs, compare vendor prices and track delivery status.</p>
                     </div>
                     <button className="proc-btn proc-btn-primary" onClick={() => {
-                      const randomSeq = Math.floor(100 + Math.random() * 900);
-                      setPoScreenNumber(`PO-2026-0${140 + randomSeq}`);
+                      fetchNextPoNumber();
                       setPoScreenOrderDate(new Date().toISOString().split('T')[0]);
                       setPoScreenExpectedDelivery(new Date(Date.now() + 4*24*60*60*1000).toISOString().split('T')[0]);
                       setPoScreenDefaultVendor('');

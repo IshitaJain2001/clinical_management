@@ -6,6 +6,44 @@ const router = express.Router();
 
 router.use(verifyToken);
 
+function getFinancialYearString(date = new Date()) {
+  const month = date.getMonth(); // 0-11
+  const year = date.getFullYear();
+  let fyStart, fyEnd;
+  if (month >= 3) { // April is month index 3
+    fyStart = year;
+    fyEnd = year + 1;
+  } else {
+    fyStart = year - 1;
+    fyEnd = year;
+  }
+  const fyEndShort = String(fyEnd).slice(-2);
+  return `${fyStart}-${fyEndShort}`; // e.g. "2026-27"
+}
+
+async function getNextPoId(tenantId) {
+  const fyStr = getFinancialYearString();
+  const prefix = `PO-${fyStr}-`;
+
+  // Find the latest purchase order for this tenant that matches this FY prefix
+  const latestPO = await PurchaseOrder.findOne({
+    tenantId,
+    poId: { $regex: `^${prefix}` }
+  }).sort({ poId: -1 });
+
+  let nextSerial = 1;
+  if (latestPO && latestPO.poId) {
+    const parts = latestPO.poId.split('-');
+    const lastSerialStr = parts[parts.length - 1];
+    const lastSerial = parseInt(lastSerialStr, 10);
+    if (!isNaN(lastSerial)) {
+      nextSerial = lastSerial + 1;
+    }
+  }
+
+  return `${prefix}${String(nextSerial).padStart(4, '0')}`;
+}
+
 // Get all Purchase Orders (scoped to tenant)
 router.get('/', async (req, res) => {
   try {
@@ -17,13 +55,25 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Get next sequential PO number
+router.get('/next-number', async (req, res) => {
+  try {
+    const nextNumber = await getNextPoId(req.tenantId);
+    res.json({ nextNumber });
+  } catch (error) {
+    console.error("Get next PO number error:", error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Create a new Purchase Order (scoped to tenant)
 router.post('/', async (req, res) => {
-  const { poId, vendorId, vendorName, items, totalAmount, requestedBy, status, expectedDelivery } = req.body;
+  const { vendorId, vendorName, items, totalAmount, requestedBy, status, expectedDelivery } = req.body;
   try {
+    const generatedPoId = await getNextPoId(req.tenantId);
     const po = await PurchaseOrder.create({
       tenantId: req.tenantId,
-      poId,
+      poId: generatedPoId,
       vendorId,
       vendorName,
       items,
