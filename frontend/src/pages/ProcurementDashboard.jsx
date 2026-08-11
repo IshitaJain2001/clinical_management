@@ -564,7 +564,10 @@ const ProcurementDashboard = () => {
         qtyRequired: item.requiredQty,
         qtyReceived: item.requiredQty,
         price: item.price,
-        gst: item.tax !== undefined ? item.tax : 12
+        gst: item.tax !== undefined ? item.tax : 12,
+        batchNumber: '',
+        expiryDate: '',
+        mfgDate: ''
       })));
     }
   };
@@ -601,13 +604,19 @@ const ProcurementDashboard = () => {
         items: grnItems.map(i => ({
           name: i.name,
           sku: i.sku,
+          qtyOrdered: i.qtyRequired || 0,
           qtyReceived: Number(i.qtyReceived),
-          price: Number(i.price)
+          price: Number(i.price),
+          gst: i.gst !== undefined ? Number(i.gst) : 12,
+          batchNumber: i.batchNumber || '',
+          expiryDate: i.expiryDate || null,
+          mfgDate: i.mfgDate || null
         })),
         invoiceUrl: grnInvoiceFileName || 'INV-DIRECT-01'
       });
 
       setShowGRNModal(false);
+      setGrnInvoiceFileName('');
       fetchData();
     } catch (err) {
       showToast(err.response?.data?.error || 'Failed to create GRN', 'error');
@@ -4678,7 +4687,7 @@ const ProcurementDashboard = () => {
       {/* MODAL 3: GENERATE GRN */}
       {showGRNModal && (
         <div className="proc-modal-overlay">
-          <form className="proc-modal" style={{ maxWidth: '680px' }} onSubmit={handleSaveGRN}>
+          <form className="proc-modal" style={{ maxWidth: '1000px', width: '95%' }} onSubmit={handleSaveGRN}>
             <div className="proc-modal-header">
               <span className="proc-modal-title">Goods Receipt Note (GRN) Generation</span>
               <button type="button" className="proc-close-btn" onClick={() => setShowGRNModal(false)}>
@@ -4715,7 +4724,7 @@ const ProcurementDashboard = () => {
                   <label className="proc-form-label">Supplier *</label>
                   <select required className="proc-select" value={grnDirectVendorId} onChange={e => {
                     setGrnDirectVendorId(e.target.value);
-                    setGrnItems([{ name: 'Paracetamol 650mg', sku: 'PAR-650', qtyRequired: 0, qtyReceived: 100, price: 10, gst: 12 }]);
+                    setGrnItems([{ name: 'Paracetamol 650mg', sku: 'PAR-650', qtyRequired: 0, qtyReceived: 100, price: 10, gst: 12, batchNumber: '', expiryDate: '', mfgDate: '' }]);
                   }}>
                     <option value="">-- Choose Vendor --</option>
                     {getDisplayVendors().map(v => (
@@ -4734,6 +4743,9 @@ const ProcurementDashboard = () => {
                         <th>Item</th>
                         <th>Ordered Qty</th>
                         <th>Received Qty</th>
+                        <th>Batch No.</th>
+                        <th>Mfg Date</th>
+                        <th>Expiry Date</th>
                         <th>Price (₹)</th>
                         <th>GST (%)</th>
                         <th>GST Amt</th>
@@ -4753,7 +4765,7 @@ const ProcurementDashboard = () => {
                             <td style={{ fontWeight: 700 }}>{item.name}</td>
                             <td>{item.qtyRequired || 'Direct'}</td>
                             <td>
-                              <input type="number" required min="1" className="proc-input" style={{ padding: '6px', width: '80px' }}
+                              <input type="number" required min="1" className="proc-input" style={{ padding: '6px', width: '70px' }}
                                 value={qty} onChange={e => {
                                   const updated = [...grnItems];
                                   updated[idx].qtyReceived = Number(e.target.value);
@@ -4761,7 +4773,31 @@ const ProcurementDashboard = () => {
                                 }} />
                             </td>
                             <td>
-                              <input type="number" required min="0" step="0.01" className="proc-input" style={{ padding: '6px', width: '80px' }}
+                              <input type="text" required placeholder="Batch" className="proc-input" style={{ padding: '6px', width: '80px' }}
+                                value={item.batchNumber || ''} onChange={e => {
+                                  const updated = [...grnItems];
+                                  updated[idx].batchNumber = e.target.value;
+                                  setGrnItems(updated);
+                                }} />
+                            </td>
+                            <td>
+                              <input type="date" className="proc-input" style={{ padding: '6px', width: '115px', fontSize: '12px' }}
+                                value={item.mfgDate || ''} onChange={e => {
+                                  const updated = [...grnItems];
+                                  updated[idx].mfgDate = e.target.value;
+                                  setGrnItems(updated);
+                                }} />
+                            </td>
+                            <td>
+                              <input type="date" required className="proc-input" style={{ padding: '6px', width: '115px', fontSize: '12px' }}
+                                value={item.expiryDate || ''} onChange={e => {
+                                  const updated = [...grnItems];
+                                  updated[idx].expiryDate = e.target.value;
+                                  setGrnItems(updated);
+                                }} />
+                            </td>
+                            <td>
+                              <input type="number" required min="0" step="0.01" className="proc-input" style={{ padding: '6px', width: '70px' }}
                                 value={price} onChange={e => {
                                   const updated = [...grnItems];
                                   updated[idx].price = Number(e.target.value);
@@ -4769,7 +4805,7 @@ const ProcurementDashboard = () => {
                                 }} />
                             </td>
                             <td>
-                              <input type="number" required min="0" max="100" className="proc-input" style={{ padding: '6px', width: '70px' }}
+                              <input type="number" required min="0" max="100" className="proc-input" style={{ padding: '6px', width: '60px' }}
                                 value={gstRate} onChange={e => {
                                   const updated = [...grnItems];
                                   updated[idx].gst = Number(e.target.value);
