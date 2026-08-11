@@ -159,6 +159,17 @@ const ProcurementDashboard = () => {
     navigate('/login');
   };
 
+  const handleExitProcurement = () => {
+    try {
+      window.close();
+    } catch (e) {
+      console.error(e);
+    }
+    setTimeout(() => {
+      navigate('/pharmacy');
+    }, 100);
+  };
+
   // Fetch all data
   const fetchData = async () => {
     try {
@@ -1930,6 +1941,10 @@ const ProcurementDashboard = () => {
             </button>
             <button className={`proc-menu-item ${activeTab === 'payments' ? 'active' : ''}`} onClick={() => setActiveTab('payments')}>
               <i data-lucide="credit-card"></i> Vendor Payments
+            </button>
+            <div style={{ margin: '12px 0 8px 0', borderTop: '1px solid #F1F5F9' }}></div>
+            <button className="proc-menu-item" style={{ color: '#64748B' }} onClick={handleExitProcurement}>
+              <i data-lucide="arrow-left"></i> Exit Procurement
             </button>
           </nav>
 
