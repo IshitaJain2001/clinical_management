@@ -277,6 +277,7 @@ const PharmacyDashboard = () => {
   const [grnIsUploading, setGrnIsUploading] = useState(false);
   const [grnNotes, setGrnNotes] = useState('');
   const [selectedGrnDetails, setSelectedGrnDetails] = useState(null);
+  const [editingGrn, setEditingGrn] = useState(null);
 
   const fetchProcurementData = async () => {
     try {
@@ -476,6 +477,28 @@ const PharmacyDashboard = () => {
     }
   };
 
+  const handleOpenEditGrn = (grn) => {
+    setEditingGrn(grn);
+    setGrnFlowType(grn.poId ? 'po' : 'direct');
+    setGrnSelectedPOId(grn.poId || '');
+    setGrnDirectVendorId(grn.vendorId || '');
+    setGrnItems((grn.items || []).map(it => ({
+      name: it.name,
+      sku: it.sku,
+      qtyRequired: it.qtyOrdered || 0,
+      qtyReceived: it.qtyReceived,
+      price: it.price,
+      gst: it.gst !== undefined ? it.gst : 12,
+      batchNumber: it.batchNumber || '',
+      expiryDate: it.expiryDate ? new Date(it.expiryDate).toISOString().substring(0, 10) : '',
+      mfgDate: it.mfgDate ? new Date(it.mfgDate).toISOString().substring(0, 10) : ''
+    })));
+    setGrnInvoiceFileName(grn.invoiceUrl || '');
+    setGrnInvoiceFile(null);
+    setGrnNotes(grn.notes || '');
+    setShowGRNModal(true);
+  };
+
   const handleSaveGRN = async (e, statusParam = 'Verified/Completed') => {
     if (e) e.preventDefault();
     
@@ -485,7 +508,7 @@ const PharmacyDashboard = () => {
     }
 
     try {
-      const grnId = `GRN-2026-${Math.floor(100000 + Math.random() * 900000)}`;
+      const grnId = editingGrn ? editingGrn.grnId : `GRN-2026-${Math.floor(100000 + Math.random() * 900000)}`;
       let vendorId = '';
       let vendorName = '';
       let poId = null;
@@ -508,7 +531,7 @@ const PharmacyDashboard = () => {
         vendorName = v.name;
       }
 
-      await api.post('/goods-receipts', {
+      const payload = {
         grnId,
         poId,
         poNumber,
@@ -520,6 +543,7 @@ const PharmacyDashboard = () => {
           qtyOrdered: it.qtyRequired || 0,
           qtyReceived: it.qtyReceived,
           price: it.price,
+          gst: it.gst !== undefined ? it.gst : 12,
           batchNumber: it.batchNumber || '',
           expiryDate: it.expiryDate || null,
           mfgDate: it.mfgDate || null
@@ -527,16 +551,23 @@ const PharmacyDashboard = () => {
         invoiceUrl: grnInvoiceFileName || '',
         notes: grnNotes || '',
         status: statusParam
-      });
+      };
+
+      if (editingGrn) {
+        await api.put(`/goods-receipts/${editingGrn._id}`, payload);
+      } else {
+        await api.post('/goods-receipts', payload);
+      }
 
       await fetchProcurementData();
       await fetchInventory();
       setShowGRNModal(false);
       setGrnNotes('');
+      setEditingGrn(null);
       showToast(statusParam === 'Draft' ? 'GRN saved as Draft successfully!' : 'GRN generated & stock updated successfully!');
     } catch (err) {
       console.error(err);
-      showToast(err.response?.data?.error || 'Failed to create GRN', 'error');
+      showToast(err.response?.data?.error || 'Failed to save GRN', 'error');
     }
   };
 
@@ -4344,12 +4375,14 @@ const PharmacyDashboard = () => {
                     className="btn btn-primary"
                     style={{ padding: '8px 16px', fontSize: '12.5px', borderRadius: '8px', background: '#2563EB', border: 'none', color: 'white', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
                     onClick={() => {
+                      setEditingGrn(null);
                       setGrnFlowType('po');
                       setGrnSelectedPOId('');
                       setGrnDirectVendorId('');
                       setGrnItems([]);
                       setGrnInvoiceFile(null);
                       setGrnInvoiceFileName('');
+                      setGrnNotes('');
                       setShowGRNModal(true);
                     }}
                   >
@@ -4369,6 +4402,7 @@ const PharmacyDashboard = () => {
                           <th>Items Received</th>
                           <th>Type</th>
                           <th>Invoice</th>
+                          <th>Status</th>
                           <th style={{ textAlign: 'center' }}>Actions</th>
                         </tr>
                       </thead>
@@ -4378,7 +4412,7 @@ const PharmacyDashboard = () => {
                             <td style={{ fontFamily: 'monospace', fontWeight: 700, color: '#059669' }}>{grn.grnId}</td>
                             <td style={{ fontFamily: 'monospace', fontWeight: 600, color: '#64748B' }}>{grn.poNumber || 'Direct Purchase'}</td>
                             <td style={{ fontWeight: 800, color: '#475569' }}>{grn.vendorName}</td>
-                            <td style={{ fontWeight: 600, color: '#64748B' }}>{new Date(grn.receivedDate).toLocaleDateString()}</td>
+                            <td style={{ fontWeight: 600, color: '#64748B' }}>{new Date(grn.receivedDate || grn.createdAt).toLocaleDateString()}</td>
                             <td style={{ fontWeight: 700, color: '#0F172A' }}>{grn.items.length} items</td>
                             <td>
                               <span style={{ 
@@ -4407,20 +4441,41 @@ const PharmacyDashboard = () => {
                                 <span style={{ color: '#94A3B8' }}>—</span>
                               )}
                             </td>
+                            <td>
+                              <span style={{
+                                padding: '4px 8px',
+                                borderRadius: '6px',
+                                fontSize: '11px',
+                                fontWeight: 800,
+                                background: grn.status === 'Draft' ? '#FEF3C7' : '#D1FAE5',
+                                color: grn.status === 'Draft' ? '#D97706' : '#065F46'
+                              }}>
+                                {grn.status || 'Verified/Completed'}
+                              </span>
+                            </td>
                             <td style={{ textAlign: 'center' }}>
-                              <button 
-                                className="btn btn-secondary" 
-                                style={{ padding: '6px 12px', fontSize: '12px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
-                                onClick={() => setSelectedGrnDetails(grn)}
-                              >
-                                View
-                              </button>
+                              <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                                <button 
+                                  className="btn btn-secondary" 
+                                  style={{ padding: '6px 12px', fontSize: '12px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                                  onClick={() => setSelectedGrnDetails(grn)}
+                                >
+                                  View
+                                </button>
+                                <button 
+                                  className="btn btn-primary" 
+                                  style={{ padding: '6px 12px', fontSize: '12px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#0EA5E9', border: 'none', color: 'white', borderRadius: '4px', fontWeight: 700 }}
+                                  onClick={() => handleOpenEditGrn(grn)}
+                                >
+                                  Edit
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         ))}
                         {goodsReceipts.length === 0 && (
                           <tr>
-                            <td colSpan="8" style={{ textAlign: 'center', padding: '24px', color: '#64748B' }}>No Goods Receipt Notes created yet.</td>
+                            <td colSpan="9" style={{ textAlign: 'center', padding: '24px', color: '#64748B' }}>No Goods Receipt Notes created yet.</td>
                           </tr>
                         )}
                       </tbody>

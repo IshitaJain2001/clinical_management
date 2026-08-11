@@ -950,6 +950,7 @@ const AdminDashboard = () => {
 
   const [goodsReceipts, setGoodsReceipts] = useState([]);
   const [adminSelectedGrn, setAdminSelectedGrn] = useState(null);
+  const [poSubTab, setPoSubTab] = useState('orders'); // 'orders' or 'grns'
 
   const fetchGoodsReceipts = async () => {
     try {
@@ -7729,10 +7730,46 @@ const AdminDashboard = () => {
 
             {/* PO APPROVALS SECTION */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
-              <div className="approval-category-header" style={{ margin: 0 }}>Pharmacy Procurement Approvals & History</div>
+              <div className="approval-category-header" style={{ margin: 0 }}>Pharmacy Procurement & Supply Chain</div>
             </div>
 
-            {(() => {
+            {/* SUB TAB NAVIGATION */}
+            <div style={{ display: 'flex', gap: '12px', borderBottom: '1px solid #E2E8F0', marginBottom: '20px', paddingBottom: '8px' }}>
+              <button 
+                onClick={() => setPoSubTab('orders')}
+                style={{ 
+                  background: 'none', 
+                  border: 'none', 
+                  fontSize: '14px', 
+                  fontWeight: 800, 
+                  color: poSubTab === 'orders' ? '#2563EB' : '#64748B', 
+                  borderBottom: poSubTab === 'orders' ? '3px solid #2563EB' : 'none', 
+                  padding: '8px 16px', 
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                Purchase Orders
+              </button>
+              <button 
+                onClick={() => setPoSubTab('grns')}
+                style={{ 
+                  background: 'none', 
+                  border: 'none', 
+                  fontSize: '14px', 
+                  fontWeight: 800, 
+                  color: poSubTab === 'grns' ? '#2563EB' : '#64748B', 
+                  borderBottom: poSubTab === 'grns' ? '3px solid #2563EB' : 'none', 
+                  padding: '8px 16px', 
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                Goods Receipt Notes (GRNs)
+              </button>
+            </div>
+
+            {poSubTab === 'orders' ? (() => {
               const sortedPOs = [...purchaseOrders].sort((a, b) => {
                 if (a.status === 'Pending' && b.status !== 'Pending') return -1;
                 if (a.status !== 'Pending' && b.status === 'Pending') return 1;
@@ -7824,7 +7861,64 @@ const AdminDashboard = () => {
                   </div>
                 </div>
               );
-            })()}
+            })() : (
+              <div className="glass-card" style={{ background: 'white', borderRadius: '16px', padding: '24px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13.5px', textAlign: 'left' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '2px solid #E2E8F0', paddingBottom: '12px' }}>
+                        <th style={{ padding: '12px 16px', color: '#475569', fontWeight: 800 }}>GRN ID</th>
+                        <th style={{ padding: '12px 16px', color: '#475569', fontWeight: 800 }}>Reference PO</th>
+                        <th style={{ padding: '12px 16px', color: '#475569', fontWeight: 800 }}>Supplier</th>
+                        <th style={{ padding: '12px 16px', color: '#475569', fontWeight: 800 }}>Date Received</th>
+                        <th style={{ padding: '12px 16px', color: '#475569', fontWeight: 800 }}>Items Received</th>
+                        <th style={{ padding: '12px 16px', color: '#475569', fontWeight: 800 }}>Status</th>
+                        <th style={{ padding: '12px 16px', color: '#475569', fontWeight: 800, textAlign: 'right' }}>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {goodsReceipts.map((grn) => (
+                        <tr key={grn._id} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                          <td style={{ padding: '16px', fontFamily: 'monospace', fontWeight: 700, color: '#059669' }}>{grn.grnId}</td>
+                          <td style={{ padding: '16px', fontFamily: 'monospace', fontWeight: 600, color: '#64748B' }}>{grn.poNumber || 'Direct Purchase'}</td>
+                          <td style={{ padding: '16px', fontWeight: 700, color: '#0F172A' }}>{grn.vendorName}</td>
+                          <td style={{ padding: '16px', color: '#475569' }}>{new Date(grn.receivedDate || grn.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                          <td style={{ padding: '16px', fontWeight: 700, color: '#0F172A' }}>{grn.items?.length || 0} items</td>
+                          <td style={{ padding: '16px' }}>
+                            <span style={{
+                              fontSize: '11px',
+                              padding: '3px 8px',
+                              borderRadius: '9999px',
+                              fontWeight: 800,
+                              background: grn.status === 'Draft' ? '#FEF3C7' : '#D1FAE5',
+                              color: grn.status === 'Draft' ? '#D97706' : '#065F46'
+                            }}>
+                              {grn.status || 'Verified/Completed'}
+                            </span>
+                          </td>
+                          <td style={{ padding: '16px', textAlign: 'right' }}>
+                            <button 
+                              className="btn btn-secondary" 
+                              style={{ padding: '6px 12px', fontSize: '12px', cursor: 'pointer' }}
+                              onClick={() => setAdminSelectedGrn(grn)}
+                            >
+                              View
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                      {goodsReceipts.length === 0 && (
+                        <tr>
+                          <td colSpan="7" style={{ padding: '40px', textAlign: 'center', color: '#94A3B8', fontStyle: 'italic' }}>
+                            No Goods Receipt Notes found.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
