@@ -780,8 +780,10 @@ const AdminDashboard = () => {
         fetchDiscountSetting();
       } else if (type === 'medicines') {
         fetchInventoryAlerts();
-      } else if (type === 'purchase-orders') {
+      } else if (type === 'purchase-orders' || type === 'purchase_orders') {
         fetchPurchaseOrders();
+      } else if (type === 'goods-receipts' || type === 'goods_receipts') {
+        fetchGoodsReceipts();
       } else if (type === 'vendors') {
         fetchVendors();
       } else if (type === 'audits' || type === 'audit-logs') {
@@ -805,6 +807,7 @@ const AdminDashboard = () => {
         fetchAuditLogs();
         fetchDpdpRequests();
         fetchPurchaseOrders();
+        fetchGoodsReceipts();
         fetchVendors();
         fetchApprovals();
         fetchWarningAlerts();

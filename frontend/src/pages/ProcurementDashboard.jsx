@@ -178,18 +178,23 @@ const ProcurementDashboard = () => {
       
       const dbMedicines = medRes.data || [];
       const vendorMedicines = [];
+      const existingNames = new Set(dbMedicines.map(m => m.name.toLowerCase()));
       fetchedVendors.forEach(v => {
         if (v.medicines && Array.isArray(v.medicines)) {
           v.medicines.forEach(m => {
-            if (m.name && !vendorMedicines.some(existing => existing.name.toLowerCase() === m.name.toLowerCase()) && !dbMedicines.some(existing => existing.name.toLowerCase() === m.name.toLowerCase())) {
-              vendorMedicines.push({
-                name: m.name,
-                sku: m.sku || `vsku-${Math.random().toString(36).substr(2, 5)}`,
-                stock: 0,
-                avgMonthlyUse: 1200,
-                status: 'In Stock',
-                mrp: m.price || 0
-              });
+            if (m.name) {
+              const lowerName = m.name.toLowerCase();
+              if (!existingNames.has(lowerName)) {
+                existingNames.add(lowerName);
+                vendorMedicines.push({
+                  name: m.name,
+                  sku: m.sku || `vsku-${Math.random().toString(36).substring(2, 7)}`,
+                  stock: 0,
+                  avgMonthlyUse: 1200,
+                  status: 'In Stock',
+                  mrp: m.price || 0
+                });
+              }
             }
           });
         }
@@ -261,7 +266,7 @@ const ProcurementDashboard = () => {
     const handleSync = (e) => {
       const { type } = e.detail;
       console.log('[SOCKET] ProcurementDashboard received sync event for:', type);
-      if (type === 'purchase_orders' || type === 'purchase-orders' || type === 'vendors') {
+      if (['purchase_orders', 'purchase-orders', 'vendors', 'goods_receipts', 'goods-receipts', 'medicines', 'approvals'].includes(type)) {
         fetchData();
       }
     };
