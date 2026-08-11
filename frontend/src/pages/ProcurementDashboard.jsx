@@ -596,6 +596,12 @@ const ProcurementDashboard = () => {
 
   const handleSaveGRN = async (e) => {
     e.preventDefault();
+    const today = new Date().toISOString().split('T')[0];
+    const futureMfgItem = grnItems.find(item => item.mfgDate && item.mfgDate > today);
+    if (futureMfgItem) {
+      showToast(`Manufacturing date for ${futureMfgItem.name} cannot be in the future!`, 'error');
+      return;
+    }
     if (grnFlowType === 'po') {
       const overLimitItem = grnItems.find(item => Number(item.qtyReceived) > Number(item.qtyRequired));
       if (overLimitItem) {
@@ -1972,6 +1978,31 @@ const ProcurementDashboard = () => {
                 padding: '6px',
                 zIndex: 99
               }} onClick={e => e.stopPropagation()}>
+                <button 
+                  onClick={handleExitProcurement}
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 12px',
+                    border: 'none',
+                    background: 'none',
+                    borderRadius: '8px',
+                    color: '#475569',
+                    fontWeight: 700,
+                    fontSize: '12.5px',
+                    cursor: 'pointer',
+                    transition: 'background 0.2s',
+                    marginBottom: '4px'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#F1F5F9'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                  Exit Procurement
+                </button>
+                <div style={{ borderTop: '1px solid #F1F5F9', margin: '4px 6px' }}></div>
                 <button 
                   onClick={handleLogout}
                   style={{
@@ -4818,7 +4849,13 @@ const ProcurementDashboard = () => {
                             </td>
                             <td>
                               <input type="date" className="proc-input" style={{ padding: '6px', width: '115px', fontSize: '12px' }}
+                                max={new Date().toISOString().split('T')[0]}
                                 value={item.mfgDate || ''} onChange={e => {
+                                  const today = new Date().toISOString().split('T')[0];
+                                  if (e.target.value > today) {
+                                    showToast('Manufacturing date cannot be in the future!', 'error');
+                                    return;
+                                  }
                                   const updated = [...grnItems];
                                   updated[idx].mfgDate = e.target.value;
                                   setGrnItems(updated);

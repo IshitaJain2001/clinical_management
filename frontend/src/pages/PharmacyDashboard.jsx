@@ -502,6 +502,13 @@ const PharmacyDashboard = () => {
   const handleSaveGRN = async (e, statusParam = 'Verified/Completed') => {
     if (e) e.preventDefault();
     
+    const today = new Date().toISOString().split('T')[0];
+    const futureMfgItem = grnItems.find(item => item.mfgDate && item.mfgDate > today);
+    if (futureMfgItem) {
+      showToast(`Manufacturing date for ${futureMfgItem.name} cannot be in the future!`, 'error');
+      return;
+    }
+    
     if (grnFlowType === 'direct' && !grnInvoiceFileName) {
       showToast('Supplier invoice document is required for direct purchase!', 'error');
       return;
@@ -7102,8 +7109,14 @@ const PharmacyDashboard = () => {
                               <td style={{ padding: '8px 12px' }}>
                                 <input 
                                   type="date"
+                                  max={new Date().toISOString().split('T')[0]}
                                   value={item.mfgDate}
                                   onChange={e => {
+                                    const today = new Date().toISOString().split('T')[0];
+                                    if (e.target.value > today) {
+                                      showToast('Manufacturing date cannot be in the future!', 'error');
+                                      return;
+                                    }
                                     const updated = [...grnItems];
                                     updated[idx].mfgDate = e.target.value;
                                     setGrnItems(updated);

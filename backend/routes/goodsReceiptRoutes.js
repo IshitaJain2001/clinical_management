@@ -33,6 +33,16 @@ router.post('/', async (req, res) => {
       }
     }
 
+    // Validate that manufacturing date is not in the future
+    if (items) {
+      const todayStr = new Date().toISOString().split('T')[0];
+      for (const item of items) {
+        if (item.mfgDate && String(item.mfgDate).substring(0, 10) > todayStr) {
+          return res.status(400).json({ error: `Manufacturing date for ${item.name} cannot be in the future!` });
+        }
+      }
+    }
+
     // 1. Create the GRN record
     const grn = await GoodsReceipt.create({
       tenantId: req.tenantId,
