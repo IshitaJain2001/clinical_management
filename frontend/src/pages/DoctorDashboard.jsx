@@ -1349,7 +1349,7 @@ const DoctorDashboard = () => {
               background-color: #ffffff;
               box-sizing: border-box;
               position: relative;
-              padding: 15mm ${xRight}mm 20mm ${xLeft}mm;
+              padding: 0mm ${xRight}mm 0mm ${xLeft}mm;
               display: flex;
               flex-direction: column;
             }
@@ -1631,7 +1631,7 @@ const DoctorDashboard = () => {
               footerContainer.innerHTML = getFooterHTML();
               const footer = footerContainer.firstElementChild;
               footer.style.position = 'absolute';
-              footer.style.bottom = bottomSpacer + 'mm';
+              footer.style.bottom = '10mm';
               footer.style.left = xLeftVal + 'mm';
               footer.style.right = xRightVal + 'mm';
               page.appendChild(footer);
