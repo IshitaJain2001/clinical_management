@@ -62,7 +62,15 @@ const superAdminHospitalSchema = new mongoose.Schema({
     storageUsed: { type: Number, default: 0 },
     storageLimit: { type: Number, default: 50 },
     patients: { type: Number, default: 0 }
-  }
+  },
+  prescriptionTemplates: [{
+    name: { type: String, required: true },
+    xLeft: { type: Number, default: 15 },
+    xRight: { type: Number, default: 15 },
+    yTop: { type: Number, default: 38 },
+    yBottom: { type: Number, default: 28 },
+    isStandard: { type: Boolean, default: false }
+  }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('SuperAdminHospital', superAdminHospitalSchema);

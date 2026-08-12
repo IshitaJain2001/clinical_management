@@ -1244,22 +1244,29 @@ const DoctorDashboard = () => {
         letterheadUrl = letterheadUrl.replace('http://', 'https://');
       }
       
-      // Auto-detect spacer margins based on letterhead image graphics
+      const templates = res.data?.prescriptionTemplates || [];
+      const standardTemplate = templates.find(t => t.isStandard);
+      
+      let xLeft = 15;
+      let xRight = 15;
       let topSpacerDetected = customSettings.topSpacer || 38;
       let bottomSpacerDetected = customSettings.bottomSpacer || 28;
-      
-      if (letterheadUrl) {
-        letterheadUrl = await convertPdfToImage(letterheadUrl);
-      }
-      
-      if (letterheadUrl) {
-        const detected = await detectLetterheadMargins(letterheadUrl);
-        topSpacerDetected = detected.top;
-        bottomSpacerDetected = detected.bottom;
+
+      if (standardTemplate) {
+        xLeft = standardTemplate.xLeft;
+        xRight = standardTemplate.xRight;
+        topSpacerDetected = (customSettings.topSpacer && customSettings.topSpacer !== 38) ? customSettings.topSpacer : standardTemplate.yTop;
+        bottomSpacerDetected = (customSettings.bottomSpacer && customSettings.bottomSpacer !== 28) ? customSettings.bottomSpacer : standardTemplate.yBottom;
       } else {
-        // If no custom letterhead image is set, fall back to clean compact margins
-        topSpacerDetected = 15;
-        bottomSpacerDetected = 20;
+        if (letterheadUrl) {
+          letterheadUrl = await convertPdfToImage(letterheadUrl);
+          const detected = await detectLetterheadMargins(letterheadUrl);
+          topSpacerDetected = detected.top;
+          bottomSpacerDetected = detected.bottom;
+        } else {
+          topSpacerDetected = 15;
+          bottomSpacerDetected = 20;
+        }
       }
 
       const iframe = document.createElement('iframe');
@@ -1342,7 +1349,7 @@ const DoctorDashboard = () => {
               background-color: #ffffff;
               box-sizing: border-box;
               position: relative;
-              padding: 15mm 15mm 20mm 15mm;
+              padding: 15mm ${xRight}mm 20mm ${xLeft}mm;
               display: flex;
               flex-direction: column;
             }
@@ -1465,6 +1472,8 @@ const DoctorDashboard = () => {
             const letterheadUrl = "${letterheadUrl || ''}";
             const topSpacer = ${topSpacerDetected};
             const bottomSpacer = ${bottomSpacerDetected};
+            const xLeftVal = ${xLeft};
+            const xRightVal = ${xRight};
             const initialFontSize = ${parseInt(customSettings.fontSize, 10) || 100};
 
             const patientName = ${JSON.stringify(cleanField(item.patient?.name || selectedPatient?.name))};
@@ -1622,9 +1631,9 @@ const DoctorDashboard = () => {
               footerContainer.innerHTML = getFooterHTML();
               const footer = footerContainer.firstElementChild;
               footer.style.position = 'absolute';
-              footer.style.bottom = '20mm';
-              footer.style.left = '15mm';
-              footer.style.right = '15mm';
+              footer.style.bottom = bottomSpacer + 'mm';
+              footer.style.left = xLeftVal + 'mm';
+              footer.style.right = xRightVal + 'mm';
               page.appendChild(footer);
               
               document.getElementById('pages-container').appendChild(page);

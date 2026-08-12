@@ -447,7 +447,10 @@ router.get("/letterhead", async (req, res) => {
     if (!hospital) {
       return res.status(404).json({ error: "Hospital tenant not found" });
     }
-    res.json({ letterheadUrl: hospital.letterheadUrl || "" });
+    res.json({ 
+      letterheadUrl: hospital.letterheadUrl || "",
+      prescriptionTemplates: hospital.prescriptionTemplates || []
+    });
   } catch (error) {
     console.error("Get letterhead error:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -498,6 +501,118 @@ router.post("/letterhead-clear", isAdmin, async (req, res) => {
     res.json({ success: true, letterheadUrl: "" });
   } catch (error) {
     console.error("Clear letterhead error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Save or update prescription template
+router.post("/prescription-templates", isAdmin, async (req, res) => {
+  try {
+    const { id, name, xLeft, xRight, yTop, yBottom, isStandard } = req.body;
+    if (!name) {
+      return res.status(400).json({ error: "Template name is required." });
+    }
+
+    const hospital = await SuperAdminHospital.findOne({ code: req.tenantId });
+    if (!hospital) {
+      return res.status(404).json({ error: "Hospital tenant not found" });
+    }
+
+    if (!hospital.prescriptionTemplates) {
+      hospital.prescriptionTemplates = [];
+    }
+
+    if (id) {
+      // Update existing template
+      const tpl = hospital.prescriptionTemplates.id(id);
+      if (tpl) {
+        tpl.name = name;
+        tpl.xLeft = xLeft || 15;
+        tpl.xRight = xRight || 15;
+        tpl.yTop = yTop || 38;
+        tpl.yBottom = yBottom || 28;
+        if (isStandard) {
+          hospital.prescriptionTemplates.forEach(t => t.isStandard = false);
+          tpl.isStandard = true;
+        }
+      } else {
+        return res.status(404).json({ error: "Template not found." });
+      }
+    } else {
+      // Create new template
+      if (isStandard || hospital.prescriptionTemplates.length === 0) {
+        hospital.prescriptionTemplates.forEach(t => t.isStandard = false);
+      }
+      hospital.prescriptionTemplates.push({
+        name,
+        xLeft: xLeft || 15,
+        xRight: xRight || 15,
+        yTop: yTop || 38,
+        yBottom: yBottom || 28,
+        isStandard: isStandard || hospital.prescriptionTemplates.length === 0
+      });
+    }
+
+    await hospital.save();
+    res.json({ success: true, prescriptionTemplates: hospital.prescriptionTemplates });
+  } catch (error) {
+    console.error("Save template error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Set template as standard (active)
+router.post("/prescription-templates/set-standard", isAdmin, async (req, res) => {
+  try {
+    const { id } = req.body;
+    const hospital = await SuperAdminHospital.findOne({ code: req.tenantId });
+    if (!hospital) {
+      return res.status(404).json({ error: "Hospital tenant not found" });
+    }
+
+    let found = false;
+    hospital.prescriptionTemplates.forEach(t => {
+      if (t._id.toString() === id) {
+        t.isStandard = true;
+        found = true;
+      } else {
+        t.isStandard = false;
+      }
+    });
+
+    if (!found) {
+      return res.status(404).json({ error: "Template not found." });
+    }
+
+    await hospital.save();
+    res.json({ success: true, prescriptionTemplates: hospital.prescriptionTemplates });
+  } catch (error) {
+    console.error("Set standard template error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Delete prescription template
+router.delete("/prescription-templates/:id", isAdmin, async (req, res) => {
+  try {
+    const hospital = await SuperAdminHospital.findOne({ code: req.tenantId });
+    if (!hospital) {
+      return res.status(404).json({ error: "Hospital tenant not found" });
+    }
+
+    hospital.prescriptionTemplates = hospital.prescriptionTemplates.filter(
+      t => t._id.toString() !== req.params.id
+    );
+
+    // If we deleted the standard one and there are templates left, make the first one standard
+    if (hospital.prescriptionTemplates.length > 0 && !hospital.prescriptionTemplates.some(t => t.isStandard)) {
+      hospital.prescriptionTemplates[0].isStandard = true;
+    }
+
+    await hospital.save();
+    res.json({ success: true, prescriptionTemplates: hospital.prescriptionTemplates });
+  } catch (error) {
+    console.error("Delete template error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });

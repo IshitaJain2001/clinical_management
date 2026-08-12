@@ -91,6 +91,16 @@ const AdminDashboard = () => {
   const [letterheadPreviewImage, setLetterheadPreviewImage] = useState(null);
   const [letterheadBlobUrl, setLetterheadBlobUrl] = useState(null);
 
+  // Prescription template layout states
+  const [prescriptionTemplates, setPrescriptionTemplates] = useState([]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState('');
+  const [templateName, setTemplateName] = useState('New Template');
+  const [xLeft, setXLeft] = useState(15);
+  const [xRight, setXRight] = useState(15);
+  const [yTop, setYTop] = useState(38);
+  const [yBottom, setYBottom] = useState(28);
+  const [sampleSize, setSampleSize] = useState('medium');
+
   useEffect(() => {
     if (!letterheadPreviewImage) {
       setLetterheadBlobUrl(null);
@@ -115,7 +125,7 @@ const AdminDashboard = () => {
       activeBlobUrl = URL.createObjectURL(blob);
       setLetterheadBlobUrl(activeBlobUrl);
     } catch (err) {
-      console.error("Failed to generate Blob URL:", err);
+      console.warn("Failed to build Blob URL:", err);
       setLetterheadBlobUrl(letterheadPreviewImage);
     }
 
@@ -132,28 +142,126 @@ const AdminDashboard = () => {
     return `${baseClean}${pathClean}`;
   };
 
-  // Fetch current letterhead URL when tab changes to letterhead
+  // Fetch current letterhead URL and templates when tab changes to letterhead
   useEffect(() => {
     if (activeTab === 'letterhead') {
       const fetchLetterhead = async () => {
         try {
           const res = await api.get('/admin/letterhead');
-          if (res.data && res.data.letterheadUrl) {
-            const absoluteUrl = getAbsoluteUrl(res.data.letterheadUrl);
-            setLetterheadUrl(absoluteUrl);
-            const imgPreview = await convertPdfToImage(absoluteUrl);
-            setLetterheadPreviewImage(imgPreview);
-          } else {
-            setLetterheadUrl('');
-            setLetterheadPreviewImage(null);
+          if (res.data) {
+            if (res.data.letterheadUrl) {
+              const absoluteUrl = getAbsoluteUrl(res.data.letterheadUrl);
+              setLetterheadUrl(absoluteUrl);
+              const imgPreview = await convertPdfToImage(absoluteUrl);
+              setLetterheadPreviewImage(imgPreview);
+            } else {
+              setLetterheadUrl('');
+              setLetterheadPreviewImage(null);
+            }
+            
+            const tpls = res.data.prescriptionTemplates || [];
+            setPrescriptionTemplates(tpls);
+            
+            // Auto-load standard template
+            const standard = tpls.find(t => t.isStandard);
+            if (standard) {
+              setSelectedTemplateId(standard._id);
+              setTemplateName(standard.name);
+              setXLeft(standard.xLeft);
+              setXRight(standard.xRight);
+              setYTop(standard.yTop);
+              setYBottom(standard.yBottom);
+            } else if (tpls.length > 0) {
+              setSelectedTemplateId(tpls[0]._id);
+              setTemplateName(tpls[0].name);
+              setXLeft(tpls[0].xLeft);
+              setXRight(tpls[0].xRight);
+              setYTop(tpls[0].yTop);
+              setYBottom(tpls[0].yBottom);
+            }
           }
         } catch (err) {
-          console.error("Failed to fetch letterhead:", err);
+          console.error("Failed to fetch letterhead/templates:", err);
         }
       };
       fetchLetterhead();
     }
   }, [activeTab]);
+
+  const handleSaveTemplate = async () => {
+    try {
+      const payload = {
+        id: selectedTemplateId || undefined,
+        name: templateName,
+        xLeft: parseInt(xLeft, 10),
+        xRight: parseInt(xRight, 10),
+        yTop: parseInt(yTop, 10),
+        yBottom: parseInt(yBottom, 10)
+      };
+
+      const res = await api.post('/admin/prescription-templates', payload);
+      if (res.data?.success) {
+        showToast("Template saved successfully!", "success");
+        setPrescriptionTemplates(res.data.prescriptionTemplates);
+        if (!selectedTemplateId && res.data.prescriptionTemplates.length > 0) {
+          const latest = res.data.prescriptionTemplates[res.data.prescriptionTemplates.length - 1];
+          setSelectedTemplateId(latest._id);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      showToast(err.response?.data?.error || "Failed to save template.", "error");
+    }
+  };
+
+  const handleSetStandard = async (id) => {
+    try {
+      const res = await api.post('/admin/prescription-templates/set-standard', { id });
+      if (res.data?.success) {
+        showToast("Standard template updated!", "success");
+        setPrescriptionTemplates(res.data.prescriptionTemplates);
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Failed to set standard template.", "error");
+    }
+  };
+
+  const handleDeleteTemplate = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this template?")) return;
+    try {
+      const res = await api.delete(`/admin/prescription-templates/${id}`);
+      if (res.data?.success) {
+        showToast("Template deleted successfully.", "success");
+        const remaining = res.data.prescriptionTemplates;
+        setPrescriptionTemplates(remaining);
+        if (selectedTemplateId === id) {
+          if (remaining.length > 0) {
+            setSelectedTemplateId(remaining[0]._id);
+            setTemplateName(remaining[0].name);
+            setXLeft(remaining[0].xLeft);
+            setXRight(remaining[0].xRight);
+            setYTop(remaining[0].yTop);
+            setYBottom(remaining[0].yBottom);
+          } else {
+            handleResetToDefault();
+          }
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Failed to delete template.", "error");
+    }
+  };
+
+  const handleResetToDefault = () => {
+    setSelectedTemplateId('');
+    setTemplateName('Default Layout');
+    setXLeft(15);
+    setXRight(15);
+    setYTop(38);
+    setYBottom(28);
+  };
 
   const handleLetterheadFileChange = async (e) => {
     const file = e.target.files[0];
@@ -10114,6 +10222,475 @@ const AdminDashboard = () => {
                     )}
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Template & Layout Configurator */}
+            <div className="dashboard-widget-card" style={{ padding: '28px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', marginTop: '24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <div>
+                  <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', margin: 0 }}>Prescription Layout & Safe Area Coordinator</h3>
+                  <p style={{ color: '#64748B', fontSize: '12px', margin: '4px 0 0 0' }}>
+                    Configure the margins and padding offsets to overlay prescription text on custom letterheads.
+                  </p>
+                </div>
+                <button 
+                  onClick={handleResetToDefault}
+                  className="btn-secondary"
+                  style={{ padding: '6px 12px', fontSize: '12px', height: '34px', cursor: 'pointer', borderRadius: '6px' }}
+                >
+                  Reset to Default
+                </button>
+              </div>
+
+              {/* Template selection list */}
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', background: '#F8FAFC', padding: '12px', borderRadius: '8px', border: '1px solid #E2E8F0', marginBottom: '20px' }}>
+                <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569' }}>Select Template:</span>
+                <select 
+                  style={{ height: '34px', padding: '0 8px', fontSize: '12.5px', borderRadius: '6px', minWidth: '180px' }}
+                  value={selectedTemplateId}
+                  onChange={(e) => {
+                    const id = e.target.value;
+                    setSelectedTemplateId(id);
+                    const tpl = prescriptionTemplates.find(t => t._id === id);
+                    if (tpl) {
+                      setTemplateName(tpl.name);
+                      setXLeft(tpl.xLeft);
+                      setXRight(tpl.xRight);
+                      setYTop(tpl.yTop);
+                      setYBottom(tpl.yBottom);
+                    } else {
+                      handleResetToDefault();
+                    }
+                  }}
+                >
+                  <option value="">-- Create New Template --</option>
+                  {prescriptionTemplates.map(t => (
+                    <option key={t._id} value={t._id}>
+                      {t.name} {t.isStandard ? '★ Standard' : ''}
+                    </option>
+                  ))}
+                </select>
+                {selectedTemplateId && (
+                  <>
+                    <button 
+                      onClick={() => handleSetStandard(selectedTemplateId)}
+                      className="btn-primary"
+                      style={{ padding: '6px 12px', fontSize: '12px', height: '34px', background: '#10B981', color: '#FFF', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
+                    >
+                      Set Active / Standard
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteTemplate(selectedTemplateId)}
+                      className="btn-secondary"
+                      style={{ padding: '6px 12px', fontSize: '12px', height: '34px', background: '#FEE2E2', color: '#DC2626', border: '1px solid #FCA5A5', borderRadius: '6px', cursor: 'pointer' }}
+                    >
+                      Delete
+                    </button>
+                  </>
+                )}
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '30px', alignItems: 'start' }}>
+                {/* Visual control sidebar */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569' }}>Template Name</span>
+                    <input 
+                      type="text"
+                      className="form-control"
+                      style={{ height: '38px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                      value={templateName}
+                      onChange={(e) => setTemplateName(e.target.value)}
+                      placeholder="e.g. Clinic A Letterhead"
+                    />
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569' }}>X Left Margin (mm)</span>
+                      <input 
+                        type="number"
+                        className="form-control"
+                        style={{ height: '38px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                        value={xLeft}
+                        min={0}
+                        max={80}
+                        onChange={(e) => setXLeft(Math.max(0, Math.min(80, parseInt(e.target.value, 10) || 0)))}
+                      />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569' }}>X Right Margin (mm)</span>
+                      <input 
+                        type="number"
+                        className="form-control"
+                        style={{ height: '38px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                        value={xRight}
+                        min={0}
+                        max={80}
+                        onChange={(e) => setXRight(Math.max(0, Math.min(80, parseInt(e.target.value, 10) || 0)))}
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569' }}>Y Top Margin (mm)</span>
+                      <input 
+                        type="number"
+                        className="form-control"
+                        style={{ height: '38px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                        value={yTop}
+                        min={0}
+                        max={180}
+                        onChange={(e) => setYTop(Math.max(0, Math.min(180, parseInt(e.target.value, 10) || 0)))}
+                      />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569' }}>Y Bottom Margin (mm)</span>
+                      <input 
+                        type="number"
+                        className="form-control"
+                        style={{ height: '38px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                        value={yBottom}
+                        min={0}
+                        max={180}
+                        onChange={(e) => setYBottom(Math.max(0, Math.min(180, parseInt(e.target.value, 10) || 0)))}
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569' }}>Mock Prescription Content Size</span>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      {['small', 'medium', 'large'].map(sz => (
+                        <button
+                          key={sz}
+                          type="button"
+                          onClick={() => setSampleSize(sz)}
+                          style={{
+                            flex: 1,
+                            padding: '8px',
+                            borderRadius: '6px',
+                            border: sampleSize === sz ? '1.5px solid #2563EB' : '1px solid #CBD5E1',
+                            background: sampleSize === sz ? '#EFF6FF' : '#FFFFFF',
+                            color: sampleSize === sz ? '#2563EB' : '#475569',
+                            fontWeight: 700,
+                            fontSize: '12px',
+                            cursor: 'pointer',
+                            textTransform: 'capitalize'
+                          }}
+                        >
+                          {sz}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Calculations and Info */}
+                  <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '14px', borderRadius: '10px', fontSize: '12.5px', color: '#334155' }}>
+                    <div style={{ fontWeight: 800, color: '#0F172A', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                      Calculated Available Dimensions (A4 Page):
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span>Available Width:</span>
+                      <strong>{210 - xLeft - xRight} mm</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span>Available Height:</span>
+                      <strong>{297 - yTop - yBottom} mm</strong>
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={handleSaveTemplate}
+                    className="btn-primary"
+                    style={{ background: '#2563EB', padding: '12px', borderRadius: '8px', color: '#FFF', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: '13px' }}
+                  >
+                    {selectedTemplateId ? "Update Template Settings" : "Save as Standard Template"}
+                  </button>
+                </div>
+
+                {/* Drag-to-resize A4 Workspace Preview */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, marginBottom: '8px' }}>
+                    Tip: Drag the red dashed boundary guidelines in the preview below to configure offsets.
+                  </span>
+                  
+                  {/* Interactive A4 Sheet Mock */}
+                  <div 
+                    id="a4-template-workspace"
+                    style={{
+                      width: '420px',
+                      height: '594px',
+                      background: '#FFFFFF',
+                      border: '1px solid #94A3B8',
+                      boxShadow: '0 10px 25px rgba(0,0,0,0.08)',
+                      borderRadius: '4px',
+                      position: 'relative',
+                      overflow: 'hidden',
+                      backgroundImage: letterheadPreviewImage ? `url(${letterheadPreviewImage})` : 'none',
+                      backgroundSize: '100% 100%',
+                      backgroundRepeat: 'no-repeat',
+                      userSelect: 'none'
+                    }}
+                  >
+                    {/* Safe Content Area Border Box */}
+                    <div style={{
+                      position: 'absolute',
+                      left: `${xLeft * 2}px`,
+                      right: `${xRight * 2}px`,
+                      top: `${yTop * 2}px`,
+                      bottom: `${yBottom * 2}px`,
+                      border: '1.5px dashed #EF4444',
+                      background: 'rgba(239, 68, 68, 0.03)',
+                      pointerEvents: 'none',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      boxSizing: 'border-box'
+                    }}>
+                      {/* Inner sample prescription content */}
+                      <div style={{
+                        padding: '10px',
+                        fontSize: '9px',
+                        lineHeight: 1.3,
+                        color: '#1E293B',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        height: '100%',
+                        overflow: 'hidden'
+                      }}>
+                        {/* Patient info block */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E2E8F0', paddingBottom: '4px', marginBottom: '6px', fontWeight: 700 }}>
+                          <div>
+                            <div>Patient: Jane Doe</div>
+                            <div>Age/Gender: 28 Yrs / Female</div>
+                          </div>
+                          <div style={{ textAlign: 'right' }}>
+                            <div>Date: 12-Aug-2026</div>
+                            <div>ID: P-98214</div>
+                          </div>
+                        </div>
+
+                        {/* Rx icon */}
+                        <div style={{ fontSize: '14px', fontWeight: 900, color: '#2563EB', marginBottom: '4px' }}>Rx</div>
+
+                        {/* Medicines List */}
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '8.5px' }}>
+                            <span>Medicine Name</span>
+                            <span>Dosage / Duration</span>
+                          </div>
+                          
+                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>1. Tab Paracetamol 650mg</span>
+                            <span>1-0-1 | After food (5 Days)</span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>2. Cap Amoxicillin 500mg</span>
+                            <span>1-1-1 | Daily (7 Days)</span>
+                          </div>
+
+                          {(sampleSize === 'medium' || sampleSize === 'large') && (
+                            <>
+                              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span>3. Syr Cough Relief 10ml</span>
+                                <span>0-0-1 | At bedtime (5 Days)</span>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span>4. Multivitamin Gels</span>
+                                <span>0-1-0 | Once daily (30 Days)</span>
+                              </div>
+                            </>
+                          )}
+
+                          {sampleSize === 'large' && (
+                            <>
+                              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span>5. Tab Cetirizine 10mg</span>
+                                <span>0-0-1 | SOS (10 Days)</span>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span>6. Antacid Suspension</span>
+                                <span>1-0-1 | Before meals (14 Days)</span>
+                              </div>
+                            </>
+                          )}
+                        </div>
+
+                        {/* Diagnostic Tests */}
+                        <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '4px', marginTop: '6px' }}>
+                          <div style={{ fontWeight: 700, fontSize: '8.5px', color: '#2563EB' }}>Investigations & Tests:</div>
+                          <div style={{ display: 'flex', gap: '12px', marginTop: '2px' }}>
+                            <span>• Complete Blood Count (CBC)</span>
+                            <span>• Thyroid Profile (T3, T4, TSH)</span>
+                          </div>
+                          {sampleSize === 'large' && (
+                            <div style={{ display: 'flex', gap: '12px' }}>
+                              <span>• Fasting Blood Sugar (FBS)</span>
+                              <span>• Urine Routine & Microscopy</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Signature block */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto', paddingTop: '8px', borderTop: '1px solid #E2E8F0' }}>
+                          <div>
+                            <span style={{ fontSize: '8px', color: '#64748B' }}>Instructions: Drink warm water.</span>
+                          </div>
+                          <div style={{ textAlign: 'center', width: '90px' }}>
+                            <div style={{ borderBottom: '1px solid #475569', height: '14px', marginBottom: '2px' }}></div>
+                            <div style={{ fontWeight: 700, fontSize: '8px' }}>Dr. Alexander</div>
+                            <div style={{ fontSize: '7.5px', color: '#64748B' }}>DMC-98765</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Draggable Top Boundary Guideline */}
+                    <div 
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        const startY = e.clientY;
+                        const startVal = yTop;
+                        const onMouseMove = (moveEvent) => {
+                          const deltaY = moveEvent.clientY - startY;
+                          const deltaMM = Math.round(deltaY / 2);
+                          setYTop(Math.max(0, Math.min(180, startVal + deltaMM)));
+                        };
+                        const onMouseUp = () => {
+                          window.removeEventListener('mousemove', onMouseMove);
+                          window.removeEventListener('mouseup', onMouseUp);
+                        };
+                        window.addEventListener('mousemove', onMouseMove);
+                        window.addEventListener('mouseup', onMouseUp);
+                      }}
+                      style={{
+                        position: 'absolute',
+                        top: `${yTop * 2}px`,
+                        left: 0,
+                        right: 0,
+                        height: '6px',
+                        cursor: 'ns-resize',
+                        background: 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 10
+                      }}
+                    >
+                      <div style={{ width: '100%', height: '1.5px', background: '#EF4444' }}></div>
+                    </div>
+
+                    {/* Draggable Bottom Boundary Guideline */}
+                    <div 
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        const startY = e.clientY;
+                        const startVal = yBottom;
+                        const onMouseMove = (moveEvent) => {
+                          const deltaY = startY - moveEvent.clientY;
+                          const deltaMM = Math.round(deltaY / 2);
+                          setYBottom(Math.max(0, Math.min(180, startVal + deltaMM)));
+                        };
+                        const onMouseUp = () => {
+                          window.removeEventListener('mousemove', onMouseMove);
+                          window.removeEventListener('mouseup', onMouseUp);
+                        };
+                        window.addEventListener('mousemove', onMouseMove);
+                        window.addEventListener('mouseup', onMouseUp);
+                      }}
+                      style={{
+                        position: 'absolute',
+                        bottom: `${yBottom * 2}px`,
+                        left: 0,
+                        right: 0,
+                        height: '6px',
+                        cursor: 'ns-resize',
+                        background: 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 10
+                      }}
+                    >
+                      <div style={{ width: '100%', height: '1.5px', background: '#EF4444' }}></div>
+                    </div>
+
+                    {/* Draggable Left Boundary Guideline */}
+                    <div 
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        const startX = e.clientX;
+                        const startVal = xLeft;
+                        const onMouseMove = (moveEvent) => {
+                          const deltaX = moveEvent.clientX - startX;
+                          const deltaMM = Math.round(deltaX / 2);
+                          setXLeft(Math.max(0, Math.min(80, startVal + deltaMM)));
+                        };
+                        const onMouseUp = () => {
+                          window.removeEventListener('mousemove', onMouseMove);
+                          window.removeEventListener('mouseup', onMouseUp);
+                        };
+                        window.addEventListener('mousemove', onMouseMove);
+                        window.addEventListener('mouseup', onMouseUp);
+                      }}
+                      style={{
+                        position: 'absolute',
+                        left: `${xLeft * 2}px`,
+                        top: 0,
+                        bottom: 0,
+                        width: '6px',
+                        cursor: 'ew-resize',
+                        background: 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 10
+                      }}
+                    >
+                      <div style={{ height: '100%', width: '1.5px', background: '#EF4444' }}></div>
+                    </div>
+
+                    {/* Draggable Right Boundary Guideline */}
+                    <div 
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        const startX = e.clientX;
+                        const startVal = xRight;
+                        const onMouseMove = (moveEvent) => {
+                          const deltaX = startX - moveEvent.clientX;
+                          const deltaMM = Math.round(deltaX / 2);
+                          setXRight(Math.max(0, Math.min(80, startVal + deltaMM)));
+                        };
+                        const onMouseUp = () => {
+                          window.removeEventListener('mousemove', onMouseMove);
+                          window.removeEventListener('mouseup', onMouseUp);
+                        };
+                        window.addEventListener('mousemove', onMouseMove);
+                        window.addEventListener('mouseup', onMouseUp);
+                      }}
+                      style={{
+                        position: 'absolute',
+                        right: `${xRight * 2}px`,
+                        top: 0,
+                        bottom: 0,
+                        width: '6px',
+                        cursor: 'ew-resize',
+                        background: 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 10
+                      }}
+                    >
+                      <div style={{ height: '100%', width: '1.5px', background: '#EF4444' }}></div>
+                    </div>
+
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
