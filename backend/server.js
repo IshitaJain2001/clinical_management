@@ -185,14 +185,14 @@ const { checkModule } = require("./middleware/subscriptionMiddleware");
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api/patients", checkModule("reception"), patientRoutes);
-app.use("/api/appointments", checkModule("reception"), appointmentRoutes);
+app.use("/api/patients", checkModule(["reception", "doctor"]), patientRoutes);
+app.use("/api/appointments", checkModule(["reception", "doctor"]), appointmentRoutes);
 app.use("/api/prescriptions", checkModule("doctor"), prescriptionRoutes);
 app.use("/api/labs", checkModule("laboratory"), labRoutes);
 app.use("/api/lab-tests", checkModule("laboratory"), labTestRoutes);
 app.use("/api/lab-inventory", checkModule("laboratory"), labInventoryRoutes);
 app.use("/api/billing", checkModule("reception"), billingRoutes);
-app.use("/api/medicines", checkModule("pharmacy"), medicineRoutes);
+app.use("/api/medicines", checkModule(["pharmacy", "doctor"]), medicineRoutes);
 app.use("/api/indents", checkModule("inventory"), indentRoutes);
 app.use("/api/permissions", permissionRoutes);
 app.use("/api/approvals", approvalRoutes);

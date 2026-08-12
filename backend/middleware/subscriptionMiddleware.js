@@ -37,10 +37,11 @@ const checkModule = (moduleName) => {
       }
 
       // 4. Validate module access
-      const moduleConf = hospital.modules[moduleName];
-      if (!moduleConf || !moduleConf.enabled) {
+      const modulesToCheck = Array.isArray(moduleName) ? moduleName : [moduleName];
+      const hasAccess = modulesToCheck.some(mod => hospital.modules && hospital.modules[mod] && hospital.modules[mod].enabled);
+      if (!hasAccess) {
         return res.status(403).json({
-          error: `Access Denied. The ${moduleName.toUpperCase()} module is not enabled for your hospital's subscription plan.`
+          error: `Access Denied. None of the required modules (${modulesToCheck.join(', ').toUpperCase()}) are enabled for your hospital's subscription plan.`
         });
       }
 

@@ -705,7 +705,7 @@ const Login = () => {
 
           <div className="mockup-image-container">
             <img 
-              src="/curoxa_login_promo.png" 
+              src="/curoxa_login_promo.jpg" 
               alt="Curoxa App Mockup" 
               className="mockup-img"
               onError={(e) => {
