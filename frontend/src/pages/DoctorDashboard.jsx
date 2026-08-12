@@ -1534,7 +1534,7 @@ const DoctorDashboard = () => {
                 '<div class="' + presetClass + '">' +
                   logoHTML +
                   '<div style="flex-grow: 1;">' +
-                    '<h1 style="margin: 0; color: ' + accentColor + '; font-family: \"Outfit\", sans-serif; font-size: 20px; font-weight: 900; text-transform: uppercase;">' + clinicName + '</h1>' +
+                    '<h1 style="margin: 0; color: ' + accentColor + '; font-family: Outfit, sans-serif; font-size: 20px; font-weight: 900; text-transform: uppercase;">' + clinicName + '</h1>' +
                     '<p style="margin: 2px 0; color: #334155; font-size: 9px; font-weight: 700; text-transform: uppercase;">' + subtitle + '</p>' +
                     '<p style="margin: 0; color: #64748b; font-size: 8px; font-weight: 600;">E-mail: info@' + clinicName.toLowerCase().replace(/\s+/g, '') + '.com &nbsp;&nbsp;•&nbsp;&nbsp; OPD Portal</p>' +
                   '</div>' +
@@ -1568,7 +1568,7 @@ const DoctorDashboard = () => {
             }
 
             function getFooterHTML() {
-              return '<div style="text-align: center; font-family: \"Outfit\", sans-serif; font-size: 10px; font-weight: bold; color: #800020; border-top: 1px solid #E2E8F0; padding-top: 6px; background: white;">' +
+              return '<div style="text-align: center; font-family: Outfit, sans-serif; font-size: 10px; font-weight: bold; color: #800020; border-top: 1px solid #E2E8F0; padding-top: 6px; background: white;">' +
                 'Thank you for trusting us with your health. Get well soon!' +
               '</div>';
             }
@@ -1682,7 +1682,7 @@ const DoctorDashboard = () => {
               function getDiagnosisHTML() {
                 if (!diagnosis || diagnosis === '—') return '';
                 return '<div style="margin-bottom: 12px; page-break-inside: avoid; break-inside: avoid;">' +
-                  '<div style="font-family: \'Outfit\', sans-serif; font-size: 12px; font-weight: 900; color: #800020; border-bottom: 1.5px solid #800020; padding-bottom: 3px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Diagnosis</div>' +
+                  '<div style="font-family: Outfit, sans-serif; font-size: 12px; font-weight: 900; color: #800020; border-bottom: 1.5px solid #800020; padding-bottom: 3px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Diagnosis</div>' +
                   '<div style="font-size: 11px; font-weight: 700; color: #1E293B; padding-left: 2px;">' + diagnosis + '</div>' +
                 '</div>';
               }
@@ -1690,7 +1690,7 @@ const DoctorDashboard = () => {
               function getSoapNotesHTML() {
                 if (!soapNotes || soapNotes === '—') return '';
                 return '<div style="margin-bottom: 12px; page-break-inside: avoid; break-inside: avoid;">' +
-                  '<div style="font-family: \'Outfit\', sans-serif; font-size: 12px; font-weight: 900; color: #800020; border-bottom: 1.5px solid #800020; padding-bottom: 3px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Clinical SOAP Notes</div>' +
+                  '<div style="font-family: Outfit, sans-serif; font-size: 12px; font-weight: 900; color: #800020; border-bottom: 1.5px solid #800020; padding-bottom: 3px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Clinical SOAP Notes</div>' +
                   '<div style="font-size: 10.5px; font-weight: 600; color: #475569; white-space: pre-wrap; padding-left: 2px; line-height: 1.4;">' + soapNotes + '</div>' +
                 '</div>';
               }
@@ -1726,7 +1726,7 @@ const DoctorDashboard = () => {
                   }
                   
                   blockHTML = '<div style="margin-bottom: 15px; page-break-inside: avoid; break-inside: avoid;">' +
-                    '<div style="font-family: \'Outfit\', sans-serif; font-size: 12px; font-weight: 900; color: #800020; border-bottom: 1.5px solid #800020; padding-bottom: 3px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Investigations & Tests ' + (start > 0 ? '(Contd.)' : '') + '</div>' +
+                    '<div style="font-family: Outfit, sans-serif; font-size: 12px; font-weight: 900; color: #800020; border-bottom: 1.5px solid #800020; padding-bottom: 3px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Investigations & Tests ' + (start > 0 ? '(Contd.)' : '') + '</div>' +
                     '<div style="display: grid; grid-template-columns: repeat(' + cols + ', 1fr); gap: 4px 12px; padding-left: 2px;">' + itemsHTML + '</div>' +
                   '</div>';
                   
@@ -1776,7 +1776,7 @@ const DoctorDashboard = () => {
                   }
                   
                   blockHTML = '<div style="margin-bottom: 15px; page-break-inside: avoid; break-inside: avoid;">' +
-                    '<div style="font-family: \'Outfit\', sans-serif; font-size: 12px; font-weight: 900; color: #800020; border-bottom: 1.5px solid #800020; padding-bottom: 3px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Rx (Prescribed Medicines) ' + (start > 0 ? '(Contd.)' : '') + '</div>' +
+                    '<div style="font-family: Outfit, sans-serif; font-size: 12px; font-weight: 900; color: #800020; border-bottom: 1.5px solid #800020; padding-bottom: 3px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Rx (Prescribed Medicines) ' + (start > 0 ? '(Contd.)' : '') + '</div>' +
                     '<div style="display: flex; flex-direction: column; gap: 4px; padding-left: 2px;">' + itemsHTML + '</div>' +
                   '</div>';
                   
