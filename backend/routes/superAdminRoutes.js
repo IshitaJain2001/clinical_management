@@ -620,6 +620,11 @@ router.post('/upload-compliance', upload.single('document'), async (req, res) =>
 
 router.put('/onboarding/:id', async (req, res) => {
   try {
+    const onboardingExist = await SuperAdminOnboarding.findById(req.params.id);
+    if (!onboardingExist) {
+      return res.status(404).json({ error: 'Onboarding record not found' });
+    }
+
     if (req.body.panNumber) {
       const val = verifyPAN(req.body.panNumber);
       if (!val.success) return res.status(400).json({ error: val.error });
@@ -632,7 +637,9 @@ router.put('/onboarding/:id', async (req, res) => {
       const dupOnb = await SuperAdminOnboarding.findOne({ gstin: req.body.gstin.trim(), _id: { $ne: req.params.id } });
       if (dupOnb) return res.status(400).json({ error: `GSTIN '${req.body.gstin}' is already registered in another onboarding setup.` });
       const dupHosp = await SuperAdminHospital.findOne({ gst: req.body.gstin.trim() });
-      if (dupHosp) return res.status(400).json({ error: `GSTIN '${req.body.gstin}' is already in use by an active hospital (${dupHosp.name}).` });
+      if (dupHosp && dupHosp.name.toLowerCase().trim() !== onboardingExist.name.toLowerCase().trim()) {
+        return res.status(400).json({ error: `GSTIN '${req.body.gstin}' is already in use by an active hospital (${dupHosp.name}).` });
+      }
     }
     if (req.body.corpId) {
       const val = verifyCIN(req.body.corpId);
@@ -646,7 +653,9 @@ router.put('/onboarding/:id', async (req, res) => {
       const dupOnb = await SuperAdminOnboarding.findOne({ drugLicense: req.body.drugLicense.trim(), _id: { $ne: req.params.id } });
       if (dupOnb) return res.status(400).json({ error: `Drug License '${req.body.drugLicense}' is already registered in another onboarding setup.` });
       const dupHosp = await SuperAdminHospital.findOne({ license: req.body.drugLicense.trim() });
-      if (dupHosp) return res.status(400).json({ error: `Drug License '${req.body.drugLicense}' is already in use by an active hospital (${dupHosp.name}).` });
+      if (dupHosp && dupHosp.name.toLowerCase().trim() !== onboardingExist.name.toLowerCase().trim()) {
+        return res.status(400).json({ error: `Drug License '${req.body.drugLicense}' is already in use by an active hospital (${dupHosp.name}).` });
+      }
     }
     if (req.body.fireSafetyCertificate) {
       const val = verifyCertificate(req.body.fireSafetyCertificate);
