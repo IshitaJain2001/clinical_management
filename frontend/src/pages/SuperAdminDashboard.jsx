@@ -3109,8 +3109,8 @@ const SuperAdminDashboard = () => {
                         type="text" 
                         style={styles.formInput}
                         maxLength={10}
-                        value={wizardHospital.contactPhone || ''} 
-                        onChange={e => updateWizardField('contactPhone', e.target.value.replace(/[^0-9]/g, ''))} 
+                        value={wizardHospital.contactMobile || ''} 
+                        onChange={e => updateWizardField('contactMobile', e.target.value.replace(/[^0-9]/g, ''))} 
                       />
                     </div>
                   </div>
