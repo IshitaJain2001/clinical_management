@@ -4,6 +4,7 @@ import api from '../utils/api';
 import HRPayroll from './HRPayroll';
 import SearchableDropdown from '../components/SearchableDropdown';
 import { convertPdfToImage } from '../utils/pdfHelper';
+import { printPO, printGRN } from '../utils/printDocHelper';
 
 const permissionNames = {
   'dr-consult': 'Patient consultation notes',
@@ -2739,10 +2740,8 @@ const PharmacyDashboard = () => {
           }}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
-        </button>
-
-        <div className="top-nav-search">
-          <i data-lucide="search" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8', width: '16px' }}></i>
+         <div className="top-nav-search" style={{ position: 'relative' }}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input 
             type="text" 
             style={{ 
@@ -2761,18 +2760,18 @@ const PharmacyDashboard = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-
+ 
         {/* Notification Bell */}
         <div 
           ref={notificationRef}
-          style={{ position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '8px', border: '1px solid #E2E8F0', color: '#64748B' }}
+          style={{ position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '8px', border: '1px solid #E2E8F0', color: '#64748B', background: 'white' }}
           onClick={() => {
             setShowNotifications(!showNotifications);
             setUnreadCount(0);
           }}
         >
-          <i data-lucide="bell" style={{ width: '18px', height: '18px' }}></i>
-          {unreadCount > 0 && (
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+           {unreadCount > 0 && (
             <span style={{ position: 'absolute', top: '-4px', right: '-4px', background: '#EF4444', color: 'white', borderRadius: '50%', width: '18px', height: '18px', fontSize: '10px', fontWeight: '900', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid white' }}>
               {unreadCount}
             </span>
@@ -4337,6 +4336,7 @@ const PharmacyDashboard = () => {
                           <th>Total Amount</th>
                           <th>Status</th>
                           <th>Requested By</th>
+                          <th style={{ textAlign: 'center' }}>Actions</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -4359,11 +4359,19 @@ const PharmacyDashboard = () => {
                               </span>
                             </td>
                             <td style={{ fontWeight: 600, color: '#64748B' }}>{po.requestedBy}</td>
+                            <td style={{ textAlign: 'center' }}>
+                              <button 
+                                style={{ padding: '6px 12px', fontSize: '12px', background: '#3B82F6', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 700, cursor: 'pointer' }}
+                                onClick={() => printPO(po, currentUser?.tenantName || 'CUROXA HEALTHCARE')}
+                              >
+                                📄 PDF
+                              </button>
+                            </td>
                           </tr>
                         ))}
                         {purchaseOrders.length === 0 && (
                           <tr>
-                            <td colSpan="6" style={{ textAlign: 'center', padding: '24px', color: '#64748B' }}>No purchase orders created.</td>
+                            <td colSpan="7" style={{ textAlign: 'center', padding: '24px', color: '#64748B' }}>No purchase orders created.</td>
                           </tr>
                         )}
                       </tbody>
@@ -4475,6 +4483,12 @@ const PharmacyDashboard = () => {
                                   onClick={() => handleOpenEditGrn(grn)}
                                 >
                                   Edit
+                                </button>
+                                <button 
+                                  style={{ padding: '6px 12px', fontSize: '12px', cursor: 'pointer', background: '#10B981', border: 'none', color: 'white', borderRadius: '4px', fontWeight: 700 }}
+                                  onClick={() => printGRN(grn, currentUser?.tenantName || 'CUROXA HEALTHCARE')}
+                                >
+                                  📄 PDF
                                 </button>
                               </div>
                             </td>
@@ -7659,7 +7673,14 @@ const PharmacyDashboard = () => {
               })()}
             </div>
             
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px', borderTop: '1px solid #F1F5F9', paddingTop: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px', borderTop: '1px solid #F1F5F9', paddingTop: '16px' }}>
+              <button 
+                type="button" 
+                style={{ padding: '8px 20px', borderRadius: '8px', background: '#10B981', color: 'white', fontWeight: 800, cursor: 'pointer', border: 'none' }} 
+                onClick={() => printGRN(selectedGrnDetails, currentUser?.tenantName || 'CUROXA HEALTHCARE')}
+              >
+                Download PDF
+              </button>
               <button type="button" className="btn btn-secondary" style={{ padding: '8px 20px', borderRadius: '8px', background: '#334155', color: 'white', fontWeight: 800, cursor: 'pointer', border: 'none' }} onClick={() => setSelectedGrnDetails(null)}>
                 Close
               </button>

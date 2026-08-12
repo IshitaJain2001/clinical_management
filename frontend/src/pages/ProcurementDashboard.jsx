@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import { printPO, printGRN } from '../utils/printDocHelper';
 
 const ProcurementDashboard = () => {
   const [activeTab, setActiveTab] = useState('vendors'); // 'dashboard', 'vendors', 'pos', 'grn', 'payments'
@@ -3731,6 +3732,13 @@ const ProcurementDashboard = () => {
                                 </td>
                                 <td style={{ textAlign: 'right', paddingRight: '24px' }}>
                                   <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                                    <button 
+                                      className="proc-btn" 
+                                      style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '6px 12px', fontSize: '12px', background: '#3B82F6', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 700 }}
+                                      onClick={() => printPO(po, localStorage.getItem('tenantName') || 'CUROXA HEALTHCARE')}
+                                    >
+                                      📄 PDF
+                                    </button>
                                     {po.status === 'Draft' || po.status === 'Rejected' ? (
                                       <button 
                                         className="proc-btn proc-btn-primary" 
@@ -4426,9 +4434,17 @@ const ProcurementDashboard = () => {
                               <td style={{ fontWeight: 700 }}>{grn.items ? grn.items.length : 0} items</td>
                               <td>{grn.invoiceUrl || '--'}</td>
                               <td style={{ textAlign: 'center' }}>
-                                <button className="proc-btn proc-btn-secondary" style={{ padding: '6px 12px', fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: '4px' }} onClick={() => setSelectedGrnDetails(grn)}>
-                                  <i data-lucide="eye" style={{ width: '13px', height: '13px' }}></i> View
-                                </button>
+                                <div style={{ display: 'flex', gap: '6px', justifyContent: 'center' }}>
+                                  <button className="proc-btn proc-btn-secondary" style={{ padding: '6px 12px', fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: '4px' }} onClick={() => setSelectedGrnDetails(grn)}>
+                                    <i data-lucide="eye" style={{ width: '13px', height: '13px' }}></i> View
+                                  </button>
+                                  <button 
+                                    style={{ padding: '6px 12px', fontSize: '12px', cursor: 'pointer', background: '#10B981', border: 'none', color: 'white', borderRadius: '4px', fontWeight: 700 }}
+                                    onClick={() => printGRN(grn, localStorage.getItem('tenantName') || 'CUROXA HEALTHCARE')}
+                                  >
+                                    📄 PDF
+                                  </button>
+                                </div>
                               </td>
                             </tr>
                           ))
@@ -5723,7 +5739,15 @@ const ProcurementDashboard = () => {
                 );
               })()}
             </div>
-            <div className="proc-modal-footer">
+            <div className="proc-modal-footer" style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <button 
+                type="button" 
+                className="proc-btn" 
+                style={{ background: '#10B981', color: 'white', fontWeight: 800, border: 'none', borderRadius: '6px', cursor: 'pointer', padding: '8px 16px' }}
+                onClick={() => printGRN(selectedGrnDetails, localStorage.getItem('tenantName') || 'CUROXA HEALTHCARE')}
+              >
+                Download PDF
+              </button>
               <button type="button" className="proc-btn proc-btn-primary" onClick={() => setSelectedGrnDetails(null)}>Close</button>
             </div>
           </div>

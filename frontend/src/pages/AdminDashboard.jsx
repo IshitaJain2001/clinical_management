@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import HRPayroll from './HRPayroll';
 import { convertPdfToImage } from '../utils/pdfHelper';
+import { printPO, printGRN } from '../utils/printDocHelper';
 
 // Safeguard React DOM reconciliation against external DOM mutations
 if (typeof window !== 'undefined') {
@@ -7950,6 +7951,12 @@ const AdminDashboard = () => {
                                   </>
                                 )}
                                 <button 
+                                  style={{ padding: '6px 12px', fontSize: '12px', background: '#3B82F6', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 700, cursor: 'pointer', marginRight: '4px' }}
+                                  onClick={() => printPO(po, currentUser?.tenantName || subscription?.name || 'Sunrise Multispeciality')}
+                                >
+                                  📄 PDF
+                                </button>
+                                <button 
                                   className="btn-premium-delete"
                                   onClick={() => handleDeletePO(po._id)}
                                   title="Delete permanently"
@@ -8008,13 +8015,21 @@ const AdminDashboard = () => {
                             </span>
                           </td>
                           <td style={{ padding: '16px', textAlign: 'right' }}>
-                            <button 
-                              className="btn btn-secondary" 
-                              style={{ padding: '6px 12px', fontSize: '12px', cursor: 'pointer' }}
-                              onClick={() => setAdminSelectedGrn(grn)}
-                            >
-                              View
-                            </button>
+                            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                              <button 
+                                className="btn btn-secondary" 
+                                style={{ padding: '6px 12px', fontSize: '12px', cursor: 'pointer' }}
+                                onClick={() => setAdminSelectedGrn(grn)}
+                              >
+                                View
+                              </button>
+                              <button 
+                                style={{ padding: '6px 12px', fontSize: '12px', background: '#10B981', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 700, cursor: 'pointer' }}
+                                onClick={() => printGRN(grn, currentUser?.tenantName || subscription?.name || 'Sunrise Multispeciality')}
+                              >
+                                📄 PDF
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -14036,7 +14051,13 @@ const AdminDashboard = () => {
               </table>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <button 
+                style={{ height: '36px', padding: '0 16px', background: '#10B981', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 700, cursor: 'pointer' }}
+                onClick={() => printGRN(adminSelectedGrn, currentUser?.tenantName || subscription?.name || 'Sunrise Multispeciality')}
+              >
+                Download PDF
+              </button>
               <button 
                 style={{ height: '36px', padding: '0 16px', background: '#3B82F6', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 700, cursor: 'pointer' }}
                 onClick={() => setAdminSelectedGrn(null)}
