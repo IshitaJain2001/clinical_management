@@ -1246,22 +1246,25 @@ const DoctorDashboard = () => {
         letterheadUrl = letterheadUrl.replace('http://', 'https://');
       }
       
+      if (letterheadUrl) {
+        letterheadUrl = await convertPdfToImage(letterheadUrl);
+      }
+
       const templates = res.data?.prescriptionTemplates || [];
-      const standardTemplate = templates.find(t => t.isStandard);
+      const selectedTemplate = templates.find(t => t._id === customSettings.template) || templates.find(t => t.isStandard) || templates[0];
       
       let xLeft = 15;
       let xRight = 15;
-      let topSpacerDetected = customSettings.topSpacer || 38;
-      let bottomSpacerDetected = customSettings.bottomSpacer || 28;
+      let topSpacerDetected = 38;
+      let bottomSpacerDetected = 28;
 
-      if (standardTemplate) {
-        xLeft = standardTemplate.xLeft;
-        xRight = standardTemplate.xRight;
-        topSpacerDetected = (customSettings.topSpacer && customSettings.topSpacer !== 38) ? customSettings.topSpacer : standardTemplate.yTop;
-        bottomSpacerDetected = (customSettings.bottomSpacer && customSettings.bottomSpacer !== 28) ? customSettings.bottomSpacer : standardTemplate.yBottom;
+      if (selectedTemplate) {
+        xLeft = selectedTemplate.xLeft;
+        xRight = selectedTemplate.xRight;
+        topSpacerDetected = selectedTemplate.yTop;
+        bottomSpacerDetected = selectedTemplate.yBottom;
       } else {
         if (letterheadUrl) {
-          letterheadUrl = await convertPdfToImage(letterheadUrl);
           const detected = await detectLetterheadMargins(letterheadUrl);
           topSpacerDetected = detected.top;
           bottomSpacerDetected = detected.bottom;
