@@ -540,6 +540,9 @@ router.post("/prescription-templates", isAdmin, async (req, res) => {
       }
     } else {
       // Create new template
+      if (hospital.prescriptionTemplates.length >= 3) {
+        return res.status(400).json({ error: "Maximum limit of 3 templates reached. Delete an existing template to create a new one." });
+      }
       if (isStandard || hospital.prescriptionTemplates.length === 0) {
         hospital.prescriptionTemplates.forEach(t => t.isStandard = false);
       }

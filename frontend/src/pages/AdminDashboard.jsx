@@ -10243,9 +10243,70 @@ const AdminDashboard = () => {
                 </button>
               </div>
 
-              {/* Template selection list */}
+              {/* Template Slots Dashboard */}
+              <div style={{ marginBottom: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Template Slots (Max 3)</span>
+                  <span style={{ fontSize: '11px', fontWeight: 700, color: prescriptionTemplates.length >= 3 ? '#DC2626' : '#10B981' }}>
+                    {prescriptionTemplates.length} / 3 Used
+                  </span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                  {[0, 1, 2].map(idx => {
+                    const tpl = prescriptionTemplates[idx];
+                    const isSelected = tpl ? selectedTemplateId === tpl._id : selectedTemplateId === '';
+                    return (
+                      <div 
+                        key={idx}
+                        onClick={() => {
+                          if (tpl) {
+                            setSelectedTemplateId(tpl._id);
+                            setTemplateName(tpl.name);
+                            setXLeft(tpl.xLeft);
+                            setXRight(tpl.xRight);
+                            setYTop(tpl.yTop);
+                            setYBottom(tpl.yBottom);
+                          } else {
+                            setSelectedTemplateId('');
+                            handleResetToDefault();
+                          }
+                        }}
+                        style={{
+                          padding: '12px',
+                          borderRadius: '10px',
+                          border: isSelected ? '2px solid #2563EB' : '1.5px solid #E2E8F0',
+                          background: isSelected ? '#EFF6FF' : (tpl ? '#FFFFFF' : '#F8FAFC'),
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          opacity: tpl ? 1 : 0.8,
+                          boxShadow: isSelected ? '0 4px 12px rgba(37, 99, 235, 0.08)' : 'none'
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                          <span style={{ fontSize: '10px', fontWeight: 800, color: isSelected ? '#2563EB' : '#94A3B8', textTransform: 'uppercase' }}>Slot {idx + 1}</span>
+                          {tpl && tpl.isStandard && (
+                            <span style={{ background: '#D1FAE5', color: '#065F46', fontSize: '9px', fontWeight: 800, padding: '1px 5px', borderRadius: '4px' }}>Standard</span>
+                          )}
+                        </div>
+                        <div style={{ fontSize: '12.5px', fontWeight: 700, color: tpl ? '#0F172A' : '#94A3B8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {tpl ? tpl.name : '+ New Template'}
+                        </div>
+                        {tpl ? (
+                          <div style={{ display: 'flex', gap: '4px', fontSize: '10px', color: '#64748B', marginTop: '6px', fontWeight: 600 }}>
+                            <span>L:{tpl.xLeft}</span>|<span>R:{tpl.xRight}</span>|<span>T:{tpl.yTop}</span>|<span>B:{tpl.yBottom}</span>
+                          </div>
+                        ) : (
+                          <div style={{ fontSize: '10px', color: '#94A3B8', marginTop: '6px', fontWeight: 500 }}>Empty Slot</div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Template selection list controls */}
               <div style={{ display: 'flex', gap: '10px', alignItems: 'center', background: '#F8FAFC', padding: '12px', borderRadius: '8px', border: '1px solid #E2E8F0', marginBottom: '20px' }}>
-                <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569' }}>Select Template:</span>
+                <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569' }}>Selected:</span>
                 <select 
                   style={{ height: '34px', padding: '0 8px', fontSize: '12.5px', borderRadius: '6px', minWidth: '180px' }}
                   value={selectedTemplateId}
@@ -10405,10 +10466,22 @@ const AdminDashboard = () => {
 
                   <button 
                     onClick={handleSaveTemplate}
+                    disabled={!selectedTemplateId && prescriptionTemplates.length >= 3}
                     className="btn-primary"
-                    style={{ background: '#2563EB', padding: '12px', borderRadius: '8px', color: '#FFF', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: '13px' }}
+                    style={{ 
+                      background: (!selectedTemplateId && prescriptionTemplates.length >= 3) ? '#CBD5E1' : '#2563EB', 
+                      padding: '12px', 
+                      borderRadius: '8px', 
+                      color: '#FFF', 
+                      fontWeight: 700, 
+                      border: 'none', 
+                      cursor: (!selectedTemplateId && prescriptionTemplates.length >= 3) ? 'not-allowed' : 'pointer', 
+                      fontSize: '13px' 
+                    }}
                   >
-                    {selectedTemplateId ? "Update Template Settings" : "Save as Standard Template"}
+                    {!selectedTemplateId && prescriptionTemplates.length >= 3 
+                      ? "Limit of 3 Templates Reached" 
+                      : (selectedTemplateId ? "Update Template Settings" : "Save as Standard Template")}
                   </button>
                 </div>
 
