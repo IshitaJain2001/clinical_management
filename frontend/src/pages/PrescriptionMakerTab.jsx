@@ -28,7 +28,8 @@ export default function PrescriptionMakerTab({
   setShowBreakGlassModal,
   toggleEmergencyBypass,
   printSettings = { template: 'standard', topSpacer: 38, bottomSpacer: 28, fontSize: 100, digitalPreset: 'none' },
-  setPrintSettings = () => {}
+  setPrintSettings = () => {},
+  adminTemplates = []
 }) {
   // Sidebar drawer visibility state
   const [showAssignLabDrawer, setShowAssignLabDrawer] = useState(false);
@@ -443,10 +444,10 @@ export default function PrescriptionMakerTab({
                 >
                   <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>Print Layout:</span>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    {printSettings.template === 'standard' && '📋 Standard Table'}
-                    {printSettings.template === 'two-column' && '📖 Compact Two-Column'}
-                    {printSettings.template === 'rx-list' && '℞ Elegant Rx List'}
-                    {printSettings.template === 'dense-grid' && '🎛️ Dense Grid'}
+                    {(() => {
+                      const selectedTpl = adminTemplates.find(t => t._id === printSettings.template) || adminTemplates.find(t => t.isStandard) || adminTemplates[0];
+                      return selectedTpl ? `📋 ${selectedTpl.name}` : '📋 Default Template';
+                    })()}
                   </span>
                   <span style={{ fontSize: '10px', color: '#64748B' }}>▼</span>
                 </button>
@@ -459,92 +460,69 @@ export default function PrescriptionMakerTab({
                       style={{ position: 'fixed', inset: 0, zIndex: 99 }}
                     />
                     <div style={{
-                      position: 'absolute', top: 'calc(100% + 8px)', right: 0, width: '360px', background: '#FFFFFF', borderRadius: '16px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)', border: '1px solid #E2E8F0', padding: '12px', zIndex: 100, display: 'flex', flexDirection: 'column', gap: '8px'
+                      position: 'absolute', top: 'calc(100% + 8px)', right: 0, width: '340px', background: '#FFFFFF', borderRadius: '16px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)', border: '1px solid #E2E8F0', padding: '12px', zIndex: 100, display: 'flex', flexDirection: 'column', gap: '8px'
                     }}>
                       <div style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', paddingBottom: '6px', borderBottom: '1px solid #F1F5F9', marginBottom: '4px' }}>
                         Select Print Template Design
                       </div>
                       
-                      {[
-                        {
-                          id: 'standard',
-                          title: 'Standard Table (Classic)',
-                          desc: 'Full-width traditional grid.',
-                          preview: (
-                            <div style={{ width: '40px', height: '54px', border: '1px solid #CBD5E1', borderRadius: '4px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', padding: '2px', boxSizing: 'border-box', gap: '2px', flexShrink: 0 }}>
-                              <div style={{ height: '8px', borderBottom: '1px dashed #E2E8F0', background: '#F8FAFC' }}></div>
-                              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '2px' }}>
-                                <div style={{ height: '4px', border: '0.5px solid #800020', background: '#FFF5F6', borderRadius: '1px' }}></div>
-                                <div style={{ height: '8px', border: '0.5px solid #E2E8F0', background: '#F8FAFC', borderRadius: '1px' }}></div>
+                      {adminTemplates && adminTemplates.length > 0 ? (
+                        adminTemplates.map(tpl => {
+                          const isSelected = printSettings.template === tpl._id || (printSettings.template === 'standard' && tpl.isStandard);
+                          return (
+                            <div 
+                              key={tpl._id}
+                              onClick={() => {
+                                setPrintSettings(prev => ({ ...prev, template: tpl._id }));
+                                setShowLayoutPopover(false);
+                              }}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                padding: '10px',
+                                borderRadius: '12px',
+                                border: isSelected ? '2px solid #800020' : '1px solid #E2E8F0',
+                                background: isSelected ? '#FFF5F6' : '#FFFFFF',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease'
+                              }}
+                            >
+                              <div style={{
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '6px',
+                                background: isSelected ? '#FCE7F3' : '#F1F5F9',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                border: isSelected ? '1px solid #FDA4AF' : '1px solid #E2E8F0',
+                                flexShrink: 0
+                              }}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={isSelected ? '#800020' : '#64748B'} strokeWidth="2.5"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
                               </div>
-                            </div>
-                          )
-                        },
-                        {
-                          id: 'two-column',
-                          title: 'Compact Two-Column',
-                          desc: 'Horizontal split, prevents 2-page spill.',
-                          preview: (
-                            <div style={{ width: '40px', height: '54px', border: '1px solid #CBD5E1', borderRadius: '4px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', padding: '2px', boxSizing: 'border-box', gap: '2px', flexShrink: 0 }}>
-                              <div style={{ height: '8px', borderBottom: '1px dashed #E2E8F0', background: '#F8FAFC' }}></div>
-                              <div style={{ flex: 1, display: 'flex', gap: '2px', marginTop: '2px' }}>
-                                <div style={{ width: '35%', background: '#F1F5F9', borderRadius: '0.5px' }}></div>
-                                <div style={{ width: '60%', border: '0.5px solid #800020', background: '#FFF5F6', borderRadius: '1px' }}></div>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontWeight: 850, fontSize: '12px', color: '#1E293B', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tpl.name}</span>
+                                  {tpl.isStandard && (
+                                    <span style={{ background: '#D1FAE5', color: '#065F46', fontSize: '8px', fontWeight: 800, padding: '0.5px 3.5px', borderRadius: '3px', flexShrink: 0 }}>Std</span>
+                                  )}
+                                </div>
+                                <div style={{ fontSize: '9.5px', color: '#64748B', marginTop: '1px', fontWeight: 500 }}>
+                                  L:{tpl.xLeft} | R:{tpl.xRight} | T:{tpl.yTop} | B:{tpl.yBottom} (mm)
+                                </div>
                               </div>
+                              {isSelected && (
+                                <span style={{ color: '#800020', fontWeight: 900, fontSize: '11px' }}>✓</span>
+                              )}
                             </div>
-                          )
-                        },
-                        {
-                          id: 'rx-list',
-                          title: 'Elegant Rx List',
-                          desc: 'Modern layout with structured Rx glyphs.',
-                          preview: (
-                            <div style={{ width: '40px', height: '54px', border: '1px solid #CBD5E1', borderRadius: '4px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', padding: '2px', boxSizing: 'border-box', gap: '2px', flexShrink: 0 }}>
-                              <div style={{ height: '8px', borderBottom: '1px dashed #E2E8F0', background: '#F8FAFC' }}></div>
-                              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '2px', paddingLeft: '1px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1px' }}><span style={{ fontSize: '5px', color: '#800020', fontWeight: 'bold', lineHeight: 1 }}>℞</span><div style={{ flex: 1, height: '1px', background: '#CBD5E1' }}></div></div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1px' }}><span style={{ fontSize: '5px', color: '#800020', fontWeight: 'bold', lineHeight: 1 }}>℞</span><div style={{ flex: 1, height: '1px', background: '#CBD5E1' }}></div></div>
-                              </div>
-                            </div>
-                          )
-                        },
-                        {
-                          id: 'dense-grid',
-                          title: 'Dense Medicine Grid',
-                          desc: 'Card blocks for heavy data consultations.',
-                          preview: (
-                            <div style={{ width: '40px', height: '54px', border: '1px solid #CBD5E1', borderRadius: '4px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', padding: '2px', boxSizing: 'border-box', gap: '2px', flexShrink: 0 }}>
-                              <div style={{ height: '8px', borderBottom: '1px dashed #E2E8F0', background: '#F8FAFC' }}></div>
-                              <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5px', marginTop: '2px' }}>
-                                <div style={{ border: '0.5px solid #800020', background: '#FFF5F6', borderRadius: '0.5px' }}></div>
-                                <div style={{ border: '0.5px solid #800020', background: '#FFF5F6', borderRadius: '0.5px' }}></div>
-                                <div style={{ border: '0.5px solid #800020', background: '#FFF5F6', borderRadius: '0.5px' }}></div>
-                                <div style={{ border: '0.5px solid #800020', background: '#FFF5F6', borderRadius: '0.5px' }}></div>
-                              </div>
-                            </div>
-                          )
-                        }
-                      ].map(tpl => (
-                        <div
-                          key={tpl.id}
-                          onClick={() => {
-                            setPrintSettings(prev => ({ ...prev, template: tpl.id }));
-                            setShowLayoutPopover(false);
-                          }}
-                          style={{
-                            display: 'flex', alignItems: 'center', gap: '10px', padding: '6px 10px', borderRadius: '10px', border: printSettings.template === tpl.id ? '1.5px solid #800020' : '1px solid #E2E8F0', background: printSettings.template === tpl.id ? '#FFF5F6' : '#FFFFFF', cursor: 'pointer', transition: 'all 0.15s ease'
-                          }}
-                        >
-                          {tpl.preview}
-                          <div style={{ flexGrow: 1 }}>
-                            <div style={{ fontSize: '12px', fontWeight: 800, color: '#1E293B' }}>{tpl.title}</div>
-                            <div style={{ fontSize: '10px', color: '#64748B', marginTop: '1px' }}>{tpl.desc}</div>
-                          </div>
-                          {printSettings.template === tpl.id && (
-                            <div style={{ color: '#800020', fontWeight: 'bold', fontSize: '12px' }}>✓</div>
-                          )}
+                          );
+                        })
+                      ) : (
+                        <div style={{ padding: '12px', textAlign: 'center', fontSize: '11px', color: '#64748B', fontWeight: 600 }}>
+                          No templates configured. Default layout active.
                         </div>
-                      ))}
+                      )}
                     </div>
                   </>
                 )}

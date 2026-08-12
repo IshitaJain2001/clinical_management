@@ -1036,11 +1036,13 @@ const DoctorDashboard = () => {
 
   // Custom Letterhead State for PDF Printing (Fetched dynamically from Admin configurations)
   const [customLetterhead, setCustomLetterhead] = useState(null);
+  const [adminTemplates, setAdminTemplates] = useState([]);
 
   useEffect(() => {
     const fetchHospitalLetterhead = async () => {
       try {
         const res = await api.get('/admin/letterhead');
+        setAdminTemplates(res.data?.prescriptionTemplates || []);
         let letterheadUrl = res.data?.letterheadUrl || "";
         if (letterheadUrl && !letterheadUrl.startsWith('http://') && !letterheadUrl.startsWith('https://') && !letterheadUrl.startsWith('data:')) {
           const apiURL = import.meta.env.VITE_API_URL || '';
@@ -6976,6 +6978,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
               toggleEmergencyBypass={toggleEmergencyBypass}
               printSettings={printSettings}
               setPrintSettings={setPrintSettings}
+              adminTemplates={adminTemplates}
             />
           ) : (
             <div className="tab-content active" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', padding: '40px', textAlign: 'center', background: '#FFFFFF', borderRadius: '16px', border: '1.5px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.02)', margin: '24px', animation: 'slideUp 0.4s ease-out' }}>
@@ -9231,154 +9234,71 @@ I have scanned the medical reference databases, but couldn't find a direct match
               
               {/* Template / Layout selection */}
               <div>
-                <label style={{ display: 'block', fontSize: '11.5px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '10px', textTransform: 'uppercase' }}>Select Prescription Template / Rearrangement</label>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                  
-                  {/* Template Card 1 */}
-                  <div 
-                    onClick={() => setTempPrintSettings(prev => ({ ...prev, template: 'standard' }))}
-                    style={{
-                      border: tempPrintSettings.template === 'standard' ? '2px solid #800020' : '1.5px solid #E2E8F0',
-                      background: tempPrintSettings.template === 'standard' ? '#FFF5F6' : '#FFFFFF',
-                      borderRadius: '16px', padding: '14px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '14px', alignItems: 'center', boxShadow: tempPrintSettings.template === 'standard' ? '0 8px 16px -4px rgba(128, 0, 32, 0.12)' : 'none'
-                    }}
-                  >
-                    {/* Visual Preview Miniature */}
-                    <div style={{ width: '60px', height: '80px', border: tempPrintSettings.template === 'standard' ? '1.5px solid #800020' : '1.5px solid #CBD5E1', borderRadius: '6px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', padding: '4px', boxSizing: 'border-box', flexShrink: 0, gap: '3px' }}>
-                      <div style={{ height: '12px', borderBottom: '1px dashed #E2E8F0', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <div style={{ width: '22px', height: '2px', background: '#E2E8F0', borderRadius: '1px' }}></div>
-                      </div>
-                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                        <div style={{ height: '3px', background: '#E2E8F0', width: '50%', borderRadius: '1px' }}></div>
-                        <div style={{ height: '8px', border: '1.5px solid #800020', background: '#FFF5F6', borderRadius: '2px', display: 'flex', flexDirection: 'column', gap: '1.5px', padding: '1.5px' }}>
-                          <div style={{ height: '1.5px', background: '#800020', width: '100%' }}></div>
-                          <div style={{ height: '1px', background: '#E2E8F0', width: '80%' }}></div>
-                        </div>
-                        <div style={{ height: '14px', border: '1.5px solid #E2E8F0', background: '#F8FAFC', borderRadius: '2px', display: 'flex', flexDirection: 'column', gap: '1.5px', padding: '1.5px' }}>
-                          <div style={{ height: '1.5px', background: '#94A3B8', width: '100%' }}></div>
-                          <div style={{ height: '1px', background: '#E2E8F0', width: '90%' }}></div>
-                          <div style={{ height: '1px', background: '#E2E8F0', width: '70%' }}></div>
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1px' }}>
-                        <div style={{ width: '12px', height: '2px', background: '#E2E8F0', borderRadius: '0.5px' }}></div>
-                        <div style={{ width: '14px', height: '2px', background: '#800020', borderRadius: '0.5px' }}></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div style={{ fontWeight: 800, fontSize: '13px', color: '#1E293B' }}>Standard Table (Classic)</div>
-                      <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '2px', fontWeight: 500, lineHeight: '1.3' }}>Traditional layout: full-width tables for medicines and diagnostics.</div>
-                    </div>
-                  </div>
-
-                  {/* Template Card 2 */}
-                  <div 
-                    onClick={() => setTempPrintSettings(prev => ({ ...prev, template: 'two-column' }))}
-                    style={{
-                      border: tempPrintSettings.template === 'two-column' ? '2px solid #800020' : '1.5px solid #E2E8F0',
-                      background: tempPrintSettings.template === 'two-column' ? '#FFF5F6' : '#FFFFFF',
-                      borderRadius: '16px', padding: '14px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '14px', alignItems: 'center', boxShadow: tempPrintSettings.template === 'two-column' ? '0 8px 16px -4px rgba(128, 0, 32, 0.12)' : 'none'
-                    }}
-                  >
-                    {/* Visual Preview Miniature */}
-                    <div style={{ width: '60px', height: '80px', border: tempPrintSettings.template === 'two-column' ? '1.5px solid #800020' : '1.5px solid #CBD5E1', borderRadius: '6px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', padding: '4px', boxSizing: 'border-box', flexShrink: 0, gap: '3px' }}>
-                      <div style={{ height: '12px', borderBottom: '1px dashed #E2E8F0', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <div style={{ width: '22px', height: '2px', background: '#E2E8F0', borderRadius: '1px' }}></div>
-                      </div>
-                      <div style={{ flex: 1, display: 'flex', gap: '4px' }}>
-                        {/* Left split column */}
-                        <div style={{ width: '40%', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                          <div style={{ height: '8px', border: '1px solid #E2E8F0', background: '#F8FAFC', borderRadius: '1px' }}></div>
-                          <div style={{ height: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC', borderRadius: '1px' }}></div>
-                        </div>
-                        {/* Right split column */}
-                        <div style={{ width: '55%', border: '1.5px solid #800020', background: '#FFF5F6', borderRadius: '2px', padding: '1.5px', display: 'flex', flexDirection: 'column', gap: '1.5px' }}>
-                          <div style={{ height: '1.5px', background: '#800020', width: '100%' }}></div>
-                          <div style={{ height: '1px', background: '#E2E8F0', width: '90%' }}></div>
-                          <div style={{ height: '1px', background: '#E2E8F0', width: '80%' }}></div>
-                          <div style={{ height: '1px', background: '#E2E8F0', width: '90%' }}></div>
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1px' }}>
-                        <div style={{ width: '12px', height: '2px', background: '#E2E8F0', borderRadius: '0.5px' }}></div>
-                        <div style={{ width: '14px', height: '2px', background: '#800020', borderRadius: '0.5px' }}></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div style={{ fontWeight: 800, fontSize: '13px', color: '#1E293B' }}>Compact Two-Column</div>
-                      <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '2px', fontWeight: 500, lineHeight: '1.3' }}>Side-by-side layout: highly compact, prevents overflow onto page 2!</div>
-                    </div>
-                  </div>
-
-                  {/* Template Card 3 */}
-                  <div 
-                    onClick={() => setTempPrintSettings(prev => ({ ...prev, template: 'rx-list' }))}
-                    style={{
-                      border: tempPrintSettings.template === 'rx-list' ? '2px solid #800020' : '1.5px solid #E2E8F0',
-                      background: tempPrintSettings.template === 'rx-list' ? '#FFF5F6' : '#FFFFFF',
-                      borderRadius: '16px', padding: '14px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '14px', alignItems: 'center', boxShadow: tempPrintSettings.template === 'rx-list' ? '0 8px 16px -4px rgba(128, 0, 32, 0.12)' : 'none'
-                    }}
-                  >
-                    {/* Visual Preview Miniature */}
-                    <div style={{ width: '60px', height: '80px', border: tempPrintSettings.template === 'rx-list' ? '1.5px solid #800020' : '1.5px solid #CBD5E1', borderRadius: '6px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', padding: '4px', boxSizing: 'border-box', flexShrink: 0, gap: '3px' }}>
-                      <div style={{ height: '12px', borderBottom: '1px dashed #E2E8F0', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <div style={{ width: '22px', height: '2px', background: '#E2E8F0', borderRadius: '1px' }}></div>
-                      </div>
-                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                        <div style={{ height: '3px', background: '#E2E8F0', width: '70%', borderRadius: '1px' }}></div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', paddingLeft: '2px' }}>
-                          {[1, 2, 3].map(idx => (
-                            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                              <span style={{ fontSize: '6px', color: '#800020', lineHeight: 1, fontWeight: '900' }}>℞</span>
-                              <div style={{ flex: 1, height: '1.5px', background: '#94A3B8', borderRadius: '0.5px' }}></div>
+                <label style={{ display: 'block', fontSize: '11.5px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '10px', textTransform: 'uppercase' }}>Select Prescription Layout Template</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {adminTemplates && adminTemplates.length > 0 ? (
+                    adminTemplates.map(tpl => {
+                      const isSelected = tempPrintSettings.template === tpl._id || (tempPrintSettings.template === 'standard' && tpl.isStandard);
+                      return (
+                        <div 
+                          key={tpl._id}
+                          onClick={() => setTempPrintSettings(prev => ({ ...prev, template: tpl._id }))}
+                          style={{
+                            border: isSelected ? '2.5px solid #800020' : '1.5px solid #E2E8F0',
+                            background: isSelected ? '#FFF5F6' : '#FFFFFF',
+                            borderRadius: '16px', 
+                            padding: '16px', 
+                            cursor: 'pointer', 
+                            transition: 'all 0.2s ease', 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            alignItems: 'center', 
+                            boxShadow: isSelected ? '0 8px 16px -4px rgba(128, 0, 32, 0.12)' : 'none'
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{
+                              width: '40px',
+                              height: '40px',
+                              borderRadius: '8px',
+                              background: isSelected ? '#FCE7F3' : '#F1F5F9',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              border: isSelected ? '1px solid #FDA4AF' : '1px solid #E2E8F0'
+                            }}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={isSelected ? '#800020' : '#64748B'} strokeWidth="2.5"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
                             </div>
-                          ))}
+                            <div>
+                              <div style={{ fontWeight: 800, fontSize: '13.5px', color: '#1E293B', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                {tpl.name}
+                                {tpl.isStandard && (
+                                  <span style={{ background: '#D1FAE5', color: '#065F46', fontSize: '9px', fontWeight: 800, padding: '1px 5px', borderRadius: '4px' }}>Standard</span>
+                                )}
+                              </div>
+                              <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px', fontWeight: 600 }}>
+                                Safe Margins: Left: {tpl.xLeft}mm | Right: {tpl.xRight}mm | Top: {tpl.yTop}mm | Bottom: {tpl.yBottom}mm
+                              </div>
+                            </div>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <div style={{
+                              width: '20px',
+                              height: '20px',
+                              borderRadius: '10px',
+                              border: isSelected ? '6px solid #800020' : '2px solid #CBD5E1',
+                              background: '#FFFFFF',
+                              boxSizing: 'border-box'
+                            }}></div>
+                          </div>
                         </div>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1px' }}>
-                        <div style={{ width: '12px', height: '2px', background: '#E2E8F0', borderRadius: '0.5px' }}></div>
-                        <div style={{ width: '14px', height: '2px', background: '#800020', borderRadius: '0.5px' }}></div>
-                      </div>
+                      );
+                    })
+                  ) : (
+                    <div style={{ padding: '16px', background: '#F1F5F9', borderRadius: '12px', textAlign: 'center', color: '#64748B', fontSize: '12px', fontWeight: 600 }}>
+                      No templates configured by Admin. Default layout is active.
                     </div>
-                    <div>
-                      <div style={{ fontWeight: 800, fontSize: '13px', color: '#1E293B' }}>Elegant Rx List</div>
-                      <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '2px', fontWeight: 500, lineHeight: '1.3' }}>Minimalist clean list structure. Professional feel with 40% vertical space savings.</div>
-                    </div>
-                  </div>
-
-                  {/* Template Card 4 */}
-                  <div 
-                    onClick={() => setTempPrintSettings(prev => ({ ...prev, template: 'dense-grid' }))}
-                    style={{
-                      border: tempPrintSettings.template === 'dense-grid' ? '2px solid #800020' : '1.5px solid #E2E8F0',
-                      background: tempPrintSettings.template === 'dense-grid' ? '#FFF5F6' : '#FFFFFF',
-                      borderRadius: '16px', padding: '14px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', gap: '14px', alignItems: 'center', boxShadow: tempPrintSettings.template === 'dense-grid' ? '0 8px 16px -4px rgba(128, 0, 32, 0.12)' : 'none'
-                    }}
-                  >
-                    {/* Visual Preview Miniature */}
-                    <div style={{ width: '60px', height: '80px', border: tempPrintSettings.template === 'dense-grid' ? '1.5px solid #800020' : '1.5px solid #CBD5E1', borderRadius: '6px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', padding: '4px', boxSizing: 'border-box', flexShrink: 0, gap: '3px' }}>
-                      <div style={{ height: '12px', borderBottom: '1px dashed #E2E8F0', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <div style={{ width: '22px', height: '2px', background: '#E2E8F0', borderRadius: '1px' }}></div>
-                      </div>
-                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                        <div style={{ height: '2.5px', background: '#E2E8F0', width: '60%', borderRadius: '1px' }}></div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px' }}>
-                          {[1, 2, 3, 4].map(idx => (
-                            <div key={idx} style={{ height: '8px', border: '1px solid #800020', background: '#FFF5F6', borderRadius: '1px' }}></div>
-                          ))}
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1px' }}>
-                        <div style={{ width: '12px', height: '2px', background: '#E2E8F0', borderRadius: '0.5px' }}></div>
-                        <div style={{ width: '14px', height: '2px', background: '#800020', borderRadius: '0.5px' }}></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div style={{ fontWeight: 800, fontSize: '13px', color: '#1E293B' }}>Dense Medicine Grid</div>
-                      <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '2px', fontWeight: 500, lineHeight: '1.3' }}>Double-column grid blocks. Best for handling heavy prescriptions with 10+ medicines.</div>
-                    </div>
-                  </div>
-
+                  )}
                 </div>
               </div>
 
