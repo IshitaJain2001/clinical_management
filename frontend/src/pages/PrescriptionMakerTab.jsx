@@ -541,7 +541,7 @@ export default function PrescriptionMakerTab({
 
           {/* Diagnosis Section */}
           <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#64748B', letterSpacing: '0.05em', marginBottom: '8px' }}>DIAGNOSIS (OPTIONAL)</label>
+            <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#D97706', letterSpacing: '0.05em', marginBottom: '8px' }}>DIAGNOSIS (REQUIRED)</label>
             <input 
               type="text" 
               value={diagnosisText} 
