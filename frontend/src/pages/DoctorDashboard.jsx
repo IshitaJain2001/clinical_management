@@ -1679,29 +1679,27 @@ const DoctorDashboard = () => {
               const pageNContentLimit = a4Height - topSpacerPx - bottomSpacerPx - 45;
               const contentHeightLimit = page1ContentLimit; // For measureHeight to use conservatively // 35px safety padding
 
-              // Helpers to generate HTML content blocks
               function getDiagnosisHTML() {
                 if (!diagnosis || diagnosis === '—') return '';
-                return '<div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 8px; overflow: hidden; background: #fff; page-break-inside: avoid; break-inside: avoid;">' +
-                  '<div style="background: #FDF2F4; padding: 4px 8px; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Diagnosis (Clinical Observation)</div>' +
-                  '<div style="padding: 6px 8px; font-size: 10.5px; font-weight: 600; color: #1E293B;">' + diagnosis + '</div>' +
+                return '<div style="margin-bottom: 12px; page-break-inside: avoid; break-inside: avoid;">' +
+                  '<div style="font-family: \'Outfit\', sans-serif; font-size: 12px; font-weight: 900; color: #800020; border-bottom: 1.5px solid #800020; padding-bottom: 3px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Diagnosis</div>' +
+                  '<div style="font-size: 11px; font-weight: 700; color: #1E293B; padding-left: 2px;">' + diagnosis + '</div>' +
                 '</div>';
               }
 
               function getSoapNotesHTML() {
                 if (!soapNotes || soapNotes === '—') return '';
-                return '<div style="border: 1.5px solid #800020; border-radius: 8px; margin-bottom: 8px; overflow: hidden; background: #fff; page-break-inside: avoid; break-inside: avoid;">' +
-                  '<div style="background: #FDF2F4; padding: 4px 8px; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Clinical SOAP Notes</div>' +
-                  '<div style="padding: 6px 8px; font-size: 10px; font-weight: 500; color: #334155; white-space: pre-wrap;">' + soapNotes + '</div>' +
+                return '<div style="margin-bottom: 12px; page-break-inside: avoid; break-inside: avoid;">' +
+                  '<div style="font-family: \'Outfit\', sans-serif; font-size: 12px; font-weight: 900; color: #800020; border-bottom: 1.5px solid #800020; padding-bottom: 3px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Clinical SOAP Notes</div>' +
+                  '<div style="font-size: 10.5px; font-weight: 600; color: #475569; white-space: pre-wrap; padding-left: 2px; line-height: 1.4;">' + soapNotes + '</div>' +
                 '</div>';
               }
 
               function getTestsBlocks(cols) {
                 if (!tests || tests.length === 0) return [];
                 var blocks = [];
-                var rowHeight = 26; // Approx height per test item row in px
+                var rowHeight = 18; 
                 
-                // Available height on page 1 for tests (subtracting diagnosis and header spacer)
                 var page1TestsHeight = page1ContentLimit - (diagnosis ? 80 : 0) - 40;
                 var pageNTestsHeight = pageNContentLimit - 40;
                 
@@ -1720,33 +1718,18 @@ const DoctorDashboard = () => {
                   var blockHTML = '';
                   var itemsHTML = '';
                   
-                  if (cols === 1) {
-                    for (var i = 0; i < chunk.length; i++) {
-                      var testName = (typeof chunk[i] === 'object' && chunk[i] !== null) ? (chunk[i].testName || chunk[i].name || '') : chunk[i];
-                      itemsHTML += '<tr style="border-bottom: 1px solid #800020;">' +
-                        '<td style="padding: 4px 8px; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020; width: 40px;">' + (start + i + 1) + '</td>' +
-                        '<td style="padding: 4px 8px; font-weight: 700; color: #1E293B;">' + testName + '</td>' +
-                      '</tr>';
-                    }
-                    blockHTML = '<div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff; margin-bottom: 8px; page-break-inside: avoid; break-inside: avoid;">' +
-                      '<div style="background: #FDF2F4; padding: 4px 8px; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Prescribed Tests ' + (start > 0 ? '(Contd.)' : '') + '</div>' +
-                      '<table class="rx-table" style="width: 100%; border: none;">' +
-                        '<tbody>' + itemsHTML + '</tbody>' +
-                      '</table>' +
-                    '</div>';
-                  } else {
-                    for (var i = 0; i < chunk.length; i++) {
-                      var testName = (typeof chunk[i] === 'object' && chunk[i] !== null) ? (chunk[i].testName || chunk[i].name || '') : chunk[i];
-                      itemsHTML += '<div style="font-size: 10px; font-weight: 700; color: #334155; display: flex; gap: 6px; align-items: flex-start; padding: 2px 4px; border-bottom: 1px dashed #E2E8F0;">' +
-                        '<span style="color: #800020;">' + (start + i + 1) + '.</span>' +
-                        '<span style="word-break: break-word;">' + testName + '</span>' +
-                      '</div>';
-                    }
-                    blockHTML = '<div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff; margin-bottom: 8px; page-break-inside: avoid; break-inside: avoid;">' +
-                      '<div style="background: #FDF2F4; padding: 4px 8px; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: 11px; font-weight: 800; color: #800020; text-transform: uppercase;">Prescribed Tests ' + (start > 0 ? '(Contd.)' : '') + '</div>' +
-                      '<div style="padding: 6px; display: grid; grid-template-columns: repeat(' + cols + ', 1fr); gap: 6px 12px;">' + itemsHTML + '</div>' +
+                  for (var i = 0; i < chunk.length; i++) {
+                    var testName = (typeof chunk[i] === 'object' && chunk[i] !== null) ? (chunk[i].testName || chunk[i].name || '') : chunk[i];
+                    itemsHTML += '<div style="font-size: 11px; font-weight: 600; color: #1E293B; padding: 3px 0;">' +
+                      '• ' + testName +
                     '</div>';
                   }
+                  
+                  blockHTML = '<div style="margin-bottom: 15px; page-break-inside: avoid; break-inside: avoid;">' +
+                    '<div style="font-family: \'Outfit\', sans-serif; font-size: 12px; font-weight: 900; color: #800020; border-bottom: 1.5px solid #800020; padding-bottom: 3px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Investigations & Tests ' + (start > 0 ? '(Contd.)' : '') + '</div>' +
+                    '<div style="display: grid; grid-template-columns: repeat(' + cols + ', 1fr); gap: 4px 12px; padding-left: 2px;">' + itemsHTML + '</div>' +
+                  '</div>';
+                  
                   blocks.push(blockHTML);
                   start += currentChunkSize;
                   isFirstBlock = false;
@@ -1757,15 +1740,11 @@ const DoctorDashboard = () => {
               function getMedicinesBlocks(cols, compact) {
                 if (!medicines || medicines.length === 0) return [];
                 var blocks = [];
+                var rowHeight = 20; 
                 
-                // Calculate physical row heights in px based on compact grid configurations
-                var rowHeight = compact ? (cols === 1 ? 28 : 42) : (cols === 1 ? 34 : 50);
-                
-                // Available height on page 1 for medicines (subtracting diagnosis and title block header)
                 var page1MedicinesHeight = page1ContentLimit - (diagnosis ? 80 : 0) - 40;
                 var pageNMedicinesHeight = pageNContentLimit - 40;
                 
-                // Calculate items that fit dynamically on first and subsequent pages
                 var page1Rows = Math.max(1, Math.floor(page1MedicinesHeight / rowHeight));
                 var page1ChunkSize = page1Rows * cols;
                 
@@ -1779,62 +1758,28 @@ const DoctorDashboard = () => {
                   var currentChunkSize = isFirstBlock ? page1ChunkSize : pageNChunkSize;
                   var chunk = medicines.slice(start, start + currentChunkSize);
                   var blockHTML = '';
+                  var itemsHTML = '';
                   
-                  if (cols === 1) {
-                    var rows = '';
-                    for (var i = 0; i < chunk.length; i++) {
-                      var m = chunk[i];
-                      var freq = 'Once a Day';
-                      var inst = 'After Food';
-                      if (m.instructions) {
-                        var parts = m.instructions.split('(');
-                        if (parts[0]) freq = parts[0].trim();
-                        if (parts[1]) inst = parts[1].replace(')', '').trim();
-                      }
-                      rows += '<tr style="border-bottom: 1px solid #800020; font-size: ' + (compact ? '10px' : '11px') + ';">' +
-                        '<td style="padding: ' + (compact ? '4px 6px' : '6px 8px') + '; text-align: center; border-right: 1px solid #800020; font-weight: 600; color: #800020;">' + (start + i + 1) + '</td>' +
-                        '<td style="padding: ' + (compact ? '4px 6px' : '6px 8px') + '; border-right: 1px solid #800020; font-weight: 700; color: #1E293B; word-wrap: break-word; word-break: break-word; min-width: 150px;">' + m.medicine + '</td>' +
-                        '<td style="padding: ' + (compact ? '4px 6px' : '6px 8px') + '; text-align: center; border-right: 1px solid #800020; color: #334155;">' + m.dosage + '</td>' +
-                        '<td style="padding: ' + (compact ? '4px 6px' : '6px 8px') + '; text-align: center; border-right: 1px solid #800020; color: #334155;">' + m.duration + '</td>' +
-                        '<td style="padding: ' + (compact ? '4px 6px' : '6px 8px') + '; text-align: center; border-right: 1px solid #800020; color: #800020; font-weight: 600;">' + freq + '</td>' +
-                        '<td style="padding: ' + (compact ? '4px 6px' : '6px 8px') + '; color: #334155; word-wrap: break-word; word-break: break-word;">' + inst + '</td>' +
-                      '</tr>';
+                  for (var i = 0; i < chunk.length; i++) {
+                    var m = chunk[i];
+                    var freq = 'Once a Day';
+                    var inst = 'After Food';
+                    if (m.instructions) {
+                      var parts = m.instructions.split('(');
+                      if (parts[0]) freq = parts[0].trim();
+                      if (parts[1]) inst = parts[1].replace(')', '').trim();
                     }
-                    blockHTML = '<div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff; margin-bottom: 8px; page-break-inside: avoid; break-inside: avoid;">' +
-                      '<div style="background: #FDF2F4; padding: ' + (compact ? '4px 8px' : '6px 10px') + '; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: ' + (compact ? '11px' : '12px') + '; font-weight: 850; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">Rx (Prescribed Medicines) ' + (start > 0 ? '(Contd.)' : '') + '</div>' +
-                      '<table class="rx-table" style="width: 100%; border: none;">' +
-                        '<thead><tr style="background: #FDF2F4; border-bottom: 1.5px solid #800020; font-size: ' + (compact ? '10px' : '11px') + ';"><th style="width: 40px; padding: 4px;">S.No.</th><th style="padding: 4px; text-align: left;">Medicine Name</th><th style="width: 60px; padding: 4px;">Dose</th><th style="width: 70px; padding: 4px;">Duration</th><th style="width: 90px; padding: 4px;">Frequency</th><th style="padding: 4px; text-align: left;">Instructions</th></tr></thead>' +
-                        '<tbody>' + rows + '</tbody>' +
-                      '</table>' +
-                    '</div>';
-                  } else {
-                    var cards = '';
-                    for (var i = 0; i < chunk.length; i++) {
-                      var m = chunk[i];
-                      var freq = 'Once a Day';
-                      var inst = 'After Food';
-                      if (m.instructions) {
-                        var parts = m.instructions.split('(');
-                        if (parts[0]) freq = parts[0].trim();
-                        if (parts[1]) inst = parts[1].replace(')', '').trim();
-                      }
-                      cards += '<div style="border: 1px solid #E2E8F0; border-radius: 6px; padding: ' + (compact ? '4px 6px' : '6px 8px') + '; background: #fff; font-size: ' + (compact ? '10px' : '10.5px') + '; display: flex; flex-direction: column; gap: 2px; page-break-inside: avoid; break-inside: avoid;">' +
-                        '<div style="font-weight: 800; color: #1E293B; display: flex; justify-content: space-between; gap: 4px; border-bottom: 1px solid #F1F5F9; padding-bottom: 3px;">' +
-                          '<span style="word-wrap: break-word; word-break: break-word;">' + (start + i + 1) + '. ' + m.medicine + '</span>' +
-                          '<span style="color: #800020; flex-shrink: 0;">' + m.dosage + '</span>' +
-                        '</div>' +
-                        '<div style="display: flex; justify-content: space-between; font-size: 9px; color: #475569; font-weight: 600; margin-top: 2px;">' +
-                          '<span>' + m.duration + '</span>' +
-                          '<span>' + freq + '</span>' +
-                        '</div>' +
-                        '<div style="color: #64748b; font-size: 8.5px; font-style: italic; word-wrap: break-word; word-break: break-word;">' + inst + '</div>' +
-                      '</div>';
-                    }
-                    blockHTML = '<div style="border: 1.5px solid #800020; border-radius: 8px; overflow: hidden; background: #fff; margin-bottom: 8px; page-break-inside: avoid; break-inside: avoid;">' +
-                      '<div style="background: #FDF2F4; padding: ' + (compact ? '4px 8px' : '6px 10px') + '; border-bottom: 1.5px solid #800020; font-family: \"Outfit\", sans-serif; font-size: ' + (compact ? '11px' : '12px') + '; font-weight: 850; color: #800020; letter-spacing: 0.5px; text-transform: uppercase;">Rx (Prescribed Medicines) ' + (start > 0 ? '(Contd.)' : '') + '</div>' +
-                      '<div style="padding: 8px; display: grid; grid-template-columns: repeat(' + cols + ', 1fr); gap: 6px;">' + cards + '</div>' +
+                    itemsHTML += '<div style="display: flex; justify-content: space-between; font-size: 11px; padding: 4px 0; border-bottom: 1px dashed #E2E8F0; font-weight: 600; color: #1E293B;">' +
+                      '<span>' + (start + i + 1) + '. ' + m.medicine + ' (' + m.dosage + ')</span>' +
+                      '<span style="color: #475569; font-weight: 500;">' + freq + ' | ' + inst + ' (' + m.duration + ')</span>' +
                     '</div>';
                   }
+                  
+                  blockHTML = '<div style="margin-bottom: 15px; page-break-inside: avoid; break-inside: avoid;">' +
+                    '<div style="font-family: \'Outfit\', sans-serif; font-size: 12px; font-weight: 900; color: #800020; border-bottom: 1.5px solid #800020; padding-bottom: 3px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Rx (Prescribed Medicines) ' + (start > 0 ? '(Contd.)' : '') + '</div>' +
+                    '<div style="display: flex; flex-direction: column; gap: 4px; padding-left: 2px;">' + itemsHTML + '</div>' +
+                  '</div>';
+                  
                   blocks.push(blockHTML);
                   start += currentChunkSize;
                   isFirstBlock = false;
