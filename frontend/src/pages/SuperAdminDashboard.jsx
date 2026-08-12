@@ -53,12 +53,13 @@ const validateCertificateFormat = (cert) => {
   return certRegex.test(cert.trim());
 };
 
-const ToggleSwitch = ({ checked, onChange }) => {
+const ToggleSwitch = ({ checked, onChange, disabled }) => {
   return (
-    <label style={styles.switchContainer}>
+    <label style={{ ...styles.switchContainer, opacity: disabled ? 0.6 : 1, pointerEvents: disabled ? 'none' : 'auto' }}>
       <input 
         type="checkbox" 
         checked={checked} 
+        disabled={disabled}
         onChange={(e) => onChange(e.target.checked)} 
         style={styles.switchInput} 
       />
@@ -1863,6 +1864,7 @@ const SuperAdminDashboard = () => {
 
   // Active Hospitals Database (Step 4 Core)
   const [hospitals, setHospitals] = useState([]);
+  const [isTogglingMap, setIsTogglingMap] = useState({});
   const [billingCycle, setBillingCycle] = useState('monthly');
   const [tempPasswords, setTempPasswords] = useState({});
   const [credentialsMsg, setCredentialsMsg] = useState({ text: '', type: '' });
@@ -7291,7 +7293,11 @@ const SuperAdminDashboard = () => {
                               <span style={{ textTransform: 'capitalize', fontWeight: 600 }}>{mod} Module</span>
                               <ToggleSwitch 
                                 checked={hosp.modules?.[mod]?.enabled !== false} 
+                                disabled={!!isTogglingMap[`${hosp._id}-${mod}`]}
                                 onChange={async (nextEnabled) => {
+                                  const toggleKey = `${hosp._id}-${mod}`;
+                                  setIsTogglingMap(prev => ({ ...prev, [toggleKey]: true }));
+                                  
                                   const token = localStorage.getItem('token');
                                   const updatedModules = { ...hosp.modules, [mod]: { enabled: nextEnabled, lastMod: new Date().toLocaleDateString() } };
                                   // Optimistically update frontend state
@@ -7313,6 +7319,12 @@ const SuperAdminDashboard = () => {
                                     console.error(err); 
                                     // Rollback on failure
                                     setHospitals(prev => prev.map(h => h._id === hosp._id ? hosp : h));
+                                  } finally {
+                                    setIsTogglingMap(prev => {
+                                      const copy = { ...prev };
+                                      delete copy[toggleKey];
+                                      return copy;
+                                    });
                                   }
                                 }}
                               />
