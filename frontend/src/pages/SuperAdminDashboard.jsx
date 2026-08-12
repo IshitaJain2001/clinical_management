@@ -201,6 +201,9 @@ const CustomSlider = ({ label, value, min, max, unit = '', onChange }) => {
 const SuperAdminDashboard = () => {
   const navigate = useNavigate();
   const superAdminChatEndRef = useRef(null);
+  const moduleUpdateTimeouts = useRef({});
+  const latestModulesRef = useRef({});
+  const rollbackModulesRef = useRef({});
 
   // Current user details
   const [currentUser, setCurrentUser] = useState(() => {
@@ -7293,39 +7296,61 @@ const SuperAdminDashboard = () => {
                               <span style={{ textTransform: 'capitalize', fontWeight: 600 }}>{mod} Module</span>
                               <ToggleSwitch 
                                 checked={hosp.modules?.[mod]?.enabled !== false} 
-                                disabled={!!isTogglingMap[`${hosp._id}-${mod}`]}
                                 onChange={async (nextEnabled) => {
-                                  const toggleKey = `${hosp._id}-${mod}`;
-                                  setIsTogglingMap(prev => ({ ...prev, [toggleKey]: true }));
-                                  
-                                  const token = localStorage.getItem('token');
-                                  const updatedModules = { ...hosp.modules, [mod]: { enabled: nextEnabled, lastMod: new Date().toLocaleDateString() } };
-                                  // Optimistically update frontend state
-                                  setHospitals(prev => prev.map(h => h._id === hosp._id ? { ...h, modules: updatedModules } : h));
-                                  try {
-                                    const res = await fetch(`/api/superadmin/hospitals/${hosp._id}`, {
-                                      method: 'PUT',
-                                      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                                      body: JSON.stringify({ modules: updatedModules })
-                                    });
-                                    if (res.ok) {
-                                      const updated = await res.json();
-                                      setHospitals(prev => prev.map(h => h._id === hosp._id ? updated : h));
-                                    } else {
-                                      // Rollback on failure
-                                      setHospitals(prev => prev.map(h => h._id === hosp._id ? hosp : h));
-                                    }
-                                  } catch (err) { 
-                                    console.error(err); 
-                                    // Rollback on failure
-                                    setHospitals(prev => prev.map(h => h._id === hosp._id ? hosp : h));
-                                  } finally {
-                                    setIsTogglingMap(prev => {
-                                      const copy = { ...prev };
-                                      delete copy[toggleKey];
-                                      return copy;
-                                    });
+                                  // Keep track of the original state for rollback on error
+                                  if (!rollbackModulesRef.current[hosp._id]) {
+                                    rollbackModulesRef.current[hosp._id] = hosp.modules || {};
                                   }
+
+                                  const currentModules = latestModulesRef.current[hosp._id] || hosp.modules || {};
+                                  const updatedModules = { ...currentModules, [mod]: { enabled: nextEnabled, lastMod: new Date().toLocaleDateString() } };
+                                  latestModulesRef.current[hosp._id] = updatedModules;
+
+                                  // Optimistically update frontend state immediately
+                                  setHospitals(prev => prev.map(h => h._id === hosp._id ? { ...h, modules: updatedModules } : h));
+
+                                  // Clear previous timeout
+                                  if (moduleUpdateTimeouts.current[hosp._id]) {
+                                    clearTimeout(moduleUpdateTimeouts.current[hosp._id]);
+                                  }
+
+                                  // Set a new debounced timeout (750ms after the last toggle action)
+                                  const thisTimeoutId = setTimeout(async () => {
+                                    const token = localStorage.getItem('token');
+                                    try {
+                                      const res = await fetch(`/api/superadmin/hospitals/${hosp._id}`, {
+                                        method: 'PUT',
+                                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                                        body: JSON.stringify({ modules: updatedModules })
+                                      });
+                                      if (res.ok) {
+                                        const updated = await res.json();
+                                        // Only sync from server if this is still the latest scheduled timeout
+                                        if (moduleUpdateTimeouts.current[hosp._id] === thisTimeoutId) {
+                                          setHospitals(prev => prev.map(h => h._id === hosp._id ? updated : h));
+                                          delete latestModulesRef.current[hosp._id];
+                                          delete rollbackModulesRef.current[hosp._id];
+                                        }
+                                      } else {
+                                        // Rollback on failure
+                                        if (moduleUpdateTimeouts.current[hosp._id] === thisTimeoutId) {
+                                          setHospitals(prev => prev.map(h => h._id === hosp._id ? { ...h, modules: rollbackModulesRef.current[hosp._id] } : h));
+                                          delete latestModulesRef.current[hosp._id];
+                                          delete rollbackModulesRef.current[hosp._id];
+                                        }
+                                      }
+                                    } catch (err) {
+                                      console.error(err);
+                                      // Rollback on failure
+                                      if (moduleUpdateTimeouts.current[hosp._id] === thisTimeoutId) {
+                                        setHospitals(prev => prev.map(h => h._id === hosp._id ? { ...h, modules: rollbackModulesRef.current[hosp._id] } : h));
+                                        delete latestModulesRef.current[hosp._id];
+                                        delete rollbackModulesRef.current[hosp._id];
+                                      }
+                                    }
+                                  }, 750);
+
+                                  moduleUpdateTimeouts.current[hosp._id] = thisTimeoutId;
                                 }}
                               />
                             </div>
