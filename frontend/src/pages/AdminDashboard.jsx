@@ -10477,7 +10477,7 @@ const AdminDashboard = () => {
                         <div style={{ fontSize: '14px', fontWeight: 900, color: '#2563EB', marginBottom: '4px' }}>Rx</div>
 
                         {/* Medicines List */}
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '12px' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '8.5px' }}>
                             <span>Medicine Name</span>
                             <span>Dosage / Duration</span>
