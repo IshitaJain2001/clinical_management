@@ -139,7 +139,8 @@ const corsOptions = {
     if (
       allowedOrigins.indexOf(origin) !== -1 || 
       origin.startsWith("http://localhost:") || 
-      origin.endsWith(".vercel.app")
+      origin.endsWith(".vercel.app") ||
+      origin.endsWith(".onrender.com")
     ) {
       return callback(null, true);
     }
