@@ -1044,6 +1044,7 @@ const DoctorDashboard = () => {
         const res = await api.get('/admin/letterhead');
         setAdminTemplates(res.data?.prescriptionTemplates || []);
         let letterheadUrl = res.data?.letterheadUrl || "";
+        letterheadUrl = letterheadUrl.replace(/\\/g, '/');
         if (letterheadUrl && !letterheadUrl.startsWith('http://') && !letterheadUrl.startsWith('https://') && !letterheadUrl.startsWith('data:')) {
           const apiURL = import.meta.env.VITE_API_URL || '';
           const backendBase = apiURL ? apiURL.replace('/api', '') : 'http://localhost:5000';
@@ -1473,8 +1474,8 @@ const DoctorDashboard = () => {
             const tests = ${jsonTests};
             const activeTemplate = "${customSettings.template}";
             const digitalPreset = "${customSettings.digitalPreset}";
-            const hasCustomLetterhead = ${letterheadUrl ? 'true' : 'false'};
-            const letterheadUrl = "${letterheadUrl || ''}";
+            const hasCustomLetterhead = ${customLetterhead || letterheadUrl ? 'true' : 'false'};
+            const letterheadUrl = ${customLetterhead ? JSON.stringify(customLetterhead) : JSON.stringify(letterheadUrl || '')};
             const topSpacer = ${topSpacerDetected};
             const bottomSpacer = ${bottomSpacerDetected};
             const xLeftVal = ${xLeft};

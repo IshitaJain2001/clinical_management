@@ -1,3 +1,5 @@
+import api from './api';
+
 const loadPdfJs = () => {
   return new Promise((resolve, reject) => {
     if (window.pdfjsLib) {
@@ -47,7 +49,11 @@ export const convertPdfToImage = async (pdfUrlOrDataUri) => {
       }
       loadingTask = pdfjs.getDocument({ data: bytes });
     } else {
-      loadingTask = pdfjs.getDocument(pdfUrlOrDataUri);
+      const response = await api.get(pdfUrlOrDataUri, { responseType: 'blob' });
+      const blob = response.data;
+      const arrayBuffer = await blob.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuffer);
+      loadingTask = pdfjs.getDocument({ data: bytes });
     }
 
     const pdf = await loadingTask.promise;
