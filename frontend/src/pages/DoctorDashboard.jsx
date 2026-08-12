@@ -1474,6 +1474,7 @@ const DoctorDashboard = () => {
             const bottomSpacer = ${bottomSpacerDetected};
             const xLeftVal = ${xLeft};
             const xRightVal = ${xRight};
+            const pageDistribution = "${customSettings.pageDistribution || 'auto'}";
             const initialFontSize = ${parseInt(customSettings.fontSize, 10) || 100};
 
             const patientName = ${JSON.stringify(cleanField(item.patient?.name || selectedPatient?.name))};
@@ -1855,70 +1856,118 @@ const DoctorDashboard = () => {
                 return h;
               }
 
-              // 2. Intelligently select layouts to fit everything on a single page if possible
+              // 2. Intelligently select layouts based on doctor's pageDistribution preference
               var bestColsMed = 1;
               var bestColsTest = 1;
               var bestCompact = false;
               var bestFontSize = initialFontSize;
               
-              // We start with standard single-column and default font size
-              var requiredH = measureHeight(1, 1, false, bestFontSize);
-              
-              if (requiredH <= contentHeightLimit) {
-                bestColsMed = 1;
-                bestColsTest = 1;
-                bestCompact = false;
-              } else {
-                // Try compact rows & double-column test lists
-                requiredH = measureHeight(1, 2, true, bestFontSize);
+              if (pageDistribution === 'one-page') {
+                var requiredH = measureHeight(1, 1, false, bestFontSize);
                 if (requiredH <= contentHeightLimit) {
                   bestColsMed = 1;
-                  bestColsTest = 2;
-                  bestCompact = true;
+                  bestColsTest = 1;
+                  bestCompact = false;
                 } else {
-                  // Try reducing font size slightly
-                  requiredH = measureHeight(1, 2, true, bestFontSize - 10);
+                  requiredH = measureHeight(1, 2, true, bestFontSize);
                   if (requiredH <= contentHeightLimit) {
                     bestColsMed = 1;
                     bestColsTest = 2;
                     bestCompact = true;
-                    bestFontSize = bestFontSize - 10;
                   } else {
-                    // Try 2-column medicine grid + 2-column test grid
-                    requiredH = measureHeight(2, 2, true, bestFontSize);
+                    requiredH = measureHeight(1, 2, true, bestFontSize - 10);
                     if (requiredH <= contentHeightLimit) {
-                      bestColsMed = 2;
+                      bestColsMed = 1;
                       bestColsTest = 2;
                       bestCompact = true;
+                      bestFontSize = bestFontSize - 10;
                     } else {
-                      // Try reducing font size with 2-column grid
-                      requiredH = measureHeight(2, 2, true, bestFontSize - 10);
+                      requiredH = measureHeight(2, 2, true, bestFontSize);
                       if (requiredH <= contentHeightLimit) {
                         bestColsMed = 2;
                         bestColsTest = 2;
                         bestCompact = true;
-                        bestFontSize = bestFontSize - 10;
                       } else {
-                        // Try 3-column medicine grid + 3-column test grid
-                        requiredH = measureHeight(3, 3, true, Math.max(80, bestFontSize - 15));
+                        requiredH = measureHeight(2, 2, true, bestFontSize - 10);
                         if (requiredH <= contentHeightLimit) {
-                          bestColsMed = 3;
-                          bestColsTest = 3;
+                          bestColsMed = 2;
+                          bestColsTest = 2;
                           bestCompact = true;
-                          bestFontSize = Math.max(80, bestFontSize - 15);
+                          bestFontSize = bestFontSize - 10;
                         } else {
-                          // Unavoidable multi-page prescription. Let's use clean layout and let pagination handle splits.
-                          bestColsMed = medicines.length > 12 ? 2 : 1;
-                          bestColsTest = tests.length > 6 ? 2 : 1;
-                          bestCompact = true;
-                          
-                          // Dynamically scale down font size based on total content height to prevent empty/blank pages
-                          var estTotalH = measureHeight(bestColsMed, bestColsTest, true, initialFontSize);
-                          var totalAvailableH = page1ContentLimit + pageNContentLimit;
-                          if (estTotalH > totalAvailableH) {
-                            bestFontSize = Math.max(80, initialFontSize - 15);
+                          requiredH = measureHeight(3, 3, true, Math.max(80, bestFontSize - 15));
+                          if (requiredH <= contentHeightLimit) {
+                            bestColsMed = 3;
+                            bestColsTest = 3;
+                            bestCompact = true;
+                            bestFontSize = Math.max(80, bestFontSize - 15);
                           } else {
-                            bestFontSize = Math.max(85, initialFontSize - 10);
+                            alert("This prescription contains too much content to fit safely on one page. Please remove unnecessary content or choose the 2-page option.");
+                            bestColsMed = medicines.length > 12 ? 2 : 1;
+                            bestColsTest = tests.length > 6 ? 2 : 1;
+                            bestCompact = true;
+                            bestFontSize = Math.max(80, initialFontSize - 15);
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              } else if (pageDistribution === 'allow-two-pages' || pageDistribution === 'split-two-pages') {
+                bestColsMed = medicines.length > 12 ? 2 : 1;
+                bestColsTest = tests.length > 6 ? 2 : 1;
+                bestCompact = false;
+                bestFontSize = initialFontSize;
+              } else {
+                var requiredH = measureHeight(1, 1, false, bestFontSize);
+                if (requiredH <= contentHeightLimit) {
+                  bestColsMed = 1;
+                  bestColsTest = 1;
+                  bestCompact = false;
+                } else {
+                  requiredH = measureHeight(1, 2, true, bestFontSize);
+                  if (requiredH <= contentHeightLimit) {
+                    bestColsMed = 1;
+                    bestColsTest = 2;
+                    bestCompact = true;
+                  } else {
+                    requiredH = measureHeight(1, 2, true, bestFontSize - 10);
+                    if (requiredH <= contentHeightLimit) {
+                      bestColsMed = 1;
+                      bestColsTest = 2;
+                      bestCompact = true;
+                      bestFontSize = bestFontSize - 10;
+                    } else {
+                      requiredH = measureHeight(2, 2, true, bestFontSize);
+                      if (requiredH <= contentHeightLimit) {
+                        bestColsMed = 2;
+                        bestColsTest = 2;
+                        bestCompact = true;
+                      } else {
+                        requiredH = measureHeight(2, 2, true, bestFontSize - 10);
+                        if (requiredH <= contentHeightLimit) {
+                          bestColsMed = 2;
+                          bestColsTest = 2;
+                          bestCompact = true;
+                          bestFontSize = bestFontSize - 10;
+                        } else {
+                          requiredH = measureHeight(3, 3, true, Math.max(80, bestFontSize - 15));
+                          if (requiredH <= contentHeightLimit) {
+                            bestColsMed = 3;
+                            bestColsTest = 3;
+                            bestCompact = true;
+                            bestFontSize = Math.max(80, bestFontSize - 15);
+                          } else {
+                            bestColsMed = medicines.length > 12 ? 2 : 1;
+                            bestColsTest = tests.length > 6 ? 2 : 1;
+                            bestCompact = true;
+                            var estTotalH = measureHeight(bestColsMed, bestColsTest, true, initialFontSize);
+                            var totalAvailableH = page1ContentLimit + pageNContentLimit;
+                            if (estTotalH > totalAvailableH) {
+                              bestFontSize = Math.max(80, initialFontSize - 15);
+                            } else {
+                              bestFontSize = Math.max(85, initialFontSize - 10);
+                            }
                           }
                         }
                       }
@@ -1945,13 +1994,23 @@ const DoctorDashboard = () => {
 
               for (var idx = 0; idx < children.length; idx++) {
                 const child = children[idx];
+                
+                const isTestsOrSig = child.innerHTML.includes('Prescribed Tests') || child.innerHTML.includes('Clinical SOAP Notes') || child.innerHTML.includes('Signature & Seal') || child.innerHTML.includes('Note :');
+                if (pageDistribution === 'split-two-pages' && isTestsOrSig && isFirst) {
+                  activePage = createNewPage(false);
+                  isFirst = false;
+                  activeContentArea = activePage.querySelector('.content-area');
+                  activeContentArea.appendChild(child);
+                  pageSpaceUsed = child.offsetHeight;
+                  continue;
+                }
+
                 activeContentArea.appendChild(child);
                 
                 const childHeight = child.offsetHeight;
                 const limit = isFirst ? page1ContentLimit : pageNContentLimit;
                 
                 if (pageSpaceUsed + childHeight > limit) {
-                  // Overflow occurred! Move it to a new page
                   activeContentArea.removeChild(child);
                   
                   activePage = createNewPage(false);
@@ -2068,6 +2127,7 @@ const DoctorDashboard = () => {
         bottomSpacer: 28, // in mm
         fontSize: 100, // in %
         digitalPreset: 'none', // none, teal, burgundy, navy
+        pageDistribution: 'auto'
       };
     } catch {
       return {
@@ -2076,6 +2136,7 @@ const DoctorDashboard = () => {
         bottomSpacer: 28,
         fontSize: 100,
         digitalPreset: 'none',
+        pageDistribution: 'auto'
       };
     }
   });
@@ -9377,6 +9438,36 @@ I have scanned the medical reference databases, but couldn't find a direct match
                     style={{ width: '100%', accentColor: '#800020', cursor: 'pointer' }}
                   />
                   <p style={{ margin: '4px 0 0 0', fontSize: '10px', color: '#94A3B8', fontWeight: 500 }}>Scale down to fit heavily cluttered documents onto a single A4 sheet.</p>
+                </div>
+              </div>
+
+              {/* Prescription Page Layout preference */}
+              <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '16px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <h4 style={{ margin: 0, fontSize: '12px', color: '#1E293B', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.03em', borderBottom: '1px solid #F1F5F9', paddingBottom: '8px' }}>
+                  Page Layout & Flow Preference
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {[
+                    { val: 'auto', label: 'Automatically optimize (Default)', desc: 'System automatically determines the best layout to fit content.' },
+                    { val: 'one-page', label: 'Keep on 1 page', desc: 'Attempt to scale and fit the entire prescription on a single page.' },
+                    { val: 'allow-two-pages', label: 'Allow 2 pages', desc: 'Allows the prescription to cleanly flow onto 2 pages when needed.' },
+                    { val: 'split-two-pages', label: 'Split into 2 pages', desc: 'Force content to break into 2 pages logically.' }
+                  ].map(opt => (
+                    <label key={opt.val} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', cursor: 'pointer' }}>
+                      <input 
+                        type="radio" 
+                        name="pageDistribution" 
+                        value={opt.val} 
+                        checked={(tempPrintSettings.pageDistribution || 'auto') === opt.val} 
+                        onChange={() => setTempPrintSettings(prev => ({ ...prev, pageDistribution: opt.val }))}
+                        style={{ marginTop: '3px', accentColor: '#800020' }}
+                      />
+                      <div>
+                        <span style={{ fontSize: '13px', fontWeight: 700, color: '#334155', display: 'block' }}>{opt.label}</span>
+                        <span style={{ display: 'block', fontSize: '10.5px', color: '#94A3B8', fontWeight: 500, marginTop: '2px' }}>{opt.desc}</span>
+                      </div>
+                    </label>
+                  ))}
                 </div>
               </div>
 
