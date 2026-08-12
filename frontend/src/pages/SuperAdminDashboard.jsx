@@ -7709,6 +7709,124 @@ const SuperAdminDashboard = () => {
                         </div>
                       </div>
 
+                      {/* Legal & Compliance Section */}
+                      <div>
+                        <strong style={{ fontSize: '10px', color: '#64748B', display: 'block', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>LEGAL & COMPLIANCE DETAILS</strong>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', background: '#F8FAFC', padding: '14px', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
+                          
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <span style={{ fontSize: '9px', fontWeight: 800, color: '#64748B' }}>PAN NUMBER</span>
+                            <input
+                              type="text"
+                              style={styles.formInput}
+                              value={hosp.panNumber || ''}
+                              placeholder="e.g. ABCDE1234F"
+                              onChange={async (e) => {
+                                const val = e.target.value.toUpperCase();
+                                setHospitals(prev => prev.map(h => h._id === hosp._id ? { ...h, panNumber: val } : h));
+                                const token = localStorage.getItem('token');
+                                try {
+                                  await fetch(`/api/superadmin/hospitals/${hosp._id}`, {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                                    body: JSON.stringify({ panNumber: val })
+                                  });
+                                } catch (err) { console.error(err); }
+                              }}
+                            />
+                          </div>
+
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <span style={{ fontSize: '9px', fontWeight: 800, color: '#64748B' }}>CIN / CORP ID</span>
+                            <input
+                              type="text"
+                              style={styles.formInput}
+                              value={hosp.corpId || ''}
+                              placeholder="e.g. U85110DL2025PTC384920"
+                              onChange={async (e) => {
+                                const val = e.target.value.toUpperCase();
+                                setHospitals(prev => prev.map(h => h._id === hosp._id ? { ...h, corpId: val } : h));
+                                const token = localStorage.getItem('token');
+                                try {
+                                  await fetch(`/api/superadmin/hospitals/${hosp._id}`, {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                                    body: JSON.stringify({ corpId: val })
+                                  });
+                                } catch (err) { console.error(err); }
+                              }}
+                            />
+                          </div>
+
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <span style={{ fontSize: '9px', fontWeight: 800, color: '#64748B' }}>SIGNATORY NAME</span>
+                            <input
+                              type="text"
+                              style={styles.formInput}
+                              value={hosp.signatoryName || ''}
+                              placeholder="Authorized Signatory Name"
+                              onChange={async (e) => {
+                                const val = e.target.value;
+                                setHospitals(prev => prev.map(h => h._id === hosp._id ? { ...h, signatoryName: val } : h));
+                                const token = localStorage.getItem('token');
+                                try {
+                                  await fetch(`/api/superadmin/hospitals/${hosp._id}`, {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                                    body: JSON.stringify({ signatoryName: val })
+                                  });
+                                } catch (err) { console.error(err); }
+                              }}
+                            />
+                          </div>
+
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <span style={{ fontSize: '9px', fontWeight: 800, color: '#64748B' }}>FIRE SAFETY CERTIFICATE</span>
+                            <input
+                              type="text"
+                              style={styles.formInput}
+                              value={hosp.fireSafetyCertificate || ''}
+                              placeholder="Certificate registration number"
+                              onChange={async (e) => {
+                                const val = e.target.value;
+                                setHospitals(prev => prev.map(h => h._id === hosp._id ? { ...h, fireSafetyCertificate: val } : h));
+                                const token = localStorage.getItem('token');
+                                try {
+                                  await fetch(`/api/superadmin/hospitals/${hosp._id}`, {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                                    body: JSON.stringify({ fireSafetyCertificate: val })
+                                  });
+                                } catch (err) { console.error(err); }
+                              }}
+                            />
+                          </div>
+
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <span style={{ fontSize: '9px', fontWeight: 800, color: '#64748B' }}>POLLUTION CONTROL CERTIFICATE</span>
+                            <input
+                              type="text"
+                              style={styles.formInput}
+                              value={hosp.pollutionCertificate || ''}
+                              placeholder="Certificate registration number"
+                              onChange={async (e) => {
+                                const val = e.target.value;
+                                setHospitals(prev => prev.map(h => h._id === hosp._id ? { ...h, pollutionCertificate: val } : h));
+                                const token = localStorage.getItem('token');
+                                try {
+                                  await fetch(`/api/superadmin/hospitals/${hosp._id}`, {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                                    body: JSON.stringify({ pollutionCertificate: val })
+                                  });
+                                } catch (err) { console.error(err); }
+                              }}
+                            />
+                          </div>
+
+                        </div>
+                      </div>
+
                       {/* Admin Credentials */}
                       <div>
                         <strong style={{ fontSize: '10px', color: '#64748B', display: 'block', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>HOSPITAL ADMIN CREDENTIALS</strong>
@@ -11053,6 +11171,11 @@ const SuperAdminDashboard = () => {
                     isLicenseVerified: activateForm.isLicenseVerified,
                     licenseVerificationDetails: activateForm.licenseVerificationDetails,
                     address: activateForm.address,
+                    panNumber: selectedOnboardingHospital.panNumber || '',
+                    corpId: selectedOnboardingHospital.corpId || '',
+                    signatoryName: selectedOnboardingHospital.signatoryName || '',
+                    fireSafetyCertificate: selectedOnboardingHospital.fireSafetyCertificate || '',
+                    pollutionCertificate: selectedOnboardingHospital.pollutionCertificate || '',
                     revenue: `₹${amount}/mo`,
                     healthScore: 100,
                     limits: {

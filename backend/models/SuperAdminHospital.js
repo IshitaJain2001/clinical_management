@@ -33,6 +33,11 @@ const superAdminHospitalSchema = new mongoose.Schema({
     verificationHash: { type: String, default: '' }
   },
   address: { type: String, default: '' },
+  panNumber: { type: String, default: '' },
+  corpId: { type: String, default: '' },
+  signatoryName: { type: String, default: '' },
+  fireSafetyCertificate: { type: String, default: '' },
+  pollutionCertificate: { type: String, default: '' },
   revenue: { type: String, default: '' },
   healthScore: { type: Number, default: 100 },
   suspensionHistory: [{
