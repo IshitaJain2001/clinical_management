@@ -3233,47 +3233,6 @@ const SuperAdminDashboard = () => {
                       <option>Arabic</option>
                     </select>
                   </div>
-
-                  <div style={{ height: '1px', background: '#E2E8F0', margin: '8px 0' }} />
-
-                  <div>
-                    <h4 style={{ margin: 0, fontSize: '13.5px', fontWeight: 800, color: '#1E293B' }}>ERP Software Modules Gates</h4>
-                    <p style={{ margin: '2px 0 12px 0', fontSize: '11px', color: '#64748B' }}>
-                      {wizardHospital.subscriptionPlan === 'custom' 
-                        ? "Custom Plan selected. You can manually gate module access." 
-                        : "Controlled by the chosen subscription tier. Select Custom plan in Step 4 to modify."}
-                    </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-                      {['reception', 'doctor', 'pharmacy', 'laboratory', 'emergency', 'billing', 'accounts', 'hr', 'payroll'].map(mod => {
-                        const enabled = isModuleEnabled(mod);
-                        return (
-                          <label 
-                            key={mod} 
-                            style={{ 
-                              display: 'flex', 
-                              alignItems: 'center', 
-                              gap: '8px', 
-                              padding: '10px', 
-                              background: '#F8FAFC', 
-                              borderRadius: '6px', 
-                              border: '1px solid #E2E8F0',
-                              cursor: wizardHospital.subscriptionPlan === 'custom' ? 'pointer' : 'default',
-                              opacity: wizardHospital.subscriptionPlan === 'custom' ? 1 : 0.75
-                            }}
-                          >
-                            <input 
-                              type="checkbox" 
-                              checked={enabled} 
-                              disabled={wizardHospital.subscriptionPlan !== 'custom'}
-                              onChange={() => toggleCustomModule(mod)}
-                              style={{ width: '15px', height: '15px' }}
-                            />
-                            <span style={{ fontSize: '12px', fontWeight: 700, color: '#334155', textTransform: 'capitalize' }}>{mod}</span>
-                          </label>
-                        );
-                      })}
-                    </div>
-                  </div>
                 </div>
               )}
 
