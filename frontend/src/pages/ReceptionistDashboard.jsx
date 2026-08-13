@@ -699,6 +699,8 @@ const ReceptionistDashboard = () => {
   const [vitalSpo2, setVitalSpo2] = useState('');
   const [vitalWeight, setVitalWeight] = useState('');
   const [vitalHeight, setVitalHeight] = useState('');
+  const [bookingDiscount, setBookingDiscount] = useState('');
+  const [bookingDiscountReason, setBookingDiscountReason] = useState('');
 
 
   const getFormattedPatientId = (patientId) => {
@@ -1490,6 +1492,10 @@ const ReceptionistDashboard = () => {
       showToast("Please select a payment method.", "error");
       return;
     }
+    if (Number(bookingDiscount) > 0 && !bookingDiscountReason.trim()) {
+      showToast("Please provide a reason for the discount.", "error");
+      return;
+    }
     if (!isExistingPatient && (!formData.name || !formData.contact)) {
       showToast("Please provide Patient Name and Contact Number.", "error");
       return;
@@ -1535,13 +1541,20 @@ const ReceptionistDashboard = () => {
         items.push({ description: 'Registration Fee', amount: 50 });
       }
 
-      const totalLabFee = selectedLabTestsList.reduce((sum, t) => sum + Number(t.price || 0), 0) + (isExistingPatient ? 0 : 50);
+      const origAmt = selectedLabTestsList.reduce((sum, t) => sum + Number(t.price || 0), 0) + (isExistingPatient ? 0 : 50);
+      const discAmt = Number(bookingDiscount) || 0;
+      const finalAmt = Math.max(0, origAmt - discAmt);
+      const discountPercentVal = origAmt > 0 ? Math.round((discAmt / origAmt) * 100) : 0;
 
       await api.post('/billing', {
         patientId: targetPatientId,
         items,
-        totalAmount: totalLabFee,
+        originalAmount: origAmt,
+        discountPercent: discountPercentVal,
+        discountAmount: discAmt,
+        totalAmount: finalAmt,
         paymentMethod: bookingPaymentMethod,
+        discountReason: discAmt > 0 ? bookingDiscountReason.trim() : '',
         status: 'Paid'
       });
 
@@ -1555,7 +1568,9 @@ const ReceptionistDashboard = () => {
         ageGender: `${patientObj.age || 'N/A'} / ${patientObj.gender || 'N/A'}`,
         testName: selectedLabTestsList.map(t => t.testName).join(', '),
         items,
-        totalAmount: totalLabFee,
+        originalAmount: origAmt,
+        discountAmount: discAmt,
+        totalAmount: finalAmt,
         paymentMethod: bookingPaymentMethod,
         hospitalName: currentUser.tenantName || 'Curoxa Medical Center'
       });
@@ -1566,6 +1581,8 @@ const ReceptionistDashboard = () => {
       // Reset
       setSelectedLabTestsList([]);
       setBookingPaymentMethod('');
+      setBookingDiscount('');
+      setBookingDiscountReason('');
       fetchData();
     } catch (err) {
       console.error("Failed to create lab order:", err);
@@ -1582,6 +1599,10 @@ const ReceptionistDashboard = () => {
     }
     if (!bookingPaymentMethod) {
       showToast("Please select a payment method.", "error");
+      return;
+    }
+    if (Number(bookingDiscount) > 0 && !bookingDiscountReason.trim()) {
+      showToast("Please provide a reason for the discount.", "error");
       return;
     }
     if (!isExistingPatient && (!formData.name || !formData.contact)) {
@@ -1619,13 +1640,20 @@ const ReceptionistDashboard = () => {
         items.push({ description: 'Registration Fee', amount: 50 });
       }
 
-      const totalServiceFee = selectedServicesList.reduce((sum, s) => sum + Number(s.price || 0), 0) + (isExistingPatient ? 0 : 50);
+      const origAmt = selectedServicesList.reduce((sum, s) => sum + Number(s.price || 0), 0) + (isExistingPatient ? 0 : 50);
+      const discAmt = Number(bookingDiscount) || 0;
+      const finalAmt = Math.max(0, origAmt - discAmt);
+      const discountPercentVal = origAmt > 0 ? Math.round((discAmt / origAmt) * 100) : 0;
 
       await api.post('/billing', {
         patientId: targetPatientId,
         items,
-        totalAmount: totalServiceFee,
+        originalAmount: origAmt,
+        discountPercent: discountPercentVal,
+        discountAmount: discAmt,
+        totalAmount: finalAmt,
         paymentMethod: bookingPaymentMethod,
+        discountReason: discAmt > 0 ? bookingDiscountReason.trim() : '',
         status: 'Paid'
       });
 
@@ -1639,7 +1667,9 @@ const ReceptionistDashboard = () => {
         ageGender: `${patientObj.age || 'N/A'} / ${patientObj.gender || 'N/A'}`,
         testName: selectedServicesList.map(s => s.serviceName).join(', '),
         items,
-        totalAmount: totalServiceFee,
+        originalAmount: origAmt,
+        discountAmount: discAmt,
+        totalAmount: finalAmt,
         paymentMethod: bookingPaymentMethod,
         hospitalName: currentUser.tenantName || 'Curoxa Medical Center'
       });
@@ -1650,6 +1680,8 @@ const ReceptionistDashboard = () => {
       // Reset
       setSelectedServicesList([]);
       setBookingPaymentMethod('');
+      setBookingDiscount('');
+      setBookingDiscountReason('');
       fetchData();
     } catch (err) {
       console.error("Failed to create clinical service order:", err);
@@ -2287,6 +2319,12 @@ const ReceptionistDashboard = () => {
         return;
       }
 
+      if (Number(bookingDiscount) > 0 && !bookingDiscountReason.trim()) {
+        showToast("Please provide a reason for the discount.", "error");
+        setLoading(false);
+        return;
+      }
+
       const billingItems = allApptsToBook.map(appt => ({
         description: `Consultation Fee (${appt.doctorName || 'Doctor'} - ${(appt.time || '').split('(Limit')[0].trim()})`,
         amount: appt.fee || 500
@@ -2298,9 +2336,10 @@ const ReceptionistDashboard = () => {
 
       const patientName = isExistingPatient && selectedPatient ? selectedPatient.name : formData.name;
       
-      const payload = {
-        isExistingPatient,
-        patientData: isExistingPatient ? null : {
+      let finalPatientId = isExistingPatient ? selectedPatient._id : null;
+      let patientObj = isExistingPatient ? selectedPatient : null;
+      if (!isExistingPatient) {
+        const patientRes = await api.post('/patients', {
           name: formData.name,
           age: parseInt(formData.age) || 30,
           gender: formData.gender,
@@ -2313,44 +2352,117 @@ const ReceptionistDashboard = () => {
           dpdpConsent: dpdpConsent,
           patientDocuments: patientDocuments,
           referredBy: formData.referredBy || ''
-        },
-        patientId: isExistingPatient ? selectedPatient._id : null,
-        appointmentsList: allApptsToBook.map(a => ({
-          doctorId: a.doctorId,
-          date: new Date(a.date),
-          time: a.time,
-          reason: a.reason
-        })),
-        billingData: {
-          items: billingItems,
-          totalAmount: billingTotal,
-          paymentMethod: bookingPaymentMethod || 'Cash'
+        });
+        finalPatientId = patientRes.data._id;
+        patientObj = patientRes.data;
+        if (formData.contact) {
+          localStorage.removeItem('curoxa_draft_' + formData.contact);
         }
-      };
+      }
 
-      setPendingRegistrationPayload(payload);
-      
-      const simulatedBill = {
-        _id: 'pending_bill',
-        isPending: true,
-        patientId: { name: patientName },
-        totalAmount: billingTotal,
+      // Book appointments
+      const apptsToCreate = allApptsToBook;
+      let primaryApptId = null;
+      for (const apptItem of apptsToCreate) {
+        const appointmentRes = await api.post('/appointments', {
+          patientId: finalPatientId,
+          doctorId: apptItem.doctorId,
+          date: apptItem.date,
+          time: apptItem.time,
+          reason: apptItem.reason
+        });
+        if (!primaryApptId) primaryApptId = appointmentRes.data._id;
+      }
+
+      // Settle billing
+      const origAmt = billingTotal;
+      const discAmt = Number(bookingDiscount) || 0;
+      const finalAmt = Math.max(0, origAmt - discAmt);
+      const discountPercentVal = origAmt > 0 ? Math.round((discAmt / origAmt) * 100) : 0;
+
+      await api.post('/billing', {
+        patientId: finalPatientId,
+        appointmentId: primaryApptId,
+        items: billingItems,
+        originalAmount: origAmt,
+        discountPercent: discountPercentVal,
+        discountAmount: discAmt,
+        totalAmount: finalAmt,
         paymentMethod: bookingPaymentMethod || 'Cash',
-        status: 'Unpaid',
-        items: billingItems
-      };
-      
-      setSelectedBillForPayment(simulatedBill);
-      setDiscountPercent(0);
-      setDiscountReason('');
-      setPaymentMethod(bookingPaymentMethod || 'Cash');
-      setShowPaymentModal(true);
+        discountReason: discAmt > 0 ? bookingDiscountReason.trim() : '',
+        status: 'Paid'
+      });
 
-      showToast(`Proceeding to payment for ${allApptsToBook.length} appointment(s).`, "info");
+      // Save vitals if any of them are filled in the form
+      if (vitalTemp || vitalPulse || vitalBpSys || vitalBpDia || vitalResp || vitalSpo2 || vitalWeight || vitalHeight) {
+        try {
+          await api.post('/emr/vitals', {
+            patientId: finalPatientId,
+            temperature: vitalTemp ? parseFloat(vitalTemp) : undefined,
+            pulse: vitalPulse ? parseInt(vitalPulse) : undefined,
+            bpSys: vitalBpSys ? parseInt(vitalBpSys) : undefined,
+            bpDia: vitalBpDia ? parseInt(vitalBpDia) : undefined,
+            resp: vitalResp ? parseInt(vitalResp) : undefined,
+            spo2: vitalSpo2 ? parseInt(vitalSpo2) : undefined,
+            weight: vitalWeight ? parseFloat(vitalWeight) : undefined,
+            height: vitalHeight ? parseFloat(vitalHeight) : undefined
+          });
+          // Clear vitals form fields
+          setVitalTemp('');
+          setVitalPulse('');
+          setVitalBpSys('');
+          setVitalBpDia('');
+          setVitalResp('');
+          setVitalSpo2('');
+          setVitalWeight('');
+          setVitalHeight('');
+        } catch (err) {
+          console.error("Failed to save vitals during registration flow:", err);
+        }
+      }
+
+      // Generate Slip PDF Data
+      const activePatient = patientObj || selectedPatient || formData;
+      setActiveSlipData({
+        receiptNo: `REC-${Date.now().toString().slice(-6)}`,
+        date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        patientName: activePatient.name || 'Patient',
+        patientId: getFormattedPatientId(finalPatientId),
+        contact: activePatient.contact || 'N/A',
+        ageGender: `${activePatient.age || 'N/A'} / ${activePatient.gender || 'N/A'}`,
+        testName: 'OPD Consultation & Booking Fee',
+        items: billingItems,
+        originalAmount: origAmt,
+        discountAmount: discAmt,
+        totalAmount: finalAmt,
+        paymentMethod: bookingPaymentMethod || 'Cash',
+        hospitalName: currentUser.tenantName || 'Curoxa Medical Center'
+      });
+      setShowSlipPdfModal(true);
+
+      showToast(`${apptsToCreate.length} Appointment(s) registered & Payment completed successfully!`, "success");
+
+      // Reset Form State
+      setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '', referredBy: '' });
+      setBookingDate(getLocalDateString());
+      setSelectedSlot('');
+      setSelectedSymptoms([]);
+      setAdditionalApptsList([]);
+      setIsExistingPatient(null);
+      setSelectedPatient(null);
+      setBookingPaymentMethod('');
+      setBookingDiscount('');
+      setBookingDiscountReason('');
+      setOtpVerified(false);
+      setOtpSent(false);
+      setVerificationOtp('');
+      setPatientDocuments([]);
+      setReschedulingAppointment(null);
+      fetchData();
 
     } catch (err) {
       console.error(err);
-      showToast(err.message || 'Failed to prepare appointments', 'error');
+      showToast(err.response?.data?.error || err.message || 'Failed to complete booking and payment', 'error');
     } finally {
       setLoading(false);
     }
@@ -6545,7 +6657,7 @@ const ReceptionistDashboard = () => {
                       <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#1A1D23', margin: 0 }}>Billing & Payment Summary</h2>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '40px', marginBottom: '48px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '340px 1fr', gap: '40px', marginBottom: '48px' }}>
                       <div className="billing-summary">
                           {getBillingItems().map((item, i) => (
                             <div key={i} className="billing-row">
@@ -6554,10 +6666,46 @@ const ReceptionistDashboard = () => {
                             </div>
                           ))}
                           {!isExistingPatient && getBillingItems().length > 0 && <div className="billing-row"><span>Registration Fee</span> <span>₹50.00</span></div>}
-                          <div className="billing-total">
+                          
+                          {/* Discount Input & Reason Fields */}
+                          <div style={{ marginTop: '12px', borderTop: '1px dashed #CBD5E1', paddingTop: '12px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                              <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', margin: 0, textTransform: 'uppercase' }}>Discount (₹)</label>
+                              <input
+                                type="number"
+                                min="0"
+                                max={getBillingItems().reduce((sum, item) => sum + item.amount, 0) + ((!isExistingPatient && getBillingItems().length > 0) ? 50 : 0)}
+                                placeholder="0"
+                                value={bookingDiscount}
+                                onChange={e => setBookingDiscount(e.target.value)}
+                                style={{ width: '100px', height: '32px', borderRadius: '6px', border: '1px solid #CBD5E1', padding: '0 8px', fontSize: '12px', fontWeight: 700, textAlign: 'right' }}
+                              />
+                            </div>
+                            {Number(bookingDiscount) > 0 && (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '8px' }}>
+                                <label style={{ fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>Discount Reason <span style={{ color: '#EF4444' }}>*</span></label>
+                                <input
+                                  type="text"
+                                  placeholder="Reason (e.g. Doctor recommendation)"
+                                  value={bookingDiscountReason}
+                                  onChange={e => setBookingDiscountReason(e.target.value)}
+                                  style={{ width: '100%', height: '32px', borderRadius: '6px', border: '1px solid #CBD5E1', padding: '0 8px', fontSize: '11px', fontWeight: 600 }}
+                                />
+                              </div>
+                            )}
+                          </div>
+
+                          {Number(bookingDiscount) > 0 && (
+                            <div className="billing-row" style={{ color: '#DC2626', fontWeight: 700 }}>
+                              <span>Discount Applied</span>
+                              <span>-₹{Number(bookingDiscount).toFixed(2)}</span>
+                            </div>
+                          )}
+
+                          <div className="billing-total" style={{ borderTop: '2px solid #2563EB', marginTop: '8px', paddingTop: '8px' }}>
                             <span>Total Amount</span> 
                             <span>
-                              ₹{(getBillingItems().reduce((sum, item) => sum + item.amount, 0) + ((!isExistingPatient && getBillingItems().length > 0) ? 50 : 0)).toFixed(2)}
+                              ₹{Math.max(0, (getBillingItems().reduce((sum, item) => sum + item.amount, 0) + ((!isExistingPatient && getBillingItems().length > 0) ? 50 : 0)) - (Number(bookingDiscount) || 0)).toFixed(2)}
                             </span>
                           </div>
                       </div>
