@@ -364,6 +364,7 @@ const ReceptionistDashboard = () => {
   const notificationRef = useRef(null);
   const globalSearchContainerRef = useRef(null);
   const medicineSearchContainerRef = useRef(null);
+  const symptomDropdownRef = useRef(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedBillForPayment, setSelectedBillForPayment] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('Cash');
@@ -382,6 +383,9 @@ const ReceptionistDashboard = () => {
       if (medicineSearchContainerRef.current && !medicineSearchContainerRef.current.contains(event.target)) {
         setShowMedicineSuggestions(false);
         setMedicineSearchQuery('');
+      }
+      if (symptomDropdownRef.current && !symptomDropdownRef.current.contains(event.target)) {
+        setSymptomDropdownOpen(false);
       }
       if (!event.target.closest('.sidebar-user') && !event.target.closest('.sidebar-profile-card') && !event.target.closest('.sidebar-profile')) {
         setShowProfileMenu(false);
@@ -6039,7 +6043,7 @@ const ReceptionistDashboard = () => {
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
                           <div className="form-group" style={{ marginBottom: '8px' }}>
                               <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Symptoms <span style={{ color: '#EF4444' }}>*</span></label>
-                              <div className="custom-dropdown-container">
+                              <div className="custom-dropdown-container" ref={symptomDropdownRef}>
                                   <div className="custom-dropdown-trigger" onClick={() => !reschedulingAppointment && setSymptomDropdownOpen(!symptomDropdownOpen)} style={{ minHeight: '38px', height: 'auto', padding: '4px 12px', flexWrap: 'wrap', ...(reschedulingAppointment ? { cursor: 'not-allowed', background: '#F1F5F9' } : {}) }}>
                                       <div className="selected-items" data-lenis-prevent style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', width: '100%', gap: '6px' }}>
                                           {selectedSymptoms.map(s => (
