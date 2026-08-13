@@ -6035,58 +6035,62 @@ const ReceptionistDashboard = () => {
                           </div>
                         </div>
                       )}
-                      
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
                           <div className="form-group" style={{ marginBottom: '8px' }}>
                               <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Symptoms <span style={{ color: '#EF4444' }}>*</span></label>
                               <div className="custom-dropdown-container">
                                   <div className="custom-dropdown-trigger" onClick={() => !reschedulingAppointment && setSymptomDropdownOpen(!symptomDropdownOpen)} style={{ height: '38px', ...(reschedulingAppointment ? { cursor: 'not-allowed', background: '#F1F5F9' } : {}) }}>
-                                      <div className="selected-items" data-lenis-prevent>
-                                          {selectedSymptoms.length > 0 ? (
-                                              selectedSymptoms.map(s => (
-                                                <div key={s} className="symptom-tag">
-                                                    {s}
-                                                    <span 
-                                                      onClick={(e) => { e.stopPropagation(); if (!reschedulingAppointment) toggleSymptom(s); }}
-                                                      style={{ cursor: reschedulingAppointment ? 'not-allowed' : 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginLeft: '4px' }}
-                                                    >
-                                                        <i data-lucide="x" style={{ pointerEvents: 'none', width: '14px', height: '14px' }}></i>
-                                                    </span>
-                                                </div>
-                                              ))
-                                          ) : (
-                                              <span style={{ color: '#94A3B8', fontWeight: 500 }}>Select symptoms</span>
-                                          )}
+                                      <div className="selected-items" data-lenis-prevent style={{ display: 'flex', alignItems: 'center', flexWrap: 'nowrap', width: '100%', gap: '8px' }}>
+                                          {selectedSymptoms.map(s => (
+                                            <div key={s} className="symptom-tag">
+                                                {s}
+                                                <span 
+                                                  onClick={(e) => { e.stopPropagation(); if (!reschedulingAppointment) toggleSymptom(s); }}
+                                                  style={{ cursor: reschedulingAppointment ? 'not-allowed' : 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginLeft: '4px' }}
+                                                >
+                                                    <i data-lucide="x" style={{ pointerEvents: 'none', width: '14px', height: '14px' }}></i>
+                                                </span>
+                                            </div>
+                                          ))}
+                                          <input
+                                            type="text"
+                                            placeholder={selectedSymptoms.length === 0 ? "Select / Search symptoms..." : ""}
+                                            value={symptomSearchQuery}
+                                            onChange={e => {
+                                              setSymptomSearchQuery(e.target.value);
+                                              if (!symptomDropdownOpen) setSymptomDropdownOpen(true);
+                                            }}
+                                            onClick={e => {
+                                              e.stopPropagation();
+                                              setSymptomDropdownOpen(true);
+                                            }}
+                                            disabled={!!reschedulingAppointment}
+                                            style={{
+                                              border: 'none',
+                                              outline: 'none',
+                                              background: 'transparent',
+                                              flex: 1,
+                                              minWidth: '100px',
+                                              fontSize: '12px',
+                                              fontWeight: 600,
+                                              color: '#0F172A',
+                                              padding: 0,
+                                              margin: 0,
+                                              cursor: reschedulingAppointment ? 'not-allowed' : 'text'
+                                            }}
+                                          />
                                       </div>
                                       <i data-lucide="chevron-down" style={{ width: '18px', color: '#94A3B8', transition: '0.3s', transform: symptomDropdownOpen ? 'rotate(180deg)' : 'none' }}></i>
                                   </div>
                                   {symptomDropdownOpen && (
-                                      <div className="dropdown-options-box show" data-lenis-prevent style={{ padding: '8px' }}>
-                                          <input
-                                              type="text"
-                                              placeholder="Type to search..."
-                                              value={symptomSearchQuery}
-                                              onChange={e => setSymptomSearchQuery(e.target.value)}
-                                              onClick={e => e.stopPropagation()}
-                                              style={{ 
-                                                  width: '100%', 
-                                                  height: '32px', 
-                                                  borderRadius: '6px', 
-                                                  border: '1.5px solid #CBD5E1', 
-                                                  padding: '0 8px', 
-                                                  fontSize: '12px', 
-                                                  marginBottom: '8px',
-                                                  boxSizing: 'border-box' 
-                                              }}
-                                          />
-                                          <div style={{ maxHeight: '180px', overflowY: 'auto' }}>
-                                              {availableSymptoms.filter(s => s.toLowerCase().includes(symptomSearchQuery.toLowerCase())).map(s => (
-                                                  <div key={s} className="option-item" onClick={() => { toggleSymptom(s); setSymptomSearchQuery(''); }} style={{ padding: '8px 12px', cursor: 'pointer', borderRadius: '4px' }}>{s}</div>
-                                              ))}
-                                              {availableSymptoms.filter(s => s.toLowerCase().includes(symptomSearchQuery.toLowerCase())).length === 0 && (
-                                                  <div style={{ padding: '8px', fontSize: '12px', color: '#64748B', textAlign: 'center' }}>No matching symptoms</div>
-                                              )}
-                                          </div>
+                                      <div className="dropdown-options-box show" data-lenis-prevent style={{ padding: '4px', maxHeight: '200px', overflowY: 'auto' }}>
+                                          {availableSymptoms.filter(s => s.toLowerCase().includes(symptomSearchQuery.toLowerCase())).map(s => (
+                                              <div key={s} className="option-item" onClick={() => { toggleSymptom(s); setSymptomSearchQuery(''); }} style={{ padding: '8px 12px', cursor: 'pointer', borderRadius: '4px' }}>{s}</div>
+                                          ))}
+                                          {availableSymptoms.filter(s => s.toLowerCase().includes(symptomSearchQuery.toLowerCase())).length === 0 && (
+                                              <div style={{ padding: '8px', fontSize: '12px', color: '#64748B', textAlign: 'center' }}>No matching symptoms</div>
+                                          )}
                                       </div>
                                   )}
                               </div>
