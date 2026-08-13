@@ -691,6 +691,7 @@ const ReceptionistDashboard = () => {
   const [patientVitals, setPatientVitals] = useState([]);
   const [showVitalsModal, setShowVitalsModal] = useState(false);
   const [vitalsCollapsed, setVitalsCollapsed] = useState(true);
+  const [docsCollapsed, setDocsCollapsed] = useState(true);
   const [vitalTemp, setVitalTemp] = useState('');
   const [vitalPulse, setVitalPulse] = useState('');
   const [vitalBpSys, setVitalBpSys] = useState('');
@@ -5884,83 +5885,108 @@ const ReceptionistDashboard = () => {
                   </div>
 
                   {!isExistingPatient && bookingType !== 'lab' && bookingType !== 'service' && (
-                    <>
-                      {/* Document Uploads */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px' }}>
+                    <div style={{ marginTop: '16px', marginBottom: '16px' }}>
+                      {/* Document Uploads Header */}
+                      <div 
+                        style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px', cursor: 'pointer', userSelect: 'none' }}
+                        onClick={() => setDocsCollapsed(!docsCollapsed)}
+                      >
                           <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#8B5CF6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '14px' }}>
                             <i data-lucide="folder-plus" style={{ width: '16px', height: '16px' }}></i>
                           </div>
-                          <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#1A1D23', margin: 0 }}>Add Additional Documents <span style={{ color: '#64748B', fontSize: '14px', fontWeight: 600 }}>(Optional)</span></h2>
+                          <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#1A1D23', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            Add Additional Documents <span style={{ color: '#64748B', fontSize: '13px', fontWeight: 600 }}>(Optional)</span>
+                            <span style={{ fontSize: '11px', color: '#8B5CF6', background: '#F5F3FF', padding: '2px 8px', borderRadius: '12px', marginLeft: '8px', fontWeight: 700 }}>
+                              {docsCollapsed ? 'Show' : 'Hide'}
+                            </span>
+                          </h2>
+                          <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            width="18" 
+                            height="18" 
+                            viewBox="0 0 24 24" 
+                            fill="none" 
+                            stroke="#8B5CF6" 
+                            strokeWidth="2.5" 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round" 
+                            style={{ marginLeft: 'auto', transition: 'transform 0.2s', transform: docsCollapsed ? 'none' : 'rotate(180deg)' }}
+                          >
+                            <polyline points="6 9 12 15 18 9" />
+                          </svg>
                       </div>
-                      <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '24px', borderRadius: '12px', marginBottom: '40px' }}>
-                        <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-end', marginBottom: '20px' }}>
-                          <div style={{ flex: 1 }}>
-                            <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: '6px', display: 'block' }}>Document Type</label>
-                            <select 
-                              className="form-control" 
-                              value={newDocType} 
-                              onChange={e => setNewDocType(e.target.value)}
-                              style={{ width: '100%', height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '13px', fontWeight: 700, padding: '0 12px' }}
-                            >
-                              <option value="Aadhar / Voter Card">Aadhar / Voter Card</option>
-                              <option value="Ultrasound Report">Ultrasound Report</option>
-                              <option value="Consent Form (e.g. HIV)">Consent Form (e.g. HIV)</option>
-                              <option value="Patient Photo">Patient Photo</option>
-                              <option value="Other">Other</option>
-                            </select>
-                          </div>
-                          <div style={{ flex: 2 }}>
-                            <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: '6px', display: 'block' }}>Upload File</label>
-                            <div style={{ display: 'flex', gap: '12px' }}>
-                              <input 
-                                type="file" 
-                                id="patient-doc-upload"
-                                className="form-control"
-                                style={{ flex: 1, padding: '8px', height: '42px', fontSize: '13px', borderRadius: '8px', background: 'white' }}
-                              />
-                              <button 
-                                type="button"
-                                onClick={() => {
-                                  const fileInput = document.getElementById('patient-doc-upload');
-                                  if (fileInput.files.length > 0) {
-                                    setPatientDocuments([...patientDocuments, { type: newDocType, name: fileInput.files[0].name, size: (fileInput.files[0].size / 1024).toFixed(1) + ' KB' }]);
-                                    fileInput.value = '';
-                                  } else {
-                                    showToast('Please select a file to upload', 'error');
-                                  }
-                                }}
-                                style={{ padding: '0 20px', background: '#2563EB', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', height: '42px' }}
-                              >
-                                Add Document
-                              </button>
-                            </div>
-                          </div>
-                        </div>
 
-                        {patientDocuments.length > 0 && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            {patientDocuments.map((doc, idx) => (
-                              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '8px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                  <i data-lucide="file-text" style={{ width: '18px', color: '#64748B' }}></i>
-                                  <div>
-                                    <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#0F172A' }}>{doc.name}</div>
-                                    <div style={{ fontSize: '11.5px', fontWeight: 600, color: '#64748B' }}>{doc.type} • {doc.size}</div>
-                                  </div>
-                                </div>
+                      {!docsCollapsed && (
+                        <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '24px', borderRadius: '12px', marginBottom: '16px' }}>
+                          <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-end', marginBottom: '20px' }}>
+                            <div style={{ flex: 1 }}>
+                              <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: '6px', display: 'block' }}>Document Type</label>
+                              <select 
+                                className="form-control" 
+                                value={newDocType} 
+                                onChange={e => setNewDocType(e.target.value)}
+                                style={{ width: '100%', height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '13px', fontWeight: 700, padding: '0 12px' }}
+                              >
+                                <option value="Aadhar / Voter Card">Aadhar / Voter Card</option>
+                                <option value="Ultrasound Report">Ultrasound Report</option>
+                                <option value="Consent Form (e.g. HIV)">Consent Form (e.g. HIV)</option>
+                                <option value="Patient Photo">Patient Photo</option>
+                                <option value="Other">Other</option>
+                              </select>
+                            </div>
+                            <div style={{ flex: 2 }}>
+                              <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: '6px', display: 'block' }}>Upload File</label>
+                              <div style={{ display: 'flex', gap: '12px' }}>
+                                <input 
+                                  type="file" 
+                                  id="patient-doc-upload"
+                                  className="form-control"
+                                  style={{ flex: 1, padding: '8px', height: '42px', fontSize: '13px', borderRadius: '8px', background: 'white' }}
+                                />
                                 <button 
-                                  type="button" 
-                                  onClick={() => setPatientDocuments(patientDocuments.filter((_, i) => i !== idx))}
-                                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#EF4444' }}
+                                  type="button"
+                                  onClick={() => {
+                                    const fileInput = document.getElementById('patient-doc-upload');
+                                    if (fileInput.files.length > 0) {
+                                      setPatientDocuments([...patientDocuments, { type: newDocType, name: fileInput.files[0].name, size: (fileInput.files[0].size / 1024).toFixed(1) + ' KB' }]);
+                                      fileInput.value = '';
+                                    } else {
+                                      showToast('Please select a file to upload', 'error');
+                                    }
+                                  }}
+                                  style={{ padding: '0 20px', background: '#2563EB', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', height: '42px' }}
                                 >
-                                  <i data-lucide="trash-2" style={{ width: '16px' }}></i>
+                                  Add Document
                                 </button>
                               </div>
-                            ))}
+                            </div>
                           </div>
-                        )}
-                      </div>
-                    </>
+
+                          {patientDocuments.length > 0 && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                              {patientDocuments.map((doc, idx) => (
+                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '8px' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <i data-lucide="file-text" style={{ width: '18px', color: '#64748B' }}></i>
+                                    <div>
+                                      <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#0F172A' }}>{doc.name}</div>
+                                      <div style={{ fontSize: '11.5px', fontWeight: 600, color: '#64748B' }}>{doc.type} • {doc.size}</div>
+                                    </div>
+                                  </div>
+                                  <button 
+                                    type="button" 
+                                    onClick={() => setPatientDocuments(patientDocuments.filter((_, i) => i !== idx))}
+                                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#EF4444' }}
+                                  >
+                                    <i data-lucide="trash-2" style={{ width: '16px' }}></i>
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   )}
 
 
