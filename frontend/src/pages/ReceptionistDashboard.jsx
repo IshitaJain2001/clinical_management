@@ -699,7 +699,7 @@ const ReceptionistDashboard = () => {
   const [vitalSpo2, setVitalSpo2] = useState('');
   const [vitalWeight, setVitalWeight] = useState('');
   const [vitalHeight, setVitalHeight] = useState('');
-  const [bookingDiscount, setBookingDiscount] = useState('');
+  const [bookingDiscountPercent, setBookingDiscountPercent] = useState(0);
   const [bookingDiscountReason, setBookingDiscountReason] = useState('');
 
 
@@ -1492,7 +1492,7 @@ const ReceptionistDashboard = () => {
       showToast("Please select a payment method.", "error");
       return;
     }
-    if (Number(bookingDiscount) > 0 && !bookingDiscountReason.trim()) {
+    if (Number(bookingDiscountPercent) > 0 && !bookingDiscountReason.trim()) {
       showToast("Please provide a reason for the discount.", "error");
       return;
     }
@@ -1542,15 +1542,14 @@ const ReceptionistDashboard = () => {
       }
 
       const origAmt = selectedLabTestsList.reduce((sum, t) => sum + Number(t.price || 0), 0) + (isExistingPatient ? 0 : 50);
-      const discAmt = Number(bookingDiscount) || 0;
+      const discAmt = (origAmt * Number(bookingDiscountPercent || 0)) / 100;
       const finalAmt = Math.max(0, origAmt - discAmt);
-      const discountPercentVal = origAmt > 0 ? Math.round((discAmt / origAmt) * 100) : 0;
 
       await api.post('/billing', {
         patientId: targetPatientId,
         items,
         originalAmount: origAmt,
-        discountPercent: discountPercentVal,
+        discountPercent: Number(bookingDiscountPercent || 0),
         discountAmount: discAmt,
         totalAmount: finalAmt,
         paymentMethod: bookingPaymentMethod,
@@ -1581,7 +1580,7 @@ const ReceptionistDashboard = () => {
       // Reset
       setSelectedLabTestsList([]);
       setBookingPaymentMethod('');
-      setBookingDiscount('');
+      setBookingDiscountPercent(0);
       setBookingDiscountReason('');
       fetchData();
     } catch (err) {
@@ -1601,7 +1600,7 @@ const ReceptionistDashboard = () => {
       showToast("Please select a payment method.", "error");
       return;
     }
-    if (Number(bookingDiscount) > 0 && !bookingDiscountReason.trim()) {
+    if (Number(bookingDiscountPercent) > 0 && !bookingDiscountReason.trim()) {
       showToast("Please provide a reason for the discount.", "error");
       return;
     }
@@ -1641,15 +1640,14 @@ const ReceptionistDashboard = () => {
       }
 
       const origAmt = selectedServicesList.reduce((sum, s) => sum + Number(s.price || 0), 0) + (isExistingPatient ? 0 : 50);
-      const discAmt = Number(bookingDiscount) || 0;
+      const discAmt = (origAmt * Number(bookingDiscountPercent || 0)) / 100;
       const finalAmt = Math.max(0, origAmt - discAmt);
-      const discountPercentVal = origAmt > 0 ? Math.round((discAmt / origAmt) * 100) : 0;
 
       await api.post('/billing', {
         patientId: targetPatientId,
         items,
         originalAmount: origAmt,
-        discountPercent: discountPercentVal,
+        discountPercent: Number(bookingDiscountPercent || 0),
         discountAmount: discAmt,
         totalAmount: finalAmt,
         paymentMethod: bookingPaymentMethod,
@@ -1680,7 +1678,7 @@ const ReceptionistDashboard = () => {
       // Reset
       setSelectedServicesList([]);
       setBookingPaymentMethod('');
-      setBookingDiscount('');
+      setBookingDiscountPercent(0);
       setBookingDiscountReason('');
       fetchData();
     } catch (err) {
@@ -2319,7 +2317,7 @@ const ReceptionistDashboard = () => {
         return;
       }
 
-      if (Number(bookingDiscount) > 0 && !bookingDiscountReason.trim()) {
+      if (Number(bookingDiscountPercent) > 0 && !bookingDiscountReason.trim()) {
         showToast("Please provide a reason for the discount.", "error");
         setLoading(false);
         return;
@@ -2376,16 +2374,15 @@ const ReceptionistDashboard = () => {
 
       // Settle billing
       const origAmt = billingTotal;
-      const discAmt = Number(bookingDiscount) || 0;
+      const discAmt = (origAmt * Number(bookingDiscountPercent || 0)) / 100;
       const finalAmt = Math.max(0, origAmt - discAmt);
-      const discountPercentVal = origAmt > 0 ? Math.round((discAmt / origAmt) * 100) : 0;
 
       await api.post('/billing', {
         patientId: finalPatientId,
         appointmentId: primaryApptId,
         items: billingItems,
         originalAmount: origAmt,
-        discountPercent: discountPercentVal,
+        discountPercent: Number(bookingDiscountPercent || 0),
         discountAmount: discAmt,
         totalAmount: finalAmt,
         paymentMethod: bookingPaymentMethod || 'Cash',
@@ -2451,7 +2448,7 @@ const ReceptionistDashboard = () => {
       setIsExistingPatient(null);
       setSelectedPatient(null);
       setBookingPaymentMethod('');
-      setBookingDiscount('');
+      setBookingDiscountPercent(0);
       setBookingDiscountReason('');
       setOtpVerified(false);
       setOtpSent(false);
@@ -6658,57 +6655,73 @@ const ReceptionistDashboard = () => {
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '340px 1fr', gap: '40px', marginBottom: '48px' }}>
-                      <div className="billing-summary">
-                          {getBillingItems().map((item, i) => (
-                            <div key={i} className="billing-row">
-                              <span>{item.description}</span>
-                              <span>₹{Number(item.amount).toFixed(2)}</span>
-                            </div>
-                          ))}
-                          {!isExistingPatient && getBillingItems().length > 0 && <div className="billing-row"><span>Registration Fee</span> <span>₹50.00</span></div>}
-                          
-                          {/* Discount Input & Reason Fields */}
-                          <div style={{ marginTop: '12px', borderTop: '1px dashed #CBD5E1', paddingTop: '12px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                              <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', margin: 0, textTransform: 'uppercase' }}>Discount (₹)</label>
-                              <input
-                                type="number"
-                                min="0"
-                                max={getBillingItems().reduce((sum, item) => sum + item.amount, 0) + ((!isExistingPatient && getBillingItems().length > 0) ? 50 : 0)}
-                                placeholder="0"
-                                value={bookingDiscount}
-                                onChange={e => setBookingDiscount(e.target.value)}
-                                style={{ width: '100px', height: '32px', borderRadius: '6px', border: '1px solid #CBD5E1', padding: '0 8px', fontSize: '12px', fontWeight: 700, textAlign: 'right' }}
-                              />
-                            </div>
-                            {Number(bookingDiscount) > 0 && (
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '8px' }}>
-                                <label style={{ fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>Discount Reason <span style={{ color: '#EF4444' }}>*</span></label>
-                                <input
-                                  type="text"
-                                  placeholder="Reason (e.g. Doctor recommendation)"
-                                  value={bookingDiscountReason}
-                                  onChange={e => setBookingDiscountReason(e.target.value)}
-                                  style={{ width: '100%', height: '32px', borderRadius: '6px', border: '1px solid #CBD5E1', padding: '0 8px', fontSize: '11px', fontWeight: 600 }}
-                                />
+                      {(() => {
+                        const subtotalVal = getBillingItems().reduce((sum, item) => sum + item.amount, 0) + ((!isExistingPatient && getBillingItems().length > 0) ? 50 : 0);
+                        const discAmt = (subtotalVal * Number(bookingDiscountPercent || 0)) / 100;
+                        const finalTotalVal = Math.max(0, subtotalVal - discAmt);
+
+                        return (
+                          <div className="billing-summary">
+                              {getBillingItems().map((item, i) => (
+                                <div key={i} className="billing-row">
+                                  <span>{item.description}</span>
+                                  <span>₹{Number(item.amount).toFixed(2)}</span>
+                                </div>
+                              ))}
+                              {!isExistingPatient && getBillingItems().length > 0 && <div className="billing-row"><span>Registration Fee</span> <span>₹50.00</span></div>}
+                              
+                              {/* Discount Input & Reason Fields */}
+                              <div style={{ marginTop: '12px', borderTop: '1px dashed #CBD5E1', paddingTop: '12px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                  <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', margin: 0, textTransform: 'uppercase' }}>Discount (%)</label>
+                                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '90px' }}>
+                                    <input
+                                      type="number"
+                                      min="0"
+                                      max={allowedDiscountPercent}
+                                      placeholder="0"
+                                      value={bookingDiscountPercent || ''}
+                                      onChange={e => setBookingDiscountPercent(Math.min(allowedDiscountPercent, Math.max(0, Number(e.target.value))))}
+                                      style={{ width: '100%', height: '32px', borderRadius: '6px', border: '1px solid #CBD5E1', padding: '0 20px 0 8px', fontSize: '13px', fontWeight: 800, textAlign: 'right' }}
+                                    />
+                                    <span style={{ position: 'absolute', right: '8px', fontWeight: 800, color: '#64748B', fontSize: '11px' }}>%</span>
+                                  </div>
+                                </div>
+                                <span style={{ display: 'block', fontSize: '10.5px', color: '#64748B', textAlign: 'right', marginTop: '-4px', marginBottom: '8px', fontWeight: 600 }}>
+                                  Max limit: {allowedDiscountPercent}%
+                                </span>
+
+                                {bookingDiscountPercent > 0 && (
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '8px' }}>
+                                    <label style={{ fontSize: '10px', fontWeight: 800, color: '#DC2626', textTransform: 'uppercase' }}>Discount Reason <span style={{ color: '#EF4444' }}>*</span></label>
+                                    <input
+                                      type="text"
+                                      placeholder="e.g. Senior Citizen / Staff Relative"
+                                      value={bookingDiscountReason}
+                                      onChange={e => setBookingDiscountReason(e.target.value)}
+                                      style={{ width: '100%', height: '32px', borderRadius: '6px', border: '1px solid #FCA5A5', padding: '0 8px', fontSize: '11.5px', fontWeight: 600, background: '#FFF5F5', color: '#991B1B' }}
+                                      required
+                                    />
+                                  </div>
+                                )}
                               </div>
-                            )}
-                          </div>
 
-                          {Number(bookingDiscount) > 0 && (
-                            <div className="billing-row" style={{ color: '#DC2626', fontWeight: 700 }}>
-                              <span>Discount Applied</span>
-                              <span>-₹{Number(bookingDiscount).toFixed(2)}</span>
-                            </div>
-                          )}
+                              {bookingDiscountPercent > 0 && (
+                                <div className="billing-row" style={{ color: '#DC2626', fontWeight: 700 }}>
+                                  <span>Discount Applied ({bookingDiscountPercent}%)</span>
+                                  <span>-₹{discAmt.toFixed(2)}</span>
+                                </div>
+                              )}
 
-                          <div className="billing-total" style={{ borderTop: '2px solid #2563EB', marginTop: '8px', paddingTop: '8px' }}>
-                            <span>Total Amount</span> 
-                            <span>
-                              ₹{Math.max(0, (getBillingItems().reduce((sum, item) => sum + item.amount, 0) + ((!isExistingPatient && getBillingItems().length > 0) ? 50 : 0)) - (Number(bookingDiscount) || 0)).toFixed(2)}
-                            </span>
+                              <div className="billing-total" style={{ borderTop: '2px solid #2563EB', marginTop: '8px', paddingTop: '8px' }}>
+                                <span>Total Amount</span> 
+                                <span>
+                                  ₹{finalTotalVal.toFixed(2)}
+                                </span>
+                              </div>
                           </div>
-                      </div>
+                        );
+                      })()}
                       
                       <div>
                           <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, marginBottom: '12px', color: '#64748B' }}>Payment Method / Status</label>
