@@ -5457,26 +5457,6 @@ const ReceptionistDashboard = () => {
               ) : (
                  <div className="glass-card" style={{ padding: '20px', marginBottom: '20px' }}>
                   
-                  {/* Status Banner */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', background: isExistingPatient ? '#EFF6FF' : '#F0FDF4', border: isExistingPatient ? '1px solid #BFDBFE' : '1px solid #BBF7D0', borderRadius: '12px', marginBottom: '20px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: isExistingPatient ? '#3B82F6' : '#10B981', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          {isExistingPatient ? <polyline points="20 6 9 17 4 12"/> : <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>}
-                        </svg>
-                      </div>
-                      <div style={{ fontSize: '14px', fontWeight: 800, color: isExistingPatient ? '#1E40AF' : '#166534', display: 'flex', alignItems: 'center' }}>
-                        {isExistingPatient ? (
-                          <span>
-                            Booking Appointment for Registered Patient: <b style={{ textDecoration: 'underline' }}>{selectedPatient?.name}</b> (ID: {getFormattedPatientId(selectedPatient?._id)})
-                          </span>
-                        ) : (
-                          <span>Registering a New First-Time Patient Profile</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
 
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
@@ -5485,24 +5465,24 @@ const ReceptionistDashboard = () => {
                   </div>
                   
                   {/* Expanded Fields Form */}
-                  <div className="mobile-stack" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginBottom: '32px' }}>
-                      <div className="form-group">
-                          <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B' }}>Full Name <span style={{ color: '#EF4444' }}>*</span></label>
+                  <div className="mobile-stack" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '16px' }}>
+                      <div className="form-group" style={{ marginBottom: '8px' }}>
+                          <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Full Name <span style={{ color: '#EF4444' }}>*</span></label>
                           <input 
                             type="text" 
                             className="form-control" 
                             placeholder="e.g. Ramesh Mehta" 
-                            style={{ height: '48px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: isExistingPatient ? 700 : 500 }} 
+                            style={{ height: '38px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: isExistingPatient ? 700 : 500 }} 
                             value={formData.name} 
                             onChange={e => setFormData({...formData, name: e.target.value})} 
                             readOnly={isExistingPatient} 
                           />
                       </div>
-                      <div className="form-group">
-                          <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B' }}>Gender <span style={{ color: '#EF4444' }}>*</span></label>
+                      <div className="form-group" style={{ marginBottom: '8px' }}>
+                          <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Gender <span style={{ color: '#EF4444' }}>*</span></label>
                           <select 
                             className="form-control" 
-                            style={{ height: '48px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'pointer', fontWeight: isExistingPatient ? 700 : 500 }} 
+                            style={{ height: '38px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'pointer', fontWeight: isExistingPatient ? 700 : 500 }} 
                             value={formData.gender} 
                             onChange={e => setFormData({...formData, gender: e.target.value})} 
                             disabled={isExistingPatient}
@@ -5513,26 +5493,26 @@ const ReceptionistDashboard = () => {
                               <option value="Other">Other</option>
                           </select>
                       </div>
-                      <div className="form-group">
-                          <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B' }}>Age <span style={{ color: '#EF4444' }}>*</span></label>
+                      <div className="form-group" style={{ marginBottom: '8px' }}>
+                          <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Age <span style={{ color: '#EF4444' }}>*</span></label>
                           <input 
                             type="number" 
                             className="form-control" 
                             placeholder="e.g. 45" 
-                            style={{ height: '48px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: isExistingPatient ? 700 : 500 }} 
+                            style={{ height: '38px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: isExistingPatient ? 700 : 500 }} 
                             value={formData.age} 
                             onChange={e => setFormData({...formData, age: e.target.value})} 
                             readOnly={isExistingPatient}
                           />
                       </div>
-                      <div className="form-group">
-                          <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B' }}>Mobile Number <span style={{ color: '#EF4444' }}>*</span></label>
+                      <div className="form-group" style={{ marginBottom: '8px' }}>
+                          <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Mobile Number <span style={{ color: '#EF4444' }}>*</span></label>
                           <input 
                             type="text" 
                             className="form-control" 
                             placeholder="e.g. 9876543210" 
                             style={{ 
-                              height: '48px', 
+                              height: '38px', 
                               borderRadius: '8px', 
                               background: isExistingPatient ? '#F1F5F9' : 'white', 
                               cursor: isExistingPatient ? 'not-allowed' : 'text', 
@@ -5554,13 +5534,13 @@ const ReceptionistDashboard = () => {
                           )}
                       </div>
                       {bookingType === 'lab' && (
-                        <div className="form-group">
-                            <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B' }}>Referred By</label>
+                        <div className="form-group" style={{ marginBottom: '8px' }}>
+                            <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Referred By</label>
                             <input 
                               type="text" 
                               className="form-control" 
                               placeholder="e.g. Dr. Rajesh Shah or Self" 
-                              style={{ height: '48px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: isExistingPatient ? 700 : 500 }} 
+                              style={{ height: '38px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: isExistingPatient ? 700 : 500 }} 
                               value={formData.referredBy || ''} 
                               onChange={e => setFormData({...formData, referredBy: e.target.value})} 
                               readOnly={isExistingPatient}
@@ -5569,8 +5549,8 @@ const ReceptionistDashboard = () => {
                       )}
                       {bookingType !== 'lab' && bookingType !== 'service' && (
                         <>
-                          <div className="form-group">
-                              <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B' }}>
+                          <div className="form-group" style={{ marginBottom: '8px' }}>
+                              <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>
                                   Email
                               </label>
                               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -5579,7 +5559,7 @@ const ReceptionistDashboard = () => {
                                     className="form-control" 
                                     placeholder="e.g. ramesh.mehta@gmail.com" 
                                     style={{ 
-                                        height: '48px', 
+                                        height: '38px', 
                                         borderRadius: '8px', 
                                         background: (isExistingPatient || otpVerified) ? '#F1F5F9' : 'white', 
                                         cursor: (isExistingPatient || otpVerified) ? 'not-allowed' : 'text', 
@@ -5595,7 +5575,7 @@ const ReceptionistDashboard = () => {
                                           type="button" 
                                           className="btn btn-primary" 
                                           style={{ 
-                                              height: '48px', 
+                                              height: '38px', 
                                               whiteSpace: 'nowrap', 
                                               borderRadius: '8px', 
                                               fontWeight: 700, 
@@ -5724,11 +5704,11 @@ const ReceptionistDashboard = () => {
                         </>
                       )}
                       {bookingType !== 'lab' && bookingType !== 'service' && (
-                        <div className="form-group">
-                            <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B' }}>Blood Group</label>
+                        <div className="form-group" style={{ marginBottom: '8px' }}>
+                            <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Blood Group</label>
                             <select 
                               className="form-control" 
-                              style={{ height: '48px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'pointer', fontWeight: isExistingPatient ? 700 : 500 }} 
+                              style={{ height: '38px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'pointer', fontWeight: isExistingPatient ? 700 : 500 }} 
                               value={formData.bloodGroup} 
                               onChange={e => setFormData({...formData, bloodGroup: e.target.value})} 
                               disabled={isExistingPatient}
@@ -5748,24 +5728,24 @@ const ReceptionistDashboard = () => {
                   </div>
 
                   {bookingType !== 'lab' && bookingType !== 'service' && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '40px' }}>
-                      <div className="form-group">
-                        <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B' }}>Residential Address</label>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+                      <div className="form-group" style={{ marginBottom: '8px' }}>
+                        <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Residential Address</label>
                         <textarea 
                           className="form-control" 
                           placeholder="e.g. Flat 101, Green Park, Main Road" 
-                          style={{ minHeight: '80px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: isExistingPatient ? 700 : 500, padding: '12px' }} 
+                          style={{ minHeight: '50px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: isExistingPatient ? 700 : 500, padding: '8px 12px' }} 
                           value={formData.address}
                           onChange={e => setFormData({...formData, address: e.target.value})}
                           readOnly={isExistingPatient}
                         />
                       </div>
-                      <div className="form-group">
-                        <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B' }}>Allergies & Medical History (Comma Separated)</label>
+                      <div className="form-group" style={{ marginBottom: '8px' }}>
+                        <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Allergies & Medical History (Comma Separated)</label>
                         <textarea 
                           className="form-control" 
                           placeholder="e.g. Hypertension, Penicillin Allergy" 
-                          style={{ minHeight: '80px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: isExistingPatient ? 700 : 500, padding: '12px' }} 
+                          style={{ minHeight: '50px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: isExistingPatient ? 700 : 500, padding: '8px 12px' }} 
                           value={formData.medicalHistory}
                           onChange={e => setFormData({...formData, medicalHistory: e.target.value})}
                           readOnly={isExistingPatient}
@@ -6029,11 +6009,11 @@ const ReceptionistDashboard = () => {
                         </div>
                       )}
 
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px', marginBottom: '24px' }}>
-                          <div className="form-group">
-                              <label>Symptoms <span style={{ color: '#EF4444' }}>*</span></label>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+                          <div className="form-group" style={{ marginBottom: '8px' }}>
+                              <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Symptoms <span style={{ color: '#EF4444' }}>*</span></label>
                               <div className="custom-dropdown-container">
-                                  <div className="custom-dropdown-trigger" onClick={() => !reschedulingAppointment && setSymptomDropdownOpen(!symptomDropdownOpen)} style={reschedulingAppointment ? { cursor: 'not-allowed', background: '#F1F5F9' } : {}}>
+                                  <div className="custom-dropdown-trigger" onClick={() => !reschedulingAppointment && setSymptomDropdownOpen(!symptomDropdownOpen)} style={{ height: '38px', ...(reschedulingAppointment ? { cursor: 'not-allowed', background: '#F1F5F9' } : {}) }}>
                                       <div className="selected-items" data-lenis-prevent>
                                           {selectedSymptoms.length > 0 ? (
                                               selectedSymptoms.map(s => (
@@ -6062,21 +6042,21 @@ const ReceptionistDashboard = () => {
                                   )}
                               </div>
                           </div>
-                          <div className="form-group">
-                              <label>Select Doctor <span style={{ color: '#EF4444' }}>*</span></label>
-                              <select className="form-control" style={{ height: '48px', borderRadius: '8px', background: reschedulingAppointment ? '#F1F5F9' : 'white', cursor: reschedulingAppointment ? 'not-allowed' : 'pointer', fontWeight: reschedulingAppointment ? 700 : 500 }} value={formData.doctorId} onChange={e => { setFormData({...formData, doctorId: e.target.value}); setSelectedSlot(''); }} disabled={!!reschedulingAppointment}>
+                          <div className="form-group" style={{ marginBottom: '8px' }}>
+                              <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Select Doctor <span style={{ color: '#EF4444' }}>*</span></label>
+                              <select className="form-control" style={{ height: '38px', borderRadius: '8px', background: reschedulingAppointment ? '#F1F5F9' : 'white', cursor: reschedulingAppointment ? 'not-allowed' : 'pointer', fontWeight: reschedulingAppointment ? 700 : 500 }} value={formData.doctorId} onChange={e => { setFormData({...formData, doctorId: e.target.value}); setSelectedSlot(''); }} disabled={!!reschedulingAppointment}>
                                   <option value="">-- Choose Doctor --</option>
                                   {doctors.map(doc => (
                                       <option key={doc._id} value={doc._id}>{doc.name}</option>
                                   ))}
                               </select>
                           </div>
-                          <div className="form-group">
-                              <label>Appointment Date <span style={{ color: '#EF4444' }}>*</span></label>
+                          <div className="form-group" style={{ marginBottom: '8px' }}>
+                              <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Appointment Date <span style={{ color: '#EF4444' }}>*</span></label>
                               <input 
                                   type="date" 
                                   className="form-control" 
-                                  style={{ height: '48px', borderRadius: '8px', background: 'white', border: '1px solid #CBD5E1', padding: '0 12px', fontWeight: 600 }} 
+                                  style={{ height: '38px', borderRadius: '8px', background: 'white', border: '1px solid #CBD5E1', padding: '0 12px', fontWeight: 600 }} 
                                   value={bookingDate} 
                                   min={getLocalDateString()} 
                                   onChange={e => {
@@ -6110,22 +6090,26 @@ const ReceptionistDashboard = () => {
                             </div>
                           )}
 
-                          {(!formData.doctorId || !bookingDate || receptionDoctorAvailability.available) && (
-                          <div className="slot-scroll-wrapper">
-                            <button
-                              className="slot-scroll-arrow left"
-                              style={{ display: 'none' }}
-                              onClick={() => {
-                                const grid = document.getElementById('reception-time-grid');
-                                if (grid) grid.scrollBy({ left: -340, behavior: 'smooth' });
-                              }}
-                              aria-label="Scroll slots left"
-                            >
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-                            </button>
+                          {(!formData.doctorId || !bookingDate) ? (
+                            <div style={{ padding: '16px', background: '#F8FAFC', border: '1px dashed #CBD5E1', borderRadius: '10px', textAlign: 'center', color: '#64748B', fontSize: '13px', fontWeight: 600 }}>
+                              Please select a Doctor and Appointment Date to view available slots.
+                            </div>
+                          ) : receptionDoctorAvailability.available && (
+                            <div className="slot-scroll-wrapper">
+                              <button
+                                className="slot-scroll-arrow left"
+                                style={{ display: 'none' }}
+                                onClick={() => {
+                                  const grid = document.getElementById('reception-time-grid');
+                                  if (grid) grid.scrollBy({ left: -340, behavior: 'smooth' });
+                                }}
+                                aria-label="Scroll slots left"
+                              >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                              </button>
 
-                            <div id="reception-time-grid" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', padding: '8px 0' }}>
-                              {(receptionDoctorAvailability.slots || DEFAULT_RECEPTION_SLOTS).map(time => {
+                              <div id="reception-time-grid" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', padding: '8px 0' }}>
+                                {(receptionDoctorAvailability.slots || DEFAULT_RECEPTION_SLOTS).map(time => {
                                   let limit = 5;
                                   const match = time.match(/\(Limit:\s*(\d+)\)/i);
                                   if (match) {
