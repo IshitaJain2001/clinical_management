@@ -6040,10 +6040,10 @@ const ReceptionistDashboard = () => {
                           <div className="form-group" style={{ marginBottom: '8px' }}>
                               <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Symptoms <span style={{ color: '#EF4444' }}>*</span></label>
                               <div className="custom-dropdown-container">
-                                  <div className="custom-dropdown-trigger" onClick={() => !reschedulingAppointment && setSymptomDropdownOpen(!symptomDropdownOpen)} style={{ height: '38px', ...(reschedulingAppointment ? { cursor: 'not-allowed', background: '#F1F5F9' } : {}) }}>
-                                      <div className="selected-items" data-lenis-prevent style={{ display: 'flex', alignItems: 'center', flexWrap: 'nowrap', width: '100%', gap: '8px' }}>
+                                  <div className="custom-dropdown-trigger" onClick={() => !reschedulingAppointment && setSymptomDropdownOpen(!symptomDropdownOpen)} style={{ minHeight: '38px', height: 'auto', padding: '4px 12px', flexWrap: 'wrap', ...(reschedulingAppointment ? { cursor: 'not-allowed', background: '#F1F5F9' } : {}) }}>
+                                      <div className="selected-items" data-lenis-prevent style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', width: '100%', gap: '6px' }}>
                                           {selectedSymptoms.map(s => (
-                                            <div key={s} className="symptom-tag">
+                                            <div key={s} className="symptom-tag" style={{ margin: '2px 0' }}>
                                                 {s}
                                                 <span 
                                                   onClick={(e) => { e.stopPropagation(); if (!reschedulingAppointment) toggleSymptom(s); }}
@@ -6071,8 +6071,9 @@ const ReceptionistDashboard = () => {
                                               outline: 'none',
                                               background: 'transparent',
                                               flex: 1,
-                                              minWidth: '100px',
-                                              fontSize: '12px',
+                                              minWidth: '120px',
+                                              height: '30px',
+                                              fontSize: '12.5px',
                                               fontWeight: 600,
                                               color: '#0F172A',
                                               padding: 0,
@@ -6769,28 +6770,61 @@ const ReceptionistDashboard = () => {
                               </div>
                           ) : (
                               <div className="payment-grid" style={{ marginBottom: '24px' }}>
-                                  {['Cash', 'UPI', 'Card', 'Insurance', 'Other'].map(method => (
-                                      <div key={method} className={`pay-btn ${bookingPaymentMethod === method ? 'active' : ''}`} onClick={() => setBookingPaymentMethod(method)}>
-                                          {bookingPaymentMethod === method && (
-                                              <svg 
-                                                  xmlns="http://www.w3.org/2000/svg" 
-                                                  width="18" 
-                                                  height="18" 
-                                                  viewBox="0 0 24 24" 
-                                                  fill="none" 
-                                                  stroke="currentColor" 
-                                                  strokeWidth="2.5" 
-                                                  strokeLinecap="round" 
-                                                  strokeLinejoin="round" 
-                                                  className="lucide lucide-check-circle"
-                                                  style={{ flexShrink: 0 }}
-                                              >
-                                                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                                                  <polyline points="22 4 12 14.01 9 11.01" />
+                                  {['Cash', 'UPI', 'Other'].map(method => {
+                                      const getIcon = () => {
+                                          if (method === 'Cash') {
+                                              return (
+                                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                                                      <rect x="2" y="6" width="20" height="12" rx="2" />
+                                                      <circle cx="12" cy="12" r="2" />
+                                                      <path d="M6 12h.01M18 12h.01" />
+                                                  </svg>
+                                              );
+                                          }
+                                          if (method === 'UPI') {
+                                              return (
+                                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                                                      <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                                                      <line x1="12" y1="18" x2="12.01" y2="18" />
+                                                  </svg>
+                                              );
+                                          }
+                                          return (
+                                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                                                  <circle cx="12" cy="12" r="10" />
+                                                  <line x1="12" y1="8" x2="12" y2="16" />
+                                                  <line x1="8" y1="12" x2="16" y2="12" />
                                               </svg>
-                                          )} {method}
-                                      </div>
-                                  ))}
+                                          );
+                                      };
+                                      return (
+                                          <div 
+                                              key={method} 
+                                              className={`pay-btn ${bookingPaymentMethod === method ? 'active' : ''}`} 
+                                              onClick={() => setBookingPaymentMethod(method)}
+                                              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px 16px', borderRadius: '8px', cursor: 'pointer', transition: '0.2s' }}
+                                          >
+                                              {getIcon()}
+                                              <span style={{ fontWeight: 800 }}>{method}</span>
+                                              {bookingPaymentMethod === method && (
+                                                  <svg 
+                                                      xmlns="http://www.w3.org/2000/svg" 
+                                                      width="14" 
+                                                      height="14" 
+                                                      viewBox="0 0 24 24" 
+                                                      fill="none" 
+                                                      stroke="currentColor" 
+                                                      strokeWidth="3" 
+                                                      strokeLinecap="round" 
+                                                      strokeLinejoin="round" 
+                                                      style={{ marginLeft: 'auto', color: '#10B981' }}
+                                                  >
+                                                      <polyline points="20 6 9 17 4 12" />
+                                                  </svg>
+                                              )}
+                                          </div>
+                                      );
+                                  })}
                               </div>
                           )}
                       </div>
