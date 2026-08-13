@@ -692,6 +692,7 @@ const ReceptionistDashboard = () => {
   const [showVitalsModal, setShowVitalsModal] = useState(false);
   const [vitalsCollapsed, setVitalsCollapsed] = useState(true);
   const [docsCollapsed, setDocsCollapsed] = useState(true);
+  const [symptomSearchQuery, setSymptomSearchQuery] = useState('');
   const [vitalTemp, setVitalTemp] = useState('');
   const [vitalPulse, setVitalPulse] = useState('');
   const [vitalBpSys, setVitalBpSys] = useState('');
@@ -6034,8 +6035,8 @@ const ReceptionistDashboard = () => {
                           </div>
                         </div>
                       )}
-
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+                      
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
                           <div className="form-group" style={{ marginBottom: '8px' }}>
                               <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Symptoms <span style={{ color: '#EF4444' }}>*</span></label>
                               <div className="custom-dropdown-container">
@@ -6060,10 +6061,32 @@ const ReceptionistDashboard = () => {
                                       <i data-lucide="chevron-down" style={{ width: '18px', color: '#94A3B8', transition: '0.3s', transform: symptomDropdownOpen ? 'rotate(180deg)' : 'none' }}></i>
                                   </div>
                                   {symptomDropdownOpen && (
-                                      <div className="dropdown-options-box show" data-lenis-prevent>
-                                          {availableSymptoms.map(s => (
-                                              <div key={s} className="option-item" onClick={() => toggleSymptom(s)}>{s}</div>
-                                          ))}
+                                      <div className="dropdown-options-box show" data-lenis-prevent style={{ padding: '8px' }}>
+                                          <input
+                                              type="text"
+                                              placeholder="Type to search..."
+                                              value={symptomSearchQuery}
+                                              onChange={e => setSymptomSearchQuery(e.target.value)}
+                                              onClick={e => e.stopPropagation()}
+                                              style={{ 
+                                                  width: '100%', 
+                                                  height: '32px', 
+                                                  borderRadius: '6px', 
+                                                  border: '1.5px solid #CBD5E1', 
+                                                  padding: '0 8px', 
+                                                  fontSize: '12px', 
+                                                  marginBottom: '8px',
+                                                  boxSizing: 'border-box' 
+                                              }}
+                                          />
+                                          <div style={{ maxHeight: '180px', overflowY: 'auto' }}>
+                                              {availableSymptoms.filter(s => s.toLowerCase().includes(symptomSearchQuery.toLowerCase())).map(s => (
+                                                  <div key={s} className="option-item" onClick={() => { toggleSymptom(s); setSymptomSearchQuery(''); }} style={{ padding: '8px 12px', cursor: 'pointer', borderRadius: '4px' }}>{s}</div>
+                                              ))}
+                                              {availableSymptoms.filter(s => s.toLowerCase().includes(symptomSearchQuery.toLowerCase())).length === 0 && (
+                                                  <div style={{ padding: '8px', fontSize: '12px', color: '#64748B', textAlign: 'center' }}>No matching symptoms</div>
+                                              )}
+                                          </div>
                                       </div>
                                   )}
                               </div>
