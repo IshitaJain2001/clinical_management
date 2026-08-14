@@ -9483,7 +9483,12 @@ I have scanned the medical reference databases, but couldn't find a direct match
                       <div style={{
                         height: `${tempPrintSettings.topSpacer * 1.0}px`,
                         borderBottom: '1px dashed #E2E8F0',
-                        background: tempPrintSettings.digitalPreset !== 'none' ? '#F8FAFC' : 'transparent',
+                        background: tempPrintSettings.digitalPreset !== 'none' 
+                          ? '#F8FAFC' 
+                          : customLetterhead 
+                            ? `url(${customLetterhead}) no-repeat center top` 
+                            : 'transparent',
+                        backgroundSize: 'contain',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -9495,7 +9500,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                         marginBottom: '12px'
                       }}>
                         {tempPrintSettings.digitalPreset === 'none' ? (
-                          <span>Header Space Margin ({tempPrintSettings.topSpacer}mm)</span>
+                          !customLetterhead && <span>Header Space Margin ({tempPrintSettings.topSpacer}mm)</span>
                         ) : (
                           <div style={{
                             position: 'absolute',
