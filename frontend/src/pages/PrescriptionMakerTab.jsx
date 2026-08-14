@@ -1749,31 +1749,51 @@ export default function PrescriptionMakerTab({
                         padding: '4px'
                       }}
                     >
-                      {((pharmacyInventoryDb && pharmacyInventoryDb.length > 0 ? pharmacyInventoryDb : dbMedicines) || [])
-                        .filter(m => m.name && m.name.toLowerCase().includes(medSearchQuery.toLowerCase()))
-                        .map(m => (
-                          <div 
-                            key={m._id || m.id || m.name}
-                            onClick={() => {
-                              const newItem = {
-                                id: Date.now() + Math.random(),
-                                medicine: m.name,
-                                dosage: '1 Tab',
-                                frequency: 'Once a Day',
-                                duration: '5 Days',
-                                timing: 'After Food'
-                              };
-                              setLocalMedicines([...localMedicines, newItem]);
-                              setMedSearchQuery('');
-                              setShowMedSuggestions(false);
-                            }}
-                            style={{ padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 650, color: '#334155', transition: '0.15s' }}
-                            onMouseEnter={e => e.currentTarget.style.background = '#F1F5F9'}
-                            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                          >
-                            💊 {m.name} {m.qty <= 0 ? <span style={{ color: '#EF4444', fontSize: '10px' }}>(Out of Stock)</span> : <span style={{ color: '#16A34A', fontSize: '10px' }}>({m.qty} In Stock)</span>}
-                          </div>
-                        ))}
+                      {(() => {
+                        const dbList = (pharmacyInventoryDb && pharmacyInventoryDb.length > 0 ? pharmacyInventoryDb : dbMedicines) || [];
+                        const defaultKeys = Object.keys(medicineDefaults || {}).map(k => ({
+                          name: k.charAt(0).toUpperCase() + k.slice(1),
+                          qty: 100,
+                          isDefault: true
+                        }));
+                        const merged = [...dbList];
+                        defaultKeys.forEach(dk => {
+                          if (!merged.some(m => m.name && m.name.toLowerCase() === dk.name.toLowerCase())) {
+                            merged.push(dk);
+                          }
+                        });
+                        return merged.filter(m => m.name && m.name.toLowerCase().includes(medSearchQuery.toLowerCase()));
+                      })().map(m => (
+                        <div 
+                          key={m._id || m.id || m.name}
+                          onClick={() => {
+                            const nameLower = m.name.toLowerCase().trim();
+                            const preset = medicineDefaults[nameLower] || {};
+                            const newItem = {
+                              id: Date.now() + Math.random(),
+                              medicine: m.name,
+                              dosage: preset.dose || '1 Tab',
+                              frequency: preset.freq || 'Once a Day',
+                              duration: preset.duration || '5 Days',
+                              timing: preset.timing || 'After Food'
+                            };
+                            setLocalMedicines([...localMedicines, newItem]);
+                            setMedSearchQuery('');
+                            setShowMedSuggestions(false);
+                          }}
+                          style={{ padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 650, color: '#334155', transition: '0.15s' }}
+                          onMouseEnter={e => e.currentTarget.style.background = '#F1F5F9'}
+                          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                        >
+                          💊 {m.name} {m.isDefault ? (
+                            <span style={{ color: '#2563EB', fontSize: '10px' }}>(Preset)</span>
+                          ) : m.qty <= 0 ? (
+                            <span style={{ color: '#EF4444', fontSize: '10px' }}>(Out of Stock)</span>
+                          ) : (
+                            <span style={{ color: '#16A34A', fontSize: '10px' }}>({m.qty} In Stock)</span>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
