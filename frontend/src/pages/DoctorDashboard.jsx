@@ -2919,17 +2919,34 @@ const DoctorDashboard = () => {
       setActiveAppointmentId(null);
     }
     
-    setVitals({
-      bpSys: '',
-      bpDia: '',
-      pulse: '',
-      temp: '',
-      weight: '',
-      height: '',
-      bmi: '',
-      spo2: '',
-      sugar: ''
-    });
+    // Fetch patient vitals from backend
+    try {
+      const vitalsRes = await api.get(`/emr/vitals/patient/${pt._id}`);
+      if (vitalsRes.data && vitalsRes.data.length > 0) {
+        const latest = vitalsRes.data[0];
+        setVitals({
+          bpSys: latest.bpSys || '',
+          bpDia: latest.bpDia || '',
+          pulse: latest.pulse || '',
+          temp: latest.temperature || '',
+          weight: latest.weight || '',
+          height: latest.height || '',
+          bmi: latest.bmi || '',
+          spo2: latest.spo2 || '',
+          sugar: latest.bloodSugar || ''
+        });
+      } else {
+        setVitals({
+          bpSys: '', bpDia: '', pulse: '', temp: '', weight: '', height: '', bmi: '', spo2: '', sugar: ''
+        });
+      }
+    } catch (e) {
+      console.warn("Failed to fetch patient EMR vitals", e);
+      setVitals({
+        bpSys: '', bpDia: '', pulse: '', temp: '', weight: '', height: '', bmi: '', spo2: '', sugar: ''
+      });
+    }
+
     setDiagnosisText('');
     setMedicines([]);
 
@@ -2988,19 +3005,28 @@ const DoctorDashboard = () => {
   // Direct Consult from dashboard button
   const startConsultation = (app) => {
     setActiveAppointmentId(app._id);
-    const matchedPatient = patients.find(p => p._id === app.patientId?._id) || {
-      _id: app.patientId?._id || 'temp',
-      name: app.patientId?.name || 'Patient Name',
-      age: app.patientId?.age || 30,
-      gender: app.patientId?.gender || 'Male',
-      uhid: app.patientId?.uhid || `MDC-${Math.floor(10000 + Math.random() * 90000)}`,
-      contact: app.patientId?.contact || '+91 99999 88888',
-      bloodGroup: 'B+',
+    const matchedPatient = (app.patientId && typeof app.patientId === 'object') ? app.patientId : (patients.find(p => p._id === app.patientId) || {
+      _id: app.patientId || 'temp',
+      name: 'Patient Name',
+      age: 30,
+      gender: 'Male',
+      uhid: `MDC-${Math.floor(10000 + Math.random() * 90000)}`,
+      contact: '+91 99999 88888',
+      bloodGroup: 'O+',
       allergies: 'None',
-      lastVisit: '2026-05-15',
+      lastVisit: 'N/A',
       visitId: `V-${Math.floor(4000 + Math.random() * 900)}`,
       abhaId: `12-${Math.floor(1000 + Math.random() * 9000)}-4482-99`
-    };
+    });
+    
+    // Auto-populate symptoms from receptionist booking
+    setSoap({
+      subjective: app.reason || '',
+      objective: '',
+      assessment: '',
+      plan: ''
+    });
+
     handleSelectPatient(matchedPatient);
     if (app.status === 'Cancelled') {
       setActiveTab('patient-profile');

@@ -607,6 +607,9 @@ const AdminDashboard = () => {
   const [selectedPatientDateFilter, setSelectedPatientDateFilter] = useState('All');
   const [selectedProfileAppointment, setSelectedProfileAppointment] = useState(null);
   const [patientLabTests, setPatientLabTests] = useState([]);
+  const [patientVitals, setPatientVitals] = useState([]);
+  const [patientClinicalNotes, setPatientClinicalNotes] = useState([]);
+  const [patientPrescriptions, setPatientPrescriptions] = useState([]);
   const [prescriptionModalOpen, setPrescriptionModalOpen] = useState(false);
   const [widgetSelectedStaff, setWidgetSelectedStaff] = useState('');
   const [widgetSelectedModule, setWidgetSelectedModule] = useState('');
@@ -1336,6 +1339,26 @@ const AdminDashboard = () => {
     if (pat) {
       setViewingPatient(pat);
       setActiveTab('patient-details');
+      const pIdVal = pat.raw?._id || pat.id;
+      if (pIdVal) {
+        api.get(`/emr/vitals/patient/${pIdVal}`).then(r => setPatientVitals(r.data || [])).catch(() => setPatientVitals([]));
+        api.get(`/emr/clinical-notes/patient/${pIdVal}`).then(r => setPatientClinicalNotes(r.data || [])).catch(() => setPatientClinicalNotes([]));
+        api.get('/prescriptions').then(r => {
+          const patRx = (r.data || []).filter(rx => {
+            const pid = rx.patientId?._id || rx.patientId;
+            return pid && pid.toString() === pIdVal.toString();
+          });
+          setPatientPrescriptions(patRx);
+        }).catch(() => setPatientPrescriptions([]));
+        api.get('/labs').catch(() => api.get(`/labs/patient/${pIdVal}`)).then(r => {
+          const data = r.data || [];
+          const patLabs = Array.isArray(data) ? data.filter(l => {
+            const pid = l.patientId?._id || l.patientId;
+            return pid && pid.toString() === pIdVal.toString();
+          }) : [];
+          setPatientLabTests(patLabs);
+        }).catch(() => setPatientLabTests([]));
+      }
     } else {
       const appt = appointments.find(a => 
         (a.patientMongoId && a.patientMongoId.toString() === patientNameOrId?.toString()) ||
@@ -8975,6 +8998,190 @@ const AdminDashboard = () => {
                         )}
                       </tbody>
                     </table>
+                  </div>
+                </div>
+
+                {/* Dynamic Patient Journey Timeline */}
+                <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px', marginTop: '24px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                      </svg>
+                      <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#0F172A', margin: 0 }}>Dynamic Patient Journey</h3>
+                    </div>
+                    <span style={{ fontSize: '12px', background: '#EFF6FF', color: '#2563EB', padding: '4px 10px', borderRadius: '20px', fontWeight: 800 }}>
+                      Live Track
+                    </span>
+                  </div>
+
+                  <div style={{ position: 'relative', paddingLeft: '32px', borderLeft: '2px solid #E2E8F0', marginLeft: '12px', marginTop: '20px' }}>
+                    {(() => {
+                      const journeyEvents = [];
+                      const ptIdVal = viewingPatient.raw?._id || viewingPatient.id;
+
+                      // 1. Patient Registration
+                      if (viewingPatient.raw?.createdAt) {
+                        journeyEvents.push({
+                          id: 'reg-' + ptIdVal,
+                          date: new Date(viewingPatient.raw.createdAt),
+                          type: 'Registration',
+                          title: 'Patient Profile Registered',
+                          description: `Registered at portal under contact: ${viewingPatient.raw.contact || 'N/A'}. Initial profile created successfully.`,
+                          icon: 'user-plus',
+                          color: '#2563EB'
+                        });
+                      }
+
+                      // 2. Appointments
+                      appointments.filter(app => {
+                        const pId = app.patientMongoId?._id || app.patientMongoId;
+                        return pId && ptIdVal && pId.toString() === ptIdVal.toString();
+                      }).forEach(app => {
+                        journeyEvents.push({
+                          id: 'appt-' + app.id,
+                          date: new Date(app.date),
+                          type: 'Appointment',
+                          title: `OPD Appointment with ${app.doctor || 'Specialist'}`,
+                          description: `Scheduled slot: ${app.time} | Status: ${app.status} | Doctor: ${app.doctor} (${app.dept || 'OPD'})`,
+                          icon: 'calendar',
+                          color: '#8B5CF6'
+                        });
+                      });
+
+                      // 3. SOAP Notes
+                      patientClinicalNotes.forEach(n => {
+                        journeyEvents.push({
+                          id: 'soap-' + n._id,
+                          date: new Date(n.createdAt),
+                          type: 'Doctor Consultation',
+                          title: `SOAP Note by ${n.doctorId?.name || 'Consultant'}`,
+                          description: `Subjective: ${n.subjective || 'N/A'} | Assessment: ${n.assessment?.join(', ') || 'N/A'} | Plan: ${n.plan || 'N/A'}`,
+                          icon: 'file-text',
+                          color: '#10B981'
+                        });
+                      });
+
+                      // 4. Prescriptions
+                      patientPrescriptions.forEach(p => {
+                        journeyEvents.push({
+                          id: 'rx-' + p._id,
+                          date: new Date(p.createdAt),
+                          type: 'Prescription',
+                          title: `Prescription issued by ${p.doctorId?.name || 'Doctor'}`,
+                          description: `Medicines: ${p.medicines?.map(m => `${m.name} (${m.dosage})`).join(', ') || 'None'}`,
+                          icon: 'pill',
+                          color: '#EC4899'
+                        });
+                      });
+
+                      // 5. Vitals
+                      patientVitals.forEach(v => {
+                        journeyEvents.push({
+                          id: 'vital-' + v._id,
+                          date: new Date(v.createdAt),
+                          type: 'Vitals Recorded',
+                          title: 'EMR Patient Vitals',
+                          description: `BP: ${v.bpSys}/${v.bpDia} mmHg | Pulse: ${v.pulse} bpm | Temp: ${v.temperature} °F | SpO2: ${v.spo2}%`,
+                          icon: 'activity',
+                          color: '#EF4444'
+                        });
+                      });
+
+                      // 6. Lab Tests
+                      patientLabTests.forEach(l => {
+                        journeyEvents.push({
+                          id: 'lab-' + (l._id || l.id),
+                          date: new Date(l.createdAt || Date.now()),
+                          type: 'Lab Investigation',
+                          title: `Lab Test: ${l.testName || l.test || 'Diagnostic Request'}`,
+                          description: `Status: ${l.status} | Results/Findings: ${l.results || 'Pending report publication'}`,
+                          icon: 'flask-conical',
+                          color: '#F59E0B'
+                        });
+                      });
+
+                      // 7. Bills
+                      bills.filter(b => {
+                        const pId = b.patientId?._id || b.patientId;
+                        return pId && ptIdVal && pId.toString() === ptIdVal.toString();
+                      }).forEach(b => {
+                        journeyEvents.push({
+                          id: 'bill-' + b._id,
+                          date: new Date(b.createdAt || Date.now()),
+                          type: 'Payment',
+                          title: `Invoice Settle - ₹${b.totalAmount?.toFixed(2)}`,
+                          description: `Payment Method: ${b.paymentMethod || 'Cash'} | Status: ${b.status} | Items: ${b.items?.map(i => i.description).join(', ')}`,
+                          icon: 'wallet',
+                          color: '#06B6D4'
+                        });
+                      });
+
+                      // Sort events: newest first
+                      journeyEvents.sort((a, b) => b.date - a.date);
+
+                      if (journeyEvents.length === 0) {
+                        return (
+                          <div style={{ padding: '20px', textAlign: 'center', color: '#64748B' }}>
+                            No journey records found for this patient.
+                          </div>
+                        );
+                      }
+
+                      return journeyEvents.map((evt, idx) => (
+                        <div 
+                          key={evt.id || idx} 
+                          style={{ 
+                            position: 'relative', 
+                            marginBottom: '20px', 
+                            background: '#F8FAFC', 
+                            border: '1px solid #E2E8F0', 
+                            borderRadius: '12px', 
+                            padding: '16px',
+                            borderLeft: `4px solid ${evt.color}`
+                          }}
+                        >
+                          {/* Timeline icon dot */}
+                          <div 
+                            style={{ 
+                              position: 'absolute', 
+                              left: '-45px', 
+                              top: '16px', 
+                              width: '24px', 
+                              height: '24px', 
+                              borderRadius: '50%', 
+                              background: evt.color, 
+                              color: 'white', 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'center', 
+                              border: '4px solid white',
+                              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                            }}
+                          >
+                            <i data-lucide={evt.icon} style={{ width: '11px', height: '11px' }}></i>
+                          </div>
+
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
+                            <div>
+                              <span style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', color: evt.color, background: evt.color + '15', padding: '3px 8px', borderRadius: '6px', display: 'inline-block', marginBottom: '4px' }}>
+                                {evt.type}
+                              </span>
+                              <h4 style={{ fontSize: '14.5px', fontWeight: 800, color: '#1E293B', margin: 0 }}>
+                                {evt.title}
+                              </h4>
+                            </div>
+                            <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 600 }}>
+                              {evt.date.toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                          <p style={{ fontSize: '12.5px', color: '#475569', margin: 0, fontWeight: 550, lineHeight: '1.4' }}>
+                            {evt.description}
+                          </p>
+                        </div>
+                      ));
+                    })()}
                   </div>
                 </div>
 
