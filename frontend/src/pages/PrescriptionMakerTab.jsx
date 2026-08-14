@@ -759,6 +759,7 @@ export default function PrescriptionMakerTab({
                   <span style={{ fontSize: '14px', fontWeight: 'bold' }}>+</span> Assign Lab test
                 </button>
               </div>
+            </div>
           </div>
 
           {/* Diagnosis Section */}
