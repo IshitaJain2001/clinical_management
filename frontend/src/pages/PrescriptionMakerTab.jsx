@@ -732,15 +732,33 @@ export default function PrescriptionMakerTab({
                 )}
               </div>
 
-              <button 
-                onClick={() => setShowAssignLabDrawer(true)}
-                style={{ border: '1px solid #DBEAFE', background: '#EFF6FF', color: '#2563EB', borderRadius: '8px', padding: '8px 16px', fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', transition: '0.2s' }}
-                onMouseEnter={e => e.currentTarget.style.background = '#DBEAFE'}
-                onMouseLeave={e => e.currentTarget.style.background = '#EFF6FF'}
-              >
-                <span style={{ fontSize: '14px', fontWeight: 'bold' }}>+</span> Assign Lab test
-              </button>
-            </div>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button 
+                  onClick={() => {
+                    setDrawerMedName('');
+                    setDrawerMedDose('');
+                    setDrawerMedFreq('Once a Day');
+                    setDrawerMedDuration('5 Days');
+                    setDrawerMedTiming('After Food');
+                    setMedSearchQuery('');
+                    setShowMedicationDrawer(true);
+                  }}
+                  style={{ border: '1px solid #D1FAE5', background: '#ECFDF5', color: '#059669', borderRadius: '8px', padding: '8px 16px', fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', transition: '0.2s' }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#D1FAE5'}
+                  onMouseLeave={e => e.currentTarget.style.background = '#ECFDF5'}
+                >
+                  <span style={{ fontSize: '14px', fontWeight: 'bold' }}>+</span> Add Medication
+                </button>
+
+                <button 
+                  onClick={() => setShowAssignLabDrawer(true)}
+                  style={{ border: '1px solid #DBEAFE', background: '#EFF6FF', color: '#2563EB', borderRadius: '8px', padding: '8px 16px', fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', transition: '0.2s' }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#DBEAFE'}
+                  onMouseLeave={e => e.currentTarget.style.background = '#EFF6FF'}
+                >
+                  <span style={{ fontSize: '14px', fontWeight: 'bold' }}>+</span> Assign Lab test
+                </button>
+              </div>
           </div>
 
           {/* Diagnosis Section */}
@@ -1539,7 +1557,6 @@ export default function PrescriptionMakerTab({
 
           </div>
 
-          `}</style>
         </>
       )}
 
