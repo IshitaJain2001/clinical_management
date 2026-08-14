@@ -475,7 +475,7 @@ const ReceptionistDashboard = () => {
   const [bills, setBills] = useState([]);
   
   const [formData, setFormData] = useState({
-    name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '', referredBy: ''
+    name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '', referredBy: '', allergies: 'None', currentMedications: ''
   });
 
   const [dpdpConsent, setDpdpConsent] = useState({ emrCreation: true, dataSharing: false });
@@ -2169,7 +2169,7 @@ const ReceptionistDashboard = () => {
         setFormData(draftData);
         showToast("Restored unsaved draft for this number.", "info");
       } else {
-        setFormData({ name: '', age: '', gender: '', contact: contactToUse || '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '', referredBy: '' });
+        setFormData({ name: '', age: '', gender: '', contact: contactToUse || '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '', referredBy: '', allergies: 'None', currentMedications: '' });
       }
     }
     if (tabId === 'new-indent') {
@@ -2382,6 +2382,8 @@ const ReceptionistDashboard = () => {
           bloodGroup: formData.bloodGroup || 'O+',
           address: formData.address || '',
           medicalHistory: formData.medicalHistory ? formData.medicalHistory.split(',').map(item => item.trim()) : [],
+          allergies: formData.allergies || 'None',
+          currentMedications: formData.currentMedications || '',
           otp: verificationOtp,
           dpdpConsent: dpdpConsent,
           patientDocuments: patientDocuments,
@@ -2391,6 +2393,20 @@ const ReceptionistDashboard = () => {
         patientObj = patientRes.data;
         if (formData.contact) {
           localStorage.removeItem('curoxa_draft_' + formData.contact);
+        }
+      } else {
+        try {
+          await api.put(`/patients/${selectedPatient._id}`, {
+            name: selectedPatient.name,
+            age: selectedPatient.age,
+            gender: selectedPatient.gender,
+            contact: selectedPatient.contact,
+            currentMedications: formData.currentMedications || selectedPatient.currentMedications || '',
+            allergies: formData.allergies !== undefined ? formData.allergies : (selectedPatient.allergies || 'None'),
+            medicalHistory: formData.medicalHistory ? formData.medicalHistory.split(',').map(item => item.trim()) : selectedPatient.medicalHistory
+          });
+        } catch (err) {
+          console.error("Failed to update patient details for existing patient:", err);
         }
       }
 
@@ -2523,7 +2539,7 @@ const ReceptionistDashboard = () => {
       showToast(isAddOnProcessed ? "Add-On Appointment registered and existing visit billing updated successfully!" : `${apptsToCreate.length} Appointment(s) registered & Payment completed successfully!`, "success");
 
       // Reset Form State
-      setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '', referredBy: '' });
+      setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '', referredBy: '', allergies: 'None', currentMedications: '' });
       setBookingDate(getLocalDateString());
       setSelectedSlot('');
       setSelectedSymptoms([]);
@@ -2631,7 +2647,7 @@ const ReceptionistDashboard = () => {
       await api.put(`/appointments/${apptId}`, { date: bookingDate, time: selectedSlot, status: 'Rescheduled' });
       showToast("Appointment rescheduled successfully!", "success");
       
-      setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '' });
+      setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '', referredBy: '', allergies: 'None', currentMedications: '' });
       setSelectedSymptoms([]);
       setIsExistingPatient(null);
       setSearchPatientQuery('');
@@ -2713,7 +2729,7 @@ const ReceptionistDashboard = () => {
   };
 
   const resetRegistrationForm = () => {
-    setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '', referredBy: '' });
+    setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '', referredBy: '', allergies: 'None', currentMedications: '' });
     setSelectedSymptoms([]);
     setIsExistingPatient(null);
     setSearchPatientQuery('');
@@ -5659,7 +5675,10 @@ const ReceptionistDashboard = () => {
                                 doctorId: formData.doctorId, 
                                 bloodGroup: '', 
                                 address: '', 
-                                medicalHistory: '' 
+                                medicalHistory: '',
+                                referredBy: '',
+                                allergies: 'None',
+                                currentMedications: ''
                               });
                               setIsExistingPatient(false);
                               setSearchPatientQuery('');
@@ -5689,7 +5708,9 @@ const ReceptionistDashboard = () => {
                                   bloodGroup: p.bloodGroup || 'O+',
                                   address: p.address || '',
                                   medicalHistory: p.medicalHistory ? p.medicalHistory.join(', ') : '',
-                                  doctorId: formData.doctorId
+                                  doctorId: formData.doctorId,
+                                  allergies: p.allergies || 'None',
+                                  currentMedications: p.currentMedications || ''
                                 });
                                 setIsExistingPatient(true);
                               }}
@@ -5735,7 +5756,7 @@ const ReceptionistDashboard = () => {
                       }}
                       onClick={() => {
                         setSelectedPatient(null);
-                        setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: formData.doctorId, bloodGroup: '', address: '', medicalHistory: '' });
+                        setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: formData.doctorId, bloodGroup: '', address: '', medicalHistory: '', referredBy: '', allergies: 'None', currentMedications: '' });
                         setIsExistingPatient(false);
                       }}
                       onMouseEnter={(e) => {
@@ -6038,14 +6059,36 @@ const ReceptionistDashboard = () => {
                         />
                       </div>
                       <div className="form-group" style={{ marginBottom: '8px' }}>
-                        <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Allergies & Medical History (Comma Separated)</label>
+                        <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Medical History (Comma Separated)</label>
                         <textarea 
                           className="form-control" 
-                          placeholder="e.g. Hypertension, Penicillin Allergy" 
+                          placeholder="e.g. Hypertension, Diabetes" 
                           style={{ minHeight: '50px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: isExistingPatient ? 700 : 500, padding: '8px 12px' }} 
                           value={formData.medicalHistory}
                           onChange={e => setFormData({...formData, medicalHistory: e.target.value})}
                           readOnly={isExistingPatient}
+                        />
+                      </div>
+                      <div className="form-group" style={{ marginBottom: '8px' }}>
+                        <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Allergies</label>
+                        <input 
+                          type="text"
+                          className="form-control" 
+                          placeholder="e.g. Penicillin, Peanuts, None" 
+                          style={{ height: '38px', borderRadius: '8px', background: 'white', cursor: 'text', fontWeight: 500 }} 
+                          value={formData.allergies}
+                          onChange={e => setFormData({...formData, allergies: e.target.value})}
+                        />
+                      </div>
+                      <div className="form-group" style={{ marginBottom: '8px' }}>
+                        <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Current Medications</label>
+                        <input 
+                          type="text"
+                          className="form-control" 
+                          placeholder="e.g. Metformin 500mg, Aspirin 75mg" 
+                          style={{ height: '38px', borderRadius: '8px', background: 'white', cursor: 'text', fontWeight: 500 }} 
+                          value={formData.currentMedications}
+                          onChange={e => setFormData({...formData, currentMedications: e.target.value})}
                         />
                       </div>
                     </div>

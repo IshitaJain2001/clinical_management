@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
 
 // Create a new patient (scoped to tenant)
 router.post('/', async (req, res) => {
-  const { name, age, gender, contact, email, address, bloodGroup, allergies, medicalHistory, avatar, otp } = req.body;
+  const { name, age, gender, contact, email, address, bloodGroup, allergies, currentMedications, medicalHistory, avatar, otp } = req.body;
   try {
     if (!contact || contact.trim() === '') {
       return res.status(400).json({ error: "Contact/Phone number is mandatory for patient registration." });
@@ -70,6 +70,7 @@ router.post('/', async (req, res) => {
       referredBy: req.body.referredBy || '',
       bloodGroup,
       allergies,
+      currentMedications: currentMedications || '',
       medicalHistory: Array.isArray(medicalHistory) ? medicalHistory : (medicalHistory ? [medicalHistory] : []),
       avatar
     });
@@ -106,7 +107,7 @@ router.get('/:id', async (req, res) => {
 
 // Update patient details (profile & settings, scoped to tenant)
 router.put('/:id', async (req, res) => {
-  const { name, age, gender, contact, address, bloodGroup, allergies, medicalHistory, avatar } = req.body;
+  const { name, age, gender, contact, address, bloodGroup, allergies, currentMedications, medicalHistory, avatar } = req.body;
   try {
     let patient = null;
     try { patient = await Patient.findOne({ _id: req.params.id, tenantId: req.tenantId }); } catch(e) {}
@@ -169,6 +170,7 @@ router.put('/:id', async (req, res) => {
     patient.referredBy = req.body.referredBy !== undefined ? req.body.referredBy : patient.referredBy;
     patient.bloodGroup = bloodGroup || patient.bloodGroup;
     patient.allergies = allergies !== undefined ? allergies : patient.allergies;
+    patient.currentMedications = currentMedications !== undefined ? currentMedications : patient.currentMedications;
     patient.medicalHistory = medicalHistory || patient.medicalHistory;
     patient.avatar = avatar !== undefined ? avatar : patient.avatar;
 

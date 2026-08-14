@@ -3,6 +3,10 @@ import api from '../utils/api';
 
 export default function PrescriptionMakerTab({
   selectedPatient,
+  activeAppointment,
+  pastPrescriptions = [],
+  appointments = [],
+  allLabs = [],
   vitals,
   soap,
   setSoap,
@@ -135,6 +139,22 @@ export default function PrescriptionMakerTab({
     }
   };
 
+  const latestCompletedPrescription = pastPrescriptions && pastPrescriptions.length > 0 
+    ? [...pastPrescriptions]
+        .filter(p => {
+          const ptId = (p.patientId && typeof p.patientId === 'object') ? p.patientId._id : p.patientId;
+          return ptId && ptId.toString() === selectedPatient?._id?.toString();
+        })
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0]
+    : null;
+
+  const prevAppt = latestCompletedPrescription && latestCompletedPrescription.appointmentId
+    ? appointments.find(a => a._id.toString() === latestCompletedPrescription.appointmentId.toString() || a._id === latestCompletedPrescription.appointmentId)
+    : null;
+  const prevLabs = latestCompletedPrescription && latestCompletedPrescription.appointmentId
+    ? allLabs.filter(l => l.appointmentId && (l.appointmentId.toString() === latestCompletedPrescription.appointmentId.toString() || l.appointmentId === latestCompletedPrescription.appointmentId))
+    : [];
+
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '360px 1fr', gap: '16px', padding: '12px', background: '#F8FAFC', minHeight: 'calc(100vh - 100px)' }} className="mobile-stack">
 
@@ -245,6 +265,13 @@ export default function PrescriptionMakerTab({
                 </li>
               ))}
             </ul>
+          ) : activeAppointment?.reason ? (
+            <ul style={{ paddingLeft: '8px', margin: 0, color: '#334155', fontSize: '14px', lineHeight: 1.6, fontWeight: 600, listStyle: 'none' }}>
+              <li style={{ marginBottom: '4px', display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                <span style={{ color: '#C2410C', fontSize: '8px', marginTop: '7px', flexShrink: 0 }}>●</span>
+                <span>{activeAppointment.reason}</span>
+              </li>
+            </ul>
           ) : (
             <span style={{ fontSize: '13px', fontWeight: 600, color: '#94A3B8', fontStyle: 'italic' }}>No symptoms recorded — type in the SOAP Subjective field</span>
           )}
@@ -255,13 +282,13 @@ export default function PrescriptionMakerTab({
           <h4 style={{ margin: '0 0 16px 0', fontSize: '15px', fontWeight: 800, color: '#059669', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <i data-lucide="activity" style={{ width: '16px', height: '16px', color: '#059669' }}></i> Vitals
           </h4>
-          {(vitals.bpSys || vitals.pulse || vitals.temp || vitals.weight) ? (
+          {(vitals.bpSys || vitals.bpDia || vitals.pulse || vitals.temp || vitals.weight || vitals.height || vitals.spo2 || vitals.sugar || vitals.resp) ? (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px 20px' }}>
-              {vitals.bpSys && (
+              {(vitals.bpSys || vitals.bpDia) && (
                 <div>
                   <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>BP</span>
                   <div style={{ fontSize: '15px', color: '#1E293B', fontWeight: 800, marginTop: '2px' }}>
-                    {vitals.bpSys}/{vitals.bpDia} <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 500 }}>mmHg</span>
+                    {vitals.bpSys || '--'}/{vitals.bpDia || '--'} <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 500 }}>mmHg</span>
                   </div>
                 </div>
               )}
@@ -286,6 +313,38 @@ export default function PrescriptionMakerTab({
                   <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>Weight</span>
                   <div style={{ fontSize: '15px', color: '#1E293B', fontWeight: 800, marginTop: '2px' }}>
                     {vitals.weight} <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 500 }}>kg</span>
+                  </div>
+                </div>
+              )}
+              {vitals.height && (
+                <div>
+                  <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>Height</span>
+                  <div style={{ fontSize: '15px', color: '#1E293B', fontWeight: 800, marginTop: '2px' }}>
+                    {vitals.height} <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 500 }}>cm</span>
+                  </div>
+                </div>
+              )}
+              {vitals.spo2 && (
+                <div>
+                  <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>SpO2</span>
+                  <div style={{ fontSize: '15px', color: '#1E293B', fontWeight: 800, marginTop: '2px' }}>
+                    {vitals.spo2} <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 500 }}>%</span>
+                  </div>
+                </div>
+              )}
+              {vitals.sugar && (
+                <div>
+                  <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>Blood Sugar</span>
+                  <div style={{ fontSize: '15px', color: '#1E293B', fontWeight: 800, marginTop: '2px' }}>
+                    {vitals.sugar} <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 500 }}>mg/dL</span>
+                  </div>
+                </div>
+              )}
+              {vitals.resp && (
+                <div>
+                  <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>Respiration</span>
+                  <div style={{ fontSize: '15px', color: '#1E293B', fontWeight: 800, marginTop: '2px' }}>
+                    {vitals.resp} <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 500 }}>/min</span>
                   </div>
                 </div>
               )}
@@ -318,6 +377,98 @@ export default function PrescriptionMakerTab({
             <span style={{ fontSize: '13px', fontWeight: 600, color: '#94A3B8', fontStyle: 'italic' }}>No current medications on file</span>
           )}
         </div>
+
+        {/* Previous Visit Card */}
+        {latestCompletedPrescription && (
+          <div style={{ border: '1.5px solid #BBF7D0', borderRadius: '16px', padding: '16px', background: '#F0FDF4', boxShadow: '0 4px 12px rgba(16, 185, 129, 0.08)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <h4 style={{ margin: 0, fontSize: '12px', fontWeight: 800, color: '#16A34A', display: 'flex', alignItems: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <i data-lucide="history" style={{ width: '16px', height: '16px', color: '#16A34A' }}></i> Previous Visit
+            </h4>
+            
+            <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700 }}>
+              DATE: {new Date(latestCompletedPrescription.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+            </div>
+
+            {prevAppt?.diagnosis && (
+              <div>
+                <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 650, display: 'block' }}>Diagnosis</span>
+                <span style={{ fontSize: '13px', color: '#1E293B', fontWeight: 750 }}>{prevAppt.diagnosis}</span>
+              </div>
+            )}
+
+            {latestCompletedPrescription.items && latestCompletedPrescription.items.length > 0 && (
+              <div>
+                <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 650, display: 'block' }}>Active Meds ({latestCompletedPrescription.items.length})</span>
+                <div style={{ maxHeight: '80px', overflowY: 'auto', paddingRight: '4px', marginTop: '4px' }}>
+                  {latestCompletedPrescription.items.map((item, idx) => (
+                    <div key={idx} style={{ fontSize: '12px', color: '#334155', fontWeight: 600, display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
+                      <span>💊 {item.medicine}</span>
+                      <span style={{ color: '#64748B', fontSize: '11px' }}>{item.dosage}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {prevLabs && prevLabs.length > 0 && (
+              <div>
+                <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 650, display: 'block' }}>Assigned Labs</span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '4px' }}>
+                  {prevLabs.map((l, idx) => (
+                    <span key={idx} style={{ fontSize: '10px', background: '#E0F2FE', color: '#0369A1', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
+                      🧪 {l.testName}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <button
+              onClick={() => {
+                // Set notes/SOAP
+                setSoap(prev => ({
+                  ...prev,
+                  subjective: latestCompletedPrescription.soapSubjective || latestCompletedPrescription.notes || prev.subjective || '',
+                  objective: latestCompletedPrescription.soapObjective || prev.objective || '',
+                  assessment: latestCompletedPrescription.soapAssessment || prev.assessment || '',
+                  plan: latestCompletedPrescription.soapPlan || prev.plan || ''
+                }));
+                // Set medicines
+                if (latestCompletedPrescription.items && latestCompletedPrescription.items.length > 0) {
+                  setMedicines(latestCompletedPrescription.items.map(item => ({
+                    medicine: item.medicine,
+                    dosage: item.dosage,
+                    instructions: item.instructions,
+                    duration: item.duration
+                  })));
+                }
+                setLabToast({ type: 'success', message: 'Previous prescription template loaded!' });
+                setTimeout(() => setLabToast(null), 3000);
+              }}
+              style={{
+                width: '100%',
+                marginTop: '4px',
+                padding: '8px 12px',
+                background: '#10B981',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontWeight: 800,
+                fontSize: '12px',
+                cursor: 'pointer',
+                transition: '0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px'
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = '#059669'}
+              onMouseLeave={e => e.currentTarget.style.background = '#10B981'}
+            >
+              <i data-lucide="copy" style={{ width: '13px', height: '13px' }}></i> Load as Template
+            </button>
+          </div>
+        )}
 
       </div>
 

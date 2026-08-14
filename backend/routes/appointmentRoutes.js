@@ -211,6 +211,7 @@ router.post('/', async (req, res) => {
           address: currentPatient.address,
           bloodGroup: currentPatient.bloodGroup,
           allergies: currentPatient.allergies,
+          currentMedications: currentPatient.currentMedications || '',
           medicalHistory: currentPatient.medicalHistory,
           avatar: currentPatient.avatar
         });

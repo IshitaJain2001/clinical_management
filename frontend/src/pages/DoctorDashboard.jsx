@@ -2114,7 +2114,8 @@ const DoctorDashboard = () => {
     height: '',
     bmi: '',
     spo2: '',
-    sugar: ''
+    sugar: '',
+    resp: ''
   });
 
   // SOAP Clinical Notes State
@@ -2920,8 +2921,16 @@ const DoctorDashboard = () => {
     });
     if (pendingApp) {
       setActiveAppointmentId(pendingApp._id);
+      setSoap(prev => ({
+        ...prev,
+        subjective: pendingApp.reason || ''
+      }));
     } else {
       setActiveAppointmentId(null);
+      setSoap(prev => ({
+        ...prev,
+        subjective: ''
+      }));
     }
     
     // Fetch patient vitals from backend
@@ -2940,11 +2949,12 @@ const DoctorDashboard = () => {
           height: latest.height || '',
           bmi: latest.bmi || '',
           spo2: latest.spo2 || '',
-          sugar: latest.bloodSugar || ''
+          sugar: latest.bloodSugar || '',
+          resp: latest.resp || ''
         });
       } else {
         setVitals({
-          bpSys: '', bpDia: '', pulse: '', temp: '', weight: '', height: '', bmi: '', spo2: '', sugar: ''
+          bpSys: '', bpDia: '', pulse: '', temp: '', weight: '', height: '', bmi: '', spo2: '', sugar: '', resp: ''
         });
       }
     } catch (e) {
@@ -6934,6 +6944,10 @@ I have scanned the medical reference databases, but couldn't find a direct match
           selectedPatient ? (
             <PrescriptionMakerTab
               selectedPatient={selectedPatient}
+              activeAppointment={appointments.find(a => a._id === activeAppointmentId)}
+              pastPrescriptions={pastPrescriptions}
+              appointments={appointments}
+              allLabs={allLabs}
               vitals={vitals}
               soap={soap}
               setSoap={setSoap}

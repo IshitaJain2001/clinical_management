@@ -11,6 +11,7 @@ const patientSchema = new mongoose.Schema({
   referredBy: { type: String, default: '' },
   bloodGroup: { type: String },
   allergies: { type: String, default: 'None' },
+  currentMedications: { type: String, default: '' },
   medicalHistory: [{ type: String }],
   avatar: { type: String, default: '' },
   
