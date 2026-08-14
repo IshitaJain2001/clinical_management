@@ -1749,7 +1749,7 @@ export default function PrescriptionMakerTab({
                         padding: '4px'
                       }}
                     >
-                      {(pharmacyInventoryDb || [])
+                      {((pharmacyInventoryDb && pharmacyInventoryDb.length > 0 ? pharmacyInventoryDb : dbMedicines) || [])
                         .filter(m => m.name && m.name.toLowerCase().includes(medSearchQuery.toLowerCase()))
                         .map(m => (
                           <div 
