@@ -7418,11 +7418,10 @@ const ReceptionistDashboard = () => {
                           );
                         }
 
-                        // For Appointments, find all other appointments on the same day for the same patient
+                        // Group all appointments for the same patient together
                         const sameDayAppts = filteredList.filter(a => 
                           a.type === 'Appointment' && 
-                          String(a.patientId?._id || a.patientId) === String(app.patientId?._id || app.patientId) && 
-                          getNormalizedDateStr(a.date) === getNormalizedDateStr(app.date)
+                          String(a.patientId?._id || a.patientId) === String(app.patientId?._id || app.patientId)
                         );
 
                         // Mark all of these as rendered
