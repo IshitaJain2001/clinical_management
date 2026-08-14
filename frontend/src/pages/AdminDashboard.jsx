@@ -8744,7 +8744,7 @@ const AdminDashboard = () => {
 
                   <div style={{ height: '1px', background: '#F1F5F9', margin: '20px 0' }}></div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '16px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '0.6fr 0.6fr 1.2fr 0.8fr 2fr', gap: '16px' }}>
                     <div>
                       <div style={{ color: '#94A3B8', fontSize: '11px', fontWeight: 800, letterSpacing: '0.5px', marginBottom: '6px', textTransform: 'uppercase' }}>Age</div>
                       <div style={{ color: '#1A1D23', fontSize: '13.5px', fontWeight: 700 }}>{viewingPatient.raw?.age || viewingPatient.age || 'N/A'} Yrs</div>

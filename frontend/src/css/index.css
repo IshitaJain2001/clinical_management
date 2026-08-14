@@ -2529,7 +2529,7 @@ body .admin-sidebar {
   grid-template-columns: 1fr 380px;
 }
 .patient-details-grid {
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: 0.6fr 0.6fr 1fr 0.8fr 2fr;
 }
 .patient-sub-cards {
   grid-template-columns: 1fr 1.2fr;
