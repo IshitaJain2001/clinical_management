@@ -4648,8 +4648,8 @@ const ReceptionistDashboard = () => {
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '16px' }}>
                     <div>
-                      <div style={{ color: '#94A3B8', fontSize: '11px', fontWeight: 800, letterSpacing: '0.5px', marginBottom: '6px', textTransform: 'uppercase' }}>Date of Birth</div>
-                      <div style={{ color: '#1A1D23', fontSize: '13.5px', fontWeight: 700 }}>{getDisplayDob(selectedPatient)}</div>
+                      <div style={{ color: '#94A3B8', fontSize: '11px', fontWeight: 800, letterSpacing: '0.5px', marginBottom: '6px', textTransform: 'uppercase' }}>Age</div>
+                      <div style={{ color: '#1A1D23', fontSize: '13.5px', fontWeight: 700 }}>{selectedPatient.age} Yrs</div>
                     </div>
                     <div>
                       <div style={{ color: '#94A3B8', fontSize: '11px', fontWeight: 800, letterSpacing: '0.5px', marginBottom: '6px', textTransform: 'uppercase' }}>Gender</div>
@@ -4657,9 +4657,8 @@ const ReceptionistDashboard = () => {
                     </div>
                     <div>
                       <div style={{ color: '#94A3B8', fontSize: '11px', fontWeight: 800, letterSpacing: '0.5px', marginBottom: '6px', textTransform: 'uppercase' }}>Contact</div>
-                      <div style={{ color: '#1A1D23', fontSize: '13.5px', fontWeight: 700, lineHeight: '1.3' }}>
-                        {selectedPatient.contact}<br />
-                        <span style={{ color: '#64748B', fontWeight: 500, fontSize: '12.5px' }}>{selectedPatient.contact.replace(/.$/, '4')}</span>
+                      <div style={{ color: '#1A1D23', fontSize: '13.5px', fontWeight: 700 }}>
+                        {selectedPatient.contact}
                       </div>
                     </div>
                     <div>

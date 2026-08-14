@@ -8746,8 +8746,8 @@ const AdminDashboard = () => {
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '16px' }}>
                     <div>
-                      <div style={{ color: '#94A3B8', fontSize: '11px', fontWeight: 800, letterSpacing: '0.5px', marginBottom: '6px', textTransform: 'uppercase' }}>Date of Birth</div>
-                      <div style={{ color: '#1A1D23', fontSize: '13.5px', fontWeight: 700 }}>{getDisplayDob(viewingPatient)}</div>
+                      <div style={{ color: '#94A3B8', fontSize: '11px', fontWeight: 800, letterSpacing: '0.5px', marginBottom: '6px', textTransform: 'uppercase' }}>Age</div>
+                      <div style={{ color: '#1A1D23', fontSize: '13.5px', fontWeight: 700 }}>{viewingPatient.raw?.age || viewingPatient.age || 'N/A'} Yrs</div>
                     </div>
                     <div>
                       <div style={{ color: '#94A3B8', fontSize: '11px', fontWeight: 800, letterSpacing: '0.5px', marginBottom: '6px', textTransform: 'uppercase' }}>Gender</div>
@@ -8755,9 +8755,8 @@ const AdminDashboard = () => {
                     </div>
                     <div>
                       <div style={{ color: '#94A3B8', fontSize: '11px', fontWeight: 800, letterSpacing: '0.5px', marginBottom: '6px', textTransform: 'uppercase' }}>Contact</div>
-                      <div style={{ color: '#1A1D23', fontSize: '13.5px', fontWeight: 700, lineHeight: '1.3' }}>
-                        {viewingPatient.raw?.contact || 'N/A'}<br />
-                        <span style={{ color: '#64748B', fontWeight: 500, fontSize: '12.5px' }}>{viewingPatient.raw?.contact ? viewingPatient.raw.contact.replace(/.$/, '4') : 'N/A'}</span>
+                      <div style={{ color: '#1A1D23', fontSize: '13.5px', fontWeight: 700 }}>
+                        {viewingPatient.raw?.contact || 'N/A'}
                       </div>
                     </div>
                     <div>
