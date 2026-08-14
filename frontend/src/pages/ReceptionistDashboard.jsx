@@ -7092,25 +7092,58 @@ const ReceptionistDashboard = () => {
                           </span>
                         </td>
                         <td>
-                          <button 
-                            className="btn btn-secondary" 
-                            style={{ padding: '6px 12px', fontSize: '12px' }} 
-                            onClick={() => {
-                              if (app.type === 'Appointment') {
-                                openDetailsModal(app.rawItem);
-                              } else if (app.type === 'Lab Test') {
-                                setSelectedLabRequest({
-                                  testName: app.rawItem?.testName || app.rawItem?.test || app.detailName,
-                                  results: app.rawItem?.results || ''
-                                });
-                                setLabModalOpen(true);
-                              } else {
-                                showToast(`${app.type}: ${app.detailName} (${app.status})`, 'info');
-                              }
-                            }}
-                          >
-                            View Details
-                          </button>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            <button 
+                              className="btn btn-secondary" 
+                              style={{ padding: '6px 12px', fontSize: '12px' }} 
+                              onClick={() => {
+                                if (app.type === 'Appointment') {
+                                  openDetailsModal(app.rawItem);
+                                } else if (app.type === 'Lab Test') {
+                                  setSelectedLabRequest({
+                                    testName: app.rawItem?.testName || app.rawItem?.test || app.detailName,
+                                    results: app.rawItem?.results || ''
+                                  });
+                                  setLabModalOpen(true);
+                                } else {
+                                  showToast(`${app.type}: ${app.detailName} (${app.status})`, 'info');
+                                }
+                              }}
+                            >
+                              View Details
+                            </button>
+                            {app.type === 'Appointment' && (app.status === 'Pending' || app.status === 'Scheduled' || app.status === 'Paid') && (
+                              <button
+                                className="btn btn-primary"
+                                style={{ padding: '6px 12px', fontSize: '12px', background: '#8B5CF6', borderColor: '#8B5CF6', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                onClick={() => {
+                                  const patientData = typeof app.patientId === 'object' ? app.patientId : null;
+                                  if (patientData) {
+                                    setSelectedPatient(patientData);
+                                    setFormData({
+                                      name: patientData.name || '',
+                                      age: patientData.age || '',
+                                      gender: patientData.gender || '',
+                                      contact: patientData.contact || '',
+                                      email: patientData.email || '',
+                                      bloodGroup: patientData.bloodGroup || 'O+',
+                                      address: patientData.address || '',
+                                      medicalHistory: patientData.medicalHistory ? (Array.isArray(patientData.medicalHistory) ? patientData.medicalHistory.join(', ') : patientData.medicalHistory) : '',
+                                      doctorId: ''
+                                    });
+                                    setIsExistingPatient(true);
+                                    switchTab('registration-form', true);
+                                    showToast(`Adding-on appointment for ${patientData.name}. Choose a doctor and slot.`, 'success');
+                                  } else {
+                                    showToast("Patient details not found.", "error");
+                                  }
+                                }}
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                Add-On
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))}
