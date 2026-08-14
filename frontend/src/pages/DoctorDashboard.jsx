@@ -1682,9 +1682,22 @@ const DoctorDashboard = () => {
 
               function getDiagnosisHTML() {
                 if (!diagnosis || diagnosis === '—') return '';
+                const lines = diagnosis.split('\n').filter(l => l.trim() !== '');
+                if (lines.length === 1) {
+                  return '<div style="margin-bottom: 12px; page-break-inside: avoid; break-inside: avoid;">' +
+                    '<div style="font-family: Outfit, sans-serif; font-size: 12px; font-weight: 900; color: #800020; border-bottom: 1.5px solid #800020; padding-bottom: 3px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Diagnosis</div>' +
+                    '<div style="font-size: 11px; font-weight: 700; color: #1E293B; padding-left: 2px;">' + diagnosis + '</div>' +
+                  '</div>';
+                }
+                const bulletList = lines.map(line => {
+                  return '<li style="margin-bottom: 4px; display: flex; align-items: flex-start; gap: 8px;">' +
+                    '<span style="color: #800020; font-size: 8px; margin-top: 5px; flex-shrink: 0;">●</span>' +
+                    '<span>' + line.trim() + '</span>' +
+                    '</li>';
+                }).join('');
                 return '<div style="margin-bottom: 12px; page-break-inside: avoid; break-inside: avoid;">' +
                   '<div style="font-family: Outfit, sans-serif; font-size: 12px; font-weight: 900; color: #800020; border-bottom: 1.5px solid #800020; padding-bottom: 3px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Diagnosis</div>' +
-                  '<div style="font-size: 11px; font-weight: 700; color: #1E293B; padding-left: 2px;">' + diagnosis + '</div>' +
+                  '<ul style="padding-left: 2px; margin: 0; font-size: 11px; font-weight: 700; color: #1E293B; list-style: none; line-height: 1.5;">' + bulletList + '</ul>' +
                 '</div>';
               }
 
@@ -9510,8 +9523,19 @@ I have scanned the medical reference databases, but couldn't find a direct match
                         {/* Diagnosis */}
                         {rx.diagnosis && (
                           <div style={{ fontSize: '9.5px' }}>
-                            <span style={{ color: '#64748B', fontWeight: 700, display: 'block', fontSize: '7.5px', textTransform: 'uppercase' }}>Diagnosis</span>
-                            <b style={{ color: '#1E293B' }}>{rx.diagnosis}</b>
+                            <span style={{ color: '#64748B', fontWeight: 700, display: 'block', fontSize: '7.5px', textTransform: 'uppercase', marginBottom: '2px' }}>Diagnosis</span>
+                            {rx.diagnosis.includes('\n') ? (
+                              <ul style={{ paddingLeft: '2px', margin: 0, listStyle: 'none' }}>
+                                {rx.diagnosis.split('\n').filter(line => line.trim() !== '').map((line, i) => (
+                                  <li key={i} style={{ marginBottom: '2px', display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
+                                    <span style={{ color: '#800020', fontSize: '6px', marginTop: '4px', flexShrink: 0 }}>●</span>
+                                    <span style={{ color: '#1E293B', fontWeight: 700 }}>{line.trim()}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <b style={{ color: '#1E293B' }}>{rx.diagnosis}</b>
+                            )}
                           </div>
                         )}
 

@@ -693,16 +693,29 @@ export default function PrescriptionMakerTab({
           {/* Diagnosis Section */}
           <div style={{ marginBottom: '24px' }}>
             <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#D97706', letterSpacing: '0.05em', marginBottom: '8px' }}>DIAGNOSIS (REQUIRED)</label>
-            <input 
-              type="text" 
-              value={diagnosisText} 
-              onChange={e => {
-                setDiagnosisText(e.target.value);
-                setSoap(prev => ({ ...prev, assessment: e.target.value }));
-              }} 
-              placeholder="Enter Patient Diagnosis..." 
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', border: '1px solid #E2E8F0', fontSize: '14px', fontWeight: 600, color: '#1E293B', outline: 'none', background: '#ffffff', boxSizing: 'border-box' }} 
-            />
+            <div style={{ border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px 20px', background: '#F8FAFC' }}>
+              {/* Render typed diagnosis as bullet points */}
+              {diagnosisText && diagnosisText.trim() !== '' && (
+                <ul style={{ paddingLeft: '8px', margin: '0 0 12px 0', fontSize: '14px', color: '#1E293B', fontWeight: 650, lineHeight: 1.6, listStyle: 'none' }}>
+                  {diagnosisText.split('\n').filter(line => line.trim() !== '').map((line, i) => (
+                    <li key={i} style={{ marginBottom: '4px', display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                      <span style={{ color: '#D97706', fontSize: '8px', marginTop: '6px', flexShrink: 0 }}>●</span>
+                      <span>{line.trim()}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <textarea 
+                data-lenis-prevent
+                value={diagnosisText}
+                onChange={e => {
+                  setDiagnosisText(e.target.value);
+                  setSoap(prev => ({ ...prev, assessment: e.target.value }));
+                }}
+                placeholder="Enter Patient Diagnosis (each line becomes a bullet point)..." 
+                style={{ width: '100%', border: 'none', background: 'transparent', outline: 'none', fontSize: '13.5px', color: '#475569', resize: 'none', minHeight: '60px', fontWeight: 500, boxSizing: 'border-box' }}
+              />
+            </div>
           </div>
 
           {/* Medications Section */}
