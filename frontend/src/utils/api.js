@@ -100,10 +100,6 @@ api.interceptors.response.use(
           : 'session_expired';
         handleAutoLogout(reason);
       }
-    } else if (!error.response && hasToken && !isAuthRequest && window.location.pathname !== '/login') {
-      // Backend server is disconnected / unreachable
-      console.warn('Backend server disconnected. Logging out...');
-      handleAutoLogout('backend_disconnected');
     }
     return Promise.reject(error);
   }
