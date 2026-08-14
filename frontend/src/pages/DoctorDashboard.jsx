@@ -2504,6 +2504,8 @@ const DoctorDashboard = () => {
           gender: p.gender || '--',
           uhid: `MDC-${p._id.substring(18).toUpperCase()}`, // Build beautiful tracking ID from Mongoose ObjectId
           contact: p.contact || '--',
+          email: p.email || 'N/A',
+          address: p.address || 'N/A',
           bloodGroup: p.bloodGroup || '--',
           allergies: p.allergies || 'None Reported',
           lastVisit: lastVisitDate,
@@ -7910,10 +7912,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                       <span style={{ color: '#64748B', fontWeight: 600 }}>Primary Phone:</span>
                       <span style={{ fontWeight: 700, color: '#1A1D23' }}>{selectedPatient.contact}</span>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', marginTop: '14px' }}>
-                      <span style={{ color: '#64748B', fontWeight: 600 }}>Alternate Phone:</span>
-                      <span style={{ fontWeight: 700, color: '#1A1D23' }}>{selectedPatient.alternateContact || 'N/A'}</span>
-                    </div>
+
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', marginTop: '14px' }}>
                       <span style={{ color: '#64748B', fontWeight: 600 }}>Address:</span>
                       <span style={{ fontWeight: 700, color: '#1A1D23', textAlign: 'right', maxWidth: '180px' }}>{selectedPatient.address || 'N/A'}</span>
