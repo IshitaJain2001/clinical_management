@@ -7983,7 +7983,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #F1F5F9', paddingTop: '12px', marginTop: '16px', fontSize: '11px', color: '#94A3B8', fontWeight: 700 }}>
                       <span>Last updated: {patientVitals[0] ? new Date(patientVitals[0].createdAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '--'}</span>
-                      <span>By: {patientVitals[0] ? (patientVitals[0].createdBy?.name || 'Receptionist') : '--'}</span>
+                      <span>By: {patientVitals[0] ? (patientVitals[0].recordedBy?.name || 'Receptionist') : '--'}</span>
                     </div>
                   </div>
                 </div>
@@ -9476,7 +9476,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                             {idx === 0 && <span style={{ marginLeft: '6px', background: '#0284C7', color: 'white', fontSize: '9px', padding: '2px 6px', borderRadius: '4px', fontWeight: 800 }}>LATEST</span>}
                           </td>
                           <td style={{ padding: '16px', fontSize: '13px', fontWeight: 650, color: '#475569' }}>
-                            {v.createdBy?.name || 'Receptionist'}
+                            {v.recordedBy?.name || 'Receptionist'}
                           </td>
                           <td style={{ padding: '16px', fontSize: '13px', fontWeight: 700, color: '#0F172A' }}>
                             {v.bpSys && v.bpDia ? `${v.bpSys}/${v.bpDia}` : '--'}
