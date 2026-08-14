@@ -9243,7 +9243,17 @@ I have scanned the medical reference databases, but couldn't find a direct match
                   type="button" 
                   onClick={() => setShowCoverageLabDetailsModal(false)}
                   style={{ height: '40px', padding: '0 20px', background: '#0F172A', border: 'none', borderRadius: '8px', fontWeight: 700, color: 'white', cursor: 'pointer' }}
-               <div className="glass-card" style={{ width: '100%', maxWidth: '960px', background: '#FFFFFF', padding: '0', borderRadius: '24px', maxHeight: '92vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 80px -15px rgba(15, 23, 42, 0.22)', border: '1px solid rgba(241, 245, 249, 0.9)' }}>
+                >Close</button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Visual Prescription formatting & Spacing Modal */}
+      {showPrintSettingsModal && printSettingsTarget && tempPrintSettings && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000, padding: '20px' }}>
+          <div className="glass-card" style={{ width: '100%', maxWidth: '960px', background: '#FFFFFF', padding: '0', borderRadius: '24px', maxHeight: '92vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 80px -15px rgba(15, 23, 42, 0.22)', border: '1px solid rgba(241, 245, 249, 0.9)' }}>
             
             {/* Modal Header */}
             <div style={{ background: 'linear-gradient(135deg, #800020, #4A0012)', padding: '20px 28px', color: 'white', display: 'flex', alignItems: 'center', justifycontent: 'space-between' }}>
