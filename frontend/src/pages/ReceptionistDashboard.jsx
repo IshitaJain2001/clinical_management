@@ -2292,8 +2292,8 @@ const ReceptionistDashboard = () => {
         return;
       }
 
-      // Check if existing patient already has an appointment today with any of the selected doctors in database
-      if (isExistingPatient && selectedPatient) {
+      // Check if existing patient already has an appointment today with any of the selected doctors in database (bypassed if explicit add-on visit)
+      if (isExistingPatient && selectedPatient && !addOnOriginAppt) {
         for (const apptToBook of allApptsToBook) {
           const alreadyHasApptInDb = appointments.some(appt => {
             const pId = appt.patientId && typeof appt.patientId === 'object' ? appt.patientId._id : appt.patientId;
@@ -7112,6 +7112,34 @@ const ReceptionistDashboard = () => {
                               {getInitials(app.patientName)}
                             </div>
                             <span className="patient-name-span" style={{ fontWeight: 700, color: '#1A1D23', transition: 'color 0.2s' }}>{app.patientName}</span>
+                            {(() => {
+                              const sameDayAppts = getFilteredAppointments().filter(a => 
+                                a.type === 'Appointment' && 
+                                String(a.patientId?._id || a.patientId) === String(app.patientId?._id || app.patientId) && 
+                                new Date(a.date).toDateString() === new Date(app.date).toDateString()
+                              );
+                              if (sameDayAppts.length > 1) {
+                                return (
+                                  <span style={{ 
+                                    marginLeft: '8px', 
+                                    fontSize: '9.5px', 
+                                    background: '#F5F3FF', 
+                                    color: '#7C3AED', 
+                                    border: '1px solid #DDD6FE', 
+                                    borderRadius: '4px', 
+                                    padding: '2px 6px', 
+                                    fontWeight: 800,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '3px'
+                                  }}>
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                                    Add-On Visit
+                                  </span>
+                                );
+                              }
+                              return null;
+                            })()}
                           </div>
                         </td>
                         <td>
