@@ -7321,133 +7321,268 @@ const ReceptionistDashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {getFilteredAppointments().map(app => (
-                      <tr key={app.id}>
-                        <td>
-                          <div 
-                            style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
-                            onClick={() => app.patientId && handleOpenPatientProfile(typeof app.patientId === 'object' ? app.patientId : { _id: app.patientId, name: app.patientName })}
-                            onMouseEnter={(e) => { e.currentTarget.querySelector('.patient-name-span').style.color = '#2563EB'; }}
-                            onMouseLeave={(e) => { e.currentTarget.querySelector('.patient-name-span').style.color = '#1A1D23'; }}
-                          >
-                            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '12px' }}>
-                              {getInitials(app.patientName)}
-                            </div>
-                            <span className="patient-name-span" style={{ fontWeight: 700, color: '#1A1D23', transition: 'color 0.2s' }}>{app.patientName}</span>
-                            {(() => {
-                              const sameDayAppts = getFilteredAppointments().filter(a => 
-                                a.type === 'Appointment' && 
-                                String(a.patientId?._id || a.patientId) === String(app.patientId?._id || app.patientId) && 
-                                new Date(a.date).toDateString() === new Date(app.date).toDateString()
-                              );
-                              if (sameDayAppts.length > 1) {
-                                return (
-                                  <span style={{ 
-                                    marginLeft: '8px', 
-                                    fontSize: '9.5px', 
-                                    background: '#F5F3FF', 
-                                    color: '#7C3AED', 
-                                    border: '1px solid #DDD6FE', 
-                                    borderRadius: '4px', 
-                                    padding: '2px 6px', 
-                                    fontWeight: 800,
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: '3px'
-                                  }}>
-                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                                    Add-On Visit
-                                  </span>
-                                );
-                              }
-                              return null;
-                            })()}
-                          </div>
-                        </td>
-                        <td>
-                          <span style={{
-                            padding: '4px 8px',
-                            borderRadius: '6px',
-                            fontSize: '11.5px',
-                            fontWeight: 700,
-                            background: app.type === 'Appointment' ? '#EFF6FF' : app.type === 'Lab Test' ? '#ECFDF5' : '#F5F3FF',
-                            color: app.type === 'Appointment' ? '#2563EB' : app.type === 'Lab Test' ? '#10B981' : '#8B5CF6',
-                            border: app.type === 'Appointment' ? '1px solid #BFDBFE' : app.type === 'Lab Test' ? '1px solid #A7F3D0' : '1px solid #DDD6FE'
-                          }}>
-                            {app.type}
-                          </span>
-                        </td>
-                        <td style={{ fontWeight: 700, color: '#334155' }}>{app.detailName}</td>
-                        <td style={{ fontWeight: 600 }}>
-                          {getFormattedDate(app.date)}
-                          {app.time}
-                        </td>
-                        <td>
-                          <span className={`status-badge ${
-                            app.status === 'Completed' || app.status === 'Paid' ? 'available' : 
-                            app.status === 'Rescheduled' ? 'rescheduled' :
-                            (app.status === 'Cancelled' ? 'critical' : 'pending')
-                          }`} style={app.status === 'Rescheduled' ? { background: '#E0F2FE', color: '#0369A1' } : {}}>
-                            {app.status}
-                          </span>
-                        </td>
-                        <td>
-                          <div style={{ display: 'flex', gap: '8px' }}>
-                            <button 
-                              className="btn btn-secondary" 
-                              style={{ padding: '6px 12px', fontSize: '12px' }} 
-                              onClick={() => {
-                                if (app.type === 'Appointment') {
-                                  openDetailsModal(app.rawItem);
-                                } else if (app.type === 'Lab Test') {
-                                  setSelectedLabRequest({
-                                    testName: app.rawItem?.testName || app.rawItem?.test || app.detailName,
-                                    results: app.rawItem?.results || ''
-                                  });
-                                  setLabModalOpen(true);
-                                } else {
-                                  showToast(`${app.type}: ${app.detailName} (${app.status})`, 'info');
-                                }
-                              }}
-                            >
-                              View Details
-                            </button>
-                            {app.type === 'Appointment' && (app.status === 'Pending' || app.status === 'Scheduled' || app.status === 'Paid') && (
-                              <button
-                                className="btn btn-primary"
-                                style={{ padding: '6px 12px', fontSize: '12px', background: '#8B5CF6', borderColor: '#8B5CF6', display: 'flex', alignItems: 'center', gap: '4px' }}
-                                onClick={() => {
-                                  const patientData = typeof app.patientId === 'object' ? app.patientId : null;
-                                  if (patientData) {
-                                    setSelectedPatient(patientData);
-                                    setAddOnOriginAppt(app.rawItem);
-                                    setFormData({
-                                      name: patientData.name || '',
-                                      age: patientData.age || '',
-                                      gender: patientData.gender || '',
-                                      contact: patientData.contact || '',
-                                      email: patientData.email || '',
-                                      bloodGroup: patientData.bloodGroup || 'O+',
-                                      address: patientData.address || '',
-                                      medicalHistory: patientData.medicalHistory ? (Array.isArray(patientData.medicalHistory) ? patientData.medicalHistory.join(', ') : patientData.medicalHistory) : '',
-                                      doctorId: ''
-                                    });
-                                    setIsExistingPatient(true);
-                                    switchTab('registration-form', true);
-                                    showToast(`Adding-on appointment for ${patientData.name}. Choose a doctor and slot.`, 'success');
-                                  } else {
-                                    showToast("Patient details not found.", "error");
-                                  }
+                    {(() => {
+                      const renderedIds = new Set();
+                      const filteredList = getFilteredAppointments();
+
+                      return filteredList.map(app => {
+                        if (renderedIds.has(app.id)) return null;
+
+                        // For non-appointments (Lab tests, Clinical services), render normally
+                        if (app.type !== 'Appointment') {
+                          renderedIds.add(app.id);
+                          return (
+                            <tr key={app.id}>
+                              <td>
+                                <div 
+                                  style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
+                                  onClick={() => app.patientId && handleOpenPatientProfile(typeof app.patientId === 'object' ? app.patientId : { _id: app.patientId, name: app.patientName })}
+                                  onMouseEnter={(e) => { e.currentTarget.querySelector('.patient-name-span').style.color = '#2563EB'; }}
+                                  onMouseLeave={(e) => { e.currentTarget.querySelector('.patient-name-span').style.color = '#1A1D23'; }}
+                                >
+                                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '12px' }}>
+                                    {getInitials(app.patientName)}
+                                  </div>
+                                  <span className="patient-name-span" style={{ fontWeight: 700, color: '#1A1D23', transition: 'color 0.2s' }}>{app.patientName}</span>
+                                </div>
+                              </td>
+                              <td>
+                                <span style={{
+                                  padding: '4px 8px',
+                                  borderRadius: '6px',
+                                  fontSize: '11.5px',
+                                  fontWeight: 700,
+                                  background: app.type === 'Lab Test' ? '#ECFDF5' : '#F5F3FF',
+                                  color: app.type === 'Lab Test' ? '#10B981' : '#8B5CF6',
+                                  border: app.type === 'Lab Test' ? '1px solid #A7F3D0' : '1px solid #DDD6FE'
+                                }}>
+                                  {app.type}
+                                </span>
+                              </td>
+                              <td style={{ fontWeight: 700, color: '#334155' }}>{app.detailName}</td>
+                              <td style={{ fontWeight: 600 }}>
+                                {getFormattedDate(app.date)}
+                                {app.time}
+                              </td>
+                              <td>
+                                <span className={`status-badge ${
+                                  app.status === 'Completed' || app.status === 'Paid' ? 'available' : 
+                                  app.status === 'Rescheduled' ? 'rescheduled' :
+                                  (app.status === 'Cancelled' ? 'critical' : 'pending')
+                                }`} style={app.status === 'Rescheduled' ? { background: '#E0F2FE', color: '#0369A1' } : {}}>
+                                  {app.status}
+                                </span>
+                              </td>
+                              <td>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                  <button 
+                                    className="btn btn-secondary" 
+                                    style={{ padding: '6px 12px', fontSize: '12px' }} 
+                                    onClick={() => {
+                                      if (app.type === 'Lab Test') {
+                                        setSelectedLabRequest({
+                                          testName: app.rawItem?.testName || app.rawItem?.test || app.detailName,
+                                          results: app.rawItem?.results || ''
+                                        });
+                                        setLabModalOpen(true);
+                                      } else {
+                                        showToast(`${app.type}: ${app.detailName} (${app.status})`, 'info');
+                                      }
+                                    }}
+                                  >
+                                    View Details
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        }
+
+                        // For Appointments, find all other appointments on the same day for the same patient
+                        const sameDayAppts = filteredList.filter(a => 
+                          a.type === 'Appointment' && 
+                          String(a.patientId?._id || a.patientId) === String(app.patientId?._id || app.patientId) && 
+                          new Date(a.date).toDateString() === new Date(app.date).toDateString()
+                        );
+
+                        // Mark all of these as rendered
+                        sameDayAppts.forEach(a => renderedIds.add(a.id));
+
+                        // The first one is the "primary" appointment
+                        const primaryApp = sameDayAppts[0];
+                        const addOnApps = sameDayAppts.slice(1);
+
+                        return (
+                          <React.Fragment key={primaryApp.id}>
+                            {/* Render the Primary Appointment Row */}
+                            <tr style={{ background: sameDayAppts.length > 1 ? '#FAF5FF' : 'transparent', borderBottom: sameDayAppts.length > 1 ? 'none' : '1px solid #F1F5F9' }}>
+                              <td>
+                                <div 
+                                  style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
+                                  onClick={() => primaryApp.patientId && handleOpenPatientProfile(typeof primaryApp.patientId === 'object' ? primaryApp.patientId : { _id: primaryApp.patientId, name: primaryApp.patientName })}
+                                  onMouseEnter={(e) => { e.currentTarget.querySelector('.patient-name-span').style.color = '#2563EB'; }}
+                                  onMouseLeave={(e) => { e.currentTarget.querySelector('.patient-name-span').style.color = '#1A1D23'; }}
+                                >
+                                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '12px' }}>
+                                    {getInitials(primaryApp.patientName)}
+                                  </div>
+                                  <div>
+                                    <span className="patient-name-span" style={{ fontWeight: 700, color: '#1A1D23', transition: 'color 0.2s' }}>{primaryApp.patientName}</span>
+                                    {sameDayAppts.length > 1 && (
+                                      <span style={{ 
+                                        marginLeft: '8px', 
+                                        fontSize: '9.5px', 
+                                        background: '#7C3AED', 
+                                        color: '#FFFFFF', 
+                                        borderRadius: '4px', 
+                                        padding: '2px 6px', 
+                                        fontWeight: 800,
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '3px'
+                                      }}>
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                                        Multi-Visit
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </td>
+                              <td>
+                                <span style={{
+                                  padding: '4px 8px',
+                                  borderRadius: '6px',
+                                  fontSize: '11.5px',
+                                  fontWeight: 700,
+                                  background: '#EFF6FF',
+                                  color: '#2563EB',
+                                  border: '1px solid #BFDBFE'
+                                }}>
+                                  {primaryApp.type}
+                                </span>
+                              </td>
+                              <td style={{ fontWeight: 700, color: '#334155' }}>
+                                {primaryApp.detailName}
+                              </td>
+                              <td style={{ fontWeight: 600 }}>
+                                {getFormattedDate(primaryApp.date)}
+                                {primaryApp.time}
+                              </td>
+                              <td>
+                                <span className={`status-badge ${
+                                  primaryApp.status === 'Completed' || primaryApp.status === 'Paid' ? 'available' : 
+                                  primaryApp.status === 'Rescheduled' ? 'rescheduled' :
+                                  (primaryApp.status === 'Cancelled' ? 'critical' : 'pending')
+                                }`} style={primaryApp.status === 'Rescheduled' ? { background: '#E0F2FE', color: '#0369A1' } : {}}>
+                                  {primaryApp.status}
+                                </span>
+                              </td>
+                              <td>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                  <button 
+                                    className="btn btn-secondary" 
+                                    style={{ padding: '6px 12px', fontSize: '12px' }} 
+                                    onClick={() => openDetailsModal(primaryApp.rawItem)}
+                                  >
+                                    View Details
+                                  </button>
+                                  {primaryApp.type === 'Appointment' && (primaryApp.status === 'Pending' || primaryApp.status === 'Scheduled' || primaryApp.status === 'Paid') && (
+                                    <button
+                                      className="btn btn-primary"
+                                      style={{ padding: '6px 12px', fontSize: '12px', background: '#8B5CF6', borderColor: '#8B5CF6', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                      onClick={() => {
+                                        const patientData = typeof primaryApp.patientId === 'object' ? primaryApp.patientId : null;
+                                        if (patientData) {
+                                          setSelectedPatient(patientData);
+                                          setAddOnOriginAppt(primaryApp.rawItem);
+                                          setFormData({
+                                            name: patientData.name || '',
+                                            age: patientData.age || '',
+                                            gender: patientData.gender || '',
+                                            contact: patientData.contact || '',
+                                            email: patientData.email || '',
+                                            bloodGroup: patientData.bloodGroup || 'O+',
+                                            address: patientData.address || '',
+                                            medicalHistory: patientData.medicalHistory ? (Array.isArray(patientData.medicalHistory) ? patientData.medicalHistory.join(', ') : patientData.medicalHistory) : '',
+                                            doctorId: ''
+                                          });
+                                          setIsExistingPatient(true);
+                                          switchTab('registration-form', true);
+                                          showToast(`Adding-on appointment for ${patientData.name}. Choose a doctor and slot.`, 'success');
+                                        } else {
+                                          showToast("Patient details not found.", "error");
+                                        }
+                                      }}
+                                    >
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                      Add-On
+                                    </button>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+
+                            {/* Render any Add-On Appointment Sub-Rows */}
+                            {addOnApps.map((addOn, subIdx) => (
+                              <tr 
+                                key={addOn.id} 
+                                style={{ 
+                                  background: '#FAF5FF', 
+                                  borderBottom: subIdx === addOnApps.length - 1 ? '1px solid #F1F5F9' : 'none' 
                                 }}
                               >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                                Add-On
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                                <td style={{ paddingLeft: '24px' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#7C3AED', fontSize: '12px', fontWeight: 700 }}>
+                                    <span style={{ fontSize: '16px', color: '#A78BFA' }}>↳</span>
+                                    <span>Add-On Visit</span>
+                                  </div>
+                                </td>
+                                <td>
+                                  <span style={{
+                                    padding: '2px 6px',
+                                    borderRadius: '4px',
+                                    fontSize: '10.5px',
+                                    fontWeight: 700,
+                                    background: '#F5F3FF',
+                                    color: '#7C3AED',
+                                    border: '1px solid #DDD6FE'
+                                  }}>
+                                    Add-On appt
+                                  </span>
+                                </td>
+                                <td style={{ fontWeight: 700, color: '#4F46E5', fontSize: '13px' }}>
+                                  {addOn.detailName}
+                                </td>
+                                <td style={{ fontWeight: 600, fontSize: '12.5px' }}>
+                                  {getFormattedDate(addOn.date)}
+                                  {addOn.time}
+                                </td>
+                                <td>
+                                  <span className={`status-badge ${
+                                    addOn.status === 'Completed' || addOn.status === 'Paid' ? 'available' : 
+                                    addOn.status === 'Rescheduled' ? 'rescheduled' :
+                                    (addOn.status === 'Cancelled' ? 'critical' : 'pending')
+                                  }`} style={{ fontSize: '11px', padding: '3px 8px' }}>
+                                    {addOn.status}
+                                  </span>
+                                </td>
+                                <td>
+                                  <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button 
+                                      className="btn btn-secondary" 
+                                      style={{ padding: '4px 10px', fontSize: '11px' }} 
+                                      onClick={() => openDetailsModal(addOn.rawItem)}
+                                    >
+                                      View Details
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </React.Fragment>
+                        );
+                      });
+                    })()}
                     {getFilteredAppointments().length === 0 && (
                       <tr>
                         <td colSpan="6" style={{ textAlign: 'center', padding: '40px', color: '#64748B', fontWeight: 600 }}>
