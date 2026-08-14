@@ -35,8 +35,21 @@ export default function PrescriptionMakerTab({
   setPrintSettings = () => {},
   adminTemplates = []
 }) {
-  // Sidebar drawer visibility state
+  // Sidebar drawer visibility and width states
   const [showAssignLabDrawer, setShowAssignLabDrawer] = useState(false);
+  const [labDrawerWidth, setLabDrawerWidth] = useState(480);
+  const [showMedicationDrawer, setShowMedicationDrawer] = useState(false);
+  const [medicationDrawerWidth, setMedicationDrawerWidth] = useState(480);
+
+  // Drawer form states for adding a medicine
+  const [drawerMedName, setDrawerMedName] = useState('');
+  const [drawerMedDose, setDrawerMedDose] = useState('');
+  const [drawerMedFreq, setDrawerMedFreq] = useState('Once a Day');
+  const [drawerMedDuration, setDrawerMedDuration] = useState('5 Days');
+  const [drawerMedTiming, setDrawerMedTiming] = useState('After Food');
+  const [medSearchQuery, setMedSearchQuery] = useState('');
+  const [showMedSuggestions, setShowMedSuggestions] = useState(false);
+
   const [followUpEnabled, setFollowUpEnabled] = useState(false);
   const [followUpDate, setFollowUpDate] = useState('');
   const [followUpTime, setFollowUpTime] = useState('10:00 AM');
@@ -56,9 +69,49 @@ export default function PrescriptionMakerTab({
     localStorage.setItem('curoxa_rx_note_templates', JSON.stringify(noteTemplates));
   }, [noteTemplates]);
 
+  const startResizingLabDrawer = (mouseDownEvent) => {
+    mouseDownEvent.preventDefault();
+    const startWidth = labDrawerWidth;
+    const startX = mouseDownEvent.clientX;
+
+    const doDrag = (mouseMoveEvent) => {
+      const deltaX = startX - mouseMoveEvent.clientX;
+      const newWidth = Math.max(380, Math.min(window.innerWidth - 100, startWidth + deltaX));
+      setLabDrawerWidth(newWidth);
+    };
+
+    const stopDrag = () => {
+      document.removeEventListener('mousemove', doDrag);
+      document.removeEventListener('mouseup', stopDrag);
+    };
+
+    document.addEventListener('mousemove', doDrag);
+    document.addEventListener('mouseup', stopDrag);
+  };
+
+  const startResizingMedicationDrawer = (mouseDownEvent) => {
+    mouseDownEvent.preventDefault();
+    const startWidth = medicationDrawerWidth;
+    const startX = mouseDownEvent.clientX;
+
+    const doDrag = (mouseMoveEvent) => {
+      const deltaX = startX - mouseMoveEvent.clientX;
+      const newWidth = Math.max(380, Math.min(window.innerWidth - 100, startWidth + deltaX));
+      setMedicationDrawerWidth(newWidth);
+    };
+
+    const stopDrag = () => {
+      document.removeEventListener('mousemove', doDrag);
+      document.removeEventListener('mouseup', stopDrag);
+    };
+
+    document.addEventListener('mousemove', doDrag);
+    document.addEventListener('mouseup', stopDrag);
+  };
+
   // Body scroll lock effect
   React.useEffect(() => {
-    if (showAssignLabDrawer) {
+    if (showAssignLabDrawer || showMedicationDrawer) {
       document.body.classList.add('modal-open');
     } else {
       document.body.classList.remove('modal-open');
@@ -66,7 +119,7 @@ export default function PrescriptionMakerTab({
     return () => {
       document.body.classList.remove('modal-open');
     };
-  }, [showAssignLabDrawer]);
+  }, [showAssignLabDrawer, showMedicationDrawer]);
 
   // Dynamic Lucide Icons re-renderer inside Prescription Maker
   React.useEffect(() => {
@@ -1013,7 +1066,15 @@ export default function PrescriptionMakerTab({
                   <tr>
                     <td colSpan="7" style={{ padding: '16px', background: '#F8FAFC', borderTop: '1px solid #E2E8F0' }}>
                       <button 
-                        onClick={() => addMedicineRow({ name: '', dose: '', freq: 'Once a Day', duration: '5 Days', timing: 'After Food' })} 
+                        onClick={() => {
+                          setDrawerMedName('');
+                          setDrawerMedDose('');
+                          setDrawerMedFreq('Once a Day');
+                          setDrawerMedDuration('5 Days');
+                          setDrawerMedTiming('After Food');
+                          setMedSearchQuery('');
+                          setShowMedicationDrawer(true);
+                        }} 
                         style={{ border: 'none', background: 'none', color: '#2563EB', fontSize: '14px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', padding: 0 }}
                       >
                         <span style={{ fontSize: '16px', color: '#2563EB', fontWeight: 'bold', marginRight: '4px' }}>+</span> Add Medicine
@@ -1182,8 +1243,8 @@ export default function PrescriptionMakerTab({
               top: 0,
               right: 0,
               bottom: 0,
-              width: '460px',
-              maxWidth: '90vw',
+              width: `${labDrawerWidth}px`,
+              maxWidth: '95vw',
               background: '#ffffff',
               boxShadow: '-10px 0 40px rgba(15, 23, 42, 0.08)',
               zIndex: 100000,
@@ -1193,6 +1254,24 @@ export default function PrescriptionMakerTab({
               fontFamily: "'Urbanist', sans-serif"
             }}
           >
+            {/* Draggable handle on left edge */}
+            <div 
+              onMouseDown={startResizingLabDrawer}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                bottom: 0,
+                width: '6px',
+                cursor: 'ew-resize',
+                zIndex: 10,
+                background: 'transparent',
+                transition: 'background 0.2s',
+                borderLeft: '2.5px solid #CBD5E1'
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = '#2563EB'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+            />
             {/* Header */}
             <div style={{ padding: '24px 32px', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
@@ -1460,20 +1539,328 @@ export default function PrescriptionMakerTab({
 
           </div>
 
-          {/* CSS Animation injection inline */}
-          <style>{`
-            @keyframes slideInRight {
-              from { transform: translateX(100%); }
-              to { transform: translateX(0); }
-            }
-            @keyframes slideInToast {
-              from { opacity: 0; transform: translateY(16px); }
-              to   { opacity: 1; transform: translateY(0); }
-            }
           `}</style>
         </>
       )}
 
+      {/* Modern High-Fidelity Sliding Medications Drawer */}
+      {showMedicationDrawer && (
+        <>
+          {/* Blur Backdrop */}
+          <div 
+            onClick={() => setShowMedicationDrawer(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(15, 23, 42, 0.3)',
+              backdropFilter: 'blur(6px)',
+              zIndex: 99999,
+              transition: 'opacity 0.2s ease-out'
+            }}
+          />
+
+          {/* Drawer Container */}
+          <div 
+            data-lenis-prevent
+            style={{
+              position: 'fixed',
+              top: 0,
+              right: 0,
+              bottom: 0,
+              width: `${medicationDrawerWidth}px`,
+              maxWidth: '95vw',
+              background: '#ffffff',
+              boxShadow: '-10px 0 40px rgba(15, 23, 42, 0.08)',
+              zIndex: 100000,
+              display: 'flex',
+              flexDirection: 'column',
+              animation: 'slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+              fontFamily: "'Urbanist', sans-serif"
+            }}
+          >
+            {/* Draggable handle on left edge */}
+            <div 
+              onMouseDown={startResizingMedicationDrawer}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                bottom: 0,
+                width: '6px',
+                cursor: 'ew-resize',
+                zIndex: 10,
+                background: 'transparent',
+                transition: 'background 0.2s',
+                borderLeft: '2.5px solid #CBD5E1'
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = '#2563EB'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+            />
+
+            {/* Header */}
+            <div style={{ padding: '24px 32px', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 800, color: '#1E3A8A' }}>Prescribe Medications</h3>
+                <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#64748B', fontWeight: 600 }}>
+                  {selectedPatient?.name || 'N/A'} | {selectedPatient?.uhid || 'N/A'}
+                </p>
+              </div>
+              <button 
+                onClick={() => setShowMedicationDrawer(false)}
+                style={{ border: 'none', background: 'none', fontSize: '22px', color: '#94A3B8', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Content Body */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              
+              {/* Medicine Search */}
+              <div>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '8px' }}>SEARCH MEDICINE INVENTORY</label>
+                
+                <div style={{ position: 'relative' }}>
+                  <i data-lucide="search" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', width: '15px', height: '15px', color: '#64748B' }}></i>
+                  <input 
+                    type="text" 
+                    placeholder="Search medicine (e.g. Paracetamol, Amoxicillin...)" 
+                    value={medSearchQuery}
+                    onChange={(e) => {
+                      setMedSearchQuery(e.target.value);
+                      setDrawerMedName(e.target.value);
+                      setShowMedSuggestions(true);
+                    }}
+                    onFocus={() => setShowMedSuggestions(true)}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px 12px 38px',
+                      borderRadius: '10px',
+                      border: '1.5px solid #E2E8F0',
+                      fontSize: '13.5px',
+                      fontWeight: 600,
+                      outline: 'none',
+                      boxSizing: 'border-box',
+                      color: '#1E293B',
+                      background: '#ffffff'
+                    }}
+                  />
+
+                  {/* Suggestions List */}
+                  {showMedSuggestions && medSearchQuery.trim() && (
+                    <div 
+                      data-lenis-prevent
+                      style={{
+                        position: 'absolute',
+                        top: '100%',
+                        left: 0,
+                        right: 0,
+                        background: 'white',
+                        border: '1px solid #E2E8F0',
+                        borderRadius: '10px',
+                        boxShadow: '0 6px 20px rgba(0,0,0,0.06)',
+                        zIndex: 10,
+                        marginTop: '4px',
+                        maxHeight: '180px',
+                        overflowY: 'auto',
+                        padding: '4px'
+                      }}
+                    >
+                      {(pharmacyInventoryDb || [])
+                        .filter(m => m.name && m.name.toLowerCase().includes(medSearchQuery.toLowerCase()))
+                        .map(m => (
+                          <div 
+                            key={m._id || m.id || m.name}
+                            onClick={() => {
+                              setDrawerMedName(m.name);
+                              setMedSearchQuery(m.name);
+                              setShowMedSuggestions(false);
+                            }}
+                            style={{ padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 650, color: '#334155', transition: '0.15s' }}
+                            onMouseEnter={e => e.currentTarget.style.background = '#F1F5F9'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                          >
+                            💊 {m.name} {m.qty <= 0 ? <span style={{ color: '#EF4444', fontSize: '10px' }}>(Out of Stock)</span> : <span style={{ color: '#16A34A', fontSize: '10px' }}>({m.qty} In Stock)</span>}
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Medicine Form Customization */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '6px' }}>MEDICINE NAME</label>
+                  <input 
+                    type="text"
+                    value={drawerMedName}
+                    onChange={e => setDrawerMedName(e.target.value)}
+                    placeholder="Enter medicine..."
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #E2E8F0', fontSize: '13px', fontWeight: 600, color: '#1E293B' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '6px' }}>DOSAGE</label>
+                  <input 
+                    type="text"
+                    value={drawerMedDose}
+                    onChange={e => setDrawerMedDose(e.target.value)}
+                    placeholder="e.g. 1 Tab, 5 ml..."
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #E2E8F0', fontSize: '13px', fontWeight: 600, color: '#1E293B' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '6px' }}>FREQUENCY</label>
+                  <select 
+                    value={drawerMedFreq}
+                    onChange={e => setDrawerMedFreq(e.target.value)}
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #E2E8F0', fontSize: '13px', fontWeight: 600, color: '#1E293B', background: 'white' }}
+                  >
+                    <option value="Once a Day">Once a Day (1-0-0)</option>
+                    <option value="Twice a Day">Twice a Day (1-0-1)</option>
+                    <option value="Thrice a Day">Thrice a Day (1-1-1)</option>
+                    <option value="Four Times a Day">Four Times a Day</option>
+                    <option value="As Needed (SOS)">As Needed (SOS)</option>
+                    <option value="At Bedtime">At Bedtime (0-0-1)</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '6px' }}>DURATION</label>
+                  <select 
+                    value={drawerMedDuration}
+                    onChange={e => setDrawerMedDuration(e.target.value)}
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #E2E8F0', fontSize: '13px', fontWeight: 600, color: '#1E293B', background: 'white' }}
+                  >
+                    <option value="5 Days">5 Days</option>
+                    <option value="3 Days">3 Days</option>
+                    <option value="7 Days">7 Days</option>
+                    <option value="10 Days">10 Days</option>
+                    <option value="14 Days">14 Days</option>
+                    <option value="30 Days">30 Days</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '6px' }}>INSTRUCTIONS</label>
+                <select 
+                  value={drawerMedTiming}
+                  onChange={e => setDrawerMedTiming(e.target.value)}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #E2E8F0', fontSize: '13px', fontWeight: 600, color: '#1E293B', background: 'white' }}
+                >
+                  <option value="After Food">After Food</option>
+                  <option value="Before Food">Before Food</option>
+                  <option value="With Food">With Food</option>
+                  <option value="Empty Stomach">Empty Stomach</option>
+                </select>
+              </div>
+
+              <button
+                onClick={() => {
+                  if (!drawerMedName || !drawerMedName.trim()) {
+                    setLabToast({ type: 'error', message: 'Medicine name is required.' });
+                    setTimeout(() => setLabToast(null), 3000);
+                    return;
+                  }
+                  addMedicineRow({
+                    name: drawerMedName,
+                    dose: drawerMedDose,
+                    freq: drawerMedFreq,
+                    duration: drawerMedDuration,
+                    timing: drawerMedTiming
+                  });
+                  // Reset form fields but keep drawer open to add more!
+                  setDrawerMedName('');
+                  setDrawerMedDose('');
+                  setMedSearchQuery('');
+                  setLabToast({ type: 'success', message: `Added ${drawerMedName} to prescription.` });
+                  setTimeout(() => setLabToast(null), 2500);
+                }}
+                style={{
+                  background: '#2563EB',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '10px',
+                  padding: '12px',
+                  fontSize: '14px',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  marginTop: '12px',
+                  boxShadow: '0 4px 12px rgba(37, 99, 235, 0.2)'
+                }}
+              >
+                + Add to Prescription
+              </button>
+
+              {/* Added List Preview */}
+              {medicines.length > 0 && (
+                <div style={{ marginTop: '16px', borderTop: '1px solid #E2E8F0', paddingTop: '16px' }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '8px' }}>ADDED MEDICATIONS ({medicines.length})</label>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '180px', overflowY: 'auto', paddingRight: '4px' }}>
+                    {medicines.map((med, index) => (
+                      <div key={med.id || index} style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                          <div style={{ fontSize: '13px', fontWeight: 800, color: '#1E293B' }}>💊 {med.medicine || med.name}</div>
+                          <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 600, marginTop: '2px' }}>
+                            {med.dosage || med.dose} | {med.instructions || med.timing} | {med.duration} | {med.frequency || med.freq}
+                          </div>
+                        </div>
+                        <button 
+                          onClick={() => removeMedicineRow(med.id)}
+                          style={{ border: 'none', background: 'none', color: '#EF4444', cursor: 'pointer', fontSize: '16px', fontWeight: 800 }}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+            </div>
+
+            {/* Footer */}
+            <div style={{ padding: '20px 32px', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end' }}>
+              <button 
+                onClick={() => setShowMedicationDrawer(false)}
+                style={{
+                  background: '#0F172A',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '10px',
+                  padding: '10px 24px',
+                  fontSize: '13.5px',
+                  fontWeight: 800,
+                  cursor: 'pointer'
+                }}
+              >
+                Done
+              </button>
+            </div>
+
+          </div>
+        </>
+      )}
+
+      {/* CSS Animation injection inline */}
+      <style>{`
+        @keyframes slideInRight {
+          from { transform: translateX(100%); }
+          to { transform: translateX(0); }
+        }
+        @keyframes slideInToast {
+          from { opacity: 0; transform: translateY(16px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }
