@@ -27,6 +27,7 @@ export default function PrescriptionMakerTab({
   user,
   isSavingPrescription = false,
   dbMedicines = [],
+  pharmacyInventoryDb = [],
   medicineDefaults = {},
   consentGiven = true,
   emergencyBypassActive = false,

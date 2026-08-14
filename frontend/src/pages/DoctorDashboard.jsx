@@ -7019,6 +7019,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
               api={api}
               isSavingPrescription={isSavingPrescription}
               dbMedicines={dbMedicines}
+              pharmacyInventoryDb={pharmacyInventoryDb}
               medicineDefaults={medicineDefaults}
               consentGiven={consentGiven}
               emergencyBypassActive={emergencyBypassActive}
