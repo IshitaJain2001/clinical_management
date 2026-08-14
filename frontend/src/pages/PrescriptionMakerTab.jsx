@@ -42,6 +42,8 @@ export default function PrescriptionMakerTab({
   const [showMedicationDrawer, setShowMedicationDrawer] = useState(false);
   const [medicationDrawerWidth, setMedicationDrawerWidth] = useState(480);
 
+  const [localMedicines, setLocalMedicines] = useState([]);
+
   // Drawer form states for adding a medicine
   const [drawerMedName, setDrawerMedName] = useState('');
   const [drawerMedDose, setDrawerMedDose] = useState('');
