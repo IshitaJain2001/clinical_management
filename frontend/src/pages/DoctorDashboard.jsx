@@ -2101,6 +2101,9 @@ const DoctorDashboard = () => {
     localStorage.setItem('curoxa_rx_print_settings', JSON.stringify(printSettings));
   }, [printSettings]);
 
+  const [patientVitals, setPatientVitals] = useState([]);
+  const [showVitalsHistoryModal, setShowVitalsHistoryModal] = useState(false);
+
   // Vitals State
   const [vitals, setVitals] = useState({
     bpSys: '',
@@ -2922,8 +2925,10 @@ const DoctorDashboard = () => {
     // Fetch patient vitals from backend
     try {
       const vitalsRes = await api.get(`/emr/vitals/patient/${pt._id}`);
-      if (vitalsRes.data && vitalsRes.data.length > 0) {
-        const latest = vitalsRes.data[0];
+      const data = vitalsRes.data || [];
+      setPatientVitals(data);
+      if (data.length > 0) {
+        const latest = data[0];
         setVitals({
           bpSys: latest.bpSys || '',
           bpDia: latest.bpDia || '',
@@ -2942,6 +2947,7 @@ const DoctorDashboard = () => {
       }
     } catch (e) {
       console.warn("Failed to fetch patient EMR vitals", e);
+      setPatientVitals([]);
       setVitals({
         bpSys: '', bpDia: '', pulse: '', temp: '', weight: '', height: '', bmi: '', spo2: '', sugar: ''
       });
@@ -7913,9 +7919,11 @@ I have scanned the medical reference databases, but couldn't find a direct match
                       <span style={{ fontWeight: 700, color: '#1A1D23', textAlign: 'right', maxWidth: '180px' }}>{selectedPatient.address || 'N/A'}</span>
                     </div>
                   </div>
-
-                  {/* Vitals Summary */}
-                  <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
+                  <div 
+                    className="glass-card" 
+                    style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px', cursor: 'pointer' }}
+                    onClick={() => setShowVitalsHistoryModal(true)}
+                  >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <i data-lucide="activity" style={{ width: '18px', height: '18px', color: '#2563EB' }}></i>
@@ -7923,8 +7931,9 @@ I have scanned the medical reference databases, but couldn't find a direct match
                       </div>
                       <span 
                         style={{ fontSize: '11px', color: '#2563EB', fontWeight: 800, cursor: 'pointer', textDecoration: 'underline' }}
-                        onClick={() => {
-                          handleOpenTimelineForPatient(selectedPatient);
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowVitalsHistoryModal(true);
                         }}
                       >
                         View Full History
@@ -7940,7 +7949,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                         <div>
                           <div style={{ fontSize: '9px', color: '#16A34A', fontWeight: 800, textTransform: 'uppercase' }}>BP</div>
                           <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#1A1D23', marginTop: '2px' }}>
-                            --
+                            {patientVitals[0] && patientVitals[0].bpSys ? `${patientVitals[0].bpSys}/${patientVitals[0].bpDia || ''}` : '--'}
                           </div>
                         </div>
                       </div>
@@ -7953,7 +7962,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                         <div>
                           <div style={{ fontSize: '9px', color: '#EF4444', fontWeight: 800, textTransform: 'uppercase' }}>Pulse</div>
                           <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#1A1D23', marginTop: '2px' }}>
-                            --
+                            {patientVitals[0] && patientVitals[0].pulse ? `${patientVitals[0].pulse} bpm` : '--'}
                           </div>
                         </div>
                       </div>
@@ -7966,15 +7975,15 @@ I have scanned the medical reference databases, but couldn't find a direct match
                         <div>
                           <div style={{ fontSize: '9px', color: '#D97706', fontWeight: 800, textTransform: 'uppercase' }}>Temp</div>
                           <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#1A1D23', marginTop: '2px' }}>
-                            --
+                            {patientVitals[0] && patientVitals[0].temperature ? `${patientVitals[0].temperature} °F` : '--'}
                           </div>
                         </div>
                       </div>
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #F1F5F9', paddingTop: '12px', marginTop: '16px', fontSize: '11px', color: '#94A3B8', fontWeight: 700 }}>
-                      <span>Last updated: --</span>
-                      <span>By: --</span>
+                      <span>Last updated: {patientVitals[0] ? new Date(patientVitals[0].createdAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '--'}</span>
+                      <span>By: {patientVitals[0] ? (patientVitals[0].createdBy?.name || 'Receptionist') : '--'}</span>
                     </div>
                   </div>
                 </div>
@@ -9406,6 +9415,100 @@ I have scanned the medical reference databases, but couldn't find a direct match
                 style={{ background: 'linear-gradient(135deg, #800020, #600018)', border: 'none', color: '#ffffff', borderRadius: '10px', padding: '10px 24px', fontSize: '13.0px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 10px rgba(128, 0, 32, 0.2)' }}
               >
                 Confirm & Generate Prescription
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* Vitals History Tracking Modal */}
+      {showVitalsHistoryModal && selectedPatient && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '20px' }}>
+          <div className="glass-card" style={{ width: '100%', maxWidth: '900px', background: '#FFFFFF', padding: '0', borderRadius: '24px', maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 80px -15px rgba(15, 23, 42, 0.22)' }}>
+            
+            {/* Modal Header */}
+            <div style={{ background: 'linear-gradient(135deg, #0284C7, #0369A1)', padding: '20px 28px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#E0F2FE' }}>
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                  </svg>
+                  <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 900, letterSpacing: '0.5px', fontFamily: "'Outfit', sans-serif" }}>PATIENT VITALS HISTORY & LOGS</h3>
+                </div>
+                <div style={{ fontSize: '11.5px', color: '#E0F2FE', marginTop: '4px', fontWeight: 700, opacity: 0.9 }}>
+                  Patient: <b style={{ color: '#FFFFFF' }}>{selectedPatient.name}</b> ({selectedPatient.gender}, {selectedPatient.age} Yrs) • UHID: {selectedPatient.uhid}
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowVitalsHistoryModal(false)} 
+                style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', width: '36px', height: '36px', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '14px', fontWeight: 800 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div data-lenis-prevent style={{ flex: 1, overflowY: 'auto', padding: '24px', background: '#F8FAFC' }}>
+              {patientVitals.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px', color: '#64748B', fontWeight: 600 }}>
+                  No vitals history logs recorded for this patient.
+                </div>
+              ) : (
+                <div style={{ overflowX: 'auto', background: 'white', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                    <thead>
+                      <tr style={{ background: '#F1F5F9', borderBottom: '2px solid #E2E8F0' }}>
+                        <th style={{ padding: '16px', fontSize: '11px', color: '#475569', fontWeight: 800, textTransform: 'uppercase' }}>Date & Time</th>
+                        <th style={{ padding: '16px', fontSize: '11px', color: '#475569', fontWeight: 800, textTransform: 'uppercase' }}>Recorded By</th>
+                        <th style={{ padding: '16px', fontSize: '11px', color: '#475569', fontWeight: 800, textTransform: 'uppercase' }}>BP (mmHg)</th>
+                        <th style={{ padding: '16px', fontSize: '11px', color: '#475569', fontWeight: 800, textTransform: 'uppercase' }}>Pulse (bpm)</th>
+                        <th style={{ padding: '16px', fontSize: '11px', color: '#475569', fontWeight: 800, textTransform: 'uppercase' }}>Temp (°F)</th>
+                        <th style={{ padding: '16px', fontSize: '11px', color: '#475569', fontWeight: 800, textTransform: 'uppercase' }}>SpO2</th>
+                        <th style={{ padding: '16px', fontSize: '11px', color: '#475569', fontWeight: 800, textTransform: 'uppercase' }}>Weight / Height</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {patientVitals.map((v, idx) => (
+                        <tr key={v._id || idx} style={{ borderBottom: '1px solid #E2E8F0', transition: '0.15s', background: idx === 0 ? '#F0F9FF' : 'transparent' }}>
+                          <td style={{ padding: '16px', fontSize: '13px', fontWeight: 700, color: '#1E293B' }}>
+                            {new Date(v.createdAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            {idx === 0 && <span style={{ marginLeft: '6px', background: '#0284C7', color: 'white', fontSize: '9px', padding: '2px 6px', borderRadius: '4px', fontWeight: 800 }}>LATEST</span>}
+                          </td>
+                          <td style={{ padding: '16px', fontSize: '13px', fontWeight: 650, color: '#475569' }}>
+                            {v.createdBy?.name || 'Receptionist'}
+                          </td>
+                          <td style={{ padding: '16px', fontSize: '13px', fontWeight: 700, color: '#0F172A' }}>
+                            {v.bpSys && v.bpDia ? `${v.bpSys}/${v.bpDia}` : '--'}
+                          </td>
+                          <td style={{ padding: '16px', fontSize: '13px', fontWeight: 700, color: '#0F172A' }}>
+                            {v.pulse ? `${v.pulse} bpm` : '--'}
+                          </td>
+                          <td style={{ padding: '16px', fontSize: '13px', fontWeight: 700, color: '#0F172A' }}>
+                            {v.temperature ? `${v.temperature} °F` : '--'}
+                          </td>
+                          <td style={{ padding: '16px', fontSize: '13px', fontWeight: 700, color: v.spo2 < 95 ? '#EF4444' : '#0F172A' }}>
+                            {v.spo2 ? `${v.spo2}%` : '--'}
+                          </td>
+                          <td style={{ padding: '16px', fontSize: '13px', fontWeight: 650, color: '#475569' }}>
+                            {v.weight || '--'} kg / {v.height || '--'} cm
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div style={{ background: '#F8FAFC', padding: '16px 24px', display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid #E2E8F0' }}>
+              <button 
+                onClick={() => setShowVitalsHistoryModal(false)}
+                className="btn btn-secondary"
+                style={{ padding: '10px 20px', borderRadius: '8px', fontSize: '13px', fontWeight: 800 }}
+              >
+                Close Logs
               </button>
             </div>
 
