@@ -21,6 +21,7 @@ export default function PrescriptionMakerTab({
   setSendToPharmacy,
   handleLockPrescription,
   setShowTimelineModal,
+  labs = [],
   setLabs,
   addLog,
   user,
@@ -789,321 +790,383 @@ export default function PrescriptionMakerTab({
               />
             </div>
           </div>
-
-          {/* Medications Section */}
+          {/* Medications Section */}
           <div style={{ marginBottom: '24px' }}>
             <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#64748B', letterSpacing: '0.05em', marginBottom: '12px' }}>MEDICATIONS</label>
             
-            <div style={{ border: '1px solid #E2E8F0', borderRadius: '12px', overflowX: activeMedFocus ? 'visible' : 'auto', minHeight: activeMedFocus ? '320px' : 'auto' }}>
-              <table style={{ width: '100%', minWidth: '680px', borderCollapse: 'collapse', textAlign: 'left' }}>
-                <thead>
-                  <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
-                    <th style={{ padding: '10px 8px', fontSize: '11px', fontWeight: 700, color: '#64748B', width: '30px' }}>#</th>
-                    <th style={{ padding: '10px 8px', fontSize: '11px', fontWeight: 700, color: '#64748B', minWidth: '150px' }}>MEDICINE</th>
-                    <th style={{ padding: '10px 8px', fontSize: '11px', fontWeight: 700, color: '#64748B', width: '90px' }}>DOSAGE</th>
-                    <th style={{ padding: '10px 8px', fontSize: '11px', fontWeight: 700, color: '#64748B', width: '120px' }}>FREQUENCY</th>
-                    <th style={{ padding: '10px 8px', fontSize: '11px', fontWeight: 700, color: '#64748B', width: '80px' }}>DURATION</th>
-                    <th style={{ padding: '10px 8px', fontSize: '11px', fontWeight: 700, color: '#64748B', width: '120px' }}>INSTRUCTIONS</th>
-                    <th style={{ padding: '10px 8px', width: '30px', textAlign: 'center' }}></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {medicines.map((med, idx) => (
-                    <tr key={med.id || idx} style={{ borderBottom: idx === medicines.length - 1 ? 'none' : '1px solid #E2E8F0' }}>
-                      <td style={{ padding: '8px 6px', fontSize: '13.5px', fontWeight: 700, color: '#64748B' }}>{idx + 1}</td>
-                      <td style={{ padding: '8px 6px', position: 'relative', zIndex: activeMedFocus === med.id ? 99 : 1 }}>
-                        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                          <input 
-                            type="text" 
-                            value={med.name} 
-                            onChange={e => {
-                              const val = e.target.value;
-                              updateMedicineRow(med.id, 'name', val);
-                              // Auto-fill from defaults on exact match
-                              const matchKey = Object.keys(medicineDefaults).find(k => k.toLowerCase() === val.toLowerCase().trim());
-                              if (matchKey) {
-                                const def = medicineDefaults[matchKey];
-                                setMedicines(prev => prev.map(m => m.id === med.id ? { ...m, dose: def.dose || m.dose, freq: def.freq || m.freq, duration: def.duration || m.duration, timing: def.timing || m.timing } : m));
-                              }
-                            }}
-                            onFocus={() => setActiveMedFocus(med.id)}
-                            onBlur={() => {
-                              setTimeout(() => {
-                                if (!isHoveringSuggestions) {
-                                  setActiveMedFocus(null);
-                                }
-                              }, 150);
-                            }}
-                            placeholder="Type medicine name..." 
-                            style={{ width: '100%', padding: '8px 32px 8px 12px', borderRadius: '8px', border: '1px solid #E2E8F0', fontSize: '13.5px', fontWeight: 705, color: '#1E293B', outline: 'none', background: '#ffffff', boxSizing: 'border-box' }} 
-                          />
-                          {med.name && (
-                            <span 
-                              onClick={() => updateMedicineRow(med.id, 'name', '')}
-                              style={{ position: 'absolute', right: '10px', cursor: 'pointer', fontSize: '14px', fontWeight: 'bold', color: '#94A3B8' }}
-                            >
-                              ×
-                            </span>
-                          )}
-                        </div>
-                        {/* Medicine Autocomplete Dropdown */}
-                        {activeMedFocus === med.id && (() => {
-                          const typedVal = (med.name || '').trim().toLowerCase();
-                          const allNames = Array.from(new Set([
-                            ...dbMedicines.map(m => m.name),
-                            ...Object.keys(medicineDefaults).map(k => k.charAt(0).toUpperCase() + k.slice(1))
-                          ]));
-                          const filtered = typedVal 
-                            ? allNames.filter(n => n.toLowerCase().includes(typedVal) && n.toLowerCase() !== typedVal).slice(0, 8)
-                            : allNames.slice(0, 8);
-                          if (filtered.length === 0) return null;
-                          return (
-                            <div 
-                              data-lenis-prevent
-                              onMouseEnter={() => setIsHoveringSuggestions(true)}
-                              onMouseLeave={() => setIsHoveringSuggestions(false)}
+            {medicines && medicines.filter(m => m.name && m.name.trim() !== '').length > 0 ? (
+              <div style={{ border: '1px solid #E2E8F0', borderRadius: '12px', overflowX: activeMedFocus ? 'visible' : 'auto', minHeight: activeMedFocus ? '320px' : 'auto' }}>
+                <table style={{ width: '100%', minWidth: '680px', borderCollapse: 'collapse', textAlign: 'left' }}>
+                  <thead>
+                    <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
+                      <th style={{ padding: '10px 8px', fontSize: '11px', fontWeight: 700, color: '#64748B', width: '30px' }}>#</th>
+                      <th style={{ padding: '10px 8px', fontSize: '11px', fontWeight: 700, color: '#64748B', minWidth: '150px' }}>MEDICINE</th>
+                      <th style={{ padding: '10px 8px', fontSize: '11px', fontWeight: 700, color: '#64748B', width: '90px' }}>DOSAGE</th>
+                      <th style={{ padding: '10px 8px', fontSize: '11px', fontWeight: 700, color: '#64748B', width: '120px' }}>FREQUENCY</th>
+                      <th style={{ padding: '10px 8px', fontSize: '11px', fontWeight: 700, color: '#64748B', width: '80px' }}>DURATION</th>
+                      <th style={{ padding: '10px 8px', fontSize: '11px', fontWeight: 700, color: '#64748B', width: '120px' }}>INSTRUCTIONS</th>
+                      <th style={{ padding: '10px 8px', width: '30px', textAlign: 'center' }}></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {medicines.filter(m => m.name && m.name.trim() !== '').map((med, idx) => {
+                      const filteredList = medicines.filter(m => m.name && m.name.trim() !== '');
+                      return (
+                        <tr key={med.id || idx} style={{ borderBottom: idx === filteredList.length - 1 ? 'none' : '1px solid #E2E8F0' }}>
+                          <td style={{ padding: '8px 6px', fontSize: '13.5px', fontWeight: 700, color: '#64748B' }}>{idx + 1}</td>
+                          <td style={{ padding: '8px 6px', position: 'relative', zIndex: activeMedFocus === med.id ? 99 : 1 }}>
+                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                              <input 
+                                type="text" 
+                                value={med.name} 
+                                onChange={e => {
+                                  const val = e.target.value;
+                                  updateMedicineRow(med.id, 'name', val);
+                                  // Auto-fill from defaults on exact match
+                                  const matchKey = Object.keys(medicineDefaults).find(k => k.toLowerCase() === val.toLowerCase().trim());
+                                  if (matchKey) {
+                                    const def = medicineDefaults[matchKey];
+                                    setMedicines(prev => prev.map(m => m.id === med.id ? { ...m, dose: def.dose || m.dose, freq: def.freq || m.freq, duration: def.duration || m.duration, timing: def.timing || m.timing } : m));
+                                  }
+                                }}
+                                onFocus={() => setActiveMedFocus(med.id)}
+                                onBlur={() => {
+                                  setTimeout(() => {
+                                    if (!isHoveringSuggestions) {
+                                      setActiveMedFocus(null);
+                                    }
+                                  }, 150);
+                                }}
+                                placeholder="Type medicine name..." 
+                                style={{ width: '100%', padding: '8px 32px 8px 12px', borderRadius: '8px', border: '1px solid #E2E8F0', fontSize: '13.5px', fontWeight: 705, color: '#1E293B', outline: 'none', background: '#ffffff', boxSizing: 'border-box' }} 
+                              />
+                              {med.name && (
+                                <span 
+                                  onClick={() => updateMedicineRow(med.id, 'name', '')}
+                                  style={{ position: 'absolute', right: '10px', cursor: 'pointer', fontSize: '14px', fontWeight: 'bold', color: '#94A3B8' }}
+                                >
+                                  ×
+                                </span>
+                              )}
+                            </div>
+                            {/* Medicine Autocomplete Dropdown */}
+                            {activeMedFocus === med.id && (() => {
+                              const typedVal = (med.name || '').trim().toLowerCase();
+                              const allNames = Array.from(new Set([
+                                ...dbMedicines.map(m => m.name),
+                                ...Object.keys(medicineDefaults).map(k => k.charAt(0).toUpperCase() + k.slice(1))
+                              ]));
+                              const filtered = typedVal 
+                                ? allNames.filter(n => n.toLowerCase().includes(typedVal) && n.toLowerCase() !== typedVal).slice(0, 8)
+                                : allNames.slice(0, 8);
+                              if (filtered.length === 0) return null;
+                              return (
+                                <div 
+                                  data-lenis-prevent
+                                  onMouseEnter={() => setIsHoveringSuggestions(true)}
+                                  onMouseLeave={() => setIsHoveringSuggestions(false)}
+                                  style={{ 
+                                    position: 'absolute', top: 'calc(100% + 6px)', left: 0, 
+                                    width: '360px', maxWidth: '90vw', zIndex: 1200, padding: '6px',
+                                    boxShadow: '0 12px 32px rgba(15, 23, 42, 0.16)', 
+                                    background: 'white', borderRadius: '14px', 
+                                    border: '1px solid #E2E8F0',
+                                    maxHeight: '240px', overflowY: 'auto',
+                                    overscrollBehavior: 'contain'
+                                  }}
+                                >
+                                  <div style={{ padding: '6px 10px 8px', fontSize: '10px', fontWeight: 800, color: '#94A3B8', letterSpacing: '0.05em' }}>
+                                    PHARMACY INVENTORY — {filtered.length} MATCH{filtered.length !== 1 ? 'ES' : ''}
+                                  </div>
+                                  {filtered.map((mName, sIdx) => {
+                                    const dbMatch = dbMedicines.find(m => m.name.toLowerCase() === mName.toLowerCase());
+                                    const stockStatus = dbMatch?.status || null;
+                                    const stockColor = stockStatus === 'In Stock' ? '#16A34A' : stockStatus === 'Low Stock' ? '#D97706' : stockStatus === 'Out of Stock' ? '#DC2626' : '#64748B';
+                                    const stockBg = stockStatus === 'In Stock' ? '#F0FDF4' : stockStatus === 'Low Stock' ? '#FFFBEB' : stockStatus === 'Out of Stock' ? '#FEF2F2' : '#F8FAFC';
+                                    
+                                    // Smart preset lookup (longest key first)
+                                    const matchedDefaultKey = Object.keys(medicineDefaults)
+                                      .sort((a, b) => b.length - a.length)
+                                      .find(k => mName.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(mName.toLowerCase()));
+                                    const hasPreset = !!matchedDefaultKey;
+
+                                    const selectSuggestion = (e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      console.log('[DEBUG Autocomplete] Selecting suggestion:', mName, 'for row ID:', med.id);
+                                      if (matchedDefaultKey) {
+                                        const def = medicineDefaults[matchedDefaultKey];
+                                        setMedicines(prev => prev.map(m => m.id === med.id ? { 
+                                          ...m, 
+                                          name: mName, 
+                                          dose: def.dose || m.dose, 
+                                          freq: def.freq || m.freq, 
+                                          duration: def.duration || m.duration, 
+                                          timing: def.timing || m.timing 
+                                        } : m));
+                                      } else {
+                                        updateMedicineRow(med.id, 'name', mName);
+                                      }
+                                      setActiveMedFocus(null);
+                                      setIsHoveringSuggestions(false);
+                                    };
+
+                                    return (
+                                      <div 
+                                        key={sIdx} 
+                                        onMouseDown={selectSuggestion}
+                                        onClick={selectSuggestion}
+                                        style={{ 
+                                          padding: '8px 12px', borderRadius: '8px', cursor: 'pointer', 
+                                          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                          fontSize: '13px', gap: '8px', transition: 'all 0.15s ease', background: 'transparent'
+                                        }}
+                                        onMouseEnter={e => e.currentTarget.style.background = '#F1F5F9'}
+                                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                                      >
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, pointerEvents: 'none' }}>
+                                          <i data-lucide="pill" style={{ width: '14px', height: '14px', color: '#64748B', flexShrink: 0 }}></i>
+                                          <span style={{ fontWeight: 700, color: '#1E293B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{mName}</span>
+                                          {dbMatch?.category && (
+                                            <span style={{ fontSize: '9px', fontWeight: 700, color: '#64748B', background: '#F1F5F9', padding: '2px 6px', borderRadius: '4px', whiteSpace: 'nowrap' }}>{dbMatch.category}</span>
+                                          )}
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0, pointerEvents: 'none' }}>
+                                          {hasPreset && (
+                                            <span style={{ fontSize: '9px', fontWeight: 800, color: '#2563EB', background: '#EFF6FF', padding: '2px 6px', borderRadius: '4px', border: '1px solid #BFDBFE', whiteSpace: 'nowrap' }}>AUTO-FILL</span>
+                                          )}
+                                          {stockStatus && (
+                                            <span style={{ fontSize: '9px', fontWeight: 800, color: stockColor, background: stockBg, padding: '2px 6px', borderRadius: '4px', border: `1px solid ${stockColor}22`, whiteSpace: 'nowrap' }}>
+                                              {dbMatch?.stock !== undefined ? `${dbMatch.stock} ${dbMatch.unit || 'pcs'}` : stockStatus}
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              );
+                            })()}
+                          </td>
+                          <td style={{ padding: '8px 6px' }}>
+                            <select 
+                              value={med.dose} 
+                              onChange={e => updateMedicineRow(med.id, 'dose', e.target.value)} 
                               style={{ 
-                                position: 'absolute', top: 'calc(100% + 6px)', left: 0, 
-                                width: '360px', maxWidth: '90vw', zIndex: 1200, padding: '6px',
-                                boxShadow: '0 12px 32px rgba(15, 23, 42, 0.16)', 
-                                background: 'white', borderRadius: '14px', 
-                                border: '1px solid #E2E8F0',
-                                maxHeight: '240px', overflowY: 'auto',
-                                overscrollBehavior: 'contain'
+                                width: '100%', 
+                                padding: '8px 24px 8px 8px', 
+                                borderRadius: '8px', 
+                                border: '1px solid #E2E8F0', 
+                                fontSize: '13.5px', 
+                                fontWeight: 600, 
+                                color: '#1E293B', 
+                                outline: 'none', 
+                                background: '#ffffff', 
+                                boxSizing: 'border-box', 
+                                cursor: 'pointer',
+                                appearance: 'none',
+                                backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'2.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'/%3e%3c/svg%3e")',
+                                backgroundRepeat: 'no-repeat',
+                                backgroundPosition: 'right 8px center',
+                                backgroundSize: '14px'
                               }}
                             >
-                              <div style={{ padding: '6px 10px 8px', fontSize: '10px', fontWeight: 800, color: '#94A3B8', letterSpacing: '0.05em' }}>
-                                PHARMACY INVENTORY — {filtered.length} MATCH{filtered.length !== 1 ? 'ES' : ''}
-                              </div>
-                              {filtered.map((mName, sIdx) => {
-                                const dbMatch = dbMedicines.find(m => m.name.toLowerCase() === mName.toLowerCase());
-                                const stockStatus = dbMatch?.status || null;
-                                const stockColor = stockStatus === 'In Stock' ? '#16A34A' : stockStatus === 'Low Stock' ? '#D97706' : stockStatus === 'Out of Stock' ? '#DC2626' : '#64748B';
-                                const stockBg = stockStatus === 'In Stock' ? '#F0FDF4' : stockStatus === 'Low Stock' ? '#FFFBEB' : stockStatus === 'Out of Stock' ? '#FEF2F2' : '#F8FAFC';
-                                
-                                // Smart preset lookup (longest key first)
-                                const matchedDefaultKey = Object.keys(medicineDefaults)
-                                  .sort((a, b) => b.length - a.length)
-                                  .find(k => mName.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(mName.toLowerCase()));
-                                const hasPreset = !!matchedDefaultKey;
-
-                                const selectSuggestion = (e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  console.log('[DEBUG Autocomplete] Selecting suggestion:', mName, 'for row ID:', med.id);
-                                  if (matchedDefaultKey) {
-                                    const def = medicineDefaults[matchedDefaultKey];
-                                    setMedicines(prev => prev.map(m => m.id === med.id ? { 
-                                      ...m, 
-                                      name: mName, 
-                                      dose: def.dose || m.dose, 
-                                      freq: def.freq || m.freq, 
-                                      duration: def.duration || m.duration, 
-                                      timing: def.timing || m.timing 
-                                    } : m));
-                                  } else {
-                                    updateMedicineRow(med.id, 'name', mName);
-                                  }
-                                  setActiveMedFocus(null);
-                                  setIsHoveringSuggestions(false);
-                                };
-
-                                return (
-                                  <div 
-                                    key={sIdx} 
-                                    onMouseDown={selectSuggestion}
-                                    onClick={selectSuggestion}
-                                    style={{ 
-                                      padding: '8px 12px', borderRadius: '8px', cursor: 'pointer', 
-                                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                      fontSize: '13px', gap: '8px', transition: 'all 0.15s ease', background: 'transparent'
-                                    }}
-                                    onMouseEnter={e => e.currentTarget.style.background = '#F1F5F9'}
-                                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                                  >
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, pointerEvents: 'none' }}>
-                                      <i data-lucide="pill" style={{ width: '14px', height: '14px', color: '#64748B', flexShrink: 0 }}></i>
-                                      <span style={{ fontWeight: 700, color: '#1E293B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{mName}</span>
-                                      {dbMatch?.category && (
-                                        <span style={{ fontSize: '9px', fontWeight: 700, color: '#64748B', background: '#F1F5F9', padding: '2px 6px', borderRadius: '4px', whiteSpace: 'nowrap' }}>{dbMatch.category}</span>
-                                      )}
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0, pointerEvents: 'none' }}>
-                                      {hasPreset && (
-                                        <span style={{ fontSize: '9px', fontWeight: 800, color: '#2563EB', background: '#EFF6FF', padding: '2px 6px', borderRadius: '4px', border: '1px solid #BFDBFE', whiteSpace: 'nowrap' }}>AUTO-FILL</span>
-                                      )}
-                                      {stockStatus && (
-                                        <span style={{ fontSize: '9px', fontWeight: 800, color: stockColor, background: stockBg, padding: '2px 6px', borderRadius: '4px', border: `1px solid ${stockColor}22`, whiteSpace: 'nowrap' }}>
-                                          {dbMatch?.stock !== undefined ? `${dbMatch.stock} ${dbMatch.unit || 'pcs'}` : stockStatus}
-                                        </span>
-                                      )}
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          );
-                        })()}
-                      </td>
-                      <td style={{ padding: '8px 6px' }}>
-                        <select 
-                          value={med.dose} 
-                          onChange={e => updateMedicineRow(med.id, 'dose', e.target.value)} 
-                          style={{ 
-                            width: '100%', 
-                            padding: '8px 24px 8px 8px', 
-                            borderRadius: '8px', 
-                            border: '1px solid #E2E8F0', 
-                            fontSize: '13.5px', 
-                            fontWeight: 600, 
-                            color: '#1E293B', 
-                            outline: 'none', 
-                            background: '#ffffff', 
-                            boxSizing: 'border-box', 
-                            cursor: 'pointer',
-                            appearance: 'none',
-                            backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'2.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'/%3e%3c/svg%3e")',
-                            backgroundRepeat: 'no-repeat',
-                            backgroundPosition: 'right 8px center',
-                            backgroundSize: '14px'
-                          }}
-                        >
-                          <option value="500 mg">500 mg</option>
-                          <option value="250 mg">250 mg</option>
-                          <option value="625 mg">625 mg</option>
-                          <option value="100 mg">100 mg</option>
-                          <option value="50 mg">50 mg</option>
-                          <option value="10 mg">10 mg</option>
-                          <option value="5 mg">5 mg</option>
-                          <option value="1 Tab">1 Tab</option>
-                          <option value="2 Tabs">2 Tabs</option>
-                        </select>
-                      </td>
-                      <td style={{ padding: '8px 6px' }}>
-                        <select 
-                          value={med.freq} 
-                          onChange={e => updateMedicineRow(med.id, 'freq', e.target.value)} 
-                          style={{ 
-                            width: '100%', 
-                            padding: '8px 24px 8px 8px', 
-                            borderRadius: '8px', 
-                            border: '1px solid #E2E8F0', 
-                            fontSize: '13.5px', 
-                            fontWeight: 600, 
-                            color: '#1E293B', 
-                            outline: 'none', 
-                            background: '#ffffff', 
-                            boxSizing: 'border-box', 
-                            cursor: 'pointer',
-                            appearance: 'none',
-                            backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'2.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'/%3e%3c/svg%3e")',
-                            backgroundRepeat: 'no-repeat',
-                            backgroundPosition: 'right 8px center',
-                            backgroundSize: '14px'
-                          }}
-                        >
-                          <option value="Twice a Day">Twice a Day</option>
-                          <option value="Once a Day">Once a Day</option>
-                          <option value="Thrice a Day">Thrice a Day</option>
-                          <option value="Four Times a Day">Four Times a Day</option>
-                          <option value="1 Tab TDS">1 Tab TDS</option>
-                          <option value="1 Tab BD">1 Tab BD</option>
-                          <option value="1 Tab OD">1 Tab OD</option>
-                        </select>
-                      </td>
-                      <td style={{ padding: '8px 6px' }}>
-                        <select 
-                          value={med.duration} 
-                          onChange={e => updateMedicineRow(med.id, 'duration', e.target.value)} 
-                          style={{ 
-                            width: '100%', 
-                            padding: '8px 24px 8px 8px', 
-                            borderRadius: '8px', 
-                            border: '1px solid #E2E8F0', 
-                            fontSize: '13.5px', 
-                            fontWeight: 600, 
-                            color: '#1E293B', 
-                            outline: 'none', 
-                            background: '#ffffff', 
-                            boxSizing: 'border-box', 
-                            cursor: 'pointer',
-                            appearance: 'none',
-                            backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'2.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'/%3e%3c/svg%3e")',
-                            backgroundRepeat: 'no-repeat',
-                            backgroundPosition: 'right 8px center',
-                            backgroundSize: '14px'
-                          }}
-                        >
-                          <option value="5 Days">5 Days</option>
-                          <option value="3 Days">3 Days</option>
-                          <option value="7 Days">7 Days</option>
-                          <option value="10 Days">10 Days</option>
-                          <option value="14 Days">14 Days</option>
-                          <option value="30 Days">30 Days</option>
-                        </select>
-                      </td>
-                      <td style={{ padding: '8px 6px' }}>
-                        <select 
-                          value={med.timing} 
-                          onChange={e => updateMedicineRow(med.id, 'timing', e.target.value)} 
-                          style={{ 
-                            width: '100%', 
-                            padding: '8px 24px 8px 8px', 
-                            borderRadius: '8px', 
-                            border: '1px solid #E2E8F0', 
-                            fontSize: '13.5px', 
-                            fontWeight: 600, 
-                            color: '#1E293B', 
-                            outline: 'none', 
-                            background: '#ffffff', 
-                            boxSizing: 'border-box', 
-                            cursor: 'pointer',
-                            appearance: 'none',
-                            backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'2.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'/%3e%3c/svg%3e")',
-                            backgroundRepeat: 'no-repeat',
-                            backgroundPosition: 'right 8px center',
-                            backgroundSize: '14px'
-                          }}
-                        >
-                          <option value="After Food">After Food</option>
-                          <option value="Before Food">Before Food</option>
-                          <option value="With Food">With Food</option>
-                          <option value="Empty Stomach">Empty Stomach</option>
-                        </select>
-                      </td>
-                      <td style={{ padding: '8px 6px', textAlign: 'center' }}>
+                              <option value="500 mg">500 mg</option>
+                              <option value="250 mg">250 mg</option>
+                              <option value="625 mg">625 mg</option>
+                              <option value="100 mg">100 mg</option>
+                              <option value="50 mg">50 mg</option>
+                              <option value="10 mg">10 mg</option>
+                              <option value="5 mg">5 mg</option>
+                              <option value="1 Tab">1 Tab</option>
+                              <option value="2 Tabs">2 Tabs</option>
+                            </select>
+                          </td>
+                          <td style={{ padding: '8px 6px' }}>
+                            <select 
+                              value={med.freq} 
+                              onChange={e => updateMedicineRow(med.id, 'freq', e.target.value)} 
+                              style={{ 
+                                width: '100%', 
+                                padding: '8px 24px 8px 8px', 
+                                borderRadius: '8px', 
+                                border: '1px solid #E2E8F0', 
+                                fontSize: '13.5px', 
+                                fontWeight: 600, 
+                                color: '#1E293B', 
+                                outline: 'none', 
+                                background: '#ffffff', 
+                                boxSizing: 'border-box', 
+                                cursor: 'pointer',
+                                appearance: 'none',
+                                backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'2.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'/%3e%3c/svg%3e")',
+                                backgroundRepeat: 'no-repeat',
+                                backgroundPosition: 'right 8px center',
+                                backgroundSize: '14px'
+                              }}
+                            >
+                              <option value="Twice a Day">Twice a Day</option>
+                              <option value="Once a Day">Once a Day</option>
+                              <option value="Thrice a Day">Thrice a Day</option>
+                              <option value="Four Times a Day">Four Times a Day</option>
+                              <option value="1 Tab TDS">1 Tab TDS</option>
+                              <option value="1 Tab BD">1 Tab BD</option>
+                              <option value="1 Tab OD">1 Tab OD</option>
+                            </select>
+                          </td>
+                          <td style={{ padding: '8px 6px' }}>
+                            <select 
+                              value={med.duration} 
+                              onChange={e => updateMedicineRow(med.id, 'duration', e.target.value)} 
+                              style={{ 
+                                width: '100%', 
+                                padding: '8px 24px 8px 8px', 
+                                borderRadius: '8px', 
+                                border: '1px solid #E2E8F0', 
+                                fontSize: '13.5px', 
+                                fontWeight: 600, 
+                                color: '#1E293B', 
+                                outline: 'none', 
+                                background: '#ffffff', 
+                                boxSizing: 'border-box', 
+                                cursor: 'pointer',
+                                appearance: 'none',
+                                backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'2.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'/%3e%3c/svg%3e")',
+                                backgroundRepeat: 'no-repeat',
+                                backgroundPosition: 'right 8px center',
+                                backgroundSize: '14px'
+                              }}
+                            >
+                              <option value="5 Days">5 Days</option>
+                              <option value="3 Days">3 Days</option>
+                              <option value="7 Days">7 Days</option>
+                              <option value="10 Days">10 Days</option>
+                              <option value="14 Days">14 Days</option>
+                              <option value="30 Days">30 Days</option>
+                            </select>
+                          </td>
+                          <td style={{ padding: '8px 6px' }}>
+                            <select 
+                              value={med.timing} 
+                              onChange={e => updateMedicineRow(med.id, 'timing', e.target.value)} 
+                              style={{ 
+                                width: '100%', 
+                                padding: '8px 24px 8px 8px', 
+                                borderRadius: '8px', 
+                                border: '1px solid #E2E8F0', 
+                                fontSize: '13.5px', 
+                                fontWeight: 600, 
+                                color: '#1E293B', 
+                                outline: 'none', 
+                                background: '#ffffff', 
+                                boxSizing: 'border-box', 
+                                cursor: 'pointer',
+                                appearance: 'none',
+                                backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'2.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'/%3e%3c/svg%3e")',
+                                backgroundRepeat: 'no-repeat',
+                                backgroundPosition: 'right 8px center',
+                                backgroundSize: '14px'
+                              }}
+                            >
+                              <option value="After Food">After Food</option>
+                              <option value="Before Food">Before Food</option>
+                              <option value="With Food">With Food</option>
+                              <option value="Empty Stomach">Empty Stomach</option>
+                            </select>
+                          </td>
+                          <td style={{ padding: '8px 6px', textAlign: 'center' }}>
+                            <button 
+                              onClick={() => removeMedicineRow(med.id)} 
+                              style={{ border: 'none', background: 'none', color: '#EF4444', cursor: 'pointer', padding: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                            >
+                              <i data-lucide="trash-2" style={{ width: '15px', height: '15px', color: '#EF4444' }}></i>
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    
+                    <tr>
+                      <td colSpan="7" style={{ padding: '16px', background: '#F8FAFC', borderTop: '1px solid #E2E8F0' }}>
                         <button 
-                          onClick={() => removeMedicineRow(med.id)} 
-                          style={{ border: 'none', background: 'none', color: '#EF4444', cursor: 'pointer', padding: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                          onClick={() => {
+                            setDrawerMedName('');
+                            setDrawerMedDose('');
+                            setDrawerMedFreq('Once a Day');
+                            setDrawerMedDuration('5 Days');
+                            setDrawerMedTiming('After Food');
+                            setMedSearchQuery('');
+                            setShowMedicationDrawer(true);
+                          }} 
+                          style={{ border: 'none', background: 'none', color: '#2563EB', fontSize: '14px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', padding: 0 }}
                         >
-                          <i data-lucide="trash-2" style={{ width: '15px', height: '15px', color: '#EF4444' }}></i>
+                          <span style={{ fontSize: '16px', color: '#2563EB', fontWeight: 'bold', marginRight: '4px' }}>+</span> Add Medicine
                         </button>
                       </td>
                     </tr>
-                  ))}
-                  
-                  <tr>
-                    <td colSpan="7" style={{ padding: '16px', background: '#F8FAFC', borderTop: '1px solid #E2E8F0' }}>
-                      <button 
-                        onClick={() => {
-                          setDrawerMedName('');
-                          setDrawerMedDose('');
-                          setDrawerMedFreq('Once a Day');
-                          setDrawerMedDuration('5 Days');
-                          setDrawerMedTiming('After Food');
-                          setMedSearchQuery('');
-                          setShowMedicationDrawer(true);
-                        }} 
-                        style={{ border: 'none', background: 'none', color: '#2563EB', fontSize: '14px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', padding: 0 }}
-                      >
-                        <span style={{ fontSize: '16px', color: '#2563EB', fontWeight: 'bold', marginRight: '4px' }}>+</span> Add Medicine
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div style={{ padding: '24px', textAlign: 'center', background: '#F8FAFC', borderRadius: '12px', border: '1.5px dashed #E2E8F0' }}>
+                <p style={{ margin: 0, fontSize: '13.5px', color: '#64748B', fontWeight: 600 }}>No medications added yet.</p>
+                <p style={{ margin: '4px 0 16px 0', fontSize: '11px', color: '#94A3B8' }}>Please prescribe medications from the sidebar drawer.</p>
+                <button 
+                  onClick={() => {
+                    setDrawerMedName('');
+                    setDrawerMedDose('');
+                    setDrawerMedFreq('Once a Day');
+                    setDrawerMedDuration('5 Days');
+                    setDrawerMedTiming('After Food');
+                    setMedSearchQuery('');
+                    setShowMedicationDrawer(true);
+                  }}
+                  style={{ border: 'none', background: '#10B981', color: 'white', fontSize: '13px', fontWeight: 700, padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <span style={{ fontSize: '14px', fontWeight: 'bold' }}>+</span> Add Medication
+                </button>
+              </div>
+            )}
           </div>
+
+          {/* Lab Tests Section */}
+          {labs && labs.length > 0 && (
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#2563EB', letterSpacing: '0.05em', marginBottom: '12px' }}>ASSIGNED LAB TESTS</label>
+              
+              <div style={{ border: '1px solid #E2E8F0', borderRadius: '12px', overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                  <thead>
+                    <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
+                      <th style={{ padding: '10px 12px', fontSize: '11px', fontWeight: 700, color: '#64748B', width: '40px' }}>#</th>
+                      <th style={{ padding: '10px 12px', fontSize: '11px', fontWeight: 700, color: '#64748B' }}>TEST NAME</th>
+                      <th style={{ padding: '10px 12px', width: '60px', textAlign: 'center' }}>ACTIONS</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {labs.map((testName, idx) => (
+                      <tr key={idx} style={{ borderBottom: idx === labs.length - 1 ? 'none' : '1px solid #E2E8F0' }}>
+                        <td style={{ padding: '10px 12px', fontSize: '13.5px', fontWeight: 700, color: '#64748B' }}>{idx + 1}</td>
+                        <td style={{ padding: '10px 12px', fontSize: '13.5px', fontWeight: 700, color: '#1E293B' }}>{testName}</td>
+                        <td style={{ padding: '10px 12px', textAlign: 'center' }}>
+                          <button 
+                            onClick={() => {
+                              const updated = labs.filter((_, i) => i !== idx);
+                              setLabs(updated);
+                              setSelectedLabsList(updated);
+                            }} 
+                            style={{ border: 'none', background: 'none', color: '#EF4444', cursor: 'pointer', padding: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                          >
+                            <i data-lucide="trash-2" style={{ width: '15px', height: '15px', color: '#EF4444' }}></i>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
           {/* Notes for Patient */}
           <div>

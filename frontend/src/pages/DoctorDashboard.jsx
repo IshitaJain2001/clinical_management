@@ -2056,7 +2056,7 @@ const DoctorDashboard = () => {
       });
       setMedicines(loadedMeds);
     } else {
-      setMedicines([{ id: 1, name: '', dose: '', freq: 'Once a Day', duration: '5 Days', timing: 'After Food', notes: '' }]);
+      setMedicines([]);
     }
 
     if (relatedLabs && relatedLabs.length > 0) {
@@ -2150,9 +2150,7 @@ const DoctorDashboard = () => {
   const [showDiagSuggestions, setShowDiagSuggestions] = useState(false);
   
   // Medicine List State
-  const [medicines, setMedicines] = useState([
-    { id: 1, name: '', dose: '', freq: 'Once a Day', duration: '5 Days', timing: 'After Food', notes: '' }
-  ]);
+  const [medicines, setMedicines] = useState([]);
 
   // Default configurations preset database for medicine autocomplete auto-fill
   const [medicineDefaults, setMedicineDefaults] = useState({
@@ -7014,6 +7012,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
               setSendToPharmacy={setSendToPharmacy}
               handleLockPrescription={handleLockPrescription}
               setShowTimelineModal={setShowTimelineModal}
+              labs={labs}
               setLabs={setLabs}
               addLog={addLog}
               user={user}
