@@ -1016,41 +1016,6 @@ export default function PrescriptionMakerTab({
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
               <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#64748B', letterSpacing: '0.05em', margin: 0 }}>NOTES FOR PATIENT</label>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <select 
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      const selected = noteTemplates.find(t => t.id === e.target.value);
-                      if (selected) setSoap(prev => ({ ...prev, plan: selected.text }));
-                      e.target.value = '';
-                    }
-                  }}
-                  style={{ padding: '4px 8px', borderRadius: '6px', border: '1px solid #E2E8F0', fontSize: '11px', fontWeight: 700, color: '#1E293B', background: '#ffffff', outline: 'none', cursor: 'pointer', maxWidth: '140px', textOverflow: 'ellipsis' }}
-                >
-                  <option value="">Load template...</option>
-                  {noteTemplates.map(t => (
-                    <option key={t.id} value={t.id}>{t.name}</option>
-                  ))}
-                </select>
-                <button 
-                  onClick={() => {
-                    if (!soap.plan || !soap.plan.trim()) {
-                      alert("Please type some notes before saving as a template.");
-                      return;
-                    }
-                    const name = prompt("Name this note template (e.g. use Diagnosis name):", diagnosisText || "New Template");
-                    if (name) {
-                      const newTemplate = { id: Date.now().toString(), name, text: soap.plan };
-                      setNoteTemplates(prev => [...prev, newTemplate]);
-                    }
-                  }}
-                  style={{ background: '#EFF6FF', color: '#2563EB', border: '1px solid #DBEAFE', borderRadius: '6px', padding: '4px 10px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
-                  onMouseEnter={e => e.currentTarget.style.background = '#DBEAFE'}
-                  onMouseLeave={e => e.currentTarget.style.background = '#EFF6FF'}
-                >
-                  + Save Template
-                </button>
-              </div>
             </div>
             <div style={{ border: '1px solid #E2E8F0', borderRadius: '12px', padding: '24px', background: '#F8FAFC' }}>
               {/* Render typed notes as bullet points */}
