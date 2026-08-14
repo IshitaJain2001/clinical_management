@@ -9230,20 +9230,10 @@ I have scanned the medical reference databases, but couldn't find a direct match
                   type="button" 
                   onClick={() => setShowCoverageLabDetailsModal(false)}
                   style={{ height: '40px', padding: '0 20px', background: '#0F172A', border: 'none', borderRadius: '8px', fontWeight: 700, color: 'white', cursor: 'pointer' }}
-                >Close</button>
-              </div>
-            </div>
-          </div>
-        );
-      })()}
-
-      {/* Visual Prescription formatting & Spacing Modal */}
-      {showPrintSettingsModal && printSettingsTarget && tempPrintSettings && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000, padding: '20px' }}>
-          <div className="glass-card" style={{ width: '100%', maxWidth: '680px', background: '#FFFFFF', padding: '0', borderRadius: '24px', maxHeight: '92vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 80px -15px rgba(15, 23, 42, 0.22)', border: '1px solid rgba(241, 245, 249, 0.9)' }}>
+               <div className="glass-card" style={{ width: '100%', maxWidth: '960px', background: '#FFFFFF', padding: '0', borderRadius: '24px', maxHeight: '92vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 80px -15px rgba(15, 23, 42, 0.22)', border: '1px solid rgba(241, 245, 249, 0.9)' }}>
             
             {/* Modal Header */}
-            <div style={{ background: 'linear-gradient(135deg, #800020, #4A0012)', padding: '20px 28px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ background: 'linear-gradient(135deg, #800020, #4A0012)', padding: '20px 28px', color: 'white', display: 'flex', alignItems: 'center', justifycontent: 'space-between' }}>
               <div>
                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 900, fontFamily: "'Outfit', sans-serif", display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#FBCFE8' }}><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
@@ -9265,181 +9255,348 @@ I have scanned the medical reference databases, but couldn't find a direct match
             </div>
 
             {/* Modal Body */}
-            <div data-lenis-prevent style={{ flex: 1, overflowY: 'auto', padding: '24px', background: '#F8FAFC', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div data-lenis-prevent style={{ flex: 1, overflowY: 'hidden', padding: '24px', background: '#F8FAFC', display: 'flex', gap: '24px' }}>
               
-              {/* Template / Layout selection */}
-              <div>
-                <label style={{ display: 'block', fontSize: '11.5px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '10px', textTransform: 'uppercase' }}>Select Prescription Layout Template</label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {adminTemplates && adminTemplates.length > 0 ? (
-                    adminTemplates.map(tpl => {
-                      const isSelected = tempPrintSettings.template === tpl._id || (tempPrintSettings.template === 'standard' && tpl.isStandard);
-                      return (
-                        <div 
-                          key={tpl._id}
-                          onClick={() => setTempPrintSettings(prev => ({ ...prev, template: tpl._id }))}
-                          style={{
-                            border: isSelected ? '2.5px solid #800020' : '1.5px solid #E2E8F0',
-                            background: isSelected ? '#FFF5F6' : '#FFFFFF',
-                            borderRadius: '16px', 
-                            padding: '16px', 
-                            cursor: 'pointer', 
-                            transition: 'all 0.2s ease', 
-                            display: 'flex', 
-                            justifyContent: 'space-between', 
-                            alignItems: 'center', 
-                            boxShadow: isSelected ? '0 8px 16px -4px rgba(128, 0, 32, 0.12)' : 'none'
-                          }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{
-                              width: '40px',
-                              height: '40px',
-                              borderRadius: '8px',
-                              background: isSelected ? '#FCE7F3' : '#F1F5F9',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              border: isSelected ? '1px solid #FDA4AF' : '1px solid #E2E8F0'
-                            }}>
-                              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={isSelected ? '#800020' : '#64748B'} strokeWidth="2.5"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
-                            </div>
-                            <div>
-                              <div style={{ fontWeight: 800, fontSize: '13.5px', color: '#1E293B', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                {tpl.name}
-                                {tpl.isStandard && (
-                                  <span style={{ background: '#D1FAE5', color: '#065F46', fontSize: '9px', fontWeight: 800, padding: '1px 5px', borderRadius: '4px' }}>Standard</span>
-                                )}
-                              </div>
-                              <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px', fontWeight: 600 }}>
-                                Safe Margins: Left: {tpl.xLeft}mm | Right: {tpl.xRight}mm | Top: {tpl.yTop}mm | Bottom: {tpl.yBottom}mm
-                              </div>
-                            </div>
-                          </div>
-                          <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <div style={{
-                              width: '20px',
-                              height: '20px',
-                              borderRadius: '10px',
-                              border: isSelected ? '6px solid #800020' : '2px solid #CBD5E1',
-                              background: '#FFFFFF',
-                              boxSizing: 'border-box'
-                            }}></div>
-                          </div>
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <div style={{ padding: '16px', background: '#F1F5F9', borderRadius: '12px', textAlign: 'center', color: '#64748B', fontSize: '12px', fontWeight: 600 }}>
-                      No templates configured by Admin. Default layout is active.
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Letterhead & Footer margin adjusters */}
-              <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '16px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <h4 style={{ margin: 0, fontSize: '12px', color: '#1E293B', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.03em', borderBottom: '1px solid #F1F5F9', paddingBottom: '8px' }}>
-                  Letterhead Fitting & Spacing Calibration
-                </h4>
+              {/* Left Column: Form Controls (width: 380px) */}
+              <div style={{ width: '380px', display: 'flex', flexDirection: 'column', gap: '16px', overflowY: 'auto', paddingRight: '8px' }}>
                 
-                {/* Header spacer slider */}
+                {/* Template / Layout selection */}
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 700, color: '#475569', marginBottom: '6px' }}>
-                    <span>Top Spacer (Header Space)</span>
-                    <span style={{ color: '#800020' }}><b>{tempPrintSettings.topSpacer} mm</b></span>
-                  </div>
-                  <input 
-                    type="range" 
-                    min="0" 
-                    max="100" 
-                    value={tempPrintSettings.topSpacer} 
-                    onChange={e => setTempPrintSettings(prev => ({ ...prev, topSpacer: parseInt(e.target.value, 10) }))}
-                    style={{ width: '100%', accentColor: '#800020', cursor: 'pointer' }}
-                  />
-                  <p style={{ margin: '4px 0 0 0', fontSize: '10px', color: '#94A3B8', fontWeight: 500 }}>Slide to match the height of your physical letterhead header logo banner.</p>
-                </div>
-
-                {/* Footer spacer slider */}
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 700, color: '#475569', marginBottom: '6px' }}>
-                    <span>Bottom Spacer (Footer Space)</span>
-                    <span style={{ color: '#800020' }}><b>{tempPrintSettings.bottomSpacer} mm</b></span>
-                  </div>
-                  <input 
-                    type="range" 
-                    min="0" 
-                    max="50" 
-                    value={tempPrintSettings.bottomSpacer} 
-                    onChange={e => setTempPrintSettings(prev => ({ ...prev, bottomSpacer: parseInt(e.target.value, 10) }))}
-                    style={{ width: '100%', accentColor: '#800020', cursor: 'pointer' }}
-                  />
-                  <p style={{ margin: '4px 0 0 0', fontSize: '10px', color: '#94A3B8', fontWeight: 500 }}>Ensure signature or footer info doesn't overwrite your pre-printed footers.</p>
-                </div>
-
-                {/* Font size adjuster */}
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 700, color: '#475569', marginBottom: '6px' }}>
-                    <span>Print Font Size Scale</span>
-                    <span style={{ color: '#800020' }}><b>{tempPrintSettings.fontSize}%</b></span>
-                  </div>
-                  <input 
-                    type="range" 
-                    min="80" 
-                    max="120" 
-                    step="5"
-                    value={tempPrintSettings.fontSize} 
-                    onChange={e => setTempPrintSettings(prev => ({ ...prev, fontSize: parseInt(e.target.value, 10) }))}
-                    style={{ width: '100%', accentColor: '#800020', cursor: 'pointer' }}
-                  />
-                  <p style={{ margin: '4px 0 0 0', fontSize: '10px', color: '#94A3B8', fontWeight: 500 }}>Scale down to fit heavily cluttered documents onto a single A4 sheet.</p>
-                </div>
-              </div>
-
-              {/* Prescription Page Layout preference */}
-              <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '16px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <h4 style={{ margin: 0, fontSize: '12px', color: '#1E293B', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.03em', borderBottom: '1px solid #F1F5F9', paddingBottom: '8px' }}>
-                  Page Layout & Flow Preference
-                </h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {[
-                    { val: 'auto', label: 'Automatically optimize (Default)', desc: 'System automatically determines the best layout to fit content.' },
-                    { val: 'one-page', label: 'Keep on 1 page', desc: 'Attempt to scale and fit the entire prescription on a single page.' },
-                    { val: 'allow-two-pages', label: 'Allow 2 pages', desc: 'Allows the prescription to cleanly flow onto 2 pages when needed.' },
-                    { val: 'split-two-pages', label: 'Split into 2 pages', desc: 'Force content to break into 2 pages logically.' }
-                  ].map(opt => (
-                    <label key={opt.val} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', cursor: 'pointer' }}>
-                      <input 
-                        type="radio" 
-                        name="pageDistribution" 
-                        value={opt.val} 
-                        checked={(tempPrintSettings.pageDistribution || 'auto') === opt.val} 
-                        onChange={() => setTempPrintSettings(prev => ({ ...prev, pageDistribution: opt.val }))}
-                        style={{ marginTop: '3px', accentColor: '#800020' }}
-                      />
-                      <div>
-                        <span style={{ fontSize: '13px', fontWeight: 700, color: '#334155', display: 'block' }}>{opt.label}</span>
-                        <span style={{ display: 'block', fontSize: '10.5px', color: '#94A3B8', fontWeight: 500, marginTop: '2px' }}>{opt.desc}</span>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '8px', textTransform: 'uppercase' }}>Select Prescription Layout Template</label>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {adminTemplates && adminTemplates.length > 0 ? (
+                      adminTemplates.map(tpl => {
+                        const isSelected = tempPrintSettings.template === tpl._id || (tempPrintSettings.template === 'standard' && tpl.isStandard);
+                        return (
+                          <div 
+                            key={tpl._id}
+                            onClick={() => setTempPrintSettings(prev => ({ ...prev, template: tpl._id }))}
+                            style={{
+                              border: isSelected ? '2.5px solid #800020' : '1.5px solid #E2E8F0',
+                              background: isSelected ? '#FFF5F6' : '#FFFFFF',
+                              borderRadius: '12px', 
+                              padding: '12px', 
+                              cursor: 'pointer', 
+                              transition: 'all 0.2s ease', 
+                              display: 'flex', 
+                              justifyContent: 'space-between', 
+                              alignItems: 'center', 
+                              boxShadow: isSelected ? '0 4px 10px -2px rgba(128, 0, 32, 0.08)' : 'none'
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                              <div style={{
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '6px',
+                                background: isSelected ? '#FCE7F3' : '#F1F5F9',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                border: isSelected ? '1px solid #FDA4AF' : '1px solid #E2E8F0'
+                              }}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={isSelected ? '#800020' : '#64748B'} strokeWidth="2.5"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                              </div>
+                              <div>
+                                <div style={{ fontWeight: 800, fontSize: '12.5px', color: '#1E293B', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                  {tpl.name}
+                                  {tpl.isStandard && (
+                                    <span style={{ background: '#D1FAE5', color: '#065F46', fontSize: '8px', fontWeight: 800, padding: '1px 4px', borderRadius: '4px' }}>Standard</span>
+                                  )}
+                                </div>
+                                <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '2px', fontWeight: 600 }}>
+                                  Margins: T: {tpl.yTop}mm | B: {tpl.yBottom}mm
+                                </div>
+                              </div>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                              <div style={{
+                                width: '16px',
+                                height: '16px',
+                                borderRadius: '8px',
+                                border: isSelected ? '5px solid #800020' : '2px solid #CBD5E1',
+                                background: '#FFFFFF',
+                                boxSizing: 'border-box'
+                              }}></div>
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div style={{ padding: '12px', background: '#F1F5F9', borderRadius: '10px', textAlign: 'center', color: '#64748B', fontSize: '11px', fontWeight: 600 }}>
+                        No templates configured by Admin. Default layout is active.
                       </div>
-                    </label>
-                  ))}
+                    )}
+                  </div>
                 </div>
+
+                {/* Letterhead & Footer margin adjusters */}
+                <div style={{ background: '#FFFFFF', padding: '14px', borderRadius: '14px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <h4 style={{ margin: 0, fontSize: '11px', color: '#1E293B', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.03em', borderBottom: '1px solid #F1F5F9', paddingBottom: '6px' }}>
+                    Letterhead Fitting & Spacing Calibration
+                  </h4>
+                  
+                  {/* Header spacer slider */}
+                  <div>
+                    <div style={{ display: 'flex', justifycontent: 'space-between', fontSize: '11.5px', fontWeight: 700, color: '#475569', marginBottom: '4px' }}>
+                      <span>Top Spacer (Header Space)</span>
+                      <span style={{ color: '#800020' }}><b>{tempPrintSettings.topSpacer} mm</b></span>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="0" 
+                      max="100" 
+                      value={tempPrintSettings.topSpacer} 
+                      onChange={e => setTempPrintSettings(prev => ({ ...prev, topSpacer: parseInt(e.target.value, 10) }))}
+                      style={{ width: '100%', accentColor: '#800020', cursor: 'pointer' }}
+                    />
+                  </div>
+
+                  {/* Footer spacer slider */}
+                  <div>
+                    <div style={{ display: 'flex', justifycontent: 'space-between', fontSize: '11.5px', fontWeight: 700, color: '#475569', marginBottom: '4px' }}>
+                      <span>Bottom Spacer (Footer Space)</span>
+                      <span style={{ color: '#800020' }}><b>{tempPrintSettings.bottomSpacer} mm</b></span>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="0" 
+                      max="50" 
+                      value={tempPrintSettings.bottomSpacer} 
+                      onChange={e => setTempPrintSettings(prev => ({ ...prev, bottomSpacer: parseInt(e.target.value, 10) }))}
+                      style={{ width: '100%', accentColor: '#800020', cursor: 'pointer' }}
+                    />
+                  </div>
+
+                  {/* Font size adjuster */}
+                  <div>
+                    <div style={{ display: 'flex', justifycontent: 'space-between', fontSize: '11.5px', fontWeight: 700, color: '#475569', marginBottom: '4px' }}>
+                      <span>Print Font Size Scale</span>
+                      <span style={{ color: '#800020' }}><b>{tempPrintSettings.fontSize}%</b></span>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="80" 
+                      max="120" 
+                      step="5"
+                      value={tempPrintSettings.fontSize} 
+                      onChange={e => setTempPrintSettings(prev => ({ ...prev, fontSize: parseInt(e.target.value, 10) }))}
+                      style={{ width: '100%', accentColor: '#800020', cursor: 'pointer' }}
+                    />
+                  </div>
+                </div>
+
+                {/* Prescription Page Layout preference */}
+                <div style={{ background: '#FFFFFF', padding: '14px', borderRadius: '14px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <h4 style={{ margin: 0, fontSize: '11px', color: '#1E293B', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.03em', borderBottom: '1px solid #F1F5F9', paddingBottom: '6px' }}>
+                    Page Layout & Flow Preference
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {[
+                      { val: 'auto', label: 'Automatically optimize (Default)' },
+                      { val: 'one-page', label: 'Keep on 1 page' },
+                      { val: 'allow-two-pages', label: 'Allow 2 pages' }
+                    ].map(opt => (
+                      <label key={opt.val} style={{ display: 'flex', gap: '8px', alignItems: 'center', cursor: 'pointer' }}>
+                        <input 
+                          type="radio" 
+                          name="pageDistribution" 
+                          value={opt.val} 
+                          checked={(tempPrintSettings.pageDistribution || 'auto') === opt.val} 
+                          onChange={() => setTempPrintSettings(prev => ({ ...prev, pageDistribution: opt.val }))}
+                          style={{ accentColor: '#800020' }}
+                        />
+                        <span style={{ fontSize: '12px', fontWeight: 700, color: '#334155' }}>{opt.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Digital Backup letterhead preset */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '4px' }}>DIGITAL LETTERHEAD PRESET (BACKUP)</label>
+                  <select
+                    value={tempPrintSettings.digitalPreset}
+                    onChange={e => setTempPrintSettings(prev => ({ ...prev, digitalPreset: e.target.value }))}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #E2E8F0', fontSize: '12px', fontWeight: 600, color: '#1E293B', background: 'white' }}
+                  >
+                    <option value="none">No Digital Header (Print on Pre-printed Physical Paper)</option>
+                    <option value="teal">Preset Style A: Modern Teal Header Banner</option>
+                    <option value="burgundy">Preset Style B: Burgundy Royal Border & Serif Logo</option>
+                    <option value="navy">Preset Style C: High-Tech Navy Clinic Theme</option>
+                  </select>
+                </div>
+
               </div>
 
-              {/* Digital Backup letterhead preset */}
-              <div>
-                <label style={{ display: 'block', fontSize: '11.5px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '6px' }}>DIGITAL LETTERHEAD PRESET (BACKUP)</label>
-                <select
-                  value={tempPrintSettings.digitalPreset}
-                  onChange={e => setTempPrintSettings(prev => ({ ...prev, digitalPreset: e.target.value }))}
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #E2E8F0', fontSize: '13px', fontWeight: 600, color: '#1E293B', background: 'white' }}
-                >
-                  <option value="none">No Digital Header (Print on Pre-printed Physical Paper)</option>
-                  <option value="teal">Preset Style A: Modern Teal Header Banner</option>
-                  <option value="burgundy">Preset Style B: Burgundy Royal Border & Serif Logo</option>
-                  <option value="navy">Preset Style C: High-Tech Navy Clinic Theme</option>
-                </select>
-                <p style={{ margin: '4px 0 0 0', fontSize: '10.5px', color: '#64748B', fontWeight: 500 }}>Select a digital preset style if you want to print a complete digital letterhead layout along with the prescription text.</p>
+              {/* Right Column: Live Interactive A4 Preview */}
+              <div style={{ flex: 1, background: '#E2E8F0', borderRadius: '16px', padding: '16px', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', overflowY: 'auto', border: '1px solid #CBD5E1' }}>
+                {(() => {
+                  const rx = printSettingsTarget?.rx || {};
+                  const pt = selectedPatient || {};
+                  const medsList = rx.items || [];
+                  const testOrders = rx.tests || [];
+                  
+                  return (
+                    <div style={{
+                      width: '100%',
+                      maxWidth: '430px',
+                      background: '#ffffff',
+                      boxShadow: '0 8px 24px rgba(15, 23, 42, 0.08)',
+                      borderRadius: '8px',
+                      border: '1px solid #CBD5E1',
+                      padding: '24px',
+                      boxSizing: 'border-box',
+                      minHeight: '620px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: `${tempPrintSettings.fontSize * 0.11}px`,
+                      lineHeight: 1.4,
+                      transition: 'all 0.2s ease'
+                    }}>
+                      
+                      {/* Top Spacer area */}
+                      <div style={{
+                        height: `${tempPrintSettings.topSpacer * 1.0}px`,
+                        borderBottom: '1px dashed #E2E8F0',
+                        background: tempPrintSettings.digitalPreset !== 'none' ? '#F8FAFC' : 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '9px',
+                        color: '#94A3B8',
+                        fontWeight: 700,
+                        transition: 'all 0.1s ease',
+                        position: 'relative',
+                        marginBottom: '12px'
+                      }}>
+                        {tempPrintSettings.digitalPreset === 'none' ? (
+                          <span>Header Space Margin ({tempPrintSettings.topSpacer}mm)</span>
+                        ) : (
+                          <div style={{
+                            position: 'absolute',
+                            inset: 0,
+                            background: tempPrintSettings.digitalPreset === 'teal' ? 'linear-gradient(135deg, #0F766E, #115E59)' : tempPrintSettings.digitalPreset === 'burgundy' ? 'linear-gradient(135deg, #800020, #4A0012)' : 'linear-gradient(135deg, #1E3A8A, #172554)',
+                            color: 'white',
+                            padding: '6px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            textAlign: 'center'
+                          }}>
+                            <span style={{ fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{user.tenantName || 'CUROXA MEDICAL CLINIC'}</span>
+                            <span style={{ fontSize: '7px', opacity: 0.8 }}>OPD Consultations & Health Center</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Patient info */}
+                      <div style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '8px', marginBottom: '10px', display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '8px', fontSize: '9px', color: '#475569' }}>
+                        <div>
+                          <div style={{ marginBottom: '2px' }}>Patient: <b style={{ color: '#1E293B' }}>{pt.name || 'abcd'}</b></div>
+                          <div>Age/Gender: <b>{pt.age || '40'} Y, {pt.gender || 'Female'}</b></div>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ marginBottom: '2px' }}>Date: <b>{rx.date || new Date().toLocaleDateString('en-IN')}</b></div>
+                          <div>UHID: <b>{pt.uhid || 'MDC-NEW'}</b></div>
+                        </div>
+                      </div>
+
+                      {/* Rx / Clinical Notes */}
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        
+                        {/* Diagnosis */}
+                        {rx.diagnosis && (
+                          <div style={{ fontSize: '9.5px' }}>
+                            <span style={{ color: '#64748B', fontWeight: 700, display: 'block', fontSize: '7.5px', textTransform: 'uppercase' }}>Diagnosis</span>
+                            <b style={{ color: '#1E293B' }}>{rx.diagnosis}</b>
+                          </div>
+                        )}
+
+                        {/* Symptoms */}
+                        {rx.soapSubjective && (
+                          <div style={{ fontSize: '9px', background: '#F8FAFC', padding: '5px', borderRadius: '4px' }}>
+                            <span style={{ color: '#64748B', fontWeight: 700, display: 'block', fontSize: '7.5px', textTransform: 'uppercase' }}>Symptoms / subjective</span>
+                            <span style={{ color: '#334155', fontWeight: 600 }}>{rx.soapSubjective}</span>
+                          </div>
+                        )}
+
+                        {/* Medicines List */}
+                        {medsList.length > 0 && (
+                          <div>
+                            <span style={{ color: '#64748B', fontWeight: 700, display: 'block', fontSize: '7.5px', textTransform: 'uppercase', marginBottom: '3px' }}>Rx (Prescribed Medicines)</span>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8.5px' }}>
+                              <thead>
+                                <tr style={{ borderBottom: '1px solid #E2E8F0', color: '#64748B', fontWeight: 700, textAlign: 'left' }}>
+                                  <th style={{ padding: '3px 0' }}>Medicine</th>
+                                  <th>Dose</th>
+                                  <th>Freq</th>
+                                  <th>Duration</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {medsList.map((m, index) => (
+                                  <tr key={index} style={{ borderBottom: '1px solid #F1F5F9', color: '#334155' }}>
+                                    <td style={{ padding: '3px 0', fontWeight: 700 }}>💊 {m.name}</td>
+                                    <td>{m.dose}</td>
+                                    <td>{m.freq}</td>
+                                    <td>{m.duration}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+
+                        {/* Lab tests */}
+                        {testOrders.length > 0 && (
+                          <div>
+                            <span style={{ color: '#64748B', fontWeight: 700, display: 'block', fontSize: '7.5px', textTransform: 'uppercase', marginBottom: '3px' }}>Lab Tests</span>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px' }}>
+                              {testOrders.map((t, idx) => (
+                                <span key={idx} style={{ fontSize: '7.5px', background: '#EFF6FF', color: '#1E40AF', padding: '2px 5px', borderRadius: '4px', fontWeight: 700 }}>
+                                  🧪 {t}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* SOAP Plan / Notes */}
+                        {rx.soapPlan && (
+                          <div style={{ fontSize: '8.5px' }}>
+                            <span style={{ color: '#64748B', fontWeight: 700, display: 'block', fontSize: '7.5px', textTransform: 'uppercase' }}>Directions / Remarks</span>
+                            <p style={{ margin: '2px 0 0 0', color: '#475569' }}>{rx.soapPlan}</p>
+                          </div>
+                        )}
+
+                      </div>
+
+                      {/* Bottom Spacer area */}
+                      <div style={{
+                        marginTop: 'auto',
+                        height: `${tempPrintSettings.bottomSpacer * 1.0}px`,
+                        borderTop: '1px dashed #E2E8F0',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        fontSize: '9px',
+                        color: '#94A3B8',
+                        fontWeight: 700,
+                        paddingTop: '6px'
+                      }}>
+                        <span>Footer Spacer ({tempPrintSettings.bottomSpacer}mm)</span>
+                        <div style={{ textAlign: 'right', color: '#334155' }}>
+                          <div style={{ borderBottom: '1px solid #E2E8F0', width: '50px', height: '10px', marginLeft: 'auto' }}></div>
+                          <span style={{ fontSize: '7px', fontWeight: 800, marginTop: '2px', display: 'block' }}>Dr. {user.name || 'Sarah Jenkins'}</span>
+                        </div>
+                      </div>
+
+                    </div>
+                  );
+                })()}
               </div>
 
             </div>
