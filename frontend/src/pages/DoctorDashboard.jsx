@@ -941,6 +941,7 @@ const DoctorDashboard = () => {
   // State for appointments and patients
   const [appointments, setAppointments] = useState([]);
   const [patientsList, setPatientsList] = useState([]);
+  const [hasFetchedInitial, setHasFetchedInitial] = useState(false);
 
   // Combined Patients list for prescription EMR (Real backend + clinical seeds)
   const [patients, setPatients] = useState([]);
@@ -2410,7 +2411,7 @@ const DoctorDashboard = () => {
 
   // Fetch initial system appointments and patients
   useEffect(() => {
-    fetchData();
+    fetchData(true);
     // Poll data and coverage data every 5 seconds for real-time updates
     const pollInterval = setInterval(() => {
       fetchData();
@@ -2430,7 +2431,8 @@ const DoctorDashboard = () => {
     return () => window.removeEventListener('curoxa_sync', handleSync);
   }, [fetchCoverageData]);
 
-  const fetchData = async () => {
+  const fetchData = async (forceInitial = false) => {
+    const isInitial = forceInitial || !hasFetchedInitial;
     try {
       const apps = await api.get((user.id && user.role === 'doctor') ? `/appointments?doctorId=${user.id}` : '/appointments');
       const sortedApps = (apps.data || []).sort((a, b) => {
@@ -2448,16 +2450,25 @@ const DoctorDashboard = () => {
         return 0;
       });
       setAppointments(sortedApps);
-      const pts = await api.get('/patients');
+
+      let ptsData = [];
+      if (isInitial) {
+        const pts = await api.get('/patients');
+        ptsData = pts.data || [];
+        window._cachedPatients = ptsData;
+        setHasFetchedInitial(true);
+      } else {
+        ptsData = window._cachedPatients || [];
+      }
       
-      let relevantPatients = pts.data;
+      let relevantPatients = ptsData;
       if (user.id && user.role === 'doctor') {
         const docPatientIds = new Set(sortedApps.map(app => 
           (app.patientId && typeof app.patientId === 'object' && app.patientId._id) 
             ? app.patientId._id.toString() 
             : (app.patientId ? app.patientId.toString() : null)
         ).filter(Boolean));
-        relevantPatients = pts.data.filter(p => docPatientIds.has(p._id.toString()));
+        relevantPatients = ptsData.filter(p => docPatientIds.has(p._id.toString()));
       }
       
       const sortedRelevantPatients = [...relevantPatients].sort((a, b) => {
@@ -2472,11 +2483,18 @@ const DoctorDashboard = () => {
       
       setPatientsList(sortedRelevantPatients);
       
-      try {
-        const rxs = await api.get('/prescriptions');
-        setAllPrescriptions(rxs.data);
-      } catch (rxErr) {
-        console.warn("Failed to load global prescriptions list", rxErr);
+      if (isInitial) {
+        try {
+          const rxs = await api.get('/prescriptions');
+          setAllPrescriptions(rxs.data);
+          window._cachedPrescriptions = rxs.data;
+        } catch (rxErr) {
+          console.warn("Failed to load global prescriptions list", rxErr);
+        }
+      } else {
+        if (window._cachedPrescriptions) {
+          setAllPrescriptions(window._cachedPrescriptions);
+        }
       }
       
       try {
@@ -2499,6 +2517,7 @@ const DoctorDashboard = () => {
         const vId = latestApp ? `V-${latestApp._id.toString().substring(20).toUpperCase()}` : 'N/A';
 
         return {
+          ...p,
           _id: p._id,
           name: p.name,
           age: p.age || '--',
@@ -2518,14 +2537,22 @@ const DoctorDashboard = () => {
       // Use only real database patients — no fallback mock records
       setPatients(formattedRealPatients);
       
+      if (isInitial) {
+        try {
+          const meds = await api.get('/medicines');
+          setPharmacyInventoryDb(meds.data);
+          window._cachedMedicines = meds.data;
+        } catch (medErr) {
+          console.warn("Failed to load pharmacy inventory for doctor's alerts", medErr);
+        }
+      } else {
+        if (window._cachedMedicines) {
+          setPharmacyInventoryDb(window._cachedMedicines);
+        }
+      }
+      
       // Removed legacy auto-preload so dashboard starts with no active consultation selected by default
 
-      try {
-        const meds = await api.get('/medicines');
-        setPharmacyInventoryDb(meds.data);
-      } catch (medErr) {
-        console.warn("Failed to load pharmacy inventory for doctor's alerts", medErr);
-      }
       addLog(`Loaded ${formattedRealPatients.length} real patient EMR records & synchronized diagnostic grids.`);
       await fetchCoverageData();
     } catch (err) {
@@ -2893,6 +2920,17 @@ const DoctorDashboard = () => {
       const codeSum = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
       const color = colors[codeSum % colors.length];
       
+      let displayDate = '';
+      try {
+        if (app.date) {
+          displayDate = new Date(app.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+        } else if (dateStr) {
+          displayDate = new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+      } catch (err) {
+        displayDate = app.date || dateStr;
+      }
+
       return {
         _id: app._id,
         name,
@@ -2902,6 +2940,7 @@ const DoctorDashboard = () => {
         color,
         time: app.time,
         status: app.status,
+        date: displayDate,
         appRaw: app
       };
     });
@@ -5869,7 +5908,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                           </div>
                           <div style={{ textAlign: 'right' }}>
                             <div style={{ fontSize: '13px', fontWeight: 800, color: '#0F172A' }}>{consult.time}</div>
-                            <div style={{ fontSize: '11px', color: '#94A3B8', marginTop: '2px', fontWeight: 600 }}>{consult.date || '24 May 2024'}</div>
+                            <div style={{ fontSize: '11px', color: '#94A3B8', marginTop: '2px', fontWeight: 600 }}>{consult.date || new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
                           </div>
                         </div>
                       ))
