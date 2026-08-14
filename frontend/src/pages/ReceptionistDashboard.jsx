@@ -481,6 +481,7 @@ const ReceptionistDashboard = () => {
   const [dpdpConsent, setDpdpConsent] = useState({ emrCreation: true, dataSharing: false });
   const [patientDocuments, setPatientDocuments] = useState([]);
   const [newDocType, setNewDocType] = useState('Aadhar / Voter Card');
+  const [addOnOriginAppt, setAddOnOriginAppt] = useState(null);
 
 
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
@@ -2383,18 +2384,45 @@ const ReceptionistDashboard = () => {
       const discAmt = (origAmt * Number(bookingDiscountPercent || 0)) / 100;
       const finalAmt = Math.max(0, origAmt - discAmt);
 
-      await api.post('/billing', {
-        patientId: finalPatientId,
-        appointmentId: primaryApptId,
-        items: billingItems,
-        originalAmount: origAmt,
-        discountPercent: Number(bookingDiscountPercent || 0),
-        discountAmount: discAmt,
-        totalAmount: finalAmt,
-        paymentMethod: bookingPaymentMethod || 'Cash',
-        discountReason: discAmt > 0 ? bookingDiscountReason.trim() : '',
-        status: 'Paid'
-      });
+      let isAddOnProcessed = false;
+      if (addOnOriginAppt) {
+        const existingBill = bills.find(b => {
+          const apptId = b.appointmentId && typeof b.appointmentId === 'object' ? b.appointmentId._id : b.appointmentId;
+          return String(apptId) === String(addOnOriginAppt._id);
+        });
+        if (existingBill) {
+          const updatedItems = [...(existingBill.items || []), ...billingItems];
+          const newOriginalAmount = (existingBill.originalAmount || 0) + origAmt;
+          const currentDiscountPercent = Number(bookingDiscountPercent || existingBill.discountPercent || 0);
+          const newDiscountAmount = (newOriginalAmount * currentDiscountPercent) / 100;
+          const newTotalAmount = Math.max(0, newOriginalAmount - newDiscountAmount);
+
+          await api.put(`/billing/${existingBill._id}`, {
+            items: updatedItems,
+            originalAmount: newOriginalAmount,
+            discountPercent: currentDiscountPercent,
+            discountAmount: newDiscountAmount,
+            totalAmount: newTotalAmount,
+            discountReason: newDiscountAmount > 0 ? (bookingDiscountReason.trim() || existingBill.discountReason || 'Add-On Discount') : ''
+          });
+          isAddOnProcessed = true;
+        }
+      }
+
+      if (!isAddOnProcessed) {
+        await api.post('/billing', {
+          patientId: finalPatientId,
+          appointmentId: primaryApptId,
+          items: billingItems,
+          originalAmount: origAmt,
+          discountPercent: Number(bookingDiscountPercent || 0),
+          discountAmount: discAmt,
+          totalAmount: finalAmt,
+          paymentMethod: bookingPaymentMethod || 'Cash',
+          discountReason: discAmt > 0 ? bookingDiscountReason.trim() : '',
+          status: 'Paid'
+        });
+      }
 
       // Save vitals if any of them are filled in the form
       if (vitalTemp || vitalPulse || vitalBpSys || vitalBpDia || vitalResp || vitalSpo2 || vitalWeight || vitalHeight) {
@@ -2426,6 +2454,26 @@ const ReceptionistDashboard = () => {
 
       // Generate Slip PDF Data
       const activePatient = patientObj || selectedPatient || formData;
+      
+      let finalItems = billingItems;
+      let finalOrigAmt = origAmt;
+      let finalDiscAmt = discAmt;
+      let finalTotalAmt = finalAmt;
+
+      if (isAddOnProcessed && addOnOriginAppt) {
+        const matchBill = bills.find(b => {
+          const apptId = b.appointmentId && typeof b.appointmentId === 'object' ? b.appointmentId._id : b.appointmentId;
+          return String(apptId) === String(addOnOriginAppt._id);
+        });
+        if (matchBill) {
+          finalItems = [...(matchBill.items || []), ...billingItems];
+          finalOrigAmt = (matchBill.originalAmount || 0) + origAmt;
+          const pct = Number(bookingDiscountPercent || matchBill.discountPercent || 0);
+          finalDiscAmt = (finalOrigAmt * pct) / 100;
+          finalTotalAmt = finalOrigAmt - finalDiscAmt;
+        }
+      }
+
       setActiveSlipData({
         receiptNo: `REC-${Date.now().toString().slice(-6)}`,
         date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
@@ -2434,16 +2482,16 @@ const ReceptionistDashboard = () => {
         contact: activePatient.contact || 'N/A',
         ageGender: `${activePatient.age || 'N/A'} / ${activePatient.gender || 'N/A'}`,
         testName: 'OPD Consultation & Booking Fee',
-        items: billingItems,
-        originalAmount: origAmt,
-        discountAmount: discAmt,
-        totalAmount: finalAmt,
+        items: finalItems,
+        originalAmount: finalOrigAmt,
+        discountAmount: finalDiscAmt,
+        totalAmount: finalTotalAmt,
         paymentMethod: bookingPaymentMethod || 'Cash',
         hospitalName: currentUser.tenantName || 'Curoxa Medical Center'
       });
       setShowSlipPdfModal(true);
 
-      showToast(`${apptsToCreate.length} Appointment(s) registered & Payment completed successfully!`, "success");
+      showToast(isAddOnProcessed ? "Add-On Appointment registered and existing visit billing updated successfully!" : `${apptsToCreate.length} Appointment(s) registered & Payment completed successfully!`, "success");
 
       // Reset Form State
       setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '', referredBy: '' });
@@ -2461,6 +2509,8 @@ const ReceptionistDashboard = () => {
       setVerificationOtp('');
       setPatientDocuments([]);
       setReschedulingAppointment(null);
+      setAddOnOriginAppt(null);
+
       fetchData();
 
     } catch (err) {
@@ -7120,6 +7170,7 @@ const ReceptionistDashboard = () => {
                                   const patientData = typeof app.patientId === 'object' ? app.patientId : null;
                                   if (patientData) {
                                     setSelectedPatient(patientData);
+                                    setAddOnOriginAppt(app.rawItem);
                                     setFormData({
                                       name: patientData.name || '',
                                       age: patientData.age || '',
