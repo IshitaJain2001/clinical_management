@@ -2292,8 +2292,13 @@ const ReceptionistDashboard = () => {
         return;
       }
 
-      // Check if existing patient already has an appointment today with any of the selected doctors in database (bypassed if explicit add-on visit)
-      if (isExistingPatient && selectedPatient && !addOnOriginAppt) {
+      // Check if existing patient already has an appointment today with any of the selected doctors at the exact same time slot in database
+      if (isExistingPatient && selectedPatient) {
+        const cleanTimeSlotStr = (str) => {
+          if (!str) return '';
+          return str.split(/\(Limit/i)[0].replace(/\s+/g, ' ').trim().toLowerCase();
+        };
+
         for (const apptToBook of allApptsToBook) {
           const alreadyHasApptInDb = appointments.some(appt => {
             const pId = appt.patientId && typeof appt.patientId === 'object' ? appt.patientId._id : appt.patientId;
@@ -2301,11 +2306,12 @@ const ReceptionistDashboard = () => {
             const samePatient = String(pId) === String(selectedPatient._id);
             const sameDoctor = String(dId) === String(apptToBook.doctorId);
             const sameDay = new Date(appt.date).toDateString() === new Date(apptToBook.date).toDateString();
+            const sameTime = cleanTimeSlotStr(appt.time) === cleanTimeSlotStr(apptToBook.time);
             const notCancelled = appt.status !== 'Cancelled';
-            return samePatient && sameDoctor && sameDay && notCancelled;
+            return samePatient && sameDoctor && sameDay && sameTime && notCancelled;
           });
           if (alreadyHasApptInDb) {
-            showToast(`Patient ${selectedPatient.name} already has an appointment booked with ${apptToBook.doctorName} on this day.`, "error");
+            showToast(`Patient ${selectedPatient.name} already has an appointment booked with ${apptToBook.doctorName} at this time slot (${apptToBook.time.split(/\(Limit/i)[0].trim()}) on this day.`, "error");
             setLoading(false);
             return;
           }
@@ -6889,7 +6895,7 @@ const ReceptionistDashboard = () => {
                           <i data-lucide={reschedulingAppointment ? "calendar-days" : (bookingType === 'lab' ? "flask-conical" : bookingType === 'service' ? "sparkles" : "qr-code")}></i> 
                           {loading 
                             ? (reschedulingAppointment ? 'Rescheduling Appointment...' : (bookingType === 'lab' ? 'Creating Lab Order...' : bookingType === 'service' ? 'Creating Service Order...' : 'Registering & Booking...')) 
-                            : (reschedulingAppointment ? 'Confirm Reschedule' : (bookingType === 'lab' ? 'Confirm Lab Test & Pay' : bookingType === 'service' ? 'Confirm Service & Pay' : `Confirm & Pay (${(additionalApptsList.length + (formData.doctorId && selectedSlot ? 1 : 0)) || 1} Appts)`))}
+                            : (reschedulingAppointment ? 'Confirm Reschedule' : (bookingType === 'lab' ? 'Confirm Lab Test & Pay' : bookingType === 'service' ? 'Confirm Service & Pay' : 'Confirm & Pay'))}
                       </button>
                   </div>
                 </div>
