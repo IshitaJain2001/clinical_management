@@ -1636,17 +1636,16 @@ export default function PrescriptionMakerTab({
               
               {/* Medicine Search */}
               <div>
-                <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '8px' }}>SEARCH MEDICINE INVENTORY</label>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '8px' }}>SEARCH & SELECT MEDICINE</label>
                 
                 <div style={{ position: 'relative' }}>
                   <i data-lucide="search" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', width: '15px', height: '15px', color: '#64748B' }}></i>
                   <input 
                     type="text" 
-                    placeholder="Search medicine (e.g. Paracetamol, Amoxicillin...)" 
+                    placeholder="Search medicine to add (e.g. Paracetamol...)" 
                     value={medSearchQuery}
                     onChange={(e) => {
                       setMedSearchQuery(e.target.value);
-                      setDrawerMedName(e.target.value);
                       setShowMedSuggestions(true);
                     }}
                     onFocus={() => setShowMedSuggestions(true)}
@@ -1690,8 +1689,16 @@ export default function PrescriptionMakerTab({
                           <div 
                             key={m._id || m.id || m.name}
                             onClick={() => {
-                              setDrawerMedName(m.name);
-                              setMedSearchQuery(m.name);
+                              const newItem = {
+                                id: Date.now() + Math.random(),
+                                medicine: m.name,
+                                dosage: '1 Tab',
+                                frequency: 'Once a Day',
+                                duration: '5 Days',
+                                timing: 'After Food'
+                              };
+                              setLocalMedicines([...localMedicines, newItem]);
+                              setMedSearchQuery('');
                               setShowMedSuggestions(false);
                             }}
                             style={{ padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 650, color: '#334155', transition: '0.15s' }}
@@ -1706,164 +1713,167 @@ export default function PrescriptionMakerTab({
                 </div>
               </div>
 
-              {/* Medicine Form Customization */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '6px' }}>MEDICINE NAME</label>
-                  <input 
-                    type="text"
-                    value={drawerMedName}
-                    onChange={e => setDrawerMedName(e.target.value)}
-                    placeholder="Enter medicine..."
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #E2E8F0', fontSize: '13px', fontWeight: 600, color: '#1E293B' }}
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '6px' }}>DOSAGE</label>
-                  <input 
-                    type="text"
-                    value={drawerMedDose}
-                    onChange={e => setDrawerMedDose(e.target.value)}
-                    placeholder="e.g. 1 Tab, 5 ml..."
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #E2E8F0', fontSize: '13px', fontWeight: 600, color: '#1E293B' }}
-                  />
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '6px' }}>FREQUENCY</label>
-                  <select 
-                    value={drawerMedFreq}
-                    onChange={e => setDrawerMedFreq(e.target.value)}
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #E2E8F0', fontSize: '13px', fontWeight: 600, color: '#1E293B', background: 'white' }}
-                  >
-                    <option value="Once a Day">Once a Day (1-0-0)</option>
-                    <option value="Twice a Day">Twice a Day (1-0-1)</option>
-                    <option value="Thrice a Day">Thrice a Day (1-1-1)</option>
-                    <option value="Four Times a Day">Four Times a Day</option>
-                    <option value="As Needed (SOS)">As Needed (SOS)</option>
-                    <option value="At Bedtime">At Bedtime (0-0-1)</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '6px' }}>DURATION</label>
-                  <select 
-                    value={drawerMedDuration}
-                    onChange={e => setDrawerMedDuration(e.target.value)}
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #E2E8F0', fontSize: '13px', fontWeight: 600, color: '#1E293B', background: 'white' }}
-                  >
-                    <option value="5 Days">5 Days</option>
-                    <option value="3 Days">3 Days</option>
-                    <option value="7 Days">7 Days</option>
-                    <option value="10 Days">10 Days</option>
-                    <option value="14 Days">14 Days</option>
-                    <option value="30 Days">30 Days</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '6px' }}>INSTRUCTIONS</label>
-                <select 
-                  value={drawerMedTiming}
-                  onChange={e => setDrawerMedTiming(e.target.value)}
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #E2E8F0', fontSize: '13px', fontWeight: 600, color: '#1E293B', background: 'white' }}
-                >
-                  <option value="After Food">After Food</option>
-                  <option value="Before Food">Before Food</option>
-                  <option value="With Food">With Food</option>
-                  <option value="Empty Stomach">Empty Stomach</option>
-                </select>
-              </div>
-
-              <button
-                onClick={() => {
-                  if (!drawerMedName || !drawerMedName.trim()) {
-                    setLabToast({ type: 'error', message: 'Medicine name is required.' });
-                    setTimeout(() => setLabToast(null), 3000);
-                    return;
-                  }
-                  addMedicineRow({
-                    name: drawerMedName,
-                    dose: drawerMedDose,
-                    freq: drawerMedFreq,
-                    duration: drawerMedDuration,
-                    timing: drawerMedTiming
-                  });
-                  // Reset form fields but keep drawer open to add more!
-                  setDrawerMedName('');
-                  setDrawerMedDose('');
-                  setMedSearchQuery('');
-                  setLabToast({ type: 'success', message: `Added ${drawerMedName} to prescription.` });
-                  setTimeout(() => setLabToast(null), 2500);
-                }}
-                style={{
-                  background: '#2563EB',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '10px',
-                  padding: '12px',
-                  fontSize: '14px',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px',
-                  marginTop: '12px',
-                  boxShadow: '0 4px 12px rgba(37, 99, 235, 0.2)'
-                }}
-              >
-                + Add to Prescription
-              </button>
-
-              {/* Added List Preview */}
-              {medicines.length > 0 && (
-                <div style={{ marginTop: '16px', borderTop: '1px solid #E2E8F0', paddingTop: '16px' }}>
-                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', letterSpacing: '0.05em', marginBottom: '8px' }}>ADDED MEDICATIONS ({medicines.length})</label>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '180px', overflowY: 'auto', paddingRight: '4px' }}>
-                    {medicines.map((med, index) => (
-                      <div key={med.id || index} style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                          <div style={{ fontSize: '13px', fontWeight: 800, color: '#1E293B' }}>💊 {med.medicine || med.name}</div>
-                          <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 600, marginTop: '2px' }}>
-                            {med.dosage || med.dose} | {med.instructions || med.timing} | {med.duration} | {med.frequency || med.freq}
-                          </div>
+              {/* Local List of Pending Medications to customize */}
+              {localMedicines.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <label style={{ display: 'block', fontSize: '11.5px', fontWeight: 800, color: '#1E3A8A', letterSpacing: '0.05em', margin: 0 }}>SELECTED MEDICATIONS ({localMedicines.length})</label>
+                  
+                  {localMedicines.map((med, index) => (
+                    <div key={med.id} style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px', position: 'relative' }}>
+                      
+                      {/* Header */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '11px', fontWeight: 800, background: '#EEF2FF', color: '#4F46E5', padding: '2px 8px', borderRadius: '12px' }}>#{index + 1}</span>
+                          <span style={{ fontSize: '14px', fontWeight: 900, color: '#1E293B' }}>💊 {med.medicine}</span>
                         </div>
                         <button 
-                          onClick={() => removeMedicineRow(med.id)}
-                          style={{ border: 'none', background: 'none', color: '#EF4444', cursor: 'pointer', fontSize: '16px', fontWeight: 800 }}
+                          onClick={() => {
+                            setLocalMedicines(localMedicines.filter(item => item.id !== med.id));
+                          }}
+                          style={{ border: 'none', background: 'none', color: '#EF4444', cursor: 'pointer', fontSize: '18px', fontWeight: 800, padding: 0 }}
                         >
                           ×
                         </button>
                       </div>
-                    ))}
-                  </div>
+
+                      {/* Customize Inline Grid */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '8px' }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '9px', fontWeight: 800, color: '#64748B', marginBottom: '4px' }}>DOSAGE</label>
+                          <input 
+                            type="text"
+                            value={med.dosage}
+                            onChange={(e) => {
+                              const updated = localMedicines.map(item => item.id === med.id ? { ...item, dosage: e.target.value } : item);
+                              setLocalMedicines(updated);
+                            }}
+                            placeholder="e.g. 1 Tab, 5 ml..."
+                            style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '12px', fontWeight: 600, color: '#1E293B' }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '9px', fontWeight: 800, color: '#64748B', marginBottom: '4px' }}>FREQUENCY</label>
+                          <select 
+                            value={med.frequency}
+                            onChange={(e) => {
+                              const updated = localMedicines.map(item => item.id === med.id ? { ...item, frequency: e.target.value } : item);
+                              setLocalMedicines(updated);
+                            }}
+                            style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '12px', fontWeight: 600, color: '#1E293B', background: 'white' }}
+                          >
+                            <option value="Once a Day">Once a Day (1-0-0)</option>
+                            <option value="Twice a Day">Twice a Day (1-0-1)</option>
+                            <option value="Thrice a Day">Thrice a Day (1-1-1)</option>
+                            <option value="Four Times a Day">Four Times a Day</option>
+                            <option value="As Needed (SOS)">As Needed (SOS)</option>
+                            <option value="At Bedtime">At Bedtime (0-0-1)</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '9px', fontWeight: 800, color: '#64748B', marginBottom: '4px' }}>DURATION</label>
+                          <select 
+                            value={med.duration}
+                            onChange={(e) => {
+                              const updated = localMedicines.map(item => item.id === med.id ? { ...item, duration: e.target.value } : item);
+                              setLocalMedicines(updated);
+                            }}
+                            style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '12px', fontWeight: 600, color: '#1E293B', background: 'white' }}
+                          >
+                            <option value="5 Days">5 Days</option>
+                            <option value="3 Days">3 Days</option>
+                            <option value="7 Days">7 Days</option>
+                            <option value="10 Days">10 Days</option>
+                            <option value="14 Days">14 Days</option>
+                            <option value="30 Days">30 Days</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '9px', fontWeight: 800, color: '#64748B', marginBottom: '4px' }}>INSTRUCTIONS</label>
+                          <select 
+                            value={med.timing}
+                            onChange={(e) => {
+                              const updated = localMedicines.map(item => item.id === med.id ? { ...item, timing: e.target.value } : item);
+                              setLocalMedicines(updated);
+                            }}
+                            style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '12px', fontWeight: 600, color: '#1E293B', background: 'white' }}
+                          >
+                            <option value="After Food">After Food</option>
+                            <option value="Before Food">Before Food</option>
+                            <option value="With Food">With Food</option>
+                            <option value="Empty Stomach">Empty Stomach</option>
+                          </select>
+                        </div>
+                      </div>
+
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ padding: '40px 20px', textAlign: 'center', background: '#F8FAFC', borderRadius: '12px', border: '1.5px dashed #E2E8F0' }}>
+                  <p style={{ margin: 0, fontSize: '13.5px', color: '#64748B', fontWeight: 600 }}>No medicines selected yet.</p>
+                  <p style={{ margin: '4px 0 0 0', fontSize: '11px', color: '#94A3B8' }}>Use the search box above to find and add medicines.</p>
                 </div>
               )}
 
             </div>
 
             {/* Footer */}
-            <div style={{ padding: '20px 32px', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end' }}>
+            <div style={{ padding: '24px 32px', borderTop: '1px solid #E2E8F0', display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
               <button 
                 onClick={() => setShowMedicationDrawer(false)}
                 style={{
-                  background: '#0F172A',
-                  color: 'white',
+                  background: '#F1F5F9',
+                  color: '#475569',
                   border: 'none',
                   borderRadius: '10px',
-                  padding: '10px 24px',
+                  padding: '12px 24px',
                   fontSize: '13.5px',
                   fontWeight: 800,
                   cursor: 'pointer'
                 }}
               >
-                Done
+                Cancel
+              </button>
+              <button 
+                onClick={() => {
+                  if (localMedicines.length === 0) {
+                    setLabToast({ type: 'error', message: 'Please select at least one medicine.' });
+                    setTimeout(() => setLabToast(null), 3000);
+                    return;
+                  }
+                  localMedicines.forEach(med => {
+                    addMedicineRow({
+                      name: med.medicine,
+                      dose: med.dosage,
+                      freq: med.frequency,
+                      duration: med.duration,
+                      timing: med.timing
+                    });
+                  });
+                  setLocalMedicines([]);
+                  setShowMedicationDrawer(false);
+                  setLabToast({ type: 'success', message: `Successfully added ${localMedicines.length} medications.` });
+                  setTimeout(() => setLabToast(null), 3000);
+                }}
+                style={{
+                  background: '#2563EB',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '10px',
+                  padding: '12px 28px',
+                  fontSize: '13.5px',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 14px rgba(37, 99, 235, 0.25)'
+                }}
+              >
+                Add All to Prescription
               </button>
             </div>
-
           </div>
         </>
       )}
