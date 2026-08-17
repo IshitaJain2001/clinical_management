@@ -12641,11 +12641,24 @@ const AdminDashboard = () => {
                             <button
                               type="button"
                               onClick={async () => {
+                                const previousCatalog = [...labTestCatalog];
+                                const nextState = !item.isActive;
+                                
+                                // Optimistic UI Update
+                                const updatedCatalog = labTestCatalog.map(t => 
+                                  t._id === item._id ? { ...t, isActive: nextState } : t
+                                );
+                                setLabTestCatalog(updatedCatalog);
+                                showToast(`Lab test '${item.testName}' ${nextState ? 'activated' : 'deactivated'}!`, "success");
+
                                 try {
-                                  await api.put(`/lab-tests/${item._id}`, { isActive: !item.isActive });
-                                  showToast(`Lab test '${item.testName}' ${item.isActive ? 'deactivated' : 'activated'}!`, "success");
-                                  fetchLabTestCatalog();
+                                  await api.put(`/lab-tests/${item._id}`, { isActive: nextState });
+                                  // Silently sync state in background
+                                  const res = await api.get('/lab-tests');
+                                  setLabTestCatalog(res.data || []);
                                 } catch (e) {
+                                  // Rollback on error
+                                  setLabTestCatalog(previousCatalog);
                                   showToast("Failed to toggle test status.", "error");
                                 }
                               }}
