@@ -608,6 +608,15 @@ const AdminDashboard = () => {
   const [selectedProfileAppointment, setSelectedProfileAppointment] = useState(null);
   const [patientLabTests, setPatientLabTests] = useState([]);
   const [patientVitals, setPatientVitals] = useState([]);
+  const [showVitalsModal, setShowVitalsModal] = useState(false);
+  const [vitalTemp, setVitalTemp] = useState('');
+  const [vitalPulse, setVitalPulse] = useState('');
+  const [vitalBpSys, setVitalBpSys] = useState('');
+  const [vitalBpDia, setVitalBpDia] = useState('');
+  const [vitalResp, setVitalResp] = useState('');
+  const [vitalSpo2, setVitalSpo2] = useState('');
+  const [vitalWeight, setVitalWeight] = useState('');
+  const [vitalHeight, setVitalHeight] = useState('');
   const [patientClinicalNotes, setPatientClinicalNotes] = useState([]);
   const [patientPrescriptions, setPatientPrescriptions] = useState([]);
   const [prescriptionModalOpen, setPrescriptionModalOpen] = useState(false);
@@ -1386,6 +1395,38 @@ const AdminDashboard = () => {
       };
       setViewingPatient(fallbackPat);
       setActiveTab('patient-details');
+    }
+  };
+
+  const handleSaveVitals = async (e) => {
+    if (e) e.preventDefault();
+    const pIdVal = viewingPatient?.raw?._id || viewingPatient?.id;
+    if (!pIdVal) return;
+    try {
+      setLoading(true);
+      const payload = {
+        patientId: pIdVal,
+        temperature: vitalTemp ? parseFloat(vitalTemp) : undefined,
+        pulse: vitalPulse ? parseInt(vitalPulse) : undefined,
+        bpSys: vitalBpSys ? parseInt(vitalBpSys) : undefined,
+        bpDia: vitalBpDia ? parseInt(vitalBpDia) : undefined,
+        respiration: vitalResp ? parseInt(vitalResp) : undefined,
+        spo2: vitalSpo2 ? parseInt(vitalSpo2) : undefined,
+        weight: vitalWeight ? parseFloat(vitalWeight) : undefined,
+        height: vitalHeight ? parseFloat(vitalHeight) : undefined
+      };
+
+      await api.post('/emr/vitals', payload);
+      showToast("Vitals recorded successfully", "success");
+      
+      const res = await api.get(`/emr/vitals/patient/${pIdVal}`);
+      setPatientVitals(res.data || []);
+      setShowVitalsModal(false);
+    } catch (err) {
+      console.error("Failed to record vitals:", err);
+      showToast("Failed to record vitals", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -8860,97 +8901,234 @@ const AdminDashboard = () => {
                 {/* Sub cards: Contact Info and Vitals */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '24px' }}>
                   
-                  {/* Contact Information */}
-                  <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                      </svg>
-                      <h3 style={{ fontSize: '16px', fontWeight: 900, color: '#2563EB', margin: 0 }}>Contact Information</h3>
-                    </div>
-                    
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px' }}>
-                        <span style={{ color: '#64748B', fontWeight: 600 }}>Email:</span>
-                        <span style={{ fontWeight: 700, color: '#1A1D23' }}>{viewingPatient.raw?.email || 'N/A'}</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                    {/* Contact Information */}
+                    <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                        <h3 style={{ fontSize: '16px', fontWeight: 900, color: '#2563EB', margin: 0 }}>Contact Information</h3>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px' }}>
-                        <span style={{ color: '#64748B', fontWeight: 600 }}>Primary Phone:</span>
-                        <span style={{ fontWeight: 700, color: '#1A1D23' }}>{viewingPatient.raw?.contact || 'N/A'}</span>
+                      
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px' }}>
+                          <span style={{ color: '#64748B', fontWeight: 600 }}>Email:</span>
+                          <span style={{ fontWeight: 700, color: '#1A1D23' }}>{viewingPatient.raw?.email || 'N/A'}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px' }}>
+                          <span style={{ color: '#64748B', fontWeight: 600 }}>Primary Phone:</span>
+                          <span style={{ fontWeight: 700, color: '#1A1D23' }}>{viewingPatient.raw?.contact || 'N/A'}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px' }}>
+                          <span style={{ color: '#64748B', fontWeight: 600 }}>Address:</span>
+                          <span style={{ fontWeight: 700, color: '#1A1D23', textAlign: 'right', maxWidth: '180px' }}>{viewingPatient.raw?.address || 'No address provided'}</span>
+                        </div>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px' }}>
-                        <span style={{ color: '#64748B', fontWeight: 600 }}>Address:</span>
-                        <span style={{ fontWeight: 700, color: '#1A1D23', textAlign: 'right', maxWidth: '180px' }}>{viewingPatient.raw?.address || 'No address provided'}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Clinical Background (Allergies & Medical History) */}
-                  <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        <path d="m9 12 2 2 4-4"/>
-                      </svg>
-                      <h3 style={{ fontSize: '16px', fontWeight: 900, color: '#2563EB', margin: 0 }}>Clinical Background</h3>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', alignItems: 'center' }}>
-                        <span style={{ color: '#64748B', fontWeight: 600 }}>Allergies:</span>
-                        {(() => {
-                          const rawAllergies = viewingPatient.raw?.allergies || '';
-                          const hasRawAllergies = rawAllergies && rawAllergies.toLowerCase() !== 'none';
-                          const allergyKeywords = ['lactose', 'gluten', 'peanut', 'nut', 'dairy', 'egg', 'soy', 'shellfish', 'wheat', 'seafood', 'penicillin'];
-                          const histAllergies = (viewingPatient.raw?.medicalHistory || []).filter(h => 
-                            allergyKeywords.some(keyword => h.toLowerCase().includes(keyword)) ||
-                            h.toLowerCase().includes('allergy') || 
-                            h.toLowerCase().includes('intolerance')
-                          );
-                          const allAllergies = [];
-                          if (hasRawAllergies) allAllergies.push(rawAllergies);
-                          histAllergies.forEach(ha => {
-                            if (!allAllergies.some(x => x.toLowerCase() === ha.toLowerCase())) {
-                              allAllergies.push(ha);
-                            }
-                          });
-                          if (allAllergies.length === 0) {
-                            return (
-                              <span className="appt-status-badge badge-danger" style={{ padding: '4px 10px', fontSize: '11px' }}>
-                                None
-                              </span>
-                            );
-                          }
-                          return (
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                              {allAllergies.map((a, idx) => (
-                                <span key={idx} className="appt-status-badge badge-danger" style={{ padding: '4px 10px', fontSize: '11px' }}>{a}</span>
-                              ))}
-                            </div>
-                          );
-                        })()}
+                    {/* Clinical Background (Allergies & Medical History) */}
+                    <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                          <path d="m9 12 2 2 4-4"/>
+                        </svg>
+                        <h3 style={{ fontSize: '16px', fontWeight: 900, color: '#2563EB', margin: 0 }}>Clinical Background</h3>
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13.5px' }}>
-                        <span style={{ color: '#64748B', fontWeight: 600 }}>Medical History:</span>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '4px' }}>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', alignItems: 'center' }}>
+                          <span style={{ color: '#64748B', fontWeight: 600 }}>Allergies:</span>
                           {(() => {
+                            const rawAllergies = viewingPatient.raw?.allergies || '';
+                            const hasRawAllergies = rawAllergies && rawAllergies.toLowerCase() !== 'none';
                             const allergyKeywords = ['lactose', 'gluten', 'peanut', 'nut', 'dairy', 'egg', 'soy', 'shellfish', 'wheat', 'seafood', 'penicillin'];
-                            const filteredHistory = (viewingPatient.raw?.medicalHistory || []).filter(h => 
-                              !allergyKeywords.some(keyword => h.toLowerCase().includes(keyword)) &&
-                              !h.toLowerCase().includes('allergy') && 
-                              !h.toLowerCase().includes('intolerance')
+                            const histAllergies = (viewingPatient.raw?.medicalHistory || []).filter(h => 
+                              allergyKeywords.some(keyword => h.toLowerCase().includes(keyword)) ||
+                              h.toLowerCase().includes('allergy') || 
+                              h.toLowerCase().includes('intolerance')
                             );
-                            if (filteredHistory.length === 0) {
-                              return <span style={{ color: '#64748B', fontWeight: 500, fontSize: '12px' }}>No medical history recorded</span>;
+                            const allAllergies = [];
+                            if (hasRawAllergies) allAllergies.push(rawAllergies);
+                            histAllergies.forEach(ha => {
+                              if (!allAllergies.some(x => x.toLowerCase() === ha.toLowerCase())) {
+                                allAllergies.push(ha);
+                              }
+                            });
+                            if (allAllergies.length === 0) {
+                              return (
+                                <span className="appt-status-badge badge-danger" style={{ padding: '4px 10px', fontSize: '11px' }}>
+                                  None
+                                </span>
+                              );
                             }
-                            return filteredHistory.map((h, idx) => (
-                              <span key={idx} className="appt-status-badge badge-info" style={{ padding: '4px 10px', fontSize: '11px' }}>{h}</span>
-                            ));
+                            return (
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                                {allAllergies.map((a, idx) => (
+                                  <span key={idx} className="appt-status-badge badge-danger" style={{ padding: '4px 10px', fontSize: '11px' }}>{a}</span>
+                                ))}
+                              </div>
+                            );
                           })()}
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13.5px' }}>
+                          <span style={{ color: '#64748B', fontWeight: 600 }}>Medical History:</span>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '4px' }}>
+                            {(() => {
+                              const allergyKeywords = ['lactose', 'gluten', 'peanut', 'nut', 'dairy', 'egg', 'soy', 'shellfish', 'wheat', 'seafood', 'penicillin'];
+                              const filteredHistory = (viewingPatient.raw?.medicalHistory || []).filter(h => 
+                                !allergyKeywords.some(keyword => h.toLowerCase().includes(keyword)) &&
+                                !h.toLowerCase().includes('allergy') && 
+                                !h.toLowerCase().includes('intolerance')
+                              );
+                              if (filteredHistory.length === 0) {
+                                  return <span style={{ color: '#64748B', fontWeight: 500, fontSize: '12px' }}>No medical history recorded</span>;
+                              }
+                              return filteredHistory.map((h, idx) => (
+                                <span key={idx} className="appt-status-badge badge-info" style={{ padding: '4px 10px', fontSize: '11px' }}>{h}</span>
+                              ));
+                            })()}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
+
+                  {/* Vitals Summary Card */}
+                  {(() => {
+                    const latestVital = patientVitals && patientVitals.length > 0 ? patientVitals[0] : null;
+                    return (
+                      <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                            </svg>
+                            <h3 style={{ fontSize: '16px', fontWeight: 900, color: '#2563EB', margin: 0 }}>Vitals Summary</h3>
+                          </div>
+                          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                            <span 
+                              style={{ fontSize: '11px', color: '#2563EB', fontWeight: 800, cursor: 'pointer', textDecoration: 'underline', display: 'flex', alignItems: 'center', gap: '4px' }}
+                              onClick={() => {
+                                setVitalTemp(latestVital?.temperature || '');
+                                setVitalPulse(latestVital?.pulse || '');
+                                setVitalBpSys(latestVital?.bpSys || '');
+                                setVitalBpDia(latestVital?.bpDia || '');
+                                setVitalResp(latestVital?.respiration || '');
+                                setVitalSpo2(latestVital?.spo2 || '');
+                                setVitalWeight(latestVital?.weight || '');
+                                setVitalHeight(latestVital?.height || '');
+                                setShowVitalsModal(true);
+                              }}
+                            >
+                              Edit Vitals
+                            </span>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+                          {/* BP */}
+                          <div style={{ background: '#F0FDF4', borderRadius: '12px', padding: '12px 10px', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid #DCFCE7' }}>
+                            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#DCFCE7', color: '#16A34A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="m16 12-4-4-4 4"/>
+                                <path d="M12 16V8"/>
+                              </svg>
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '9px', color: '#16A34A', fontWeight: 800, textTransform: 'uppercase' }}>BP</div>
+                              <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#1A1D23', marginTop: '2px' }}>
+                                {latestVital && latestVital.bpSys ? `${latestVital.bpSys}/${latestVital.bpDia || ''}` : '--'} <span style={{ fontSize: '9px', color: '#64748B', fontWeight: 500 }}>mmHg</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Heart Rate */}
+                          <div style={{ background: '#FFF5F5', borderRadius: '12px', padding: '12px 10px', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid #FEE2E2' }}>
+                            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                              </svg>
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '9px', color: '#EF4444', fontWeight: 800, textTransform: 'uppercase' }}>Heart Rate</div>
+                              <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#1A1D23', marginTop: '2px' }}>
+                                {latestVital && latestVital.pulse ? latestVital.pulse : '--'} <span style={{ fontSize: '9px', color: '#64748B', fontWeight: 500 }}>bpm</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Temp */}
+                          <div style={{ background: '#FFFBEB', borderRadius: '12px', padding: '12px 10px', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid #FEF3C7' }}>
+                            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#FEF3C7', color: '#D97706', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
+                              </svg>
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '9px', color: '#D97706', fontWeight: 800, textTransform: 'uppercase' }}>Temp</div>
+                              <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#1A1D23', marginTop: '2px' }}>
+                                {latestVital && latestVital.temperature ? latestVital.temperature : '--'} <span style={{ fontSize: '9px', color: '#64748B', fontWeight: 500 }}>°F</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* SpO2 */}
+                          <div style={{ background: '#ECFDF5', borderRadius: '12px', padding: '12px 10px', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid #D1FAE5' }}>
+                            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#D1FAE5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                              </svg>
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '9px', color: '#059669', fontWeight: 800, textTransform: 'uppercase' }}>SpO2</div>
+                              <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#1A1D23', marginTop: '2px' }}>
+                                {latestVital && latestVital.spo2 ? latestVital.spo2 : '--'} <span style={{ fontSize: '9px', color: '#64748B', fontWeight: 500 }}>%</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Weight */}
+                          <div style={{ background: '#EFF6FF', borderRadius: '12px', padding: '12px 10px', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid #DBEAFE' }}>
+                            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#DBEAFE', color: '#3B82F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                              </svg>
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '9px', color: '#3B82F6', fontWeight: 800, textTransform: 'uppercase' }}>Weight</div>
+                              <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#1A1D23', marginTop: '2px' }}>
+                                {latestVital && latestVital.weight ? latestVital.weight : '--'} <span style={{ fontSize: '9px', color: '#64748B', fontWeight: 500 }}>kg</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Height */}
+                          <div style={{ background: '#F5F5F7', borderRadius: '12px', padding: '12px 10px', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid #E4E4E7' }}>
+                            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#E4E4E7', color: '#71717A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                              </svg>
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '9px', color: '#71717A', fontWeight: 800, textTransform: 'uppercase' }}>Height</div>
+                              <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#1A1D23', marginTop: '2px' }}>
+                                {latestVital && latestVital.height ? latestVital.height : '--'} <span style={{ fontSize: '9px', color: '#64748B', fontWeight: 500 }}>cm</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #F1F5F9', paddingTop: '12px', marginTop: '16px', fontSize: '11px', color: '#94A3B8', fontWeight: 700 }}>
+                          <span>Last updated: {latestVital && latestVital.createdAt ? new Date(latestVital.createdAt).toLocaleDateString() : '--'}</span>
+                          <span>By: {latestVital && latestVital.recordedBy?.name ? latestVital.recordedBy.name : '--'}</span>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
                 </div>
 
                 {/* Appointment History Table */}
@@ -13713,6 +13891,148 @@ const AdminDashboard = () => {
               >
                 {reschedulingApptId ? 'Confirm Reschedule' : 'Schedule Appointment'}
               </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* RECORD / EDIT VITALS MODAL */}
+      {showVitalsModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(4px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div className="glass-card" style={{ background: 'white', borderRadius: '16px', border: '1.5px solid #C4B5FD', padding: '28px', width: '100%', maxWidth: '520px', boxShadow: '0 20px 40px rgba(0,0,0,0.12)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid #F1F5F9', paddingBottom: '12px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#1A1D23', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                </svg>
+                Record Patient Vitals
+              </h3>
+              <button 
+                type="button" 
+                onClick={() => setShowVitalsModal(false)}
+                style={{ background: 'none', border: 'none', color: '#64748B', cursor: 'pointer', padding: '4px', fontSize: '16px' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveVitals}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Temperature (°F)</label>
+                  <input 
+                    type="number" 
+                    step="0.1" 
+                    className="form-control" 
+                    placeholder="e.g. 98.6"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    value={vitalTemp}
+                    onChange={e => setVitalTemp(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Heart Rate / Pulse (bpm)</label>
+                  <input 
+                    type="number" 
+                    className="form-control" 
+                    placeholder="e.g. 72"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    value={vitalPulse}
+                    onChange={e => setVitalPulse(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>BP Systolic (mmHg)</label>
+                  <input 
+                    type="number" 
+                    className="form-control" 
+                    placeholder="e.g. 120"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    value={vitalBpSys}
+                    onChange={e => setVitalBpSys(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>BP Diastolic (mmHg)</label>
+                  <input 
+                    type="number" 
+                    className="form-control" 
+                    placeholder="e.g. 80"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    value={vitalBpDia}
+                    onChange={e => setVitalBpDia(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Respiration (breaths/min)</label>
+                  <input 
+                    type="number" 
+                    className="form-control" 
+                    placeholder="e.g. 16"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    value={vitalResp}
+                    onChange={e => setVitalResp(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Oxygen Saturation SpO2 (%)</label>
+                  <input 
+                    type="number" 
+                    className="form-control" 
+                    placeholder="e.g. 98"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    value={vitalSpo2}
+                    onChange={e => setVitalSpo2(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Weight (kg)</label>
+                  <input 
+                    type="number" 
+                    step="0.1" 
+                    className="form-control" 
+                    placeholder="e.g. 68.5"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    value={vitalWeight}
+                    onChange={e => setVitalWeight(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Height (cm)</label>
+                  <input 
+                    type="number" 
+                    className="form-control" 
+                    placeholder="e.g. 175"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    value={vitalHeight}
+                    onChange={e => setVitalHeight(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                <button 
+                  type="button" 
+                  onClick={() => setShowVitalsModal(false)}
+                  style={{ height: '40px', padding: '0 20px', borderRadius: '8px', border: '1px solid #E2E8F0', background: '#F8FAFC', color: '#64748B', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={loading}
+                  style={{ height: '40px', padding: '0 20px', borderRadius: '8px', border: 'none', background: '#2563EB', color: 'white', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                >
+                  {loading ? 'Saving...' : 'Save Vitals'}
+                </button>
+              </div>
             </form>
           </div>
         </div>

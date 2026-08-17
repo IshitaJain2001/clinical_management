@@ -99,7 +99,7 @@ router.put('/visits/:id', restrictEMRRole(['doctor', 'nurse', 'receptionist']), 
 // ==========================================
 
 // Get vitals history for a patient
-router.get('/vitals/patient/:patientId', checkPatientConsent('treatment'), restrictEMRRole(['doctor', 'nurse', 'patient', 'receptionist']), async (req, res) => {
+router.get('/vitals/patient/:patientId', checkPatientConsent('treatment'), restrictEMRRole(['doctor', 'nurse', 'patient', 'receptionist', 'lab', 'admin']), async (req, res) => {
   try {
     const vitals = await Vital.find({ patientId: req.params.patientId, tenantId: req.tenantId }).populate('recordedBy', 'name').sort({ createdAt: -1 });
     await writeAudit(req, req.params.patientId, 'VIEW_VITALS', 'Vitals History', { count: vitals.length });
@@ -110,7 +110,7 @@ router.get('/vitals/patient/:patientId', checkPatientConsent('treatment'), restr
 });
 
 // Record new vitals
-router.post('/vitals', checkPatientConsent('treatment'), restrictEMRRole(['doctor', 'nurse', 'receptionist']), async (req, res) => {
+router.post('/vitals', checkPatientConsent('treatment'), restrictEMRRole(['doctor', 'nurse', 'receptionist', 'lab', 'admin']), async (req, res) => {
   try {
     const { patientId, visitId, temperature, pulse, respiration, bpSys, bpDia, height, weight, spo2, painScore, bloodSugar, sugarType, ecgFile } = req.body;
     

@@ -208,6 +208,16 @@ const LabDashboard = () => {
   const [coveragePharmacyInventory, setCoveragePharmacyInventory] = useState([]);
   const [patients, setPatients] = useState([]);
   const [coverageDoctors, setCoverageDoctors] = useState([]);
+  const [patientVitals, setPatientVitals] = useState([]);
+  const [showVitalsModal, setShowVitalsModal] = useState(false);
+  const [vitalTemp, setVitalTemp] = useState('');
+  const [vitalPulse, setVitalPulse] = useState('');
+  const [vitalBpSys, setVitalBpSys] = useState('');
+  const [vitalBpDia, setVitalBpDia] = useState('');
+  const [vitalResp, setVitalResp] = useState('');
+  const [vitalSpo2, setVitalSpo2] = useState('');
+  const [vitalWeight, setVitalWeight] = useState('');
+  const [vitalHeight, setVitalHeight] = useState('');
 
   const showToast = (message) => {
     setSuccessMessage(message);
@@ -884,6 +894,46 @@ const LabDashboard = () => {
       wbc: parsed.parameters?.wbc || '',
       platelets: parsed.parameters?.platelets || ''
     });
+    const patientId = req.patientId?._id || req.patientId;
+    if (patientId) {
+      api.get(`/emr/vitals/patient/${patientId}`)
+        .then(r => setPatientVitals(r.data || []))
+        .catch(() => setPatientVitals([]));
+    } else {
+      setPatientVitals([]);
+    }
+  };
+
+  const handleSaveVitals = async (e) => {
+    if (e) e.preventDefault();
+    const patientId = selectedRequestDetails?.patientId?._id || selectedRequestDetails?.patientId;
+    if (!patientId) return;
+    try {
+      setLoading(true);
+      const payload = {
+        patientId,
+        temperature: vitalTemp ? parseFloat(vitalTemp) : undefined,
+        pulse: vitalPulse ? parseInt(vitalPulse) : undefined,
+        bpSys: vitalBpSys ? parseInt(vitalBpSys) : undefined,
+        bpDia: vitalBpDia ? parseInt(vitalBpDia) : undefined,
+        respiration: vitalResp ? parseInt(vitalResp) : undefined,
+        spo2: vitalSpo2 ? parseInt(vitalSpo2) : undefined,
+        weight: vitalWeight ? parseFloat(vitalWeight) : undefined,
+        height: vitalHeight ? parseFloat(vitalHeight) : undefined
+      };
+
+      await api.post('/emr/vitals', payload);
+      showToast("Vitals recorded successfully");
+      
+      const res = await api.get(`/emr/vitals/patient/${patientId}`);
+      setPatientVitals(res.data || []);
+      setShowVitalsModal(false);
+    } catch (err) {
+      console.error("Failed to record vitals:", err);
+      showToast("Failed to record vitals");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Lab Inventory operations
@@ -2123,6 +2173,96 @@ const LabDashboard = () => {
                 </div>
               </div>
             </div>
+ 
+            {/* Vitals Summary Card */}
+            {(() => {
+              const latestVital = patientVitals && patientVitals.length > 0 ? patientVitals[0] : null;
+              return (
+                <div className="detail-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '12px', marginBottom: '24px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                      </svg>
+                      <h3 style={{ fontSize: '15px', fontWeight: 900, color: '#2563EB', margin: 0 }}>Patient Vitals</h3>
+                    </div>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      <span 
+                        style={{ fontSize: '11.5px', color: '#2563EB', fontWeight: 800, cursor: 'pointer', textDecoration: 'underline', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        onClick={() => {
+                          setVitalTemp(latestVital?.temperature || '');
+                          setVitalPulse(latestVital?.pulse || '');
+                          setVitalBpSys(latestVital?.bpSys || '');
+                          setVitalBpDia(latestVital?.bpDia || '');
+                          setVitalResp(latestVital?.respiration || '');
+                          setVitalSpo2(latestVital?.spo2 || '');
+                          setVitalWeight(latestVital?.weight || '');
+                          setVitalHeight(latestVital?.height || '');
+                          setShowVitalsModal(true);
+                        }}
+                      >
+                        Edit Vitals
+                      </span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '12px' }}>
+                    {/* BP */}
+                    <div style={{ background: '#F0FDF4', borderRadius: '10px', padding: '10px 8px', display: 'flex', flexDirection: 'column', gap: '4px', border: '1px solid #DCFCE7', alignItems: 'center', justifyContent: 'center' }}>
+                      <div style={{ fontSize: '9px', color: '#16A34A', fontWeight: 800, textTransform: 'uppercase' }}>BP</div>
+                      <div style={{ fontSize: '12px', fontWeight: 800, color: '#1A1D23' }}>
+                        {latestVital && latestVital.bpSys ? `${latestVital.bpSys}/${latestVital.bpDia || ''}` : '--'} <span style={{ fontSize: '8px', color: '#64748B', fontWeight: 500 }}>mmHg</span>
+                      </div>
+                    </div>
+
+                    {/* Heart Rate */}
+                    <div style={{ background: '#FFF5F5', borderRadius: '10px', padding: '10px 8px', display: 'flex', flexDirection: 'column', gap: '4px', border: '1px solid #FEE2E2', alignItems: 'center', justifyContent: 'center' }}>
+                      <div style={{ fontSize: '9px', color: '#EF4444', fontWeight: 800, textTransform: 'uppercase' }}>Heart Rate</div>
+                      <div style={{ fontSize: '12px', fontWeight: 800, color: '#1A1D23' }}>
+                        {latestVital && latestVital.pulse ? latestVital.pulse : '--'} <span style={{ fontSize: '8px', color: '#64748B', fontWeight: 500 }}>bpm</span>
+                      </div>
+                    </div>
+
+                    {/* Temp */}
+                    <div style={{ background: '#FFFBEB', borderRadius: '10px', padding: '10px 8px', display: 'flex', flexDirection: 'column', gap: '4px', border: '1px solid #FEF3C7', alignItems: 'center', justifyContent: 'center' }}>
+                      <div style={{ fontSize: '9px', color: '#D97706', fontWeight: 800, textTransform: 'uppercase' }}>Temp</div>
+                      <div style={{ fontSize: '12px', fontWeight: 800, color: '#1A1D23' }}>
+                        {latestVital && latestVital.temperature ? latestVital.temperature : '--'} <span style={{ fontSize: '8px', color: '#64748B', fontWeight: 500 }}>°F</span>
+                      </div>
+                    </div>
+
+                    {/* SpO2 */}
+                    <div style={{ background: '#ECFDF5', borderRadius: '10px', padding: '10px 8px', display: 'flex', flexDirection: 'column', gap: '4px', border: '1px solid #D1FAE5', alignItems: 'center', justifyContent: 'center' }}>
+                      <div style={{ fontSize: '9px', color: '#059669', fontWeight: 800, textTransform: 'uppercase' }}>SpO2</div>
+                      <div style={{ fontSize: '12px', fontWeight: 800, color: '#1A1D23' }}>
+                        {latestVital && latestVital.spo2 ? latestVital.spo2 : '--'} <span style={{ fontSize: '8px', color: '#64748B', fontWeight: 500 }}>%</span>
+                      </div>
+                    </div>
+
+                    {/* Weight */}
+                    <div style={{ background: '#EFF6FF', borderRadius: '10px', padding: '10px 8px', display: 'flex', flexDirection: 'column', gap: '4px', border: '1px solid #DBEAFE', alignItems: 'center', justifyContent: 'center' }}>
+                      <div style={{ fontSize: '9px', color: '#3B82F6', fontWeight: 800, textTransform: 'uppercase' }}>Weight</div>
+                      <div style={{ fontSize: '12px', fontWeight: 800, color: '#1A1D23' }}>
+                        {latestVital && latestVital.weight ? latestVital.weight : '--'} <span style={{ fontSize: '8px', color: '#64748B', fontWeight: 500 }}>kg</span>
+                      </div>
+                    </div>
+
+                    {/* Height */}
+                    <div style={{ background: '#F5F5F7', borderRadius: '10px', padding: '10px 8px', display: 'flex', flexDirection: 'column', gap: '4px', border: '1px solid #E4E4E7', alignItems: 'center', justifyContent: 'center' }}>
+                      <div style={{ fontSize: '9px', color: '#71717A', fontWeight: 800, textTransform: 'uppercase' }}>Height</div>
+                      <div style={{ fontSize: '12px', fontWeight: 800, color: '#1A1D23' }}>
+                        {latestVital && latestVital.height ? latestVital.height : '--'} <span style={{ fontSize: '8px', color: '#64748B', fontWeight: 500 }}>cm</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #F1F5F9', paddingTop: '10px', marginTop: '14px', fontSize: '10.5px', color: '#94A3B8', fontWeight: 700 }}>
+                    <span>Last updated: {latestVital && latestVital.createdAt ? new Date(latestVital.createdAt).toLocaleDateString() : '--'}</span>
+                    <span>By: {latestVital && latestVital.recordedBy?.name ? latestVital.recordedBy.name : '--'}</span>
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* 2. Doctor Recommendation Card */}
             <div className="recommendation-card-custom detail-card" style={{ padding: 0 }}>
@@ -3934,6 +4074,148 @@ const LabDashboard = () => {
           </>
         )}
       </div>
+
+      {/* RECORD / EDIT VITALS MODAL */}
+      {showVitalsModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(4px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div className="glass-card" style={{ background: 'white', borderRadius: '16px', border: '1.5px solid #C4B5FD', padding: '28px', width: '100%', maxWidth: '520px', boxShadow: '0 20px 40px rgba(0,0,0,0.12)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid #F1F5F9', paddingBottom: '12px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#1A1D23', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                </svg>
+                Record Patient Vitals
+              </h3>
+              <button 
+                type="button" 
+                onClick={() => setShowVitalsModal(false)}
+                style={{ background: 'none', border: 'none', color: '#64748B', cursor: 'pointer', padding: '4px', fontSize: '16px' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveVitals}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Temperature (°F)</label>
+                  <input 
+                    type="number" 
+                    step="0.1" 
+                    className="form-control" 
+                    placeholder="e.g. 98.6"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%', background: 'white', color: '#1A1D23' }}
+                    value={vitalTemp}
+                    onChange={e => setVitalTemp(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Heart Rate / Pulse (bpm)</label>
+                  <input 
+                    type="number" 
+                    className="form-control" 
+                    placeholder="e.g. 72"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%', background: 'white', color: '#1A1D23' }}
+                    value={vitalPulse}
+                    onChange={e => setVitalPulse(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>BP Systolic (mmHg)</label>
+                  <input 
+                    type="number" 
+                    className="form-control" 
+                    placeholder="e.g. 120"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%', background: 'white', color: '#1A1D23' }}
+                    value={vitalBpSys}
+                    onChange={e => setVitalBpSys(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>BP Diastolic (mmHg)</label>
+                  <input 
+                    type="number" 
+                    className="form-control" 
+                    placeholder="e.g. 80"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%', background: 'white', color: '#1A1D23' }}
+                    value={vitalBpDia}
+                    onChange={e => setVitalBpDia(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Respiration (breaths/min)</label>
+                  <input 
+                    type="number" 
+                    className="form-control" 
+                    placeholder="e.g. 16"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%', background: 'white', color: '#1A1D23' }}
+                    value={vitalResp}
+                    onChange={e => setVitalResp(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Oxygen Saturation SpO2 (%)</label>
+                  <input 
+                    type="number" 
+                    className="form-control" 
+                    placeholder="e.g. 98"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%', background: 'white', color: '#1A1D23' }}
+                    value={vitalSpo2}
+                    onChange={e => setVitalSpo2(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Weight (kg)</label>
+                  <input 
+                    type="number" 
+                    step="0.1" 
+                    className="form-control" 
+                    placeholder="e.g. 68.5"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%', background: 'white', color: '#1A1D23' }}
+                    value={vitalWeight}
+                    onChange={e => setVitalWeight(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Height (cm)</label>
+                  <input 
+                    type="number" 
+                    className="form-control" 
+                    placeholder="e.g. 175"
+                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%', background: 'white', color: '#1A1D23' }}
+                    value={vitalHeight}
+                    onChange={e => setVitalHeight(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                <button 
+                  type="button" 
+                  onClick={() => setShowVitalsModal(false)}
+                  style={{ height: '40px', padding: '0 20px', borderRadius: '8px', border: '1px solid #E2E8F0', background: '#F8FAFC', color: '#64748B', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={loading}
+                  style={{ height: '40px', padding: '0 20px', borderRadius: '8px', border: 'none', background: '#2563EB', color: 'white', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                >
+                  {loading ? 'Saving...' : 'Save Vitals'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Unified Manage Reagent/Supply Modal */}
       {showLabInventoryModal && (
