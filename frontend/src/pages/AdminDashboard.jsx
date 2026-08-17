@@ -13959,16 +13959,7 @@ const AdminDashboard = () => {
               </div>
             </div>
             
-            {/* Footer */}
-            <div style={{ padding: '16px 28px 24px', backgroundColor: '#F8FAFC', borderTop: '1px solid #F1F5F9', display: 'flex', justifyContent: 'flex-end' }}>
-              <button 
-                className="approval-act-btn" 
-                style={{ background: '#0F172A', color: 'white', padding: '10px 24px', borderRadius: '8px', fontWeight: 700 }}
-                onClick={() => setViewingPatient(null)}
-              >
-                Close Profile
-              </button>
-            </div>
+            {/* Body */}
           </div>
         </div>
       )}
