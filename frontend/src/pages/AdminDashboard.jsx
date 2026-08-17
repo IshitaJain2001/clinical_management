@@ -507,7 +507,7 @@ const AdminDashboard = () => {
   const [viewingApproval, setViewingApproval] = useState(null);
   const [approvalSearchQuery, setApprovalSearchQuery] = useState('');
   const [approvalDateRange, setApprovalDateRange] = useState({ start: '', end: '' });
-  const [approvalStatusFilter, setApprovalStatusFilter] = useState('pending');
+  const [approvalStatusFilter, setApprovalStatusFilter] = useState('all');
   const [approvalComment, setApprovalComment] = useState('');
   const [editingVendorCatalog, setEditingVendorCatalog] = useState(null);
   const [newCatalogItem, setNewCatalogItem] = useState({ name: '', sku: '', price: '' });
@@ -1498,9 +1498,9 @@ const AdminDashboard = () => {
     }
   };
 
-  const fetchApprovals = async (statusVal = approvalStatusFilter) => {
+  const fetchApprovals = async () => {
     try {
-      const response = await api.get(`/approvals?status=${statusVal}`);
+      const response = await api.get('/approvals');
       const dbApprovals = response.data.map(appItem => {
         let category = 'reorder';
         if (appItem.type === 'staff_signup' || appItem.type === 'permission_request' || appItem.type === 'role_change' || appItem.type === 'leave') {
@@ -1542,21 +1542,21 @@ const AdminDashboard = () => {
 
       setPendingApprovals(dbApprovals);
 
-      // Fetch approved approvals to compute approvedTodayCount
-      const approvedRes = await api.get('/approvals?status=approved');
+      // Compute approvedTodayCount
       const today = new Date().toDateString();
-      const approvedToday = approvedRes.data.filter(app => {
-        const resolvedDate = app.resolvedAt || app.updatedAt;
+      const approvedToday = dbApprovals.filter(app => {
+        if (app.status.toLowerCase() !== 'approved') return false;
+        const resolvedDate = app.raw?.resolvedAt || app.raw?.updatedAt;
         return resolvedDate ? new Date(resolvedDate).toDateString() === today : false;
       }).length;
       setApprovedTodayCount(approvedToday);
 
-      // Fetch denied approvals to compute rejectedThisWeekCount
-      const deniedRes = await api.get('/approvals?status=denied');
+      // Compute rejectedThisWeekCount
       const oneWeekAgo = new Date();
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-      const rejectedThisWeek = deniedRes.data.filter(app => {
-        const resolvedDate = app.resolvedAt || app.updatedAt;
+      const rejectedThisWeek = dbApprovals.filter(app => {
+        if (app.status.toLowerCase() !== 'denied' && app.status.toLowerCase() !== 'rejected') return false;
+        const resolvedDate = app.raw?.resolvedAt || app.raw?.updatedAt;
         return resolvedDate ? new Date(resolvedDate) >= oneWeekAgo : false;
       }).length;
       setRejectedThisWeekCount(rejectedThisWeek);
@@ -6807,7 +6807,7 @@ const AdminDashboard = () => {
                     <button className="widget-header-action-btn" onClick={() => setActiveTab('approvals')}>View All &gt;</button>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {pendingApprovals.slice(0, 4).map(item => (
+                    {pendingApprovals.filter(x => x.status.toLowerCase() === 'pending').slice(0, 4).map(item => (
                       <div key={item.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', border: '1px solid #E2E8F0', borderRadius: '12px', background: '#FFFFFF' }}>
                         <div 
                           style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1, minWidth: 0, cursor: item.category === 'vendor_onboarding' ? 'pointer' : 'default' }}
@@ -6834,7 +6834,7 @@ const AdminDashboard = () => {
                         </div>
                       </div>
                     ))}
-                    {pendingApprovals.length === 0 && (
+                    {pendingApprovals.filter(x => x.status.toLowerCase() === 'pending').length === 0 && (
                       <div style={{ padding: '24px', border: '1px dashed #E2E8F0', borderRadius: '12px', textAlign: 'center', fontSize: '13px', color: '#64748B', fontWeight: 600 }}>
                         No pending approvals. All clear!
                       </div>
@@ -7593,6 +7593,7 @@ const AdminDashboard = () => {
                     background: '#FFFFFF'
                   }}
                 >
+                  <option value="all">All Statuses</option>
                   <option value="pending">Pending</option>
                   <option value="approved">Approved</option>
                   <option value="denied">Denied/Rejected</option>
@@ -7625,48 +7626,68 @@ const AdminDashboard = () => {
             </div>
 
             {/* Inner Subtabs selector */}
-            <div className="approvals-subtab-bar" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px', borderBottom: '1px solid #E2E8F0', marginBottom: '20px' }}>
-              <button 
-                className={`approvals-subtab-btn ${approvalsSubTab === 'receptionist_indent' ? 'active' : 'inactive'}`}
-                onClick={() => setApprovalsSubTab('receptionist_indent')}
-              >
-                Indents ({pendingApprovals.filter(x => x.category === 'receptionist_indent').length})
-              </button>
-              <button 
-                className={`approvals-subtab-btn ${approvalsSubTab === 'vendor_onboarding' ? 'active' : 'inactive'}`}
-                onClick={() => setApprovalsSubTab('vendor_onboarding')}
-              >
-                Vendors ({pendingApprovals.filter(x => x.category === 'vendor_onboarding').length})
-              </button>
-              <button 
-                className={`approvals-subtab-btn ${approvalsSubTab === 'item_price_update' ? 'active' : 'inactive'}`}
-                onClick={() => setApprovalsSubTab('item_price_update')}
-              >
-                Price Updates ({pendingApprovals.filter(x => x.category === 'item_price_update').length})
-              </button>
-              <button 
-                className={`approvals-subtab-btn ${approvalsSubTab === 'purchase_order_approval' ? 'active' : 'inactive'}`}
-                onClick={() => setApprovalsSubTab('purchase_order_approval')}
-              >
-                Purchase Orders ({pendingApprovals.filter(x => x.category === 'purchase_order_approval').length})
-              </button>
-              <button 
-                className={`approvals-subtab-btn ${approvalsSubTab === 'leave' ? 'active' : 'inactive'}`}
-                onClick={() => setApprovalsSubTab('leave')}
-              >
-                Leave & Staff ({pendingApprovals.filter(x => x.category === 'leave').length})
-              </button>
-              <button 
-                className={`approvals-subtab-btn ${approvalsSubTab === 'billing' ? 'active' : 'inactive'}`}
-                onClick={() => setApprovalsSubTab('billing')}
-              >
-                Billing ({pendingApprovals.filter(x => x.category === 'billing').length})
-              </button>
-            </div>
+            {(() => {
+              const filteredByStatus = pendingApprovals.filter(item => {
+                if (approvalStatusFilter === 'all') return true;
+                if (approvalStatusFilter === 'pending') return item.status.toLowerCase() === 'pending';
+                if (approvalStatusFilter === 'approved') return item.status.toLowerCase() === 'approved';
+                if (approvalStatusFilter === 'denied') return item.status.toLowerCase() === 'denied' || item.status.toLowerCase() === 'rejected';
+                return true;
+              });
+
+              return (
+                <div className="approvals-subtab-bar" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px', borderBottom: '1px solid #E2E8F0', marginBottom: '20px' }}>
+                  <button 
+                    className={`approvals-subtab-btn ${approvalsSubTab === 'receptionist_indent' ? 'active' : 'inactive'}`}
+                    onClick={() => setApprovalsSubTab('receptionist_indent')}
+                  >
+                    Indents ({filteredByStatus.filter(x => x.category === 'receptionist_indent').length})
+                  </button>
+                  <button 
+                    className={`approvals-subtab-btn ${approvalsSubTab === 'vendor_onboarding' ? 'active' : 'inactive'}`}
+                    onClick={() => setApprovalsSubTab('vendor_onboarding')}
+                  >
+                    Vendors ({filteredByStatus.filter(x => x.category === 'vendor_onboarding').length})
+                  </button>
+                  <button 
+                    className={`approvals-subtab-btn ${approvalsSubTab === 'item_price_update' ? 'active' : 'inactive'}`}
+                    onClick={() => setApprovalsSubTab('item_price_update')}
+                  >
+                    Price Updates ({filteredByStatus.filter(x => x.category === 'item_price_update').length})
+                  </button>
+                  <button 
+                    className={`approvals-subtab-btn ${approvalsSubTab === 'purchase_order_approval' ? 'active' : 'inactive'}`}
+                    onClick={() => setApprovalsSubTab('purchase_order_approval')}
+                  >
+                    Purchase Orders ({filteredByStatus.filter(x => x.category === 'purchase_order_approval').length})
+                  </button>
+                  <button 
+                    className={`approvals-subtab-btn ${approvalsSubTab === 'leave' ? 'active' : 'inactive'}`}
+                    onClick={() => setApprovalsSubTab('leave')}
+                  >
+                    Leave & Staff ({filteredByStatus.filter(x => x.category === 'leave').length})
+                  </button>
+                  <button 
+                    className={`approvals-subtab-btn ${approvalsSubTab === 'billing' ? 'active' : 'inactive'}`}
+                    onClick={() => setApprovalsSubTab('billing')}
+                  >
+                    Billing ({filteredByStatus.filter(x => x.category === 'billing').length})
+                  </button>
+                </div>
+              );
+            })()}
 
             {/* List Renderer */}
             {(() => {
-              const filteredList = pendingApprovals.filter(item => {
+              const filteredByStatus = pendingApprovals.filter(item => {
+                if (approvalStatusFilter === 'all') return true;
+                if (approvalStatusFilter === 'pending') return item.status.toLowerCase() === 'pending';
+                if (approvalStatusFilter === 'approved') return item.status.toLowerCase() === 'approved';
+                if (approvalStatusFilter === 'denied') return item.status.toLowerCase() === 'denied' || item.status.toLowerCase() === 'rejected';
+                return true;
+              });
+
+              const filteredList = filteredByStatus.filter(item => {
                 // 1. Category check
                 if (item.category !== approvalsSubTab) return false;
                 // 2. Search Query
