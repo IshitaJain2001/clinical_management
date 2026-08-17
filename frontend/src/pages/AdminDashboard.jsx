@@ -7795,12 +7795,44 @@ const AdminDashboard = () => {
                         </div>
                       )}
 
-                      {item.category === 'purchase_order_approval' && (
-                        <div style={{ margin: '8px 0 16px 0', fontSize: '13.5px', color: '#334155' }}>
-                          <div><strong>Vendor:</strong> {item.raw?.details?.vendorName}</div>
-                          <div style={{ fontSize: '15px', color: '#1E3A8A', fontWeight: 800, marginTop: '4px' }}>Total Outlay: ₹{item.raw?.details?.totalAmount}</div>
-                        </div>
-                      )}
+                      {item.category === 'purchase_order_approval' && (() => {
+                        const matchingPO = purchaseOrders.find(po => 
+                          po.poId === item.raw?.details?.poNumber || 
+                          po._id === item.raw?.details?.poId || 
+                          po._id === item.raw?.details?.id
+                        );
+                        const matchingGRN = matchingPO ? goodsReceipts.find(grn => 
+                          grn.poNumber === matchingPO.poId || 
+                          grn.poId === matchingPO._id
+                        ) : null;
+                        
+                        return (
+                          <div style={{ margin: '8px 0 16px 0', fontSize: '13.5px', color: '#334155', background: '#F8FAFC', borderRadius: '8px', padding: '12px', border: '1px solid #E2E8F0' }}>
+                            <div><strong>Vendor:</strong> {item.raw?.details?.vendorName}</div>
+                            <div style={{ fontSize: '15px', color: '#1E3A8A', fontWeight: 800, marginTop: '4px', marginBottom: '8px' }}>Total Outlay: ₹{item.raw?.details?.totalAmount}</div>
+                            
+                            {matchingPO && (
+                              <div style={{ borderTop: '1px dashed #CBD5E1', paddingTop: '8px', marginTop: '8px' }}>
+                                <div style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '4px' }}>PO Delivery Info</div>
+                                <div><strong>PO Status:</strong> {matchingPO.status}</div>
+                                <div><strong>Expected Delivery:</strong> {matchingPO.expectedDelivery ? new Date(matchingPO.expectedDelivery).toLocaleDateString() : 'N/A'}</div>
+                                <div><strong>Items Ordered:</strong> {matchingPO.items?.map(i => `${i.name} (Qty: ${i.requiredQty})`).join(', ')}</div>
+                              </div>
+                            )}
+
+                            {matchingGRN && (
+                              <div style={{ borderTop: '1px dashed #CBD5E1', paddingTop: '8px', marginTop: '8px' }}>
+                                <div style={{ fontSize: '12px', fontWeight: 800, color: '#065F46', textTransform: 'uppercase', marginBottom: '4px' }}>Goods Receipt Note (GRN) Info</div>
+                                <div><strong>GRN ID:</strong> {matchingGRN.grnId}</div>
+                                <div><strong>GRN Status:</strong> <span style={{ color: '#059669', fontWeight: 700 }}>{matchingGRN.status}</span></div>
+                                <div><strong>Received Date:</strong> {new Date(matchingGRN.receivedDate).toLocaleDateString()}</div>
+                                <div><strong>Received By:</strong> {matchingGRN.receivedBy || 'Staff'}</div>
+                                <div><strong>Items Received:</strong> {matchingGRN.items?.map(i => `${i.name} (Qty Recd: ${i.qtyReceived})`).join(', ')}</div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
 
                       {item.details && item.category !== 'receptionist_indent' && item.category !== 'item_price_update' && (
                         <div style={{ color: '#475569', fontSize: '13.5px', fontWeight: 600, marginBottom: '20px' }}>
