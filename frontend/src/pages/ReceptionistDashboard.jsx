@@ -11874,6 +11874,39 @@ const ReceptionistDashboard = () => {
           `}</style>
 
           <div id="printable-receipt-slip" style={{ background: '#FFFFFF', borderRadius: '16px', width: '100%', maxWidth: '720px', padding: '36px 40px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', border: '1px solid #E2E8F0', position: 'relative', overflow: 'hidden' }}>
+            {/* Top Right Close Button */}
+            <button 
+              type="button"
+              className="no-print"
+              onClick={() => {
+                setShowSlipPdfModal(false);
+                setActiveSlipData(null);
+                switchTab('patients');
+              }}
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: '#64748B',
+                padding: '8px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'background 0.2s',
+                zIndex: 10
+              }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = '#F1F5F9'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
             
             {/* Massive Diagonal Watermark - CUROXA (Optimized for PDF Print) */}
             <div 
@@ -12075,19 +12108,23 @@ const ReceptionistDashboard = () => {
               <button
                 type="button"
                 onClick={() => {
-                  setShowSlipPdfModal(false);
-                  setActiveSlipData(null);
-                  switchTab('patients');
+                  const rawNumber = activeSlipData.contact || '';
+                  const cleanNumber = rawNumber.replace(/\D/g, '');
+                  const phoneWithCountry = cleanNumber.length === 10 ? `91${cleanNumber}` : cleanNumber;
+                  const message = `Hello, here is your payment receipt & clinical service order slip from ${activeSlipData.hospitalName || 'Curoxa Medical Center'}.\n\nReceipt No: ${activeSlipData.receiptNo}\nTotal Amount: ₹${activeSlipData.totalAmount}\nUHID: ${activeSlipData.patientId}\n\nThank you!`;
+                  const url = `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(message)}`;
+                  window.open(url, '_blank');
                 }}
-                style={{ padding: '10px 22px', background: '#2563EB', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 800, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(37,99,235,0.25)', transition: 'all 0.15s ease' }}
+                style={{ padding: '10px 18px', background: '#2563EB', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 800, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(37,99,235,0.25)', transition: 'all 0.15s ease' }}
                 onMouseEnter={e => e.currentTarget.style.background = '#1D4ED8'}
                 onMouseLeave={e => e.currentTarget.style.background = '#2563EB'}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"/>
-                  <line x1="6" y1="6" x2="18" y2="18"/>
+                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                  <polyline points="16 6 12 2 8 6" />
+                  <line x1="12" y1="2" x2="12" y2="15" />
                 </svg>
-                Done / Close
+                Share
               </button>
             </div>
           </div>

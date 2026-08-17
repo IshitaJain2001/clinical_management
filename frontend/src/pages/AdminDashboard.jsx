@@ -13684,17 +13684,40 @@ const AdminDashboard = () => {
               </div>
               <div className="admin-input-group">
                 <label className="admin-input-label">Assigned Consultant</label>
-                <select 
-                  className="admin-text-input" 
-                  value={editingPatient.doctor}
-                  onChange={e => setEditingPatient({...editingPatient, doctor: e.target.value})}
-                  required
-                >
-                  <option value="">-- Choose Consultant --</option>
-                  {staff.filter(u => u.role === 'doctor').map(doc => (
-                    <option key={doc.id || doc._id} value={doc.name}>{doc.name} ({doc.dept})</option>
-                  ))}
-                </select>
+                {(() => {
+                  const metDoctor = (() => {
+                    if (!editingPatient) return false;
+                    return appointments.some(app => {
+                      const appPatId = app.patientMongoId?._id || app.patientMongoId;
+                      const matchesPat = (appPatId && editingPatient.id && appPatId.toString() === editingPatient.id.toString()) ||
+                                         (app.patientId === editingPatient.patientId) ||
+                                         (app.patientName && editingPatient.name && app.patientName.toLowerCase() === editingPatient.name.toLowerCase());
+                      return matchesPat && app.status === 'COMPLETED';
+                    });
+                  })();
+                  return (
+                    <>
+                      <select 
+                        className="admin-text-input" 
+                        value={editingPatient.doctor}
+                        onChange={e => setEditingPatient({...editingPatient, doctor: e.target.value})}
+                        required
+                        disabled={metDoctor}
+                        style={metDoctor ? { backgroundColor: '#F1F5F9', color: '#64748B', cursor: 'not-allowed' } : {}}
+                      >
+                        <option value="">-- Choose Consultant --</option>
+                        {staff.filter(u => u.role === 'doctor').map(doc => (
+                          <option key={doc.id || doc._id} value={doc.name}>{doc.name} ({doc.dept})</option>
+                        ))}
+                      </select>
+                      {metDoctor && (
+                        <span style={{ fontSize: '11.5px', color: '#EF4444', fontWeight: 700, marginTop: '4px', display: 'block' }}>
+                          Patient has already consulted with the doctor. Consultant cannot be changed.
+                        </span>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
               
               <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
