@@ -12786,14 +12786,18 @@ const AdminDashboard = () => {
                           />
                         </div>
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '4px' }}>TURNAROUND TIME</label>
-                          <input 
-                            type="text" 
-                            value={catalogForm.turnaroundTime} 
-                            onChange={e => setCatalogForm({ ...catalogForm, turnaroundTime: e.target.value })} 
-                            placeholder="e.g. 4 Hours, 24 Hours"
-                            style={{ width: '100%', height: '40px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 10px', fontSize: '13px' }}
-                          />
+                          <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '4px' }}>TURNAROUND TIME (HOURS)</label>
+                          <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                            <input 
+                              type="number" 
+                              value={catalogForm.turnaroundTime ? (parseInt(catalogForm.turnaroundTime) || '') : ''} 
+                              onChange={e => setCatalogForm({ ...catalogForm, turnaroundTime: e.target.value ? `${e.target.value} Hours` : '' })} 
+                              placeholder="e.g. 24"
+                              min="1"
+                              style={{ width: '100%', height: '40px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 55px 0 10px', fontSize: '13px' }}
+                            />
+                            <span style={{ position: 'absolute', right: '12px', fontSize: '12px', color: '#64748B', fontWeight: 700 }}>Hours</span>
+                          </div>
                         </div>
                       </div>
 
