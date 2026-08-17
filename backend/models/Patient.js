@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const patientSchema = new mongoose.Schema({
   tenantId: { type: String, required: true, default: 'city_hospital', index: true },
+  patientId: { type: String },
   name: { type: String, required: true },
   age: { type: Number, required: true },
   gender: { type: String, enum: ['Male', 'Female', 'Other'], required: true },

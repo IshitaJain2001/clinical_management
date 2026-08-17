@@ -1282,13 +1282,18 @@ const AdminDashboard = () => {
     return 'Unassigned';
   };
 
-  const getFormattedPatientId = (patientId) => {
-    if (!patientId) return 'MDC-000000';
+  const getFormattedPatientId = (patientId, patientRaw) => {
+    if (patientRaw?.patientId) return patientRaw.patientId;
+    if (!patientId) return 'pat-00';
     const idStr = patientId.toString();
+    if (idStr.toLowerCase().startsWith('pat-')) return idStr;
+    const found = patients.find(p => p.id === idStr || p.raw?._id === idStr);
+    if (found?.raw?.patientId) return found.raw.patientId;
+    if (found?.patientId) return found.patientId;
     if (idStr.length >= 24) {
-      return `MDC-${idStr.substring(18).toUpperCase()}`;
+      return `pat-${idStr.substring(22).toUpperCase()}`;
     }
-    return `MDC-${idStr.toUpperCase()}`;
+    return `pat-${idStr.toUpperCase()}`;
   };
 
   const getDisplayDob = (patient) => {
@@ -1389,7 +1394,7 @@ const AdminDashboard = () => {
       const response = await api.get('/patients');
       const formattedPatients = response.data.map(p => ({
         id: p._id,
-        patientId: p.contact ? `#${p.contact.slice(-4)}` : `#${p._id.substring(p._id.length - 4).toUpperCase()}`,
+        patientId: p.patientId || (p.contact ? `pat-${p.contact.slice(-2)}` : `pat-${p._id.substring(p._id.length - 2).toUpperCase()}`),
         name: p.name,
         ageGender: `${p.age || '--'} ${p.gender?.[0] || 'U'}`,
         lastVisit: p.updatedAt ? new Date(p.updatedAt).toLocaleDateString([], { day: 'numeric', month: 'short', year: 'numeric' }) : 'Unknown',

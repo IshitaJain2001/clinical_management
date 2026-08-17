@@ -2621,13 +2621,17 @@ const DoctorDashboard = () => {
   // REAL-TIME DATA FLOW & INTERACTIVE CALENDAR HELPERS
   // ==========================================
 
-  const getFormattedPatientId = (patientId) => {
-    if (!patientId) return 'MDC-000000';
+  const getFormattedPatientId = (patientId, patientRaw) => {
+    if (patientRaw?.patientId) return patientRaw.patientId;
+    if (!patientId) return 'pat-00';
     const idStr = patientId.toString();
+    if (idStr.toLowerCase().startsWith('pat-')) return idStr;
+    const found = patients.find(p => p._id === idStr || p.id === idStr);
+    if (found?.patientId) return found.patientId;
     if (idStr.length >= 24) {
-      return `MDC-${idStr.substring(18).toUpperCase()}`;
+      return `pat-${idStr.substring(22).toUpperCase()}`;
     }
-    return `MDC-${idStr.toUpperCase()}`;
+    return `pat-${idStr.toUpperCase()}`;
   };
 
   const getDisplayDob = (pt) => {

@@ -9,8 +9,17 @@ router.use(verifyToken);
 // Get all patients (scoped to tenant)
 router.get('/', async (req, res) => {
   try {
-    const patients = await Patient.find({ tenantId: req.tenantId }).sort({ createdAt: -1 });
-    res.json(patients);
+    const patients = await Patient.find({ tenantId: req.tenantId }).sort({ createdAt: 1 });
+    let changed = false;
+    for (let i = 0; i < patients.length; i++) {
+      if (!patients[i].patientId) {
+        patients[i].patientId = `pat-${String(i + 1).padStart(2, '0')}`;
+        await patients[i].save();
+        changed = true;
+      }
+    }
+    const patientsToReturn = changed ? await Patient.find({ tenantId: req.tenantId }).sort({ createdAt: -1 }) : patients.reverse();
+    res.json(patientsToReturn);
   } catch (error) {
     console.error("Get patients error:", error);
     res.status(500).json({ error: 'Internal server error' });
@@ -59,8 +68,19 @@ router.post('/', async (req, res) => {
       }
     }
 
+    const count = await Patient.countDocuments({ tenantId: req.tenantId });
+    let nextSeq = count + 1;
+    let formattedId = `pat-${String(nextSeq).padStart(2, '0')}`;
+    let exists = await Patient.exists({ tenantId: req.tenantId, patientId: formattedId });
+    while (exists) {
+      nextSeq++;
+      formattedId = `pat-${String(nextSeq).padStart(2, '0')}`;
+      exists = await Patient.exists({ tenantId: req.tenantId, patientId: formattedId });
+    }
+
     const patient = await Patient.create({
       tenantId: req.tenantId,
+      patientId: formattedId,
       name,
       age: parseInt(age) || 30,
       gender,
