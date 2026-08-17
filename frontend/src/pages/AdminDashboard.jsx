@@ -8960,11 +8960,26 @@ const AdminDashboard = () => {
 
                                 {/* Status */}
                                 <td style={{ padding: '16px 12px' }}>
-                                  <span style={{ 
-                                    background: app.status === 'COMPLETED' ? '#ECFDF5' : (app.status === 'CANCELLED' ? '#FEF2F2' : '#FAF5FF'), 
-                                    color: app.status === 'COMPLETED' ? '#10B981' : (app.status === 'CANCELLED' ? '#EF4444' : '#7E22CE'), 
-                                    fontSize: '11px', padding: '4px 10px', borderRadius: '6px', fontWeight: 800 
-                                  }}>{app.status}</span>
+                                  {(() => {
+                                    const dynStatus = (() => {
+                                      if (!app) return 'N/A';
+                                      const today = new Date();
+                                      today.setHours(0, 0, 0, 0);
+                                      const appDate = new Date(app.date);
+                                      appDate.setHours(0, 0, 0, 0);
+                                      if (app.status === 'COMPLETED') return 'CONSULTED';
+                                      if (app.status === 'CANCELLED') return 'CANCELLED';
+                                      if (appDate < today && (app.status === 'SCHEDULED' || app.status === 'IN QUEUE')) return 'PENDING';
+                                      return app.status;
+                                    })();
+                                    const bg = dynStatus === 'CONSULTED' ? '#ECFDF5' : (dynStatus === 'CANCELLED' ? '#FEF2F2' : (dynStatus === 'PENDING' ? '#FEF3C7' : '#FAF5FF'));
+                                    const fg = dynStatus === 'CONSULTED' ? '#10B981' : (dynStatus === 'CANCELLED' ? '#EF4444' : (dynStatus === 'PENDING' ? '#D97706' : '#7E22CE'));
+                                    return (
+                                      <span style={{ background: bg, color: fg, fontSize: '11px', padding: '4px 10px', borderRadius: '6px', fontWeight: 800 }}>
+                                        {dynStatus}
+                                      </span>
+                                    );
+                                  })()}
                                 </td>
 
                                 {/* Action */}
@@ -9248,10 +9263,23 @@ const AdminDashboard = () => {
                   {selectedProfileAppointment ? (
                     <>
                       <div style={{ fontSize: '13.5px', color: '#64748B', fontWeight: 700, marginTop: '6px' }}>
-                        Status: <span style={{ 
-                          color: selectedProfileAppointment.status === 'COMPLETED' ? '#10B981' : (selectedProfileAppointment.status === 'CANCELLED' ? '#EF4444' : '#7E22CE'),
-                          fontWeight: 800
-                        }}>{selectedProfileAppointment.status}</span>
+                        Status: {(() => {
+                          const dynStatus = (() => {
+                            if (!selectedProfileAppointment) return 'N/A';
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            const appDate = new Date(selectedProfileAppointment.date);
+                            appDate.setHours(0, 0, 0, 0);
+                            if (selectedProfileAppointment.status === 'COMPLETED') return 'CONSULTED';
+                            if (selectedProfileAppointment.status === 'CANCELLED') return 'CANCELLED';
+                            if (appDate < today && (selectedProfileAppointment.status === 'SCHEDULED' || selectedProfileAppointment.status === 'IN QUEUE')) return 'PENDING';
+                            return selectedProfileAppointment.status;
+                          })();
+                          const fg = dynStatus === 'CONSULTED' ? '#10B981' : (dynStatus === 'CANCELLED' ? '#EF4444' : (dynStatus === 'PENDING' ? '#D97706' : '#7E22CE'));
+                          return (
+                            <span style={{ color: fg, fontWeight: 800 }}>{dynStatus}</span>
+                          );
+                        })()}
                       </div>
 
                       <div style={{ height: '1px', background: '#F1F5F9', margin: '18px 0' }}></div>
