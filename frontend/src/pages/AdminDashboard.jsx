@@ -7814,7 +7814,6 @@ const AdminDashboard = () => {
                             {matchingPO && (
                               <div style={{ borderTop: '1px dashed #CBD5E1', paddingTop: '8px', marginTop: '8px' }}>
                                 <div style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '4px' }}>PO Delivery Info</div>
-                                <div><strong>PO Status:</strong> {matchingPO.status}</div>
                                 <div><strong>Expected Delivery:</strong> {matchingPO.expectedDelivery ? new Date(matchingPO.expectedDelivery).toLocaleDateString() : 'N/A'}</div>
                                 <div><strong>Items Ordered:</strong> {matchingPO.items?.map(i => `${i.name} (Qty: ${i.requiredQty})`).join(', ')}</div>
                               </div>
@@ -7849,11 +7848,7 @@ const AdminDashboard = () => {
                             ✓ Review Request
                           </button>
                         )}
-                        {item.status.toLowerCase() !== 'pending' && (
-                          <span style={{ fontSize: '13px', color: '#22C55E', fontWeight: 700 }}>
-                            Status: {item.status}
-                          </span>
-                        )}
+
                         <button 
                           className="approval-action-btn-blue-outline"
                           onClick={() => setViewingApproval(item)}
