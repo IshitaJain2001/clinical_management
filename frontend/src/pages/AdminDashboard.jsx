@@ -8863,22 +8863,57 @@ const AdminDashboard = () => {
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', alignItems: 'center' }}>
                         <span style={{ color: '#64748B', fontWeight: 600 }}>Allergies:</span>
-                        <span className="appt-status-badge badge-danger" style={{ padding: '4px 10px', fontSize: '11px' }}>
-                          {viewingPatient.raw?.allergies || 'None'}
-                        </span>
+                        {(() => {
+                          const rawAllergies = viewingPatient.raw?.allergies || '';
+                          const hasRawAllergies = rawAllergies && rawAllergies.toLowerCase() !== 'none';
+                          const allergyKeywords = ['lactose', 'gluten', 'peanut', 'nut', 'dairy', 'egg', 'soy', 'shellfish', 'wheat', 'seafood', 'penicillin'];
+                          const histAllergies = (viewingPatient.raw?.medicalHistory || []).filter(h => 
+                            allergyKeywords.some(keyword => h.toLowerCase().includes(keyword)) ||
+                            h.toLowerCase().includes('allergy') || 
+                            h.toLowerCase().includes('intolerance')
+                          );
+                          const allAllergies = [];
+                          if (hasRawAllergies) allAllergies.push(rawAllergies);
+                          histAllergies.forEach(ha => {
+                            if (!allAllergies.some(x => x.toLowerCase() === ha.toLowerCase())) {
+                              allAllergies.push(ha);
+                            }
+                          });
+                          if (allAllergies.length === 0) {
+                            return (
+                              <span className="appt-status-badge badge-danger" style={{ padding: '4px 10px', fontSize: '11px' }}>
+                                None
+                              </span>
+                            );
+                          }
+                          return (
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                              {allAllergies.map((a, idx) => (
+                                <span key={idx} className="appt-status-badge badge-danger" style={{ padding: '4px 10px', fontSize: '11px' }}>{a}</span>
+                              ))}
+                            </div>
+                          );
+                        })()}
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13.5px' }}>
                         <span style={{ color: '#64748B', fontWeight: 600 }}>Medical History:</span>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '4px' }}>
-                          {viewingPatient.raw?.medicalHistory && viewingPatient.raw.medicalHistory.length > 0 ? (
-                            viewingPatient.raw.medicalHistory.map((h, idx) => (
+                          {(() => {
+                            const allergyKeywords = ['lactose', 'gluten', 'peanut', 'nut', 'dairy', 'egg', 'soy', 'shellfish', 'wheat', 'seafood', 'penicillin'];
+                            const filteredHistory = (viewingPatient.raw?.medicalHistory || []).filter(h => 
+                              !allergyKeywords.some(keyword => h.toLowerCase().includes(keyword)) &&
+                              !h.toLowerCase().includes('allergy') && 
+                              !h.toLowerCase().includes('intolerance')
+                            );
+                            if (filteredHistory.length === 0) {
+                              return <span style={{ color: '#64748B', fontWeight: 500, fontSize: '12px' }}>No medical history recorded</span>;
+                            }
+                            return filteredHistory.map((h, idx) => (
                               <span key={idx} className="appt-status-badge badge-info" style={{ padding: '4px 10px', fontSize: '11px' }}>{h}</span>
-                            ))
-                          ) : (
-                            <span style={{ color: '#64748B', fontWeight: 500, fontSize: '12px' }}>No medical history recorded</span>
-                          )}
+                            ));
+                          })()}
                         </div>
                       </div>
                     </div>
@@ -13967,22 +14002,57 @@ const AdminDashboard = () => {
               <div>
                 <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Allergies</label>
                 <div style={{ fontSize: '14px', fontWeight: 600, color: '#334155', marginTop: '4px' }}>
-                  <span className="appt-status-badge badge-danger" style={{ display: 'inline-block', padding: '4px 10px', fontSize: '12px' }}>
-                    {viewingPatient.raw?.allergies || 'None'}
-                  </span>
+                  {(() => {
+                    const rawAllergies = viewingPatient.raw?.allergies || '';
+                    const hasRawAllergies = rawAllergies && rawAllergies.toLowerCase() !== 'none';
+                    const allergyKeywords = ['lactose', 'gluten', 'peanut', 'nut', 'dairy', 'egg', 'soy', 'shellfish', 'wheat', 'seafood', 'penicillin'];
+                    const histAllergies = (viewingPatient.raw?.medicalHistory || []).filter(h => 
+                      allergyKeywords.some(keyword => h.toLowerCase().includes(keyword)) ||
+                      h.toLowerCase().includes('allergy') || 
+                      h.toLowerCase().includes('intolerance')
+                    );
+                    const allAllergies = [];
+                    if (hasRawAllergies) allAllergies.push(rawAllergies);
+                    histAllergies.forEach(ha => {
+                      if (!allAllergies.some(x => x.toLowerCase() === ha.toLowerCase())) {
+                        allAllergies.push(ha);
+                      }
+                    });
+                    if (allAllergies.length === 0) {
+                      return (
+                        <span className="appt-status-badge badge-danger" style={{ display: 'inline-block', padding: '4px 10px', fontSize: '12px' }}>
+                          None
+                        </span>
+                      );
+                    }
+                    return (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                        {allAllergies.map((a, idx) => (
+                          <span key={idx} className="appt-status-badge badge-danger" style={{ padding: '4px 10px', fontSize: '12px' }}>{a}</span>
+                        ))}
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
 
               <div>
                 <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Medical History</label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '6px' }}>
-                  {viewingPatient.raw?.medicalHistory && viewingPatient.raw.medicalHistory.length > 0 ? (
-                    viewingPatient.raw.medicalHistory.map((h, idx) => (
+                  {(() => {
+                    const allergyKeywords = ['lactose', 'gluten', 'peanut', 'nut', 'dairy', 'egg', 'soy', 'shellfish', 'wheat', 'seafood', 'penicillin'];
+                    const filteredHistory = (viewingPatient.raw?.medicalHistory || []).filter(h => 
+                      !allergyKeywords.some(keyword => h.toLowerCase().includes(keyword)) &&
+                      !h.toLowerCase().includes('allergy') && 
+                      !h.toLowerCase().includes('intolerance')
+                    );
+                    if (filteredHistory.length === 0) {
+                      return <span style={{ fontSize: '13.5px', color: '#64748B', fontWeight: 500 }}>No medical history recorded</span>;
+                    }
+                    return filteredHistory.map((h, idx) => (
                       <span key={idx} className="appt-status-badge badge-info" style={{ padding: '4px 10px', fontSize: '12px' }}>{h}</span>
-                    ))
-                  ) : (
-                    <span style={{ fontSize: '13.5px', color: '#64748B', fontWeight: 500 }}>No medical history recorded</span>
-                  )}
+                    ));
+                  })()}
                 </div>
               </div>
             </div>
