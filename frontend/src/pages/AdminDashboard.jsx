@@ -14182,24 +14182,28 @@ const AdminDashboard = () => {
                 >
                   Close
                 </button>
-                <button 
-                  style={{ padding: '10px 20px', borderRadius: '8px', background: '#EF4444', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer' }}
-                  onClick={() => {
-                    rejectApprovalItem(viewingApproval.id, viewingApproval.title, !!viewingApproval.raw);
-                    setViewingApproval(null);
-                  }}
-                >
-                  ✕ Reject
-                </button>
-                <button 
-                  style={{ padding: '10px 20px', borderRadius: '8px', background: '#22C55E', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer' }}
-                  onClick={() => {
-                    approveApprovalItem(viewingApproval.id, viewingApproval.title, !!viewingApproval.raw);
-                    setViewingApproval(null);
-                  }}
-                >
-                  ✓ Approve
-                </button>
+                {viewingApproval.status.toLowerCase() === 'pending' && (
+                  <>
+                    <button 
+                      style={{ padding: '10px 20px', borderRadius: '8px', background: '#EF4444', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer' }}
+                      onClick={() => {
+                        rejectApprovalItem(viewingApproval.id, viewingApproval.title, !!viewingApproval.raw);
+                        setViewingApproval(null);
+                      }}
+                    >
+                      ✕ Reject
+                    </button>
+                    <button 
+                      style={{ padding: '10px 20px', borderRadius: '8px', background: '#22C55E', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer' }}
+                      onClick={() => {
+                        approveApprovalItem(viewingApproval.id, viewingApproval.title, !!viewingApproval.raw);
+                        setViewingApproval(null);
+                      }}
+                    >
+                      ✓ Approve
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>
