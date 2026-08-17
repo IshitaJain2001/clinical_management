@@ -472,7 +472,7 @@ const AdminDashboard = () => {
   // Interactive approvals state matching the new mockup layout exactly
   const [pendingApprovals, setPendingApprovals] = useState([]);
 
-  const [approvalsSubTab, setApprovalsSubTab] = useState('reorder');
+  const [approvalsSubTab, setApprovalsSubTab] = useState('all');
   const [approvedTodayCount, setApprovedTodayCount] = useState(0);
   const [rejectedThisWeekCount, setRejectedThisWeekCount] = useState(0);
 
@@ -7638,6 +7638,12 @@ const AdminDashboard = () => {
               return (
                 <div className="approvals-subtab-bar" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px', borderBottom: '1px solid #E2E8F0', marginBottom: '20px' }}>
                   <button 
+                    className={`approvals-subtab-btn ${approvalsSubTab === 'all' ? 'active' : 'inactive'}`}
+                    onClick={() => setApprovalsSubTab('all')}
+                  >
+                    All ({filteredByStatus.length})
+                  </button>
+                  <button 
                     className={`approvals-subtab-btn ${approvalsSubTab === 'receptionist_indent' ? 'active' : 'inactive'}`}
                     onClick={() => setApprovalsSubTab('receptionist_indent')}
                   >
@@ -7689,7 +7695,7 @@ const AdminDashboard = () => {
 
               const filteredList = filteredByStatus.filter(item => {
                 // 1. Category check
-                if (item.category !== approvalsSubTab) return false;
+                if (approvalsSubTab !== 'all' && item.category !== approvalsSubTab) return false;
                 // 2. Search Query
                 if (approvalSearchQuery) {
                   const q = approvalSearchQuery.toLowerCase();
