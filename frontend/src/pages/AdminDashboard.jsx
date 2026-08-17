@@ -14266,6 +14266,140 @@ const AdminDashboard = () => {
         </div>
       )}
 
+      {/* Manage Vendor Catalogue Modal */}
+      {editingVendorCatalog && (
+        <div className="admin-modal-overlay" onClick={() => setEditingVendorCatalog(null)}>
+          <div className="admin-modal-card" style={{ maxWidth: '640px' }} onClick={e => e.stopPropagation()}>
+            <div className="admin-modal-header">
+              <span className="admin-modal-title">Manage Vendor Catalogue: {editingVendorCatalog.vendorName}</span>
+              <button className="admin-modal-close-btn" onClick={() => setEditingVendorCatalog(null)}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+              </button>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '8px 0' }}>
+              
+              {/* Add New Item Form */}
+              <div style={{ background: '#F8FAFC', borderRadius: '10px', padding: '16px', border: '1px dashed #3B82F6' }}>
+                <div style={{ fontSize: '13px', fontWeight: 800, color: '#1E3A8A', textTransform: 'uppercase', marginBottom: '12px' }}>Add Medicine to Catalogue</div>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                  <input 
+                    type="text" 
+                    placeholder="Medicine Name (e.g. Paracetamol 650mg)"
+                    value={newCatalogItem.name}
+                    onChange={e => setNewCatalogItem({ ...newCatalogItem, name: e.target.value })}
+                    style={{ flex: 2, minWidth: '180px', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '13px' }}
+                  />
+                  <input 
+                    type="text" 
+                    placeholder="SKU"
+                    value={newCatalogItem.sku}
+                    onChange={e => setNewCatalogItem({ ...newCatalogItem, sku: e.target.value })}
+                    style={{ flex: 1, minWidth: '80px', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '13px' }}
+                  />
+                  <input 
+                    type="number" 
+                    placeholder="Price (₹)"
+                    value={newCatalogItem.price}
+                    onChange={e => setNewCatalogItem({ ...newCatalogItem, price: e.target.value })}
+                    style={{ flex: 1, minWidth: '80px', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '13px' }}
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      if (!newCatalogItem.name || !newCatalogItem.sku || !newCatalogItem.price) {
+                        showToast("Please fill all fields", "error");
+                        return;
+                      }
+                      const updatedMeds = [
+                        ...editingVendorCatalog.medicines,
+                        { name: newCatalogItem.name, sku: newCatalogItem.sku, price: Number(newCatalogItem.price), available: true }
+                      ];
+                      setEditingVendorCatalog({ ...editingVendorCatalog, medicines: updatedMeds });
+                      setNewCatalogItem({ name: '', sku: '', price: '' });
+                    }}
+                    style={{ background: '#2563EB', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '8px', fontWeight: 800, fontSize: '13px', cursor: 'pointer' }}
+                  >
+                    + Add
+                  </button>
+                </div>
+              </div>
+
+              {/* Items List */}
+              <div style={{ maxHeight: '300px', overflowY: 'auto', border: '1px solid #E2E8F0', borderRadius: '8px' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                  <thead>
+                    <tr style={{ background: '#F1F5F9', borderBottom: '1px solid #E2E8F0', position: 'sticky', top: 0 }}>
+                      <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: 800 }}>Medicine Name</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: 800, width: '100px' }}>SKU</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 800, width: '100px' }}>Price (₹)</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'center', fontWeight: 800, width: '80px' }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {editingVendorCatalog.medicines.map((med, idx) => (
+                      <tr key={idx} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                        <td style={{ padding: '10px 12px', fontWeight: 700 }}>{med.name}</td>
+                        <td style={{ padding: '10px 12px', fontFamily: 'monospace' }}>{med.sku}</td>
+                        <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 800 }}>₹{med.price.toFixed(2)}</td>
+                        <td style={{ padding: '10px 12px', textAlign: 'center' }}>
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              const updatedMeds = editingVendorCatalog.medicines.filter((_, i) => i !== idx);
+                              setEditingVendorCatalog({ ...editingVendorCatalog, medicines: updatedMeds });
+                            }}
+                            style={{ background: 'none', border: 'none', color: '#EF4444', cursor: 'pointer', fontWeight: 800 }}
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {editingVendorCatalog.medicines.length === 0 && (
+                      <tr>
+                        <td colSpan="4" style={{ padding: '24px', textAlign: 'center', color: '#64748B', fontWeight: 600 }}>No items in catalogue yet.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Footer Actions */}
+              <div style={{ display: 'flex', gap: '12px', marginTop: '16px', justifyContent: 'flex-end', paddingTop: '16px', borderTop: '1px solid #E2E8F0' }}>
+                <button 
+                  type="button"
+                  style={{ padding: '10px 20px', borderRadius: '8px', border: '1px solid #E2E8F0', background: '#F8FAFC', color: '#475569', fontWeight: 800, cursor: 'pointer' }}
+                  onClick={() => setEditingVendorCatalog(null)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await api.put(`/vendors/${editingVendorCatalog.vendorId}/price-list`, {
+                        medicines: editingVendorCatalog.medicines
+                      });
+                      showToast("Vendor catalogue updated successfully!", "success");
+                      fetchVendors();
+                      setEditingVendorCatalog(null);
+                    } catch (err) {
+                      console.error(err);
+                      showToast("Failed to update vendor catalogue", "error");
+                    }
+                  }}
+                  style={{ padding: '10px 20px', borderRadius: '8px', background: '#2563EB', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  Save Catalogue
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
+
       {adminSelectedGrn && (
         <div className="admin-modal-overlay" data-lenis-prevent onClick={() => setAdminSelectedGrn(null)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999 }}>
           <div className="admin-modal-card" onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: '12px', width: '90%', maxWidth: '650px', padding: '24px', maxHeight: '85vh', overflowY: 'auto', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}>
