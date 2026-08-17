@@ -718,7 +718,7 @@ const ReceptionistDashboard = () => {
     if (!patientId) return 'pat-00';
     const idStr = patientId.toString();
     if (idStr.toLowerCase().startsWith('pat-')) return idStr;
-    const found = patients.find(p => p._id === idStr || p.id === idStr);
+    const found = patientsList.find(p => p._id === idStr || p.id === idStr);
     if (found?.patientId) return found.patientId;
     if (idStr.length >= 24) {
       return `pat-${idStr.substring(22).toUpperCase()}`;
@@ -4486,7 +4486,7 @@ const ReceptionistDashboard = () => {
                   <button 
                     type="button" 
                     onClick={() => {
-                      const selectedPatients = patients.filter(p => selectedPatientIds.includes(p._id));
+                      const selectedPatients = patientsList.filter(p => selectedPatientIds.includes(p._id));
                       const csvHeader = "ID,Name,Gender,Contact,Email\n";
                       const csvRows = selectedPatients.map(p => `"${getFormattedPatientId(p._id)}","${p.name}","${p.gender}","${p.contact}","${p.email || ''}"`).join("\n");
                       const blob = new Blob([csvHeader + csvRows], { type: 'text/csv' });
@@ -12310,7 +12310,7 @@ const ReceptionistDashboard = () => {
                 RECIPIENTS ({selectedPatientIds.length})
               </label>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', maxHeight: '90px', overflowY: 'auto', padding: '10px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px' }}>
-                {patients.filter(p => selectedPatientIds.includes(p._id)).map(p => (
+                {patientsList.filter(p => selectedPatientIds.includes(p._id)).map(p => (
                   <span key={p._id} style={{ background: '#EFF6FF', color: '#1D4ED8', border: '1px solid #BFDBFE', padding: '3px 8px', borderRadius: '6px', fontSize: '11.5px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                     👤 {p.name} ({p.contact})
                   </span>
