@@ -2063,8 +2063,7 @@ const DoctorDashboard = () => {
       `;
 
       console.log("HTML CONTENT TO WRITE:", htmlContent);
-      printWindow.document.write(htmlContent);
-      printWindow.document.close();
+      iframe.srcdoc = htmlContent;
     } catch (err) {
       console.error("Print prescription error:", err);
       showToastNotification("Failed to prepare print view.", "error");
