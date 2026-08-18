@@ -3507,8 +3507,23 @@ const DoctorDashboard = () => {
       });
     const validLabs = labs.filter(test => test && test.trim() !== '');
 
-    // Directly save and lock prescription using default print settings
-    executeSaveAndLockPrescription(printSettings);
+    // Set target print items and show settings modal
+    setPrintSettingsTarget({
+      rx: null,
+      item: {
+        items: validMedicines,
+        tests: validLabs,
+        diagnosis: diagnosisText ? diagnosisText.trim() : '',
+        date: new Date().toLocaleDateString('en-IN'),
+        doctor: user.name,
+        originalApp: { regNo: activeAppointmentId ? activeAppointmentId.substring(0, 8).toUpperCase() : 'NEW' }
+      },
+      callback: (finalSettings) => {
+        executeSaveAndLockPrescription(finalSettings);
+      }
+    });
+    setTempPrintSettings(printSettings);
+    setShowPrintSettingsModal(true);
   };
 
   const executeSaveAndLockPrescription = (finalSettings = printSettings) => {
@@ -10119,7 +10134,15 @@ I have scanned the medical reference databases, but couldn't find a direct match
                                     </button>
                                     <button
                                       onClick={() => {
-                                        handlePrintPrescription(item.rx, item, printSettings);
+                                        setPrintSettingsTarget({
+                                          rx: item.rx,
+                                          item: item,
+                                          callback: (finalSettings) => {
+                                            handlePrintPrescription(item.rx, item, finalSettings);
+                                          }
+                                        });
+                                        setTempPrintSettings(printSettings);
+                                        setShowPrintSettingsModal(true);
                                       }}
                                       style={{ margin: 0, padding: '4px 10px', fontSize: '10.5px', background: '#EFF6FF', color: '#1E40AF', border: '1px solid #BFDBFE', cursor: 'pointer', borderRadius: '8px', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '4px', transition: 'all 0.2s ease' }}
                                     >
