@@ -9285,7 +9285,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
             <div data-lenis-prevent style={{ flex: 1, overflowY: 'hidden', padding: '24px', background: '#F8FAFC', display: 'flex', gap: '24px' }}>
               
               {/* Left Column: Form Controls (width: 380px) */}
-              <div style={{ width: '380px', display: 'flex', flexDirection: 'column', gap: '16px', overflowY: 'auto', paddingRight: '8px' }}>
+              <div style={{ display: 'none', width: '380px', flexDirection: 'column', gap: '16px', overflowY: 'auto', paddingRight: '8px' }}>
                 
                 {/* Template / Layout selection */}
                 <div>
