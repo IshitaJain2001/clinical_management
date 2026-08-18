@@ -5725,6 +5725,31 @@ const ReceptionistDashboard = () => {
                                 <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 600, marginTop: '2px' }}>
                                   #{p._id.substring(18).toUpperCase()} • {p.gender} • {p.age} Yrs
                                 </div>
+                                <div 
+                                  style={{ fontSize: '11px', color: '#10B981', fontWeight: 700, marginTop: '6px', display: 'inline-block', cursor: 'pointer' }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedPatient(null);
+                                    setFormData({ 
+                                      name: '', 
+                                      age: '', 
+                                      gender: '', 
+                                      contact: p.contact, 
+                                      email: '', 
+                                      doctorId: formData.doctorId, 
+                                      bloodGroup: '', 
+                                      address: '', 
+                                      medicalHistory: '',
+                                      referredBy: '',
+                                      allergies: 'None',
+                                      currentMedications: ''
+                                    });
+                                    setIsExistingPatient(false);
+                                    setSearchPatientQuery('');
+                                  }}
+                                >
+                                  + Register Family
+                                </div>
                               </div>
                               <div style={{ textAlign: 'right' }}>
                                 <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--primary)' }}>{p.contact}</div>
@@ -5736,43 +5761,7 @@ const ReceptionistDashboard = () => {
                       </div>
                     )}
 
-                    <div style={{ width: '100%', height: '1px', background: '#F1F5F9', marginBottom: '20px' }}></div>
 
-                    {/* Register New Patient green border button */}
-                    <button 
-                      className="btn" 
-                      style={{ 
-                        width: '100%', 
-                        height: '52px', 
-                        fontWeight: 800, 
-                        borderRadius: '10px', 
-                        border: '2px solid #10B981', 
-                        background: 'transparent',
-                        color: '#10B981',
-                        display: 'flex', 
-                        justifyContent: 'center', 
-                        alignItems: 'center',
-                        gap: '8px',
-                        cursor: 'pointer',
-                        padding: '0 20px',
-                        boxSizing: 'border-box',
-                        transition: 'all 0.2s ease-in-out'
-                      }}
-                      onClick={() => {
-                        setSelectedPatient(null);
-                        setFormData({ name: '', age: '', gender: '', contact: '', email: '', doctorId: formData.doctorId, bloodGroup: '', address: '', medicalHistory: '', referredBy: '', allergies: 'None', currentMedications: '' });
-                        setIsExistingPatient(false);
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = '#F0FDF4';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'transparent';
-                      }}
-                    >
-                      Register New Patient
-                      <i data-lucide="chevron-right" style={{ width: '18px', height: '18px', marginLeft: 'auto', strokeWidth: 3 }}></i>
-                    </button>
 
                   </div>
                 </div>
