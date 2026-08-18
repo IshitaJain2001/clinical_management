@@ -5741,7 +5741,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                                 </span>
                               </td>
                               <td style={{ padding: '16px 0', textAlign: 'right' }}>
-                                {app.status === 'Completed' || app.status === 'In Progress' || app._id === activeAppointmentId ? (
+                                {app.status === 'Completed' || app.status === 'In Progress' || app._id === activeAppointmentId || allPrescriptions.some(r => r.appointmentId === app._id || (r.appointmentId?._id && r.appointmentId?._id === app._id)) ? (
                                   <button 
                                     className="btn-view-detail" 
                                     style={{ 
@@ -6218,13 +6218,14 @@ I have scanned the medical reference databases, but couldn't find a direct match
                     <tbody>
                       {paginatedList.length > 0 ? (
                         paginatedList.map((item, idx) => {
+                          const hasPres = allPrescriptions.some(r => r.appointmentId === item._id || (r.appointmentId?._id && r.appointmentId?._id === item._id));
                           const isUpcoming = item.status?.toLowerCase() === 'upcoming' || item.status?.toLowerCase() === 'pending';
-                          const isCompleted = item.status?.toLowerCase() === 'completed';
+                          const isCompleted = item.status?.toLowerCase() === 'completed' || hasPres;
                           const isOverviewEnabled = isCompleted || item.originalApp?.status === 'In Progress' || item._id === activeAppointmentId;
                           
                           // Soft purple background for upcoming, soft green background for completed
-                          const rowBg = isUpcoming ? '#FAF5FF' : (isCompleted ? '#ECFDF5' : '#ffffff');
-                          const borderBottomColor = isUpcoming ? '#F3E8FF' : (isCompleted ? '#D1FAE5' : '#F1F5F9');
+                          const rowBg = (isCompleted || hasPres) ? '#ECFDF5' : (isUpcoming ? '#FAF5FF' : '#ffffff');
+                          const borderBottomColor = (isCompleted || hasPres) ? '#D1FAE5' : (isUpcoming ? '#F3E8FF' : '#F1F5F9');
                           const avatarStyle = getAvatarStyle(item.patientName);
                           const initials = getInitials(item.patientName);
                           
