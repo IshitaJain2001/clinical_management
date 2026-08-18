@@ -1770,13 +1770,13 @@ const DoctorDashboard = () => {
                 var start = 0;
                 var isFirstBlock = true;
                 
-                while (start < tests.length) {
+                while (tests.length > start) {
                   var currentChunkSize = isFirstBlock ? page1ChunkSize : pageNChunkSize;
                   var chunk = tests.slice(start, start + currentChunkSize);
                   var blockHTML = '';
                   var itemsHTML = '';
                   
-                  for (var i = 0; i < chunk.length; i++) {
+                  for (var i = 0; chunk.length > i; i++) {
                     var testName = (typeof chunk[i] === 'object' && chunk[i] !== null) ? (chunk[i].testName || chunk[i].name || '') : chunk[i];
                     itemsHTML += '<div style="font-size: 11px; font-weight: 600; color: #1E293B; padding: 3px 0;">' +
                       '• ' + testName +
@@ -1812,13 +1812,13 @@ const DoctorDashboard = () => {
                 var start = 0;
                 var isFirstBlock = true;
                 
-                while (start < medicines.length) {
+                while (medicines.length > start) {
                   var currentChunkSize = isFirstBlock ? page1ChunkSize : pageNChunkSize;
                   var chunk = medicines.slice(start, start + currentChunkSize);
                   var blockHTML = '';
                   var itemsHTML = '';
                   
-                  for (var i = 0; i < chunk.length; i++) {
+                  for (var i = 0; chunk.length > i; i++) {
                     var m = chunk[i];
                     var freq = 'Once a Day';
                     var inst = 'After Food';
@@ -2001,7 +2001,7 @@ const DoctorDashboard = () => {
               var pageSpaceUsed = 0;
               var isFirst = true;
 
-              for (var idx = 0; idx < children.length; idx++) {
+              for (var idx = 0; children.length > idx; idx++) {
                 const child = children[idx];
                 
                 const isTestsOrSig = child.innerHTML.includes('Prescribed Tests') || child.innerHTML.includes('Clinical SOAP Notes') || child.innerHTML.includes('Signature & Seal') || child.innerHTML.includes('Note :');
