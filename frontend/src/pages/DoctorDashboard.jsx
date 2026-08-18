@@ -5645,7 +5645,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                                 <div 
                                   style={{ fontSize: '14px', fontWeight: 700, color: '#0F172A', cursor: 'pointer' }} 
                                   onClick={() => {
-                                    if (app.status === 'Completed') {
+                                    if (app.status === 'Completed' || app.status === 'In Progress' || app._id === activeAppointmentId) {
                                       setSelectedOverviewApp(app.originalApp || app);
                                       setShowAppOverviewModal(true);
                                       addLog(`Opened clinical overview for completed appointment of: ${app.patientId?.name}`);
@@ -5672,11 +5672,11 @@ I have scanned the medical reference databases, but couldn't find a direct match
                                     borderRadius: '6px', 
                                     fontSize: '11px', 
                                     fontWeight: 700,
-                                    cursor: app.status === 'Completed' ? 'pointer' : 'default',
-                                    textDecoration: app.status === 'Completed' ? 'underline' : 'none'
+                                    cursor: (app.status === 'Completed' || app.status === 'In Progress' || app._id === activeAppointmentId) ? 'pointer' : 'default',
+                                    textDecoration: (app.status === 'Completed' || app.status === 'In Progress' || app._id === activeAppointmentId) ? 'underline' : 'none'
                                   }}
                                   onClick={() => {
-                                    if (app.status === 'Completed') {
+                                    if (app.status === 'Completed' || app.status === 'In Progress' || app._id === activeAppointmentId) {
                                       setSelectedOverviewApp(app.originalApp || app);
                                       setShowAppOverviewModal(true);
                                       addLog(`Opened clinical overview for completed appointment of: ${app.patientId?.name}`);
@@ -5702,7 +5702,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                                 </span>
                               </td>
                               <td style={{ padding: '16px 0', textAlign: 'right' }}>
-                                {app.status === 'Completed' ? (
+                                {app.status === 'Completed' || app.status === 'In Progress' || app._id === activeAppointmentId ? (
                                   <button 
                                     className="btn-view-detail" 
                                     style={{ 
@@ -6181,6 +6181,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                         paginatedList.map((item, idx) => {
                           const isUpcoming = item.status?.toLowerCase() === 'upcoming' || item.status?.toLowerCase() === 'pending';
                           const isCompleted = item.status?.toLowerCase() === 'completed';
+                          const isOverviewEnabled = isCompleted || item.originalApp?.status === 'In Progress' || item._id === activeAppointmentId;
                           
                           // Soft purple background for upcoming, soft green background for completed
                           const rowBg = isUpcoming ? '#FAF5FF' : (isCompleted ? '#ECFDF5' : '#ffffff');
@@ -6219,7 +6220,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                                   <span 
                                     style={{ fontSize: '14px', fontWeight: 700, color: '#0F172A', cursor: 'pointer' }} 
                                     onClick={() => {
-                                      if (isCompleted) {
+                                      if (isOverviewEnabled) {
                                         setSelectedOverviewApp(item.originalApp || item);
                                         setShowAppOverviewModal(true);
                                         addLog(`Opened clinical overview for completed appointment of: ${item.patientName}`);
@@ -6253,7 +6254,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                               <td style={{ padding: '16px 24px' }}>
                                 <span 
                                   onClick={() => {
-                                    if (isCompleted) {
+                                    if (isOverviewEnabled) {
                                       setSelectedOverviewApp(item.originalApp || item);
                                       setShowAppOverviewModal(true);
                                       addLog(`Opened clinical overview for completed appointment of: ${item.patientName}`);
@@ -6263,8 +6264,8 @@ I have scanned the medical reference databases, but couldn't find a direct match
                                     color: isUpcoming ? '#7C3AED' : (isCompleted ? '#16A34A' : '#EF4444'), 
                                     fontWeight: 700, 
                                     fontSize: '13px',
-                                    cursor: isCompleted ? 'pointer' : 'default',
-                                    textDecoration: isCompleted ? 'underline' : 'none',
+                                    cursor: isOverviewEnabled ? 'pointer' : 'default',
+                                    textDecoration: isOverviewEnabled ? 'underline' : 'none',
                                     textUnderlineOffset: '2px'
                                   }}
                                 >
@@ -6287,7 +6288,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                                 </span>
                               </td>
                               <td style={{ padding: '16px 24px', textAlign: 'right', position: 'relative' }}>
-                                {isCompleted ? (
+                                {isOverviewEnabled ? (
                                   <button 
                                     onClick={() => {
                                       setSelectedOverviewApp(item.originalApp || item);
