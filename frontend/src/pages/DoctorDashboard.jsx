@@ -1514,37 +1514,77 @@ const DoctorDashboard = () => {
           <div id="pages-container"></div>
 
           <script>
-            var printData = window.parent.__currentPrintData || {};
-            var medicines = printData.medicines || [];
-            var tests = printData.tests || [];
-            var activeTemplate = printData.template;
-            var digitalPreset = printData.digitalPreset;
-            var hasCustomLetterhead = window.parent.__currentLetterhead ? true : false;
-            var letterheadUrl = window.parent.__currentLetterhead || '';
-            var topSpacer = printData.topSpacer;
-            var bottomSpacer = printData.bottomSpacer;
-            var xLeftVal = printData.xLeft;
-            var xRightVal = printData.xRight;
-            var pageDistribution = printData.pageDistribution;
-            var initialFontSize = printData.fontSize;
+            // Variables will be populated via postMessage from parent
+            var printData = {};
+            var medicines = [];
+            var tests = [];
+            var activeTemplate = '';
+            var digitalPreset = 'none';
+            var hasCustomLetterhead = false;
+            var letterheadUrl = '';
+            var topSpacer = 95;
+            var bottomSpacer = 20;
+            var xLeftVal = 15;
+            var xRightVal = 15;
+            var pageDistribution = 'auto';
+            var initialFontSize = 100;
 
-            const patientName = printData.patientName;
-            const patientAge = printData.patientAge;
-            const patientGender = printData.patientGender;
-            const rxDate = printData.rxDate;
-            const patientContact = printData.patientContact;
-            const patientAddress = printData.patientAddress;
-            const regNo = printData.regNo;
+            var patientName = '—';
+            var patientAge = '—';
+            var patientGender = '—';
+            var rxDate = '—';
+            var patientContact = '—';
+            var patientAddress = '—';
+            var regNo = '—';
 
-            const doctorName = printData.doctorName;
-            const doctorDesignation = printData.doctorDesignation;
-            const doctorReg = printData.doctorReg;
-            const doctorDept = printData.doctorDept;
-            const doctorShift = printData.doctorShift;
-            const clinicName = printData.clinicName;
-            const diagnosis = printData.diagnosis;
-            const vitalsText = printData.vitalsText;
-            const soapNotes = printData.soapNotes;
+            var doctorName = '—';
+            var doctorDesignation = '—';
+            var doctorReg = '—';
+            var doctorDept = '—';
+            var doctorShift = '—';
+            var clinicName = '—';
+            var diagnosis = '—';
+            var vitalsText = '—';
+            var soapNotes = '—';
+
+            window.addEventListener('message', function(e) {
+              if (e.data && e.data.type === 'PRINT_DATA') {
+                printData = e.data.data || {};
+                medicines = printData.medicines || [];
+                tests = printData.tests || [];
+                activeTemplate = printData.template || '';
+                digitalPreset = printData.digitalPreset || 'none';
+                letterheadUrl = e.data.letterhead || '';
+                hasCustomLetterhead = !!letterheadUrl;
+                topSpacer = printData.topSpacer || 95;
+                bottomSpacer = printData.bottomSpacer || 20;
+                xLeftVal = printData.xLeft || 15;
+                xRightVal = printData.xRight || 15;
+                pageDistribution = printData.pageDistribution || 'auto';
+                initialFontSize = printData.fontSize || 100;
+
+                patientName = printData.patientName || '—';
+                patientAge = printData.patientAge || '—';
+                patientGender = printData.patientGender || '—';
+                rxDate = printData.rxDate || '—';
+                patientContact = printData.patientContact || '—';
+                patientAddress = printData.patientAddress || '—';
+                regNo = printData.regNo || '—';
+
+                doctorName = printData.doctorName || '—';
+                doctorDesignation = printData.doctorDesignation || '—';
+                doctorReg = printData.doctorReg || '—';
+                doctorDept = printData.doctorDept || '—';
+                doctorShift = printData.doctorShift || '—';
+                clinicName = printData.clinicName || '—';
+                diagnosis = printData.diagnosis || '—';
+                vitalsText = printData.vitalsText || '—';
+                soapNotes = printData.soapNotes || '—';
+
+                document.body.style.fontSize = initialFontSize + '%';
+                initPrint();
+              }
+            });
 
             function getHeaderHTML() {
               if (hasCustomLetterhead && digitalPreset === 'none') {
@@ -2052,11 +2092,6 @@ const DoctorDashboard = () => {
                 setTimeout(function() { window.parent.postMessage('close-print-prescription-iframe', '*'); }, 500);
               });
             }
-            if (document.readyState === 'complete' || document.readyState === 'interactive') {
-              initPrint();
-            } else {
-              window.onload = initPrint;
-            }
           </script>
         </body>
         </html>
@@ -2064,6 +2099,12 @@ const DoctorDashboard = () => {
 
       console.log("HTML CONTENT TO WRITE:", htmlContent);
       iframe.srcdoc = htmlContent;
+      // Post the print data to the iframe after it loads (srcdoc cannot access window.parent)
+      iframe.addEventListener('load', function() {
+        try {
+          iframe.contentWindow.postMessage({ type: 'PRINT_DATA', data: window.__currentPrintData, letterhead: window.__currentLetterhead || '' }, '*');
+        } catch(e) { console.warn('postMessage to iframe failed', e); }
+      });
     } catch (err) {
       console.error("Print prescription error:", err);
       showToastNotification("Failed to prepare print view.", "error");
