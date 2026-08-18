@@ -1244,25 +1244,8 @@ const DoctorDashboard = () => {
 
   const handlePrintPrescription = async (rx, item, customSettings = printSettings) => {
     try {
-      const res = await api.get('/admin/letterhead');
-      let letterheadUrl = res.data?.letterheadUrl || "";
-      letterheadUrl = letterheadUrl.replace(/\\/g, '/');
-      if (letterheadUrl && !letterheadUrl.startsWith('http://') && !letterheadUrl.startsWith('https://') && !letterheadUrl.startsWith('data:')) {
-        const apiURL = import.meta.env.VITE_API_URL || '';
-        const backendBase = apiURL ? apiURL.replace('/api', '') : 'http://localhost:5000';
-        const baseClean = backendBase.endsWith('/') ? backendBase.slice(0, -1) : backendBase;
-        const pathClean = letterheadUrl.startsWith('/') ? letterheadUrl : `/${letterheadUrl}`;
-        letterheadUrl = `${baseClean}${pathClean}`;
-      }
-      if (letterheadUrl && letterheadUrl.startsWith('http://') && window.location.protocol === 'https:') {
-        letterheadUrl = letterheadUrl.replace('http://', 'https://');
-      }
-      
-      if (letterheadUrl) {
-        letterheadUrl = await convertPdfToImage(letterheadUrl);
-      }
-
-      const templates = res.data?.prescriptionTemplates || [];
+      let letterheadUrl = customLetterhead || "";
+      const templates = adminTemplates || [];
       const selectedTemplate = templates.find(t => t._id === customSettings.template) || templates.find(t => t.isStandard) || templates[0];
       
       let xLeft = 15;
@@ -3618,6 +3601,7 @@ const DoctorDashboard = () => {
         rxRecord = rxRes.data;
         if (rxRes && rxRes.data) {
           setAllPrescriptions(prev => prev.map(r => r._id === editingPrescriptionId ? rxRes.data : r));
+          setPastPrescriptions(prev => prev.map(r => r._id === editingPrescriptionId ? rxRes.data : r));
         }
 
         // Delete all old lab requests for this appointment and re-create updated ones!
@@ -3659,6 +3643,7 @@ const DoctorDashboard = () => {
         rxRecord = rxRes.data;
         if (rxRes && rxRes.data) {
           setAllPrescriptions(prev => [rxRes.data, ...prev]);
+          setPastPrescriptions(prev => [rxRes.data, ...prev]);
         }
 
         // Create real lab requests in DB
@@ -9675,6 +9660,9 @@ I have scanned the medical reference databases, but couldn't find a direct match
               <button 
                 onClick={() => {
                   setShowPrintSettingsModal(false);
+                  if (printSettingsTarget && printSettingsTarget.rx) {
+                    handleLoadPrescriptionForEdit(printSettingsTarget.rx, printSettingsTarget.item?.relatedLabs || []);
+                  }
                   setPrintSettingsTarget(null);
                 }} 
                 style={{ background: '#E2E8F0', border: 'none', color: '#475569', borderRadius: '10px', padding: '10px 20px', fontSize: '13.0px', fontWeight: 700, cursor: 'pointer' }}
