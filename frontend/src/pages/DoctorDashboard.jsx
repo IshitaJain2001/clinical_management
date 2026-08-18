@@ -9453,7 +9453,12 @@ I have scanned the medical reference databases, but couldn't find a direct match
                     <div style={{
                       width: '100%',
                       maxWidth: '430px',
-                      background: '#ffffff',
+                      background: tempPrintSettings.digitalPreset !== 'none' 
+                        ? '#ffffff' 
+                        : customLetterhead 
+                          ? `#ffffff url(${customLetterhead}) no-repeat center top` 
+                          : '#ffffff',
+                      backgroundSize: '100% auto',
                       boxShadow: '0 8px 24px rgba(15, 23, 42, 0.08)',
                       borderRadius: '8px',
                       border: '1px solid #CBD5E1',
@@ -9472,12 +9477,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                       <div style={{
                         height: `${tempPrintSettings.topSpacer * 1.0}px`,
                         borderBottom: '1px dashed #E2E8F0',
-                        background: tempPrintSettings.digitalPreset !== 'none' 
-                          ? '#F8FAFC' 
-                          : customLetterhead 
-                            ? `url(${customLetterhead}) no-repeat center top` 
-                            : 'transparent',
-                        backgroundSize: 'contain',
+                        background: 'transparent',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
