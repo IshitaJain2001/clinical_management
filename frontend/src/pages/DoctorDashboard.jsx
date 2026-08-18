@@ -7135,22 +7135,83 @@ I have scanned the medical reference databases, but couldn't find a direct match
               adminTemplates={adminTemplates}
             />
           ) : (
-            <div className="tab-content active" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', padding: '40px', textAlign: 'center', background: '#FFFFFF', borderRadius: '16px', border: '1.5px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.02)', margin: '24px', animation: 'slideUp 0.4s ease-out' }}>
-              <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB', marginBottom: '24px' }}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <div className="tab-content active" style={{ display: 'flex', flexDirection: 'column', minHeight: '60vh', padding: '24px', background: '#FFFFFF', borderRadius: '16px', border: '1.5px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.02)', margin: '24px', animation: 'slideUp 0.4s ease-out' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid #E2E8F0' }}>
+                <div>
+                  <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#0F172A', margin: '0 0 4px 0' }}>All Prescriptions</h2>
+                  <p style={{ color: '#64748B', fontSize: '13px', margin: 0, fontWeight: 500 }}>View and edit your patient prescriptions.</p>
+                </div>
+                <button 
+                  onClick={() => setActiveTab('consultations')} 
+                  style={{ backgroundColor: '#2563EB', color: '#FFFFFF', fontWeight: 700, fontSize: '13px', padding: '10px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 2px 8px rgba(37, 99, 235, 0.15)' }}
+                >
+                  + New Prescription
+                </button>
               </div>
-              <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#0F172A', marginBottom: '12px' }}>No Active Patient Loaded</h2>
-              <p style={{ color: '#64748B', fontWeight: 600, fontSize: '15px', maxWidth: '420px', lineHeight: '1.6', marginBottom: '32px' }}>
-                You must select an active patient from the consultations roster before accessing the Smart Prescription & SOAP Maker.
-              </p>
-              <button 
-                onClick={() => setActiveTab('consultations')} 
-                style={{ backgroundColor: '#2563EB', color: '#FFFFFF', fontWeight: 800, fontSize: '14.5px', padding: '14px 28px', borderRadius: '12px', border: 'none', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(37, 99, 235, 0.2)' }}
-                onMouseEnter={e => e.target.style.backgroundColor = '#1D4ED8'}
-                onMouseLeave={e => e.target.style.backgroundColor = '#2563EB'}
-              >
-                Go to Consultations
-              </button>
+
+              {allPrescriptions.length === 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, padding: '40px', textAlign: 'center' }}>
+                  <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94A3B8', marginBottom: '16px' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                  </div>
+                  <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#334155', margin: '0 0 8px 0' }}>No Prescriptions Found</h3>
+                  <p style={{ color: '#64748B', fontSize: '13px', margin: 0 }}>You haven't created any prescriptions yet.</p>
+                </div>
+              ) : (
+                <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                    <thead style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
+                      <tr>
+                        <th style={{ padding: '16px', fontSize: '12px', fontWeight: 700, color: '#475569', textTransform: 'uppercase' }}>Date</th>
+                        <th style={{ padding: '16px', fontSize: '12px', fontWeight: 700, color: '#475569', textTransform: 'uppercase' }}>Patient Name</th>
+                        <th style={{ padding: '16px', fontSize: '12px', fontWeight: 700, color: '#475569', textTransform: 'uppercase' }}>Diagnosis</th>
+                        <th style={{ padding: '16px', fontSize: '12px', fontWeight: 700, color: '#475569', textTransform: 'uppercase' }}>Medicines</th>
+                        <th style={{ padding: '16px', fontSize: '12px', fontWeight: 700, color: '#475569', textTransform: 'uppercase', textAlign: 'right' }}>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {allPrescriptions.map(rx => {
+                        const pt = patients.find(p => p._id === rx.patientId || p._id === rx.patientId?._id) || rx.patientId || {};
+                        const ptName = pt.name || 'Unknown Patient';
+                        const d = new Date(rx.createdAt || Date.now());
+                        const dateStr = isNaN(d.getTime()) ? 'No Date' : d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+                        const medsCount = rx.items ? rx.items.length : 0;
+                        const diagnosisStr = rx.diagnosis || 'General Consultation';
+                        
+                        return (
+                          <tr key={rx._id} style={{ borderBottom: '1px solid #F1F5F9', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = '#F8FAFC'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                            <td style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#334155' }}>
+                              {dateStr}
+                            </td>
+                            <td style={{ padding: '16px', fontSize: '14px', fontWeight: 700, color: '#0F172A' }}>
+                              {ptName}
+                            </td>
+                            <td style={{ padding: '16px', fontSize: '13px', color: '#64748B' }}>
+                              {diagnosisStr.length > 40 ? diagnosisStr.substring(0, 40) + '...' : diagnosisStr}
+                            </td>
+                            <td style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#3B82F6' }}>
+                              {medsCount} {medsCount === 1 ? 'Medicine' : 'Medicines'}
+                            </td>
+                            <td style={{ padding: '16px', textAlign: 'right' }}>
+                              <button 
+                                onClick={() => {
+                                  const relatedLabs = rx.appointmentId ? allLabs.filter(l => l.appointmentId && (l.appointmentId.toString() === rx.appointmentId.toString() || l.appointmentId === rx.appointmentId)) : [];
+                                  handleLoadPrescriptionForEdit(rx, relatedLabs);
+                                }}
+                                style={{ background: '#EFF6FF', color: '#2563EB', border: '1px solid #BFDBFE', padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
+                                onMouseEnter={e => { e.target.style.background = '#DBEAFE'; e.target.style.borderColor = '#93C5FD'; }}
+                                onMouseLeave={e => { e.target.style.background = '#EFF6FF'; e.target.style.borderColor = '#BFDBFE'; }}
+                              >
+                                Edit
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )
         )}
