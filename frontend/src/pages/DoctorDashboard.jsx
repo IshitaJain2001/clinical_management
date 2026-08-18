@@ -1506,19 +1506,19 @@ const DoctorDashboard = () => {
           <div id="pages-container"></div>
 
           <script>
-            const printData = window.parent.__currentPrintData || {};
-            const medicines = printData.medicines || [];
-            const tests = printData.tests || [];
-            const activeTemplate = "${customSettings.template}";
-            const digitalPreset = "${customSettings.digitalPreset}";
-            const hasCustomLetterhead = window.parent.__currentLetterhead ? true : false;
-            const letterheadUrl = window.parent.__currentLetterhead || '';
-            const topSpacer = ${topSpacerDetected};
-            const bottomSpacer = ${bottomSpacerDetected};
-            const xLeftVal = ${xLeft};
-            const xRightVal = ${xRight};
-            const pageDistribution = "${customSettings.pageDistribution || 'auto'}";
-            const initialFontSize = ${parseInt(customSettings.fontSize, 10) || 100};
+            var printData = window.parent.__currentPrintData || {};
+            var medicines = printData.medicines || [];
+            var tests = printData.tests || [];
+            var activeTemplate = "${customSettings.template}";
+            var digitalPreset = "${customSettings.digitalPreset}";
+            var hasCustomLetterhead = window.parent.__currentLetterhead ? true : false;
+            var letterheadUrl = window.parent.__currentLetterhead || '';
+            var topSpacer = ${topSpacerDetected};
+            var bottomSpacer = ${bottomSpacerDetected};
+            var xLeftVal = ${xLeft};
+            var xRightVal = ${xRight};
+            var pageDistribution = "${customSettings.pageDistribution || 'auto'}";
+            var initialFontSize = ${parseInt(customSettings.fontSize, 10) || 100};
 
             const patientName = printData.patientName;
             const patientAge = printData.patientAge;
