@@ -9474,10 +9474,15 @@ I have scanned the medical reference databases, but couldn't find a direct match
               {/* Right Column: Live Interactive A4 Preview */}
               <div style={{ flex: 1, background: '#E2E8F0', borderRadius: '16px', padding: '16px', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', overflowY: 'auto', border: '1px solid #CBD5E1' }}>
                 {(() => {
-                  const rx = printSettingsTarget?.rx || {};
+                  const targetItem = printSettingsTarget?.item || {};
+                  const rx = printSettingsTarget?.rx || targetItem.rx || {};
                   const pt = selectedPatient || {};
-                  const medsList = rx.items || [];
-                  const testOrders = rx.tests || [];
+                  const medsList = rx.items || targetItem.items || [];
+                  const testOrders = rx.tests || targetItem.tests || [];
+                  const diagnosisVal = rx.diagnosis || targetItem.diagnosis || '';
+                  const dateVal = rx.date || targetItem.date || new Date().toLocaleDateString('en-IN');
+                  const soapPlanVal = rx.soapPlan || targetItem.soapPlan || targetItem.notes || '';
+                  const soapSubjectiveVal = rx.soapSubjective || targetItem.symptoms || '';
                   
                   return (
                     <div style={{
@@ -9546,7 +9551,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                           <div>Age/Gender: <b>{pt.age || '40'} Y, {pt.gender || 'Female'}</b></div>
                         </div>
                         <div style={{ textAlign: 'right' }}>
-                          <div style={{ marginBottom: '2px' }}>Date: <b>{rx.date || new Date().toLocaleDateString('en-IN')}</b></div>
+                          <div style={{ marginBottom: '2px' }}>Date: <b>{dateVal}</b></div>
                           <div>UHID: <b>{pt.uhid || 'MDC-NEW'}</b></div>
                         </div>
                       </div>
@@ -9555,12 +9560,12 @@ I have scanned the medical reference databases, but couldn't find a direct match
                       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         
                         {/* Diagnosis */}
-                        {rx.diagnosis && (
+                        {diagnosisVal && (
                           <div style={{ fontSize: '9.5px' }}>
                             <span style={{ color: '#64748B', fontWeight: 700, display: 'block', fontSize: '7.5px', textTransform: 'uppercase', marginBottom: '2px' }}>Diagnosis</span>
-                            {rx.diagnosis.includes('\n') ? (
+                            {diagnosisVal.includes('\n') ? (
                               <ul style={{ paddingLeft: '2px', margin: 0, listStyle: 'none' }}>
-                                {rx.diagnosis.split('\n').filter(line => line.trim() !== '').map((line, i) => (
+                                {diagnosisVal.split('\n').filter(line => line.trim() !== '').map((line, i) => (
                                   <li key={i} style={{ marginBottom: '2px', display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
                                     <span style={{ color: '#800020', fontSize: '6px', marginTop: '4px', flexShrink: 0 }}>●</span>
                                     <span style={{ color: '#1E293B', fontWeight: 700 }}>{line.trim()}</span>
@@ -9568,16 +9573,16 @@ I have scanned the medical reference databases, but couldn't find a direct match
                                 ))}
                               </ul>
                             ) : (
-                              <b style={{ color: '#1E293B' }}>{rx.diagnosis}</b>
+                              <b style={{ color: '#1E293B' }}>{diagnosisVal}</b>
                             )}
                           </div>
                         )}
 
                         {/* Symptoms */}
-                        {rx.soapSubjective && (
+                        {soapSubjectiveVal && (
                           <div style={{ fontSize: '9px', background: '#F8FAFC', padding: '5px', borderRadius: '4px' }}>
                             <span style={{ color: '#64748B', fontWeight: 700, display: 'block', fontSize: '7.5px', textTransform: 'uppercase' }}>Symptoms / subjective</span>
-                            <span style={{ color: '#334155', fontWeight: 600 }}>{rx.soapSubjective}</span>
+                            <span style={{ color: '#334155', fontWeight: 600 }}>{soapSubjectiveVal}</span>
                           </div>
                         )}
 
@@ -9623,10 +9628,10 @@ I have scanned the medical reference databases, but couldn't find a direct match
                         )}
 
                         {/* SOAP Plan / Notes */}
-                        {rx.soapPlan && (
+                        {soapPlanVal && (
                           <div style={{ fontSize: '8.5px' }}>
                             <span style={{ color: '#64748B', fontWeight: 700, display: 'block', fontSize: '7.5px', textTransform: 'uppercase' }}>Directions / Remarks</span>
-                            <p style={{ margin: '2px 0 0 0', color: '#475569' }}>{rx.soapPlan}</p>
+                            <p style={{ margin: '2px 0 0 0', color: '#475569' }}>{soapPlanVal}</p>
                           </div>
                         )}
 
