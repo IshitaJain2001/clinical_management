@@ -9608,9 +9608,9 @@ I have scanned the medical reference databases, but couldn't find a direct match
                               <tbody>
                                 {medsList.map((m, index) => (
                                   <tr key={index} style={{ borderBottom: '1px solid #F1F5F9', color: '#334155' }}>
-                                    <td style={{ padding: '3px 0', fontWeight: 700 }}>💊 {m.name}</td>
-                                    <td>{m.dose}</td>
-                                    <td>{m.freq}</td>
+                                    <td style={{ padding: '3px 0', fontWeight: 700 }}>💊 {m.name || m.medicine}</td>
+                                    <td>{m.dose || m.dosage}</td>
+                                    <td>{m.freq || m.instructions}</td>
                                     <td>{m.duration}</td>
                                   </tr>
                                 ))}
