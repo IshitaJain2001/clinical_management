@@ -958,6 +958,8 @@ const DoctorDashboard = () => {
   const searchContainerRef = useRef(null);
   const [pastPrescriptions, setPastPrescriptions] = useState([]);
   const [activePrescriptionLogs, setActivePrescriptionLogs] = useState([]);
+  const [showAppOverviewModal, setShowAppOverviewModal] = useState(false);
+  const [selectedOverviewApp, setSelectedOverviewApp] = useState(null);
   
   // Real-time Interactive Calendar & Dynamic Data Flow states
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -2264,8 +2266,6 @@ const DoctorDashboard = () => {
   const [previewFile, setPreviewFile] = useState(null); // Click to preview uploaded file
   const [showTimelineModal, setShowTimelineModal] = useState(false); // EMR timeline modal
   const [isSavingPrescription, setIsSavingPrescription] = useState(false);
-  const [showAppOverviewModal, setShowAppOverviewModal] = useState(false);
-  const [selectedOverviewApp, setSelectedOverviewApp] = useState(null);
   const fileInputRef = useRef(null);
   
   // Consent and compliance tracking
