@@ -5828,7 +5828,7 @@ const ReceptionistDashboard = () => {
                               background: isExistingPatient ? '#F1F5F9' : 'white', 
                               cursor: isExistingPatient ? 'not-allowed' : 'text', 
                               fontWeight: isExistingPatient ? 700 : 500,
-                              borderColor: (!isExistingPatient && formData.contact && patientsList.some(p => String(p.contact) === String(formData.contact))) ? '#EF4444' : '#E2E8F0'
+                              borderColor: '#E2E8F0'
                             }} 
                             value={formData.contact} 
                             onChange={e => {
@@ -5837,12 +5837,6 @@ const ReceptionistDashboard = () => {
                             }} 
                             readOnly={isExistingPatient}
                           />
-                          {!isExistingPatient && formData.contact && patientsList.some(p => String(p.contact) === String(formData.contact)) && (
-                            <div style={{ color: '#EF4444', fontSize: '11px', fontWeight: 700, marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
-                              This mobile number is already registered. Please search for the patient or use a different number.
-                            </div>
-                          )}
                       </div>
                       {bookingType === 'lab' && (
                         <div className="form-group" style={{ marginBottom: '8px' }}>
