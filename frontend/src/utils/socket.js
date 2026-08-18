@@ -8,7 +8,7 @@ console.log('[SOCKET] Initializing socket connection to url:', socketUrl);
 
 export const socket = io(socketUrl, {
   autoConnect: false,
-  transports: ['websocket', 'polling']
+  transports: ['polling', 'websocket']
 });
 
 export const joinTenantRoom = (tenantId) => {

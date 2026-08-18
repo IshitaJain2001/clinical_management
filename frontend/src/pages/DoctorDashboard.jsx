@@ -1621,7 +1621,7 @@ const DoctorDashboard = () => {
                   '<div style="flex-grow: 1;">' +
                     '<h1 style="margin: 0; color: ' + accentColor + '; font-family: Outfit, sans-serif; font-size: 20px; font-weight: 900; text-transform: uppercase;">' + clinicName + '</h1>' +
                     '<p style="margin: 2px 0; color: #334155; font-size: 9px; font-weight: 700; text-transform: uppercase;">' + subtitle + '</p>' +
-                    '<p style="margin: 0; color: #64748b; font-size: 8px; font-weight: 600;">E-mail: info@' + clinicName.toLowerCase().replace(/\s+/g, '') + '.com &nbsp;&nbsp;\u2022&nbsp;&nbsp; OPD Portal</p>' +
+                    '<p style="margin: 0; color: #64748b; font-size: 8px; font-weight: 600;">E-mail: info@' + clinicName.toLowerCase().replace(/\\s+/g, '') + '.com &nbsp;&nbsp;\u2022&nbsp;&nbsp; OPD Portal</p>' +
                   '</div>' +
                   '<div style="text-align: right; font-size: 8.5px; color: #475569; font-weight: 600;">' +
                     '<div>Date: ' + rxDate + '</div>' +
@@ -1766,7 +1766,7 @@ const DoctorDashboard = () => {
 
               function getDiagnosisHTML() {
                 if (!diagnosis || diagnosis === '\u2014') return '';
-                const lines = diagnosis.split('\n').filter(l => l.trim() !== '');
+                const lines = diagnosis.split('\\n').filter(l => l.trim() !== '');
                 if (lines.length === 1) {
                   return '<div style="margin-bottom: 12px; page-break-inside: avoid; break-inside: avoid;">' +
                     '<div style="font-family: Outfit, sans-serif; font-size: 12px; font-weight: 900; color: #800020; border-bottom: 1.5px solid #800020; padding-bottom: 3px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Diagnosis</div>' +
