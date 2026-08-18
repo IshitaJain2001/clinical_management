@@ -2729,7 +2729,7 @@ const DoctorDashboard = () => {
     return patients.find(p => p._id === pId) || patientsList.find(p => p._id === pId) || null;
   };
 
-  const getOverviewData = () => {
+  function getOverviewData() {
     if (!selectedOverviewApp) return null;
     const appObj = selectedOverviewApp.originalApp || selectedOverviewApp;
     const pId = appObj.patientId?._id || appObj.patientId;
