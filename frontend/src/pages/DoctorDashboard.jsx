@@ -9595,6 +9595,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                         {/* Medicines List */}
                         {medsList.length > 0 && (
                           <div>
+                            <div style={{ fontSize: '7px', color: 'red', wordBreak: 'break-all' }}>DEBUG: {JSON.stringify(medsList)}</div>
                             <span style={{ color: '#64748B', fontWeight: 700, display: 'block', fontSize: '7.5px', textTransform: 'uppercase', marginBottom: '3px' }}>Rx (Prescribed Medicines)</span>
                             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8.5px' }}>
                               <thead>
