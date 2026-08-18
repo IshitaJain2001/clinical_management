@@ -1332,6 +1332,14 @@ const DoctorDashboard = () => {
       }
 
       window.__currentPrintData = {
+        template: customSettings.template,
+        digitalPreset: customSettings.digitalPreset,
+        topSpacer: topSpacerDetected,
+        bottomSpacer: bottomSpacerDetected,
+        xLeft: xLeft,
+        xRight: xRight,
+        pageDistribution: customSettings.pageDistribution || 'auto',
+        fontSize: parseInt(customSettings.fontSize, 10) || 100,
         medicines: item.items || [],
         tests: item.tests || [],
         patientName: cleanField(item.patient?.name || selectedPatient?.name),
@@ -1509,16 +1517,16 @@ const DoctorDashboard = () => {
             var printData = window.parent.__currentPrintData || {};
             var medicines = printData.medicines || [];
             var tests = printData.tests || [];
-            var activeTemplate = "${customSettings.template}";
-            var digitalPreset = "${customSettings.digitalPreset}";
+            var activeTemplate = printData.template;
+            var digitalPreset = printData.digitalPreset;
             var hasCustomLetterhead = window.parent.__currentLetterhead ? true : false;
             var letterheadUrl = window.parent.__currentLetterhead || '';
-            var topSpacer = ${topSpacerDetected};
-            var bottomSpacer = ${bottomSpacerDetected};
-            var xLeftVal = ${xLeft};
-            var xRightVal = ${xRight};
-            var pageDistribution = "${customSettings.pageDistribution || 'auto'}";
-            var initialFontSize = ${parseInt(customSettings.fontSize, 10) || 100};
+            var topSpacer = printData.topSpacer;
+            var bottomSpacer = printData.bottomSpacer;
+            var xLeftVal = printData.xLeft;
+            var xRightVal = printData.xRight;
+            var pageDistribution = printData.pageDistribution;
+            var initialFontSize = printData.fontSize;
 
             const patientName = printData.patientName;
             const patientAge = printData.patientAge;
