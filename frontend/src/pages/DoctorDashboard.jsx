@@ -1529,23 +1529,23 @@ const DoctorDashboard = () => {
             var pageDistribution = 'auto';
             var initialFontSize = 100;
 
-            var patientName = '—';
-            var patientAge = '—';
-            var patientGender = '—';
-            var rxDate = '—';
-            var patientContact = '—';
-            var patientAddress = '—';
-            var regNo = '—';
+            var patientName = '\u2014';
+            var patientAge = '\u2014';
+            var patientGender = '\u2014';
+            var rxDate = '\u2014';
+            var patientContact = '\u2014';
+            var patientAddress = '\u2014';
+            var regNo = '\u2014';
 
-            var doctorName = '—';
-            var doctorDesignation = '—';
-            var doctorReg = '—';
-            var doctorDept = '—';
-            var doctorShift = '—';
-            var clinicName = '—';
-            var diagnosis = '—';
-            var vitalsText = '—';
-            var soapNotes = '—';
+            var doctorName = '\u2014';
+            var doctorDesignation = '\u2014';
+            var doctorReg = '\u2014';
+            var doctorDept = '\u2014';
+            var doctorShift = '\u2014';
+            var clinicName = '\u2014';
+            var diagnosis = '\u2014';
+            var vitalsText = '\u2014';
+            var soapNotes = '\u2014';
 
             window.addEventListener('message', function(e) {
               if (e.data && e.data.type === 'PRINT_DATA') {
@@ -1563,23 +1563,23 @@ const DoctorDashboard = () => {
                 pageDistribution = printData.pageDistribution || 'auto';
                 initialFontSize = printData.fontSize || 100;
 
-                patientName = printData.patientName || '—';
-                patientAge = printData.patientAge || '—';
-                patientGender = printData.patientGender || '—';
-                rxDate = printData.rxDate || '—';
-                patientContact = printData.patientContact || '—';
-                patientAddress = printData.patientAddress || '—';
-                regNo = printData.regNo || '—';
+                patientName = printData.patientName || '\u2014';
+                patientAge = printData.patientAge || '\u2014';
+                patientGender = printData.patientGender || '\u2014';
+                rxDate = printData.rxDate || '\u2014';
+                patientContact = printData.patientContact || '\u2014';
+                patientAddress = printData.patientAddress || '\u2014';
+                regNo = printData.regNo || '\u2014';
 
-                doctorName = printData.doctorName || '—';
-                doctorDesignation = printData.doctorDesignation || '—';
-                doctorReg = printData.doctorReg || '—';
-                doctorDept = printData.doctorDept || '—';
-                doctorShift = printData.doctorShift || '—';
-                clinicName = printData.clinicName || '—';
-                diagnosis = printData.diagnosis || '—';
-                vitalsText = printData.vitalsText || '—';
-                soapNotes = printData.soapNotes || '—';
+                doctorName = printData.doctorName || '\u2014';
+                doctorDesignation = printData.doctorDesignation || '\u2014';
+                doctorReg = printData.doctorReg || '\u2014';
+                doctorDept = printData.doctorDept || '\u2014';
+                doctorShift = printData.doctorShift || '\u2014';
+                clinicName = printData.clinicName || '\u2014';
+                diagnosis = printData.diagnosis || '\u2014';
+                vitalsText = printData.vitalsText || '\u2014';
+                soapNotes = printData.soapNotes || '\u2014';
 
                 document.body.style.fontSize = initialFontSize + '%';
                 initPrint();
@@ -1592,13 +1592,13 @@ const DoctorDashboard = () => {
               }
               
               var presetClass = '';
-              var logoHTML = '✚';
+              var logoHTML = '\u271A';
               var accentColor = '#800020';
               var subtitle = 'Official EMR OPD Portal';
               
               if (digitalPreset === 'teal') {
                 presetClass = 'preset-teal';
-                logoHTML = '<div class="logo-box">✚</div>';
+                logoHTML = '<div class="logo-box">\u271A</div>';
                 accentColor = '#0d9488';
                 subtitle = 'Premium Medical Care & Diagnostics';
               } else if (digitalPreset === 'burgundy') {
@@ -1608,7 +1608,7 @@ const DoctorDashboard = () => {
                 subtitle = 'Care with Devotion & Medical Excellence';
               } else if (digitalPreset === 'navy') {
                 presetClass = 'preset-navy';
-                logoHTML = '<div class="logo-box">✚</div>';
+                logoHTML = '<div class="logo-box">\u271A</div>';
                 accentColor = '#1e3a8a';
                 subtitle = 'Multi-Specialty EMR Center';
               } else {
@@ -1621,7 +1621,7 @@ const DoctorDashboard = () => {
                   '<div style="flex-grow: 1;">' +
                     '<h1 style="margin: 0; color: ' + accentColor + '; font-family: Outfit, sans-serif; font-size: 20px; font-weight: 900; text-transform: uppercase;">' + clinicName + '</h1>' +
                     '<p style="margin: 2px 0; color: #334155; font-size: 9px; font-weight: 700; text-transform: uppercase;">' + subtitle + '</p>' +
-                    '<p style="margin: 0; color: #64748b; font-size: 8px; font-weight: 600;">E-mail: info@' + clinicName.toLowerCase().replace(/\s+/g, '') + '.com &nbsp;&nbsp;•&nbsp;&nbsp; OPD Portal</p>' +
+                    '<p style="margin: 0; color: #64748b; font-size: 8px; font-weight: 600;">E-mail: info@' + clinicName.toLowerCase().replace(/\s+/g, '') + '.com &nbsp;&nbsp;\u2022&nbsp;&nbsp; OPD Portal</p>' +
                   '</div>' +
                   '<div style="text-align: right; font-size: 8.5px; color: #475569; font-weight: 600;">' +
                     '<div>Date: ' + rxDate + '</div>' +
@@ -1633,7 +1633,7 @@ const DoctorDashboard = () => {
 
             function getPatientDetailsHTML() {
               var vitalsHTML = '';
-              if (vitalsText && vitalsText !== '—') {
+              if (vitalsText && vitalsText !== '\u2014') {
                 vitalsHTML = '<div><span style="font-weight: 700; width: 85px; display: inline-block; color: #059669;">Vitals</span><span style="font-weight: 600; color: #059669;">: ' + vitalsText + '</span></div>';
               }
               return '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 11px; color: #1E293B; line-height: 1.4; margin-bottom: 8px;">' +
@@ -1660,7 +1660,7 @@ const DoctorDashboard = () => {
 
             function getSignatureBlockHTML() {
               var noteContentHTML = '';
-              if (soapNotes && soapNotes !== '—' && soapNotes.trim() !== '') {
+              if (soapNotes && soapNotes !== '\u2014' && soapNotes.trim() !== '') {
                 noteContentHTML = '<div style=\"color: #334155; font-weight: 600; white-space: pre-wrap; line-height: 1.4;\">' + soapNotes + '</div>';
               } else {
                 noteContentHTML = '<ul style=\"padding-left: 10px; margin: 0; list-style-type: square; color: #334155; font-weight: 600;\">' +
@@ -1765,7 +1765,7 @@ const DoctorDashboard = () => {
               const contentHeightLimit = page1ContentLimit; // For measureHeight to use conservatively // 35px safety padding
 
               function getDiagnosisHTML() {
-                if (!diagnosis || diagnosis === '—') return '';
+                if (!diagnosis || diagnosis === '\u2014') return '';
                 const lines = diagnosis.split('\n').filter(l => l.trim() !== '');
                 if (lines.length === 1) {
                   return '<div style="margin-bottom: 12px; page-break-inside: avoid; break-inside: avoid;">' +
@@ -1775,7 +1775,7 @@ const DoctorDashboard = () => {
                 }
                 const bulletList = lines.map(line => {
                   return '<li style="margin-bottom: 4px; display: flex; align-items: flex-start; gap: 8px;">' +
-                    '<span style="color: #800020; font-size: 8px; margin-top: 5px; flex-shrink: 0;">●</span>' +
+                    '<span style="color: #800020; font-size: 8px; margin-top: 5px; flex-shrink: 0;">\u25CF</span>' +
                     '<span>' + line.trim() + '</span>' +
                     '</li>';
                 }).join('');
@@ -1786,7 +1786,7 @@ const DoctorDashboard = () => {
               }
 
               function getSoapNotesHTML() {
-                if (!soapNotes || soapNotes === '—') return '';
+                if (!soapNotes || soapNotes === '\u2014') return '';
                 return '<div style="margin-bottom: 12px; page-break-inside: avoid; break-inside: avoid;">' +
                   '<div style="font-family: Outfit, sans-serif; font-size: 12px; font-weight: 900; color: #800020; border-bottom: 1.5px solid #800020; padding-bottom: 3px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Clinical SOAP Notes</div>' +
                   '<div style="font-size: 10.5px; font-weight: 600; color: #475569; white-space: pre-wrap; padding-left: 2px; line-height: 1.4;">' + soapNotes + '</div>' +
@@ -1819,7 +1819,7 @@ const DoctorDashboard = () => {
                   for (var i = 0; chunk.length > i; i++) {
                     var testName = (typeof chunk[i] === 'object' && chunk[i] !== null) ? (chunk[i].testName || chunk[i].name || '') : chunk[i];
                     itemsHTML += '<div style="font-size: 11px; font-weight: 600; color: #1E293B; padding: 3px 0;">' +
-                      '• ' + testName +
+                      '\u2022 ' + testName +
                     '</div>';
                   }
                   
