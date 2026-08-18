@@ -2011,13 +2011,18 @@ const DoctorDashboard = () => {
               return Promise.all(promises);
             }
 
-            window.onload = function() {
+            function initPrint() {
               waitForImages().then(function() {
                 buildLayout();
                 window.print();
                 setTimeout(function() { window.parent.postMessage('close-print-prescription-iframe', '*'); }, 500);
               });
-            };
+            }
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+              initPrint();
+            } else {
+              window.onload = initPrint;
+            }
           </script>
         </body>
         </html>
