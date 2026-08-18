@@ -2036,6 +2036,7 @@ const DoctorDashboard = () => {
         </html>
       `;
 
+      console.log("HTML CONTENT TO WRITE:", htmlContent);
       printWindow.document.write(htmlContent);
       printWindow.document.close();
     } catch (err) {
