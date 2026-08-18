@@ -1043,7 +1043,17 @@ const DoctorDashboard = () => {
     const fetchHospitalLetterhead = async () => {
       try {
         const res = await api.get('/admin/letterhead');
-        setAdminTemplates(res.data?.prescriptionTemplates || []);
+        const templates = res.data?.prescriptionTemplates || [];
+        setAdminTemplates(templates);
+        const standardTpl = templates.find(t => t.isStandard) || templates[0];
+        if (standardTpl) {
+          setPrintSettings(prev => ({
+            ...prev,
+            template: standardTpl._id,
+            topSpacer: standardTpl.yTop,
+            bottomSpacer: standardTpl.yBottom
+          }));
+        }
         let letterheadUrl = res.data?.letterheadUrl || "";
         letterheadUrl = letterheadUrl.replace(/\\/g, '/');
         if (letterheadUrl && !letterheadUrl.startsWith('http://') && !letterheadUrl.startsWith('https://') && !letterheadUrl.startsWith('data:')) {
@@ -9297,7 +9307,12 @@ I have scanned the medical reference databases, but couldn't find a direct match
                         return (
                           <div 
                             key={tpl._id}
-                            onClick={() => setTempPrintSettings(prev => ({ ...prev, template: tpl._id }))}
+                            onClick={() => setTempPrintSettings(prev => ({ 
+                              ...prev, 
+                              template: tpl._id,
+                              topSpacer: tpl.yTop,
+                              bottomSpacer: tpl.yBottom
+                            }))}
                             style={{
                               border: isSelected ? '2.5px solid #800020' : '1.5px solid #E2E8F0',
                               background: isSelected ? '#FFF5F6' : '#FFFFFF',
@@ -9490,7 +9505,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                       
                       {/* Top Spacer area */}
                       <div style={{
-                        height: `${tempPrintSettings.topSpacer * 1.0}px`,
+                        height: `${tempPrintSettings.topSpacer * 2.05}px`,
                         borderBottom: '1px dashed #E2E8F0',
                         background: 'transparent',
                         display: 'flex',
@@ -9620,7 +9635,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                       {/* Bottom Spacer area */}
                       <div style={{
                         marginTop: 'auto',
-                        height: `${tempPrintSettings.bottomSpacer * 1.0}px`,
+                        height: `${tempPrintSettings.bottomSpacer * 2.05}px`,
                         borderTop: '1px dashed #E2E8F0',
                         display: 'flex',
                         alignItems: 'center',
