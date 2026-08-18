@@ -1331,9 +1331,26 @@ const DoctorDashboard = () => {
         ].filter(Boolean).join(' | ');
       }
 
-      // Convert details to JSON
-      const jsonItems = JSON.stringify(item.items || []);
-      const jsonTests = JSON.stringify(item.tests || []);
+      window.__currentPrintData = {
+        medicines: item.items || [],
+        tests: item.tests || [],
+        patientName: cleanField(item.patient?.name || selectedPatient?.name),
+        patientAge: item.patient?.age ? item.patient.age + ' Yrs' : (selectedPatient?.age ? selectedPatient.age + ' Yrs' : '—'),
+        patientGender: cleanField(item.patient?.gender || selectedPatient?.gender),
+        rxDate: cleanField(item.date || new Date().toLocaleDateString('en-IN')),
+        patientContact: cleanField(item.patient?.contact || selectedPatient?.contact),
+        patientAddress: cleanField(item.patient?.address || selectedPatient?.address),
+        regNo: cleanField(item.originalApp?.regNo),
+        doctorName: cleanField(item.doctor || user.name),
+        doctorDesignation: cleanField(user.designation || 'MBBS, MD (Medicine)'),
+        doctorReg: user.staff_id ? (user.staff_id.match(/^\d+$/) ? user.staff_id.slice(-5) : user.staff_id.toUpperCase()) : '12345',
+        doctorDept: cleanField(user.department || 'General Medicine'),
+        doctorShift: user.shiftName || '10:00 AM - 01:00 PM, 06:00 PM - 09:00 PM',
+        clinicName: clinicName,
+        diagnosis: cleanField(item.diagnosis),
+        vitalsText: vitalsString,
+        soapNotes: cleanField(item.notes || '')
+      };
 
       const htmlContent = `
         <!DOCTYPE html>
@@ -1489,8 +1506,9 @@ const DoctorDashboard = () => {
           <div id="pages-container"></div>
 
           <script>
-            const medicines = ${jsonItems};
-            const tests = ${jsonTests};
+            const printData = window.parent.__currentPrintData || {};
+            const medicines = printData.medicines || [];
+            const tests = printData.tests || [];
             const activeTemplate = "${customSettings.template}";
             const digitalPreset = "${customSettings.digitalPreset}";
             const hasCustomLetterhead = window.parent.__currentLetterhead ? true : false;
@@ -1502,23 +1520,23 @@ const DoctorDashboard = () => {
             const pageDistribution = "${customSettings.pageDistribution || 'auto'}";
             const initialFontSize = ${parseInt(customSettings.fontSize, 10) || 100};
 
-            const patientName = ${JSON.stringify(cleanField(item.patient?.name || selectedPatient?.name))};
-            const patientAge = ${JSON.stringify(item.patient?.age ? item.patient.age + ' Yrs' : (selectedPatient?.age ? selectedPatient.age + ' Yrs' : '—'))};
-            const patientGender = ${JSON.stringify(cleanField(item.patient?.gender || selectedPatient?.gender))};
-            const rxDate = ${JSON.stringify(cleanField(item.date || new Date().toLocaleDateString('en-IN')))};
-            const patientContact = ${JSON.stringify(cleanField(item.patient?.contact || selectedPatient?.contact))};
-            const patientAddress = ${JSON.stringify(cleanField(item.patient?.address || selectedPatient?.address))};
-            const regNo = ${JSON.stringify(cleanField(item.originalApp?.regNo))};
+            const patientName = printData.patientName;
+            const patientAge = printData.patientAge;
+            const patientGender = printData.patientGender;
+            const rxDate = printData.rxDate;
+            const patientContact = printData.patientContact;
+            const patientAddress = printData.patientAddress;
+            const regNo = printData.regNo;
 
-            const doctorName = ${JSON.stringify(cleanField(item.doctor || user.name))};
-            const doctorDesignation = ${JSON.stringify(cleanField(user.designation || 'MBBS, MD (Medicine)'))};
-            const doctorReg = ${JSON.stringify(user.staff_id ? (user.staff_id.match(/^\d+$/) ? user.staff_id.slice(-5) : user.staff_id.toUpperCase()) : '12345')};
-            const doctorDept = ${JSON.stringify(cleanField(user.department || 'General Medicine'))};
-            const doctorShift = ${JSON.stringify(user.shiftName || '10:00 AM - 01:00 PM, 06:00 PM - 09:00 PM')};
-            const clinicName = ${JSON.stringify(clinicName)};
-            const diagnosis = ${JSON.stringify(cleanField(item.diagnosis))};
-            const vitalsText = ${JSON.stringify(vitalsString)};
-            const soapNotes = ${JSON.stringify(cleanField(item.notes || ''))};
+            const doctorName = printData.doctorName;
+            const doctorDesignation = printData.doctorDesignation;
+            const doctorReg = printData.doctorReg;
+            const doctorDept = printData.doctorDept;
+            const doctorShift = printData.doctorShift;
+            const clinicName = printData.clinicName;
+            const diagnosis = printData.diagnosis;
+            const vitalsText = printData.vitalsText;
+            const soapNotes = printData.soapNotes;
 
             function getHeaderHTML() {
               if (hasCustomLetterhead && digitalPreset === 'none') {
