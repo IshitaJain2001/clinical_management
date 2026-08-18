@@ -451,6 +451,21 @@ router.post("/google-login", tenantMiddleware, async (req, res) => {
         address: "Registered via Google Sign-In",
         allergies: "None"
       });
+
+      const Consent = require('../models/Consent');
+      await Consent.create({
+        tenantId: targetTenant,
+        patientId: patient._id,
+        purposes: {
+          treatment: true,
+          insurance: true,
+          research: false
+        },
+        status: 'Active',
+        signature: 'Consent granted via Google Authentication',
+        ipAddress: req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+        userAgent: req.headers['user-agent'] || 'Google Auth flow'
+      });
     }
 
     if (patient) {

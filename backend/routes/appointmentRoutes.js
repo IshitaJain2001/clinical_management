@@ -215,6 +215,21 @@ router.post('/', async (req, res) => {
           medicalHistory: currentPatient.medicalHistory,
           avatar: currentPatient.avatar
         });
+
+        const Consent = require('../models/Consent');
+        await Consent.create({
+          tenantId: resolvedTenantId,
+          patientId: targetPatient._id,
+          purposes: {
+            treatment: true,
+            insurance: true,
+            research: false
+          },
+          status: 'Active',
+          signature: 'Auto-consented during offline appointment booking',
+          ipAddress: '127.0.0.1',
+          userAgent: 'System Automated Workflow'
+        });
       }
       targetPatientId = targetPatient._id;
     }

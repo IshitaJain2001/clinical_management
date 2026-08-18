@@ -94,6 +94,22 @@ router.post('/', async (req, res) => {
       medicalHistory: Array.isArray(medicalHistory) ? medicalHistory : (medicalHistory ? [medicalHistory] : []),
       avatar
     });
+    const Consent = require('../models/Consent');
+    const dpdpConsent = req.body.dpdpConsent || { emrCreation: true, dataSharing: false };
+    await Consent.create({
+      tenantId: req.tenantId,
+      patientId: patient._id,
+      purposes: {
+        treatment: !!dpdpConsent.emrCreation,
+        insurance: true,
+        research: !!dpdpConsent.dataSharing
+      },
+      status: (dpdpConsent.emrCreation === false) ? 'Withdrawn' : 'Active',
+      signature: `Digitally signed on registration`,
+      ipAddress: req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+      userAgent: req.headers['user-agent'] || 'System UI'
+    });
+
     const io = req.app.get("io");
     if (io && req.tenantId) {
       io.to(req.tenantId).emit("data_changed", { type: "patients" });

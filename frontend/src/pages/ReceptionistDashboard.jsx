@@ -3996,7 +3996,7 @@ const ReceptionistDashboard = () => {
                   <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '11px', borderRadius: '6px', background: '#F1F5F9', border: 'none', color: '#475569', fontWeight: 800, cursor: 'pointer' }} onClick={() => switchTab('patients')}>View All</button>
                 </div>
                 
-                <div className="table-responsive" style={{ height: '220px', position: 'relative', marginBottom: '24px', overflowY: 'hidden', overflowX: 'auto' }}>
+                <div className="table-responsive" style={{ height: '220px', position: 'relative', marginBottom: '24px', overflowY: 'visible', overflowX: 'auto' }}>
                   <div className="chart-glow-bg"></div>
                   <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '180px', pointerEvents: 'none' }}>
                     <div style={{ height: '33.3%', borderBottom: '1px solid #F1F5F9' }}></div>
@@ -4012,10 +4012,10 @@ const ReceptionistDashboard = () => {
                        return (
                          <div key={idx} className="bar-group">
                            <div className="bar-pair">
-                             <div className="chart-bar walkin" style={{ height: `${walkinPercent}%` }}>
+                             <div className="chart-bar walkin" style={{ height: `${walkinPercent}%` }} onClick={() => switchTab('billing')}>
                                <div className="bar-tooltip">{day.walkin} Walk-ins</div>
                              </div>
-                             <div className="chart-bar online" style={{ height: `${onlinePercent}%` }}>
+                             <div className="chart-bar online" style={{ height: `${onlinePercent}%` }} onClick={() => switchTab('billing')}>
                                <div className="bar-tooltip">{day.online} Online</div>
                              </div>
                            </div>

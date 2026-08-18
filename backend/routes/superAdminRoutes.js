@@ -1369,6 +1369,22 @@ router.post('/hospitals/:code/patients', async (req, res) => {
       contact: cleanContact,
       email: email ? email.toLowerCase().trim() : 'N/A'
     });
+
+    const Consent = require('../models/Consent');
+    await Consent.create({
+      tenantId,
+      patientId: newPatient._id,
+      purposes: {
+        treatment: true,
+        insurance: true,
+        research: false
+      },
+      status: 'Active',
+      signature: 'Created via Super Admin Portal',
+      ipAddress: req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+      userAgent: req.headers['user-agent'] || 'SuperAdmin CLI/Web'
+    });
+
     res.status(201).json(newPatient);
   } catch (err) {
     res.status(500).json({ error: err.message });
