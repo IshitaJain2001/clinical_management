@@ -2606,7 +2606,7 @@ const LabDashboard = () => {
 
                 {/* KPI Metrics Dashboard Grid */}
                 <div className="kpi-container-custom">
-                  <div className="kpi-card-custom">
+                  <div className="kpi-card-custom semantic-card-info">
                     <div className="kpi-icon-box-custom" style={{ background: '#EFF6FF', color: '#2563EB' }}>
                       <i data-lucide="plus-circle" style={{ width: '22px', height: '22px' }}></i>
                     </div>
@@ -2616,7 +2616,7 @@ const LabDashboard = () => {
                     </div>
                   </div>
 
-                  <div className="kpi-card-custom">
+                  <div className="kpi-card-custom semantic-card-info">
                     <div className="kpi-icon-box-custom" style={{ background: '#FFFBEB', color: '#D97706' }}>
                       <i data-lucide="refresh-cw" style={{ width: '20px', height: '20px' }}></i>
                     </div>
@@ -2628,7 +2628,7 @@ const LabDashboard = () => {
                     </div>
                   </div>
 
-                  <div className="kpi-card-custom">
+                  <div className="kpi-card-custom semantic-card-info">
                     <div className="kpi-icon-box-custom" style={{ background: '#ECFDF5', color: '#059669' }}>
                       <i data-lucide="check-circle" style={{ width: '22px', height: '22px' }}></i>
                     </div>
@@ -2638,7 +2638,7 @@ const LabDashboard = () => {
                     </div>
                   </div>
 
-                  <div className="kpi-card-custom">
+                  <div className="kpi-card-custom semantic-card-info">
                     <div className="kpi-icon-box-custom" style={{ background: '#FEF2F2', color: '#DC2626' }}>
                       <i data-lucide="alert-circle" style={{ width: '22px', height: '22px' }}></i>
                     </div>

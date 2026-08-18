@@ -2865,7 +2865,7 @@ const PharmacyDashboard = () => {
             <div className="kpi-grid">
               
               {/* Card 1: Today's Prescriptions */}
-              <div className="premium-kpi-card" onClick={() => setActiveTab('prescriptions')}>
+              <div className="premium-kpi-card semantic-card-success" onClick={() => setActiveTab('prescriptions')}>
                 <div>
                   <div className="kpi-lbl">Today's Prescriptions</div>
                   <div className="kpi-val">{prescriptions.filter(p => {
@@ -2882,7 +2882,7 @@ const PharmacyDashboard = () => {
               </div>
 
               {/* Card 2: Pending to Dispense */}
-              <div className="premium-kpi-card" onClick={() => setActiveTab('prescriptions')}>
+              <div className="premium-kpi-card semantic-card-success" onClick={() => setActiveTab('prescriptions')}>
                 <div>
                   <div className="kpi-lbl">Pending to Dispense</div>
                   <div className="kpi-val">{prescriptions.filter(p => p.status === 'Pending Pharmacy Dispatch' || p.status === 'Pending' || p.status === 'In Progress').length}</div>
@@ -2896,7 +2896,7 @@ const PharmacyDashboard = () => {
               </div>
 
               {/* Card 3: Prescriptions Dispensed */}
-              <div className="premium-kpi-card" onClick={() => setActiveTab('prescriptions')}>
+              <div className="premium-kpi-card semantic-card-success" onClick={() => setActiveTab('prescriptions')}>
                 <div>
                   <div className="kpi-lbl">Prescriptions Dispensed</div>
                   <div className="kpi-val">{prescriptions.filter(p => p.status === 'Dispensed' || p.status === 'Dispensed by Pharmacy').length}</div>
@@ -2910,7 +2910,7 @@ const PharmacyDashboard = () => {
               </div>
 
               {/* Card 4: Today's Sales */}
-              <div className="premium-kpi-card" onClick={() => setActiveTab('sales')}>
+              <div className="premium-kpi-card semantic-card-success" onClick={() => setActiveTab('sales')}>
                 <div>
                   <div className="kpi-lbl">Today's Sales</div>
                   <div className="kpi-val">₹{getSalesBreakdown().total.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</div>
@@ -2924,7 +2924,7 @@ const PharmacyDashboard = () => {
               </div>
 
               {/* Card 5: Low Stock Items */}
-              <div className="premium-kpi-card" onClick={() => setActiveTab('inventory')}>
+              <div className="premium-kpi-card semantic-card-success" onClick={() => setActiveTab('inventory')}>
                 <div>
                   <div className="kpi-lbl">Low Stock Items</div>
                   <div className="kpi-val">{inventory.filter(item => item.status === 'Low Stock' || item.status === 'Out of Stock').length}</div>

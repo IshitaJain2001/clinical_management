@@ -2161,7 +2161,7 @@ const ProcurementDashboard = () => {
 
                 {/* STATS */}
                 <div className="proc-stats-grid">
-                  <div className="proc-stat-card">
+                  <div className="proc-stat-card semantic-card-info">
                     <div>
                       <div className="proc-stat-label">Total Vendors</div>
                       <div className="proc-stat-val">{getDisplayVendors().length}</div>
@@ -2174,7 +2174,7 @@ const ProcurementDashboard = () => {
                     </div>
                   </div>
 
-                  <div className="proc-stat-card">
+                  <div className="proc-stat-card semantic-card-success">
                     <div>
                       <div className="proc-stat-label">Open Purchase Orders</div>
                       <div className="proc-stat-val">
@@ -2187,7 +2187,7 @@ const ProcurementDashboard = () => {
                     </div>
                   </div>
 
-                  <div className="proc-stat-card">
+                  <div className="proc-stat-card semantic-card-info">
                     <div>
                       <div className="proc-stat-label">Total Purchases (MTD)</div>
                       <div className="proc-stat-val">
@@ -2202,7 +2202,7 @@ const ProcurementDashboard = () => {
                     </div>
                   </div>
 
-                  <div className="proc-stat-card">
+                  <div className="proc-stat-card semantic-card-info">
                     <div>
                       <div className="proc-stat-label">Outstanding Payable</div>
                       <div className="proc-stat-val">
@@ -2387,7 +2387,7 @@ const ProcurementDashboard = () => {
 
                   {/* KPI CARDS ROW */}
                   <div className="proc-stats-grid" style={{ gridTemplateColumns: 'repeat(5, 1fr)' }}>
-                    <div className="proc-stat-card">
+                    <div className="proc-stat-card semantic-card-info">
                       <div>
                         <div className="proc-stat-label">Total Vendors</div>
                         <div className="proc-stat-val">{getDisplayVendors().length}</div>
@@ -2397,7 +2397,7 @@ const ProcurementDashboard = () => {
                       </div>
                     </div>
 
-                    <div className="proc-stat-card">
+                    <div className="proc-stat-card semantic-card-success">
                       <div>
                         <div className="proc-stat-label">Active Vendors</div>
                         <div className="proc-stat-val">
@@ -2409,7 +2409,7 @@ const ProcurementDashboard = () => {
                       </div>
                     </div>
 
-                    <div className="proc-stat-card">
+                    <div className="proc-stat-card semantic-card-info">
                       <div>
                         <div className="proc-stat-label">Under Process</div>
                         <div className="proc-stat-val" style={{ color: '#EA580C' }}>
@@ -2421,7 +2421,7 @@ const ProcurementDashboard = () => {
                       </div>
                     </div>
 
-                    <div className="proc-stat-card">
+                    <div className="proc-stat-card semantic-card-info">
                       <div>
                         <div className="proc-stat-label">Medicine Vendors</div>
                         <div className="proc-stat-val">
@@ -2433,7 +2433,7 @@ const ProcurementDashboard = () => {
                       </div>
                     </div>
 
-                    <div className="proc-stat-card">
+                    <div className="proc-stat-card semantic-card-info">
                       <div>
                         <div className="proc-stat-label">Consumable Vendors</div>
                         <div className="proc-stat-val">
@@ -3596,7 +3596,7 @@ const ProcurementDashboard = () => {
 
                   {/* KPI CARDS ROW */}
                   <div className="proc-stats-grid" style={{ marginBottom: '24px' }}>
-                    <div className="proc-stat-card">
+                    <div className="proc-stat-card semantic-card-info">
                       <div>
                         <div className="proc-stat-label">TOTAL POS</div>
                         <div className="proc-stat-val">{getDisplayPOs().length}</div>
@@ -3606,7 +3606,7 @@ const ProcurementDashboard = () => {
                       </div>
                     </div>
 
-                    <div className="proc-stat-card">
+                    <div className="proc-stat-card semantic-card-success">
                       <div>
                         <div className="proc-stat-label">OPEN ORDERS</div>
                         <div className="proc-stat-val">
@@ -3619,7 +3619,7 @@ const ProcurementDashboard = () => {
                       </div>
                     </div>
 
-                    <div className="proc-stat-card">
+                    <div className="proc-stat-card semantic-card-success">
                       <div>
                         <div className="proc-stat-label">PARTIALLY DELIVERED</div>
                         <div className="proc-stat-val">
@@ -3631,7 +3631,7 @@ const ProcurementDashboard = () => {
                       </div>
                     </div>
 
-                    <div className="proc-stat-card">
+                    <div className="proc-stat-card semantic-card-success">
                       <div>
                         <div className="proc-stat-label">COMPLETED</div>
                         <div className="proc-stat-val">
@@ -4277,7 +4277,7 @@ const ProcurementDashboard = () => {
 
                 {/* KPI CARDS ROW */}
                 <div className="proc-stats-grid" style={{ marginBottom: '24px' }}>
-                  <div className="proc-stat-card">
+                  <div className="proc-stat-card semantic-card-success">
                     <div>
                       <div className="proc-stat-label">AWAITING VERIFICATION</div>
                       <div className="proc-stat-val">
@@ -4289,7 +4289,7 @@ const ProcurementDashboard = () => {
                     </div>
                   </div>
 
-                  <div className="proc-stat-card">
+                  <div className="proc-stat-card semantic-card-info">
                     <div>
                       <div className="proc-stat-label">GRNS THIS WEEK</div>
                       <div className="proc-stat-val">{getGrnsThisWeek()}</div>
@@ -4299,7 +4299,7 @@ const ProcurementDashboard = () => {
                     </div>
                   </div>
 
-                  <div className="proc-stat-card">
+                  <div className="proc-stat-card semantic-card-info">
                     <div>
                       <div className="proc-stat-label">QUANTITY MISMATCHES</div>
                       <div className="proc-stat-val">{getQuantityMismatches()}</div>
@@ -4309,7 +4309,7 @@ const ProcurementDashboard = () => {
                     </div>
                   </div>
 
-                  <div className="proc-stat-card">
+                  <div className="proc-stat-card semantic-card-info">
                     <div>
                       <div className="proc-stat-label">ACCEPTED (MONTH)</div>
                       <div className="proc-stat-val">{formatAcceptedTotal()}</div>
@@ -4497,7 +4497,7 @@ const ProcurementDashboard = () => {
 
                   {/* KPI CARDS ROW */}
                   <div className="proc-stats-grid" style={{ marginBottom: '24px' }}>
-                    <div className="proc-stat-card">
+                    <div className="proc-stat-card semantic-card-info">
                       <div>
                         <div className="proc-stat-label">TOTAL PURCHASES</div>
                         <div className="proc-stat-val">₹{totalPurchases.toLocaleString()}</div>
@@ -4507,7 +4507,7 @@ const ProcurementDashboard = () => {
                       </div>
                     </div>
 
-                    <div className="proc-stat-card">
+                    <div className="proc-stat-card semantic-card-info">
                       <div>
                         <div className="proc-stat-label">OUTSTANDING</div>
                         <div className="proc-stat-val">₹{totalOutstanding.toLocaleString()}</div>
@@ -4517,7 +4517,7 @@ const ProcurementDashboard = () => {
                       </div>
                     </div>
 
-                    <div className="proc-stat-card">
+                    <div className="proc-stat-card semantic-card-success">
                       <div>
                         <div className="proc-stat-label">PAID AMOUNT</div>
                         <div className="proc-stat-val">₹{totalPaid.toLocaleString()}</div>
@@ -4527,7 +4527,7 @@ const ProcurementDashboard = () => {
                       </div>
                     </div>
 
-                    <div className="proc-stat-card">
+                    <div className="proc-stat-card semantic-card-info">
                       <div>
                         <div className="proc-stat-label">CREDIT BALANCE</div>
                         <div className="proc-stat-val">₹{creditBalance.toLocaleString()}</div>

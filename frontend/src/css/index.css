@@ -3017,3 +3017,51 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   color: #2563EB !important;
   border-left: 4px solid #2563EB !important;
 }
+
+/* Semantic Status Cards */
+.semantic-card-success {
+  background: #f0fdf4 !important;
+  border-left: 4px solid #22c55e !important;
+}
+.semantic-card-success .appt-kpi-header, .semantic-card-success p { color: #15803d !important; }
+.semantic-card-success h2 { color: #166534 !important; }
+.semantic-card-success .dashboard-widget-icon { background: #dcfce7 !important; color: #15803d !important; }
+
+.semantic-card-warning {
+  background: #fefce8 !important;
+  border-left: 4px solid #eab308 !important;
+}
+.semantic-card-warning .appt-kpi-header, .semantic-card-warning p { color: #a16207 !important; }
+.semantic-card-warning h2 { color: #854d0e !important; }
+.semantic-card-warning .dashboard-widget-icon { background: #fef08a !important; color: #a16207 !important; }
+
+.semantic-card-danger {
+  background: #fef2f2 !important;
+  border-left: 4px solid #ef4444 !important;
+}
+.semantic-card-danger .appt-kpi-header, .semantic-card-danger p { color: #b91c1c !important; }
+.semantic-card-danger h2 { color: #991b1b !important; }
+.semantic-card-danger .dashboard-widget-icon { background: #fee2e2 !important; color: #b91c1c !important; }
+
+.semantic-card-attention {
+  background: #fff7ed !important;
+  border-left: 4px solid #f97316 !important;
+}
+.semantic-card-attention .appt-kpi-header, .semantic-card-attention p { color: #c2410c !important; }
+.semantic-card-attention h2 { color: #9a3412 !important; }
+.semantic-card-attention .dashboard-widget-icon { background: #ffedd5 !important; color: #c2410c !important; }
+
+.semantic-card-info {
+  background: #eff6ff !important;
+  border-left: 4px solid #3b82f6 !important;
+}
+.semantic-card-info .appt-kpi-header, .semantic-card-info p { color: #1d4ed8 !important; }
+.semantic-card-info h2 { color: #1e40af !important; }
+.semantic-card-info .dashboard-widget-icon { background: #dbeafe !important; color: #1d4ed8 !important; }
+
+/* Semantic Status Badges */
+.semantic-badge-success { background: #dcfce7 !important; color: #166534 !important; border: 1px solid #bbf7d0 !important; }
+.semantic-badge-warning { background: #fef08a !important; color: #854d0e !important; border: 1px solid #fde047 !important; }
+.semantic-badge-danger { background: #fee2e2 !important; color: #991b1b !important; border: 1px solid #fecaca !important; }
+.semantic-badge-attention { background: #ffedd5 !important; color: #9a3412 !important; border: 1px solid #fed7aa !important; }
+.semantic-badge-info { background: #dbeafe !important; color: #1e40af !important; border: 1px solid #bfdbfe !important; }

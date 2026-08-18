@@ -4483,21 +4483,21 @@ export default function HRPayrollStaff({ onExit }) {
                     </div>
 
                     <div className="hr-admin-stats-grid">
-                      <div className="hr-admin-stat-card">
+                      <div className="hr-admin-stat-card semantic-card-info">
                         <span className="hr-admin-stat-lbl">Total Employees</span>
                         <span className="hr-admin-stat-val">{employees.length}</span>
                       </div>
-                      <div className="hr-admin-stat-card">
+                      <div className="hr-admin-stat-card semantic-card-warning">
                         <span className="hr-admin-stat-lbl">Pending Leaves</span>
                         <span className="hr-admin-stat-val">{getAllPendingLeaves().length}</span>
                       </div>
-                      <div className="hr-admin-stat-card">
+                      <div className="hr-admin-stat-card semantic-card-info">
                         <span className="hr-admin-stat-lbl">Departments</span>
                         <span className="hr-admin-stat-val">
                           {new Set(employees.map(e => e.dept)).size || 1}
                         </span>
                       </div>
-                      <div className="hr-admin-stat-card">
+                      <div className="hr-admin-stat-card semantic-card-success">
                         <span className="hr-admin-stat-lbl">Active Context</span>
                         <span className="hr-admin-stat-val" style={{ fontSize: '15px', color: '#2563EB' }}>
                           {selectedEmployee?.name || 'None'}
@@ -4853,35 +4853,35 @@ export default function HRPayrollStaff({ onExit }) {
 
                 {/* KPI indicators */}
                 <div className="hr-attendance-kpis">
-                  <div className="hr-attendance-kpi-card">
+                  <div className="hr-attendance-kpi-card semantic-card-info">
                     <div className="hr-att-kpi-header">
                       <span>Working Days</span>
                       <div className="hr-status-dot" style={{ backgroundColor: '#3B82F6' }} />
                     </div>
                     <div className="hr-att-kpi-val">{workingDaysCount}</div>
                   </div>
-                  <div className="hr-attendance-kpi-card">
+                  <div className="hr-attendance-kpi-card semantic-card-info">
                     <div className="hr-att-kpi-header">
                       <span>Present</span>
                       <div className="hr-status-dot" style={{ backgroundColor: '#10B981' }} />
                     </div>
                     <div className="hr-att-kpi-val">{presentCount}</div>
                   </div>
-                  <div className="hr-attendance-kpi-card">
+                  <div className="hr-attendance-kpi-card semantic-card-info">
                     <div className="hr-att-kpi-header">
                       <span>Absent</span>
                       <div className="hr-status-dot" style={{ backgroundColor: '#EF4444' }} />
                     </div>
                     <div className="hr-att-kpi-val">{absentCount}</div>
                   </div>
-                  <div className="hr-attendance-kpi-card">
+                  <div className="hr-attendance-kpi-card semantic-card-info">
                     <div className="hr-att-kpi-header">
                       <span>Late Marks</span>
                       <div className="hr-status-dot" style={{ backgroundColor: '#F59E0B' }} />
                     </div>
                     <div className="hr-att-kpi-val">{lateCount}</div>
                   </div>
-                  <div className="hr-attendance-kpi-card">
+                  <div className="hr-attendance-kpi-card semantic-card-info">
                     <div className="hr-att-kpi-header">
                       <span>Attendance %</span>
                       <div className="hr-status-dot" style={{ backgroundColor: '#8B5CF6' }} />
@@ -5028,7 +5028,7 @@ export default function HRPayrollStaff({ onExit }) {
 
               {/* Leave KPIs */}
               <div className="hr-leave-kpis">
-                <div className="hr-leave-kpi-card">
+                <div className="hr-leave-kpi-card semantic-card-info">
                   <div className="hr-leave-kpi-left">
                     <span className="hr-leave-kpi-lbl">Casual Leave</span>
                     <span className="hr-leave-kpi-count">{casualAvailable}</span>
@@ -5039,7 +5039,7 @@ export default function HRPayrollStaff({ onExit }) {
                   </div>
                 </div>
 
-                <div className="hr-leave-kpi-card">
+                <div className="hr-leave-kpi-card semantic-card-info">
                   <div className="hr-leave-kpi-left">
                     <span className="hr-leave-kpi-lbl">Sick Leave</span>
                     <span className="hr-leave-kpi-count">{sickAvailable}</span>
@@ -5050,7 +5050,7 @@ export default function HRPayrollStaff({ onExit }) {
                   </div>
                 </div>
 
-                <div className="hr-leave-kpi-card">
+                <div className="hr-leave-kpi-card semantic-card-info">
                   <div className="hr-leave-kpi-left">
                     <span className="hr-leave-kpi-lbl">Earned Leave</span>
                     <span className="hr-leave-kpi-count">{earnedAvailable}</span>
@@ -5061,7 +5061,7 @@ export default function HRPayrollStaff({ onExit }) {
                   </div>
                 </div>
 
-                <div className="hr-leave-kpi-card">
+                <div className="hr-leave-kpi-card semantic-card-info">
                   <div className="hr-leave-kpi-left">
                     <span className="hr-leave-kpi-lbl">Taken This Month</span>
                     <span className="hr-leave-kpi-count">{takenThisMonth}</span>

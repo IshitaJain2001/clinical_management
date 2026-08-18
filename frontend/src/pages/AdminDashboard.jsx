@@ -7033,7 +7033,7 @@ const AdminDashboard = () => {
           <div className="admin-dashboard-content">
             {/* KPI Cards Row */}
             <div className="staff-kpi-row">
-              <div className="dashboard-widget-card" style={{ padding: '24px' }}>
+              <div className="dashboard-widget-card semantic-card-info" style={{ padding: '24px' }}>
                 <span className="appt-kpi-header">Total Staff</span>
                 <div style={{ display: 'flex', alignItems: 'baseline', marginTop: '12px' }}>
                   <h2 style={{ fontSize: '36px', fontWeight: 800, color: '#0F172A', margin: 0 }}>{staff.length}</h2>
@@ -7043,7 +7043,7 @@ const AdminDashboard = () => {
                 </p>
               </div>
 
-              <div className="dashboard-widget-card" style={{ padding: '24px' }}>
+              <div className="dashboard-widget-card semantic-card-success" style={{ padding: '24px' }}>
                 <span className="appt-kpi-header">Active Today</span>
                 <div style={{ display: 'flex', alignItems: 'baseline', marginTop: '12px' }}>
                   <h2 style={{ fontSize: '36px', fontWeight: 800, color: '#10B981', margin: 0 }}>
@@ -7055,7 +7055,7 @@ const AdminDashboard = () => {
                 </p>
               </div>
 
-              <div className="dashboard-widget-card" style={{ padding: '24px' }}>
+              <div className="dashboard-widget-card semantic-card-warning" style={{ padding: '24px' }}>
                 <span className="appt-kpi-header">Pending Approvals</span>
                 <div style={{ display: 'flex', alignItems: 'baseline', marginTop: '12px' }}>
                   <h2 style={{ fontSize: '36px', fontWeight: 800, color: '#D97706', margin: 0 }}>{leaveCount}</h2>
@@ -7063,7 +7063,7 @@ const AdminDashboard = () => {
                 <p style={{ color: '#64748B', fontSize: '13px', fontWeight: 600, marginTop: '8px', marginBottom: 0 }}>New req.</p>
               </div>
 
-              <div className="dashboard-widget-card" style={{ padding: '24px' }}>
+              <div className="dashboard-widget-card semantic-card-success" style={{ padding: '24px' }}>
                 <span className="appt-kpi-header">Staff Performance</span>
                 <div style={{ display: 'flex', alignItems: 'baseline', marginTop: '12px' }}>
                   <h2 style={{ fontSize: '36px', fontWeight: 800, color: '#10B981', margin: 0 }}>Good</h2>
@@ -8329,7 +8329,7 @@ const AdminDashboard = () => {
               {/* KPI Cards Row */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '24px' }}>
                 {/* Card 1: Filtered Revenue */}
-                <div className="dashboard-widget-card" style={{ padding: '24px', backgroundColor: 'white', borderRadius: '16px', border: '1.5px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.02)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '120px' }}>
+                <div className="dashboard-widget-card semantic-card-success" style={{ padding: '24px', backgroundColor: 'white', borderRadius: '16px', border: '1.5px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.02)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '120px' }}>
                   <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Revenue ({revenueFilterPeriod})</span>
                   <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#0F172A', margin: '8px 0', fontFamily: "'Outfit', sans-serif" }}>
                     ₹{periodRevenue.toLocaleString()}
@@ -8340,7 +8340,7 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Card 2: Paid Invoices */}
-                <div className="dashboard-widget-card" style={{ padding: '24px', backgroundColor: 'white', borderRadius: '16px', border: '1.5px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.02)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '120px' }}>
+                <div className="dashboard-widget-card semantic-card-success" style={{ padding: '24px', backgroundColor: 'white', borderRadius: '16px', border: '1.5px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.02)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '120px' }}>
                   <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Paid Transactions</span>
                   <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#0F172A', margin: '8px 0', fontFamily: "'Outfit', sans-serif" }}>
                     {periodBills.length.toLocaleString()}
@@ -8351,7 +8351,7 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Card 3: Average Bill Value */}
-                <div className="dashboard-widget-card" style={{ padding: '24px', backgroundColor: 'white', borderRadius: '16px', border: '1.5px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.02)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '120px' }}>
+                <div className="dashboard-widget-card semantic-card-info" style={{ padding: '24px', backgroundColor: 'white', borderRadius: '16px', border: '1.5px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.02)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '120px' }}>
                   <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Avg Invoice Value</span>
                   <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#0F172A', margin: '8px 0', fontFamily: "'Outfit', sans-serif" }}>
                     ₹{(periodBills.length > 0 ? Math.round(periodRevenue / periodBills.length) : 0).toLocaleString()}
@@ -8360,7 +8360,7 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Card 4: Pending Collections */}
-                <div className="dashboard-widget-card" style={{ padding: '24px', backgroundColor: 'white', borderRadius: '16px', border: '1.5px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.02)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '120px' }}>
+                <div className="dashboard-widget-card semantic-card-warning" style={{ padding: '24px', backgroundColor: 'white', borderRadius: '16px', border: '1.5px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.02)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '120px' }}>
                   <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Pending Collections</span>
                   <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#D97706', margin: '8px 0', fontFamily: "'Outfit', sans-serif" }}>
                     ₹{pendingCollections.total.toLocaleString()}
@@ -9600,7 +9600,7 @@ const AdminDashboard = () => {
           <div className="admin-dashboard-content">
             {/* KPI Cards Row */}
             <div className="pat-stats-row">
-              <div className="dashboard-widget-card" style={{ padding: '24px' }}>
+              <div className="dashboard-widget-card semantic-card-info" style={{ padding: '24px' }}>
                 <span className="appt-kpi-header">Total Patients</span>
                 <div style={{ display: 'flex', alignItems: 'baseline', marginTop: '12px' }}>
                   <h2 style={{ fontSize: '36px', fontWeight: 800, color: '#0F172A', margin: 0 }}>{patients.length.toLocaleString()}</h2>
@@ -9608,7 +9608,7 @@ const AdminDashboard = () => {
                 <p style={{ color: '#64748B', fontSize: '13px', fontWeight: 600, marginTop: '8px', marginBottom: 0 }}>Registered in system</p>
               </div>
 
-              <div className="dashboard-widget-card" style={{ padding: '24px' }}>
+              <div className="dashboard-widget-card semantic-card-success" style={{ padding: '24px' }}>
                 <span className="appt-kpi-header">New This Month</span>
                 <div style={{ display: 'flex', alignItems: 'baseline', marginTop: '12px' }}>
                   <h2 style={{ fontSize: '36px', fontWeight: 800, color: '#0F172A', margin: 0 }}>
@@ -9620,7 +9620,7 @@ const AdminDashboard = () => {
                 </p>
               </div>
 
-              <div className="dashboard-widget-card" style={{ padding: '24px' }}>
+              <div className="dashboard-widget-card semantic-card-attention" style={{ padding: '24px' }}>
                 <span className="appt-kpi-header">Follow-Up Due</span>
                 <div style={{ display: 'flex', alignItems: 'baseline', marginTop: '12px' }}>
                   <h2 style={{ fontSize: '36px', fontWeight: 800, color: '#D97706', margin: 0 }}>

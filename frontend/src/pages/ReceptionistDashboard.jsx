@@ -3926,10 +3926,10 @@ const ReceptionistDashboard = () => {
             )}
 
             {/* 4 KPI Cards Grid */}
-            <div className="kpi-card-container">
+            <div className="kpi-card-container semantic-card-info">
               
               {/* Card 1: Total Appointments */}
-              <div className="modern-kpi-card" onClick={() => switchTab('appointments')}>
+              <div className="modern-kpi-card semantic-card-info" onClick={() => switchTab('appointments')}>
                 <div className="modern-kpi-icon" style={{ background: '#FFF7ED', color: '#EA580C' }}>
                   <i data-lucide="calendar"></i>
                 </div>
@@ -3940,7 +3940,7 @@ const ReceptionistDashboard = () => {
               </div>
 
               {/* Card 2: Total Visits */}
-              <div className="modern-kpi-card" onClick={() => switchTab('patients')}>
+              <div className="modern-kpi-card semantic-card-info" onClick={() => switchTab('patients')}>
                 <div className="modern-kpi-icon" style={{ background: '#EFF6FF', color: '#2563EB' }}>
                   <i data-lucide="users"></i>
                 </div>
@@ -3951,7 +3951,7 @@ const ReceptionistDashboard = () => {
               </div>
 
               {/* Card 3: Total Doctors */}
-              <div className="modern-kpi-card" onClick={() => switchTab('staff')}>
+              <div className="modern-kpi-card semantic-card-info" onClick={() => switchTab('staff')}>
                 <div className="modern-kpi-icon" style={{ background: '#F5F3FF', color: '#7C3AED' }}>
                   <i data-lucide="stethoscope"></i>
                 </div>
@@ -3962,7 +3962,7 @@ const ReceptionistDashboard = () => {
               </div>
 
               {/* Card 4: Total Revenue */}
-              <div className="modern-kpi-card" onClick={() => switchTab('billing')}>
+              <div className="modern-kpi-card semantic-card-info" onClick={() => switchTab('billing')}>
                 <div className="modern-kpi-icon" style={{ background: '#FDF2F8', color: '#DB2777' }}>
                   <i data-lucide="wallet"></i>
                 </div>
@@ -7764,21 +7764,21 @@ const ReceptionistDashboard = () => {
                   <button className="btn btn-primary" onClick={handleExportBillingCSV}><i data-lucide="download"></i> Export Report</button>
               </div>
               <div className="ph-kpi-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginBottom: '24px' }}>
-                  <div className="kpi-card" style={{ padding: '24px' }}>
+                  <div className="kpi-card semantic-card-info" style={{ padding: '24px' }}>
                       <div className="kpi-icon-box" style={{ background: '#F0FDF4', color: '#10B981' }}><i data-lucide="trending-up"></i></div>
                       <div>
                         <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 800 }}>TOTAL REVENUE</div>
                         <div style={{ fontSize: '24px', fontWeight: 900 }}>₹{bills.filter(b => b.status === 'Paid').reduce((sum, b) => sum + (b.totalAmount || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</div>
                       </div>
                   </div>
-                  <div className="kpi-card" style={{ padding: '24px' }}>
+                  <div className="kpi-card semantic-card-warning" style={{ padding: '24px' }}>
                       <div className="kpi-icon-box" style={{ background: '#FFFBEB', color: '#F59E0B' }}><i data-lucide="clock"></i></div>
                       <div>
                         <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 800 }}>PENDING PAYMENTS</div>
                         <div style={{ fontSize: '24px', fontWeight: 900 }}>₹{bills.filter(b => b.status === 'Unpaid' || !b.status).reduce((sum, b) => sum + (b.totalAmount || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</div>
                       </div>
                   </div>
-                  <div className="kpi-card" style={{ padding: '24px' }}>
+                  <div className="kpi-card semantic-card-info" style={{ padding: '24px' }}>
                       <div className="kpi-icon-box" style={{ background: '#EEF2FF', color: '#6366F1' }}><i data-lucide="credit-card"></i></div>
                       <div>
                         <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 800 }}>TRANSACTIONS TODAY</div>
