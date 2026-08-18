@@ -9673,7 +9673,21 @@ I have scanned the medical reference databases, but couldn't find a direct match
                 }} 
                 style={{ background: '#E2E8F0', border: 'none', color: '#475569', borderRadius: '10px', padding: '10px 20px', fontSize: '13.0px', fontWeight: 700, cursor: 'pointer' }}
               >
-                Cancel
+                Edit Prescription
+              </button>
+              <button 
+                onClick={() => {
+                  setShowPrintSettingsModal(false);
+                  setPrintSettings(tempPrintSettings);
+                  if (printSettingsTarget.callback) {
+                    printSettingsTarget.callback(tempPrintSettings);
+                  }
+                  setPrintSettingsTarget(null);
+                  showToastNotification("Prescription shared with patient successfully!", "success");
+                }}
+                style={{ background: 'linear-gradient(135deg, #10B981, #059669)', border: 'none', color: '#ffffff', borderRadius: '10px', padding: '10px 24px', fontSize: '13.0px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 10px rgba(16, 185, 129, 0.2)' }}
+              >
+                Share Prescription
               </button>
               <button 
                 onClick={() => {
@@ -9686,7 +9700,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                 }}
                 style={{ background: 'linear-gradient(135deg, #800020, #600018)', border: 'none', color: '#ffffff', borderRadius: '10px', padding: '10px 24px', fontSize: '13.0px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 10px rgba(128, 0, 32, 0.2)' }}
               >
-                Confirm & Generate Prescription
+                Print Prescription
               </button>
             </div>
 
