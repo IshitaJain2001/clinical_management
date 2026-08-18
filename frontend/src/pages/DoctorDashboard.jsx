@@ -5744,16 +5744,20 @@ I have scanned the medical reference databases, but couldn't find a direct match
                               </td>
                               <td style={{ padding: '16px 0' }}>
                                 <span 
-                                  className={`badge-pill ${app.status?.toLowerCase() === 'completed' ? 'completed' : 'waiting'}`} 
+                                  className={
+                                    (app.status === 'Completed' || app._id === activeAppointmentId) ? 'semantic-badge-success' :
+                                    (app.status?.toLowerCase() === 'pending' ? 'semantic-badge-warning' :
+                                    (app.status?.toLowerCase() === 'upcoming' ? 'semantic-badge-attention' :
+                                    (app.status?.toLowerCase() === 'cancelled' ? 'semantic-badge-danger' : 'semantic-badge-info')))
+                                  } 
                                   style={{ 
-                                    background: app.status === 'Completed' ? '#ECFDF5' : '#FFF7ED', 
-                                    color: app.status === 'Completed' ? '#16A34A' : '#EA580C', 
                                     padding: '4px 8px', 
                                     borderRadius: '6px', 
                                     fontSize: '11px', 
-                                    fontWeight: 700,
+                                    fontWeight: 800,
                                     cursor: (app.status === 'Completed' || app.status === 'In Progress' || app._id === activeAppointmentId) ? 'pointer' : 'default',
-                                    textDecoration: (app.status === 'Completed' || app.status === 'In Progress' || app._id === activeAppointmentId) ? 'underline' : 'none'
+                                    textDecoration: (app.status === 'Completed' || app.status === 'In Progress' || app._id === activeAppointmentId) ? 'underline' : 'none',
+                                    display: 'inline-block'
                                   }}
                                   onClick={() => {
                                     if (app.status === 'Completed' || app.status === 'In Progress' || app._id === activeAppointmentId) {
@@ -6264,9 +6268,8 @@ I have scanned the medical reference databases, but couldn't find a direct match
                           const isCompleted = item.status?.toLowerCase() === 'completed' || hasPres;
                           const isOverviewEnabled = isCompleted || item.originalApp?.status === 'In Progress' || item._id === activeAppointmentId;
                           
-                          // Soft purple background for upcoming, soft green background for completed
-                          const rowBg = (isCompleted || hasPres) ? '#ECFDF5' : (isUpcoming ? '#FAF5FF' : '#ffffff');
-                          const borderBottomColor = (isCompleted || hasPres) ? '#D1FAE5' : (isUpcoming ? '#F3E8FF' : '#F1F5F9');
+                          const rowBg = '#ffffff';
+                          const borderBottomColor = '#F1F5F9';
                           const avatarStyle = getAvatarStyle(item.patientName);
                           const initials = getInitials(item.patientName);
                           
@@ -6341,23 +6344,30 @@ I have scanned the medical reference databases, but couldn't find a direct match
                                       addLog(`Opened clinical overview for completed appointment of: ${item.patientName}`);
                                     }
                                   }}
+                                  className={
+                                    isCompleted ? 'semantic-badge-success' :
+                                    (item.status?.toLowerCase() === 'pending' ? 'semantic-badge-warning' :
+                                    (item.status?.toLowerCase() === 'upcoming' ? 'semantic-badge-attention' :
+                                    (item.status?.toLowerCase() === 'cancelled' ? 'semantic-badge-danger' : 'semantic-badge-info')))
+                                  }
                                   style={{ 
-                                    color: isUpcoming ? '#7C3AED' : (isCompleted ? '#16A34A' : '#EF4444'), 
+                                    padding: '4px 8px',
+                                    borderRadius: '6px',
                                     fontWeight: 700, 
-                                    fontSize: '13px',
+                                    fontSize: '12px',
                                     cursor: isOverviewEnabled ? 'pointer' : 'default',
                                     textDecoration: isOverviewEnabled ? 'underline' : 'none',
-                                    textUnderlineOffset: '2px'
+                                    textUnderlineOffset: '2px',
+                                    display: 'inline-block'
                                   }}
                                 >
-                                  {item.status}
+                                  {isCompleted ? 'Completed' : item.status}
                                 </span>
                               </td>
                               <td style={{ padding: '16px 24px' }}>
                                 <span 
+                                  className={item.billingStatus === 'Paid' ? 'semantic-badge-success' : 'semantic-badge-warning'}
                                   style={{ 
-                                    background: item.billingStatus === 'Paid' ? '#ECFDF5' : '#FFFBEB',
-                                    color: item.billingStatus === 'Paid' ? '#16A34A' : '#D97706',
                                     fontWeight: 800, 
                                     fontSize: '11px',
                                     padding: '4px 8px',
