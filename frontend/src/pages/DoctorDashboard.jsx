@@ -3620,14 +3620,6 @@ const DoctorDashboard = () => {
     setIsFinalized(true);
     addLog("Prescription final eSign locked. Record marked as tamper-proof.");
 
-    const appointmentIdToUse = activeAppointmentId;
-    const cleanDiagnosisText = diagnosisText ? diagnosisText.trim() : '';
-    
-    const resolvedPatient = typeof selectedPatient === 'string' 
-      ? (patients.find(p => p._id === selectedPatient) || patientsList.find(p => p._id === selectedPatient) || { _id: selectedPatient })
-      : selectedPatient;
-    const patientId = resolvedPatient?._id;
-
     const validMedicines = medicines
       .filter(m => m.name && m.name.trim() !== '')
       .map(m => {
@@ -3647,6 +3639,27 @@ const DoctorDashboard = () => {
         };
       });
     const validLabs = labs.filter(test => test && test.trim() !== '');
+
+    const appointmentIdToUse = activeAppointmentId;
+    const cleanDiagnosisText = diagnosisText ? diagnosisText.trim() : '';
+
+    const resolvedPatient = typeof selectedPatient === 'string' 
+      ? (patients.find(p => p._id === selectedPatient) || patientsList.find(p => p._id === selectedPatient) || { _id: selectedPatient })
+      : selectedPatient;
+    const patientId = resolvedPatient?._id;
+
+    // Trigger Print Automatically synchronously to avoid popup blockers
+    const printItem = {
+      items: validMedicines,
+      tests: validLabs,
+      diagnosis: cleanDiagnosisText,
+      notes: soap.plan || soap.assessment || '',
+      date: new Date().toLocaleDateString('en-IN'),
+      doctor: user.name,
+      originalApp: { regNo: appointmentIdToUse ? appointmentIdToUse.substring(0, 8).toUpperCase() : 'NEW' }
+    };
+    // Pass null for rx as it's not created yet, handlePrintPrescription will use printItem
+    handlePrintPrescription(null, printItem, finalSettings);
 
     // 1. Immediately transition UI back to appointments list in foreground
     showToastNotification(editingPrescriptionId ? "Prescription updated! Syncing changes in the background." : "Prescription locked! Syncing encounter records in the background.", "success");
@@ -3830,20 +3843,6 @@ const DoctorDashboard = () => {
           diagnosis: cleanDiagnosisText,
           notes: soap.plan || soap.assessment || ''
         });
-      }
-
-      // Trigger Print Automatically with settings
-      if (rxRecord) {
-        const printItem = {
-          items: validMedicines,
-          tests: validLabs,
-          diagnosis: cleanDiagnosisText,
-          notes: soap.plan || soap.assessment || '',
-          date: new Date().toLocaleDateString('en-IN'),
-          doctor: user.name,
-          originalApp: { regNo: resolvedAppId ? resolvedAppId.substring(0, 8).toUpperCase() : 'NEW' }
-        };
-        handlePrintPrescription(rxRecord, printItem, finalSettings);
       }
     };
 
