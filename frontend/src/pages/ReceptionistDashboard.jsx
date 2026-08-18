@@ -3285,7 +3285,7 @@ const ReceptionistDashboard = () => {
           h2 {
             font-size: 17px !important;
           }
-          h3, [style*="fontSize: '18px'"], [style*="fontSize: '17px'"], [style*="fontSize:18px"], [style*="fontSize:17px"] {
+          h3, [style*="fontSize: '14px'"], [style*="fontSize: '17px'"], [style*="fontSize:18px"], [style*="fontSize:17px"] {
             font-size: 15px !important;
           }
           .modern-kpi-val, .kpi-value-custom {
@@ -3329,7 +3329,7 @@ const ReceptionistDashboard = () => {
           h1, [style*="fontSize: '28px'"], [style*="fontSize: '24px'"], [style*="fontSize:28px"], [style*="fontSize:24px"] {
             font-size: 17px !important;
           }
-          h3, [style*="fontSize: '18px'"], [style*="fontSize: '17px'"], [style*="fontSize:18px"], [style*="fontSize:17px"] {
+          h3, [style*="fontSize: '14px'"], [style*="fontSize: '17px'"], [style*="fontSize:18px"], [style*="fontSize:17px"] {
             font-size: 13.5px !important;
           }
           .modern-kpi-val, .kpi-value-custom {
@@ -3414,7 +3414,7 @@ const ReceptionistDashboard = () => {
       {activeTab !== 'hr-payroll' && (
         <div className={"sidebar " + (isSidebarCollapsed ? "collapsed " : "") + (mobileSidebarOpen ? "mobile-open" : "")} data-lenis-prevent>
         <div className="sidebar-logo" style={{ display: 'flex', alignItems: 'center', gap: '10px', position: 'relative', width: '100%' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '8px', background: 'var(--primary)', color: '#FFFFFF', fontWeight: 900, fontSize: '16px', boxShadow: '0 0 15px rgba(59, 113, 254, 0.15)', flexShrink: 0 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '2px', background: 'var(--primary)', color: '#FFFFFF', fontWeight: 900, fontSize: '14px', boxShadow: '0 0 15px rgba(59, 113, 254, 0.15)', flexShrink: 0 }}>
             C
           </div>
           <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 900, color: '#2563EB', letterSpacing: '-0.02em' }}>Curoxa</span>
@@ -3477,7 +3477,7 @@ const ReceptionistDashboard = () => {
           {currentUser.avatar ? (
             <img src={currentUser.avatar} className="user-avatar" alt="Avatar" style={{ objectFit: 'cover', border: '2px solid #BFDBFE' }} />
           ) : (
-            <div className="sidebar-user-avatar-initials" style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '14px', marginRight: '10px', flexShrink: 0 }}>
+            <div className="sidebar-user-avatar-initials" style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '12px', marginRight: '10px', flexShrink: 0 }}>
               {currentUser.name ? currentUser.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'RC'}
             </div>
           )}
@@ -3499,20 +3499,20 @@ const ReceptionistDashboard = () => {
                 padding: '8px', 
                 boxShadow: '0 -10px 40px rgba(0,0,0,0.06)', 
                 background: 'white',
-                borderRadius: '12px',
+                borderRadius: '4px',
                 border: '1px solid #F1F5F9',
                 animation: 'slideUp 0.2s ease-out'
               }}
               onClick={e => e.stopPropagation()}
             >
               <div style={{ padding: '10px 12px', borderBottom: '1px solid #F1F5F9', marginBottom: '6px' }}>
-                <div style={{ fontWeight: 800, fontSize: '13.5px', color: '#0F172A' }}>{currentUser.name || 'Roshni'}</div>
+                <div style={{ fontWeight: 800, fontSize: '12px', color: '#0F172A' }}>{currentUser.name || 'Roshni'}</div>
                 <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 600 }}>Front Desk Manager</div>
               </div>
               <div 
                 style={{ 
                   padding: '10px 12px', 
-                  borderRadius: '8px', 
+                  borderRadius: '2px', 
                   display: 'flex', 
                   alignItems: 'center', 
                   gap: '10px', 
@@ -3535,7 +3535,7 @@ const ReceptionistDashboard = () => {
               <div 
                 style={{ 
                   padding: '10px 12px', 
-                  borderRadius: '8px', 
+                  borderRadius: '2px', 
                   display: 'flex', 
                   alignItems: 'center', 
                   gap: '10px', 
@@ -3558,7 +3558,7 @@ const ReceptionistDashboard = () => {
               <div 
                 style={{ 
                   padding: '10px 12px', 
-                  borderRadius: '8px', 
+                  borderRadius: '2px', 
                   display: 'flex', 
                   alignItems: 'center', 
                   gap: '10px', 
@@ -3572,7 +3572,7 @@ const ReceptionistDashboard = () => {
                 onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                 onClick={handleLogout}
               >
-                <i data-lucide="log-out" style={{ width: '16px', height: '16px' }}></i> Logout Account
+                <i data-lucide="log-out" style={{ width: '16px', height: '16px' }}></i> Logout
               </div>
             </div>
           )}
@@ -3602,7 +3602,7 @@ const ReceptionistDashboard = () => {
             cursor: 'pointer',
             color: '#475569',
             padding: '8px',
-            borderRadius: '8px',
+            borderRadius: '2px',
             alignItems: 'center',
             justifyContent: 'center',
             transition: 'background-color 0.2s',
@@ -3612,14 +3612,14 @@ const ReceptionistDashboard = () => {
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
         </button>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1, maxWidth: '560px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, maxWidth: '560px' }}>
           <div ref={globalSearchContainerRef} className="desktop-only-flex" style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center' }}>
             <i data-lucide="search" style={{ position: 'absolute', left: '16px', color: '#64748B', width: '16px' }}></i>
             <input 
               type="text" 
               className="search-input" 
               placeholder="Search patient by mobile/ID" 
-              style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', paddingLeft: '44px', height: '40px', width: '100%', borderRadius: '10px', fontSize: '13px', fontWeight: 600, outline: 'none' }} 
+              style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', paddingLeft: '44px', height: '40px', width: '100%', borderRadius: '2px', fontSize: '13px', fontWeight: 600, outline: 'none' }} 
               value={globalSearchQuery}
               onChange={(e) => {
                 setGlobalSearchQuery(e.target.value);
@@ -3635,7 +3635,7 @@ const ReceptionistDashboard = () => {
                   left: 0, 
                   width: '100%', 
                   background: 'white', 
-                  borderRadius: '12px', 
+                  borderRadius: '4px', 
                   border: '1px solid #E2E8F0', 
                   boxShadow: '0 10px 30px rgba(0,0,0,0.1)', 
                   zIndex: 99999, 
@@ -3671,7 +3671,7 @@ const ReceptionistDashboard = () => {
                       }} 
                       style={{ 
                         padding: '10px 12px', 
-                        borderRadius: '8px', 
+                        borderRadius: '2px', 
                         cursor: 'pointer', 
                         display: 'flex', 
                         justifyContent: 'space-between', 
@@ -3697,7 +3697,7 @@ const ReceptionistDashboard = () => {
         <div style={{ display: 'flex', gap: '20px', alignItems: 'center', marginLeft: 'auto', flexShrink: 0 }}>
           <button 
             className="btn" 
-            style={{ border: '1.5px solid #EF4444', color: '#EF4444', background: 'white', borderRadius: '8px', padding: '8px 16px', fontWeight: 850, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer', height: '40px' }}
+            style={{ border: '1.5px solid #EF4444', color: '#EF4444', background: 'white', borderRadius: '2px', padding: '8px 16px', fontWeight: 850, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer', height: '40px' }}
           >
             <i data-lucide="alert-circle" style={{ width: '16px', height: '16px' }}></i> Emergency
           </button>
@@ -3705,7 +3705,7 @@ const ReceptionistDashboard = () => {
           {/* Notification Bell with Action Indicator */}
           <div 
             ref={notificationRef}
-            style={{ position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '8px', border: '1px solid #E2E8F0', color: '#64748B' }}
+            style={{ position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '2px', border: '1px solid #E2E8F0', color: '#64748B' }}
             onClick={() => {
               setShowNotifications(!showNotifications);
               setUnreadCount(0);
@@ -3727,7 +3727,7 @@ const ReceptionistDashboard = () => {
                   width: '320px',
                   background: 'rgba(255, 255, 255, 0.95)',
                   backdropFilter: 'blur(8px)',
-                  borderRadius: '12px',
+                  borderRadius: '4px',
                   border: '1px solid #E2E8F0',
                   boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
                   zIndex: 1000,
@@ -3738,7 +3738,7 @@ const ReceptionistDashboard = () => {
                 onClick={(e) => e.stopPropagation()}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #F1F5F9', paddingBottom: '8px', marginBottom: '12px' }}>
-                  <span style={{ fontWeight: 800, fontSize: '14px', color: '#0F172A' }}>Notifications</span>
+                  <span style={{ fontWeight: 800, fontSize: '12px', color: '#0F172A' }}>Notifications</span>
                   <button 
                     style={{ background: 'none', border: 'none', color: '#2563EB', fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}
                     onClick={() => {
@@ -3757,12 +3757,12 @@ const ReceptionistDashboard = () => {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {notifications.map(n => (
-                    <div key={n.id} style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '8px', borderRadius: '8px', background: n.isNew ? '#EFF6FF' : '#F8FAFC', borderLeft: n.isNew ? '3px solid #2563EB' : '3px solid #E2E8F0' }}>
+                    <div key={n.id} style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '8px', borderRadius: '2px', background: n.isNew ? '#EFF6FF' : '#F8FAFC', borderLeft: n.isNew ? '3px solid #2563EB' : '3px solid #E2E8F0' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontWeight: 800, fontSize: '12.5px', color: '#1E293B' }}>{n.title}</span>
                         <span style={{ fontSize: '10px', color: '#94A3B8', fontWeight: 600 }}>{n.time}</span>
                       </div>
-                      <span style={{ fontSize: '11.5px', color: '#475569', fontWeight: 550, lineHeight: 1.4 }}>{n.message}</span>
+                      <span style={{ fontSize: '12px', color: '#475569', fontWeight: 550, lineHeight: 1.4 }}>{n.message}</span>
                     </div>
                   ))}
                   {notifications.length === 0 && (
@@ -3788,15 +3788,15 @@ const ReceptionistDashboard = () => {
           <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out' }}>
             
             {/* High-fidelity Dashboard Title Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <div>
                 <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#0F172A', margin: '0 0 4px 0' }}>Welcome, {user.name || 'Roshni'}</h1>
-                <div style={{ fontSize: '13.5px', color: '#64748B', fontWeight: 700 }}>Today is {new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+                <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 700 }}>Today is {new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
               </div>
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                 <button 
                   className="btn btn-primary" 
-                  style={{ height: '38px', padding: '0 16px', fontWeight: 700, borderRadius: '10px', background: '#2563EB', color: 'white', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }} 
+                  style={{ height: '26px', padding: '0 16px', fontWeight: 700, borderRadius: '2px', background: '#2563EB', color: 'white', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }} 
                   onClick={() => {
                     resetRegistrationForm();
                     setBookingType('opd');
@@ -3807,7 +3807,7 @@ const ReceptionistDashboard = () => {
                 </button>
                 <button 
                   className="btn btn-primary" 
-                  style={{ height: '38px', padding: '0 16px', fontWeight: 700, borderRadius: '10px', background: '#059669', color: 'white', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }} 
+                  style={{ height: '26px', padding: '0 16px', fontWeight: 700, borderRadius: '2px', background: '#059669', color: 'white', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }} 
                   onClick={() => {
                     resetRegistrationForm();
                     setBookingType('lab');
@@ -3819,7 +3819,7 @@ const ReceptionistDashboard = () => {
                 </button>
                 <button 
                   className="btn btn-primary" 
-                  style={{ height: '38px', padding: '0 16px', fontWeight: 700, borderRadius: '10px', background: '#7C3AED', color: 'white', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }} 
+                  style={{ height: '26px', padding: '0 16px', fontWeight: 700, borderRadius: '2px', background: '#7C3AED', color: 'white', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }} 
                   onClick={() => {
                     resetRegistrationForm();
                     setBookingType('service');
@@ -3831,7 +3831,7 @@ const ReceptionistDashboard = () => {
                 </button>
                 <button 
                   className="btn btn-secondary" 
-                  style={{ width: '38px', height: '38px', padding: 0, borderRadius: '10px', background: showDashboardDateFilter ? '#2563EB' : '#EFF6FF', color: showDashboardDateFilter ? '#FFFFFF' : '#2563EB', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
+                  style={{ width: '38px', height: '26px', padding: 0, borderRadius: '2px', background: showDashboardDateFilter ? '#2563EB' : '#EFF6FF', color: showDashboardDateFilter ? '#FFFFFF' : '#2563EB', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
                   onClick={() => setShowDashboardDateFilter(!showDashboardDateFilter)}
                   title="Filter dashboard analytics by date / date range"
                 >
@@ -3847,19 +3847,19 @@ const ReceptionistDashboard = () => {
 
             {/* Dashboard Date Filter Bar (For viewing stats of that day / date range without redirecting) */}
             {showDashboardDateFilter && (
-              <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px 20px', marginBottom: '24px', boxShadow: '0 4px 12px rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap', animation: 'slideDown 0.25s ease-out' }}>
+              <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '4px', padding: '16px 20px', marginBottom: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap', animation: 'slideDown 0.25s ease-out' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#EFF6FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '2px', background: '#EFF6FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                   </div>
                   <div>
-                    <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#0F172A' }}>Dashboard Date Range Filter</div>
-                    <div style={{ fontSize: '11.5px', color: '#64748B', fontWeight: 600 }}>Filter metrics, patient visits, and revenue totals by date without leaving dashboard</div>
+                    <div style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A' }}>Dashboard Date Range Filter</div>
+                    <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>Filter metrics, patient visits, and revenue totals by date without leaving dashboard</div>
                   </div>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                  <div style={{ display: 'flex', background: '#F8FAFC', padding: '4px', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
+                  <div style={{ display: 'flex', background: '#F8FAFC', padding: '4px', borderRadius: '2px', border: '1px solid #E2E8F0' }}>
                     {[
                       { key: 'today', label: 'Today' },
                       { key: '7days', label: 'Last 7 Days' },
@@ -3910,14 +3910,14 @@ const ReceptionistDashboard = () => {
                         type="date"
                         value={dashboardFilterStartDate}
                         onChange={e => setDashboardFilterStartDate(e.target.value)}
-                        style={{ height: '36px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 10px', fontSize: '12px', fontWeight: 600, outline: 'none', background: 'white' }}
+                        style={{ height: '36px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 10px', fontSize: '12px', fontWeight: 600, outline: 'none', background: 'white' }}
                       />
                       <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 700 }}>to</span>
                       <input
                         type="date"
                         value={dashboardFilterEndDate}
                         onChange={e => setDashboardFilterEndDate(e.target.value)}
-                        style={{ height: '36px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 10px', fontSize: '12px', fontWeight: 600, outline: 'none', background: 'white' }}
+                        style={{ height: '36px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 10px', fontSize: '12px', fontWeight: 600, outline: 'none', background: 'white' }}
                       />
                     </div>
                   )}
@@ -3975,14 +3975,14 @@ const ReceptionistDashboard = () => {
             </div>
 
             {/* Grid Split: Left Bar Chart vs Right Doctor's Availability */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '32px', marginBottom: '32px' }} className="mobile-stack">
+            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '32px', marginBottom: '16px' }} className="mobile-stack">
               
               {/* Left Column: Patient Visits Card */}
               <div className="glass-card" style={{ padding: '32px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-                    <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#0F172A', margin: 0 }}>Patient Visits</h3>
-                    <div className="chart-legend-inline" style={{ display: 'flex', gap: '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <h3 style={{ fontSize: '14px', fontWeight: 900, color: '#0F172A', margin: 0 }}>Patient Visits</h3>
+                    <div className="chart-legend-inline" style={{ display: 'flex', gap: '8px' }}>
                       <div className="legend-item-small" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 700, color: '#64748B' }}>
                         <div className="legend-dot" style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#7C3AED' }}></div>
                         Walk-ins
@@ -3996,7 +3996,7 @@ const ReceptionistDashboard = () => {
                   <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '11px', borderRadius: '6px', background: '#F1F5F9', border: 'none', color: '#475569', fontWeight: 800, cursor: 'pointer' }} onClick={() => switchTab('patients')}>View All</button>
                 </div>
                 
-                <div className="table-responsive" style={{ height: '220px', position: 'relative', marginBottom: '24px', overflowY: 'visible', overflowX: 'auto' }}>
+                <div className="table-responsive" style={{ height: '220px', position: 'relative', marginBottom: '12px', overflowY: 'visible', overflowX: 'auto' }}>
                   <div className="chart-glow-bg"></div>
                   <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '180px', pointerEvents: 'none' }}>
                     <div style={{ height: '33.3%', borderBottom: '1px solid #F1F5F9' }}></div>
@@ -4026,12 +4026,12 @@ const ReceptionistDashboard = () => {
                   </div>
                 </div>
 
-                <div className="mobile-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderTop: '1px solid #F1F5F9', paddingTop: '24px', gap: '16px' }}>
+                <div className="mobile-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderTop: '1px solid #F1F5F9', paddingTop: '24px', gap: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#F0F4FF', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><i data-lucide="user" style={{ width: '16px' }}></i></div>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '2px', background: '#F0F4FF', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><i data-lucide="user" style={{ width: '16px' }}></i></div>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span style={{ fontWeight: 900, fontSize: '14px', color: '#1A1D23' }}>Walk-In</span>
+                        <span style={{ fontWeight: 900, fontSize: '12px', color: '#1A1D23' }}>Walk-In</span>
                         <span style={{ fontWeight: 800, fontSize: '12px', color: 'var(--primary)' }}>{overallWalkinPercent}%</span>
                       </div>
                       <div style={{ fontSize: '10px', color: walkinTrend >= 0 ? '#10B981' : '#EF4444', fontWeight: 800 }}>
@@ -4040,10 +4040,10 @@ const ReceptionistDashboard = () => {
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#F5F3FF', color: '#7C3AED', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><i data-lucide="globe" style={{ width: '16px' }}></i></div>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '2px', background: '#F5F3FF', color: '#7C3AED', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><i data-lucide="globe" style={{ width: '16px' }}></i></div>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span style={{ fontWeight: 900, fontSize: '14px', color: '#1A1D23' }}>Online</span>
+                        <span style={{ fontWeight: 900, fontSize: '12px', color: '#1A1D23' }}>Online</span>
                         <span style={{ fontWeight: 800, fontSize: '12px', color: '#7C3AED' }}>{overallOnlinePercent}%</span>
                       </div>
                       <div style={{ fontSize: '10px', color: onlineTrend >= 0 ? '#10B981' : '#EF4444', fontWeight: 800 }}>
@@ -4056,11 +4056,11 @@ const ReceptionistDashboard = () => {
 
               {/* Right Column: Doctor's availability Card */}
               <div className="glass-card" style={{ padding: '32px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                  <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#0F172A', margin: 0 }}>Doctor's availability</h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <h3 style={{ fontSize: '14px', fontWeight: 900, color: '#0F172A', margin: 0 }}>Doctor's availability</h3>
                   <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '11px', borderRadius: '6px', background: '#F1F5F9', border: 'none', color: '#475569', fontWeight: 800, cursor: 'pointer' }} onClick={() => switchTab('staff')}>View All</button>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {doctors && doctors.length > 0 ? (
                     doctors.map((doc, idx) => (
                       <div key={doc._id || idx} className="doctor-avail-item">
@@ -4075,7 +4075,7 @@ const ReceptionistDashboard = () => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             fontWeight: 700,
-                            fontSize: '14px',
+                            fontSize: '12px',
                             border: '1px solid #E2E8F0'
                           }}>
                             {doc.name ? doc.name.split(' ').map(p => p[0]).join('').substring(0, 2).toUpperCase() : 'DR'}
@@ -4115,10 +4115,10 @@ const ReceptionistDashboard = () => {
             </div>
 
             {/* Bottom Row: Latest Appointments Card Table */}
-            <div className="glass-card" style={{ padding: '24px' }}>
+            <div className="glass-card" style={{ padding: '12px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', padding: '0 8px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#0F172A', margin: 0 }}>Latest Appointments</h3>
-                <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '11.5px', borderRadius: '6px', border: '1px solid #E2E8F0', background: 'transparent', color: '#475569', fontWeight: 700, cursor: 'pointer' }} onClick={() => switchTab('appointments')}>View All</button>
+                <h3 style={{ fontSize: '14px', fontWeight: 900, color: '#0F172A', margin: 0 }}>Latest Appointments</h3>
+                <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '12px', borderRadius: '6px', border: '1px solid #E2E8F0', background: 'transparent', color: '#475569', fontWeight: 700, cursor: 'pointer' }} onClick={() => switchTab('appointments')}>View All</button>
               </div>
               <div style={{ overflowX: 'auto' }}>
                 <table className="premium-table">
@@ -4212,7 +4212,7 @@ const ReceptionistDashboard = () => {
         {/* PATIENTS TAB */}
         {activeTab === 'patients' && (
           <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out' }}>
-            <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+            <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
               <div>
                 <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#1A1D23', marginBottom: '4px' }}>Patients</h2>
                 <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 700 }}>Home <span style={{ margin: '0 8px' }}>»</span> <span style={{ color: '#1A1D23' }}>Patients</span></div>
@@ -4220,7 +4220,7 @@ const ReceptionistDashboard = () => {
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                 <button 
                   className="btn btn-primary" 
-                  style={{ height: '38px', padding: '0 16px', fontWeight: 700, borderRadius: '10px', background: '#059669', color: 'white', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }} 
+                  style={{ height: '26px', padding: '0 16px', fontWeight: 700, borderRadius: '2px', background: '#059669', color: 'white', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }} 
                   onClick={() => {
                     resetRegistrationForm();
                     setBookingType('lab');
@@ -4232,7 +4232,7 @@ const ReceptionistDashboard = () => {
                 </button>
                 <button 
                   className="btn btn-primary" 
-                  style={{ height: '38px', padding: '0 16px', fontWeight: 700, borderRadius: '10px', background: '#2563EB', color: '#FFFFFF', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }} 
+                  style={{ height: '26px', padding: '0 16px', fontWeight: 700, borderRadius: '2px', background: '#2563EB', color: '#FFFFFF', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }} 
                   onClick={() => {
                     resetRegistrationForm();
                     setBookingType('opd');
@@ -4243,7 +4243,7 @@ const ReceptionistDashboard = () => {
                 </button>
                 <button 
                   className="btn btn-secondary" 
-                  style={{ height: '38px', padding: '0 16px', fontWeight: 700, borderRadius: '10px', background: '#FEE2E2', color: '#EF4444', border: '1px solid #FCA5A5', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '13px' }} 
+                  style={{ height: '26px', padding: '0 16px', fontWeight: 700, borderRadius: '2px', background: '#FEE2E2', color: '#EF4444', border: '1px solid #FCA5A5', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '13px' }} 
                   onClick={handleDeleteAllPatients}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
@@ -4251,7 +4251,7 @@ const ReceptionistDashboard = () => {
                 </button>
                 <button 
                   className="btn btn-secondary" 
-                  style={{ width: '38px', height: '38px', padding: 0, borderRadius: '10px', background: '#EFF6FF', color: '#2563EB', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                  style={{ width: '38px', height: '26px', padding: 0, borderRadius: '2px', background: '#EFF6FF', color: '#2563EB', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
                   onClick={() => switchTab('appointments')}
                   title="View Appointments"
                 >
@@ -4265,8 +4265,8 @@ const ReceptionistDashboard = () => {
               </div>
             </div>
             
-            <div className="glass-card" style={{ padding: '24px' }}>
-              <div className="filter-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+            <div className="glass-card" style={{ padding: '12px' }}>
+              <div className="filter-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                 <div style={{ flex: 1, maxWidth: '400px', position: 'relative', display: 'flex', alignItems: 'center' }}>
                     <i data-lucide="search" style={{ position: 'absolute', left: '16px', color: '#64748B', width: '18px' }}></i>
                     <input 
@@ -4275,20 +4275,20 @@ const ReceptionistDashboard = () => {
                       placeholder="Search Patients..." 
                       value={patientSearchText}
                       onChange={e => setPatientSearchText(e.target.value)}
-                      style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', paddingLeft: '44px', height: '44px', width: '100%', borderRadius: '12px', fontSize: '14px', fontWeight: 600 }} 
+                      style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', paddingLeft: '44px', height: '26px', width: '100%', borderRadius: '4px', fontSize: '12px', fontWeight: 600 }} 
                     />
                 </div>
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                     <button 
                       className="btn btn-secondary" 
-                      style={{ padding: '0 16px', height: '44px', display: 'flex', alignItems: 'center', gap: '8px', background: showPatientFilters ? 'rgba(59, 130, 246, 0.15)' : '#EFF6FF', border: showPatientFilters ? '1px solid #93C5FD' : 'none', color: '#2563EB' }}
+                      style={{ padding: '0 16px', height: '26px', display: 'flex', alignItems: 'center', gap: '8px', background: showPatientFilters ? 'rgba(59, 130, 246, 0.15)' : '#EFF6FF', border: showPatientFilters ? '1px solid #93C5FD' : 'none', color: '#2563EB' }}
                       onClick={() => { setShowPatientFilters(!showPatientFilters); setTimeout(() => window.lucide && window.lucide.createIcons(), 100); }}
                     >
                       <i data-lucide="filter" style={{ width: '18px' }}></i> Filter
                     </button>
                     <button 
                       className="btn btn-secondary" 
-                      style={{ padding: '0 16px', height: '44px', display: 'flex', alignItems: 'center', gap: '8px', background: '#EFF6FF', border: 'none', color: '#2563EB' }}
+                      style={{ padding: '0 16px', height: '26px', display: 'flex', alignItems: 'center', gap: '8px', background: '#EFF6FF', border: 'none', color: '#2563EB' }}
                       onClick={handleExportPatientsCSV}
                     >
                       <i data-lucide="download" style={{ width: '18px' }}></i> Export
@@ -4298,9 +4298,9 @@ const ReceptionistDashboard = () => {
 
               {/* Sliding Patient Filter Panel */}
               {showPatientFilters && (
-                <div className="glass-card" style={{ padding: '24px', marginBottom: '24px', animation: 'slideDown 0.3s ease-out', border: '1.5px solid #BFDBFE', background: '#F8FAFC', borderRadius: '12px' }}>
+                <div className="glass-card" style={{ padding: '12px', marginBottom: '12px', animation: 'slideDown 0.3s ease-out', border: '1.5px solid #BFDBFE', background: '#F8FAFC', borderRadius: '4px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                    <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#1E293B', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h4 style={{ fontSize: '12px', fontWeight: 800, color: '#1E293B', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <i data-lucide="filter" style={{ width: '18px', color: '#2563EB' }}></i> Select Patient Filters
                     </h4>
                     {(patientGenderFilter !== 'All' || patientStartRegDate || patientEndRegDate || patientBookingTypeFilter !== 'All') && (
@@ -4324,7 +4324,7 @@ const ReceptionistDashboard = () => {
                       <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Gender</label>
                       <select 
                         className="form-control" 
-                        style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }}
+                        style={{ height: '40px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }}
                         value={patientGenderFilter}
                         onChange={e => setPatientGenderFilter(e.target.value)}
                       >
@@ -4339,7 +4339,7 @@ const ReceptionistDashboard = () => {
                       <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Booking Type</label>
                       <select 
                         className="form-control" 
-                        style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }}
+                        style={{ height: '40px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }}
                         value={patientBookingTypeFilter}
                         onChange={e => setPatientBookingTypeFilter(e.target.value)}
                       >
@@ -4355,7 +4355,7 @@ const ReceptionistDashboard = () => {
                       <input 
                         type="date" 
                         className="form-control" 
-                        style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }} 
+                        style={{ height: '40px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }} 
                         value={patientStartRegDate} 
                         onChange={e => setPatientStartRegDate(e.target.value)} 
                       />
@@ -4366,7 +4366,7 @@ const ReceptionistDashboard = () => {
                       <input 
                         type="date" 
                         className="form-control" 
-                        style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }} 
+                        style={{ height: '40px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }} 
                         value={patientEndRegDate} 
                         onChange={e => setPatientEndRegDate(e.target.value)} 
                       />
@@ -4467,16 +4467,16 @@ const ReceptionistDashboard = () => {
 
             {/* Floating Bulk Action Bar */}
             {selectedPatientIds.length > 0 && (
-              <div style={{ background: '#0F172A', color: 'white', padding: '14px 22px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '16px', boxShadow: '0 12px 28px rgba(15, 23, 42, 0.3)', border: '1px solid #334155', animation: 'slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+              <div style={{ background: '#0F172A', color: 'white', padding: '14px 22px', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '16px', boxShadow: '0 12px 28px rgba(15, 23, 42, 0.3)', border: '1px solid #334155', animation: 'slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <span style={{ background: '#2563EB', color: 'white', padding: '4px 12px', borderRadius: '6px', fontSize: '12.5px', fontWeight: 800 }}>{selectedPatientIds.length} Selected</span>
-                  <span style={{ fontSize: '13.5px', fontWeight: 700, color: '#E2E8F0' }}>Bulk Batch Actions</span>
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#E2E8F0' }}>Bulk Batch Actions</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <button 
                     type="button" 
                     onClick={() => setShowBatchSmsModal(true)}
-                    style={{ padding: '8px 16px', background: '#334155', color: 'white', border: '1px solid #475569', borderRadius: '8px', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.15s' }}
+                    style={{ padding: '8px 16px', background: '#334155', color: 'white', border: '1px solid #475569', borderRadius: '2px', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.15s' }}
                     onMouseEnter={e => e.currentTarget.style.background = '#475569'}
                     onMouseLeave={e => e.currentTarget.style.background = '#334155'}
                   >
@@ -4499,7 +4499,7 @@ const ReceptionistDashboard = () => {
                       setBatchSmsSuccessToast(`Exported ${selectedPatientIds.length} patient record(s) to CSV!`);
                       setTimeout(() => setBatchSmsSuccessToast(''), 4000);
                     }}
-                    style={{ padding: '8px 16px', background: '#059669', color: 'white', border: 'none', borderRadius: '8px', fontSize: '12.5px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 4px 12px rgba(5,150,105,0.25)', transition: 'all 0.15s' }}
+                    style={{ padding: '8px 16px', background: '#059669', color: 'white', border: 'none', borderRadius: '2px', fontSize: '12.5px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 4px 12px rgba(5,150,105,0.25)', transition: 'all 0.15s' }}
                     onMouseEnter={e => e.currentTarget.style.background = '#047857'}
                     onMouseLeave={e => e.currentTarget.style.background = '#059669'}
                   >
@@ -4509,7 +4509,7 @@ const ReceptionistDashboard = () => {
                   <button 
                     type="button" 
                     onClick={() => setSelectedPatientIds([])}
-                    style={{ padding: '8px 14px', background: 'transparent', color: '#94A3B8', border: '1px solid #475569', borderRadius: '8px', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer' }}
+                    style={{ padding: '8px 14px', background: 'transparent', color: '#94A3B8', border: '1px solid #475569', borderRadius: '2px', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer' }}
                   >
                     Clear Selection
                   </button>
@@ -4523,8 +4523,8 @@ const ReceptionistDashboard = () => {
         {/* PATIENT DETAILS TAB */}
         {activeTab === 'patient-details' && selectedPatient && (
           <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <button 
                   onClick={() => switchTab('patients')}
                   style={{
@@ -4533,7 +4533,7 @@ const ReceptionistDashboard = () => {
                     justifyContent: 'center',
                     width: '40px',
                     height: '40px',
-                    borderRadius: '10px',
+                    borderRadius: '2px',
                     border: '1.5px solid #E2E8F0',
                     background: 'white',
                     cursor: 'pointer',
@@ -4558,7 +4558,7 @@ const ReceptionistDashboard = () => {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                <button className="btn btn-primary" style={{ height: '44px', padding: '0 20px', fontWeight: 850, borderRadius: '10px', background: '#2563EB', color: 'white', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }} onClick={handleCreateAppointmentForProfilePatient}>
+                <button className="btn btn-primary" style={{ height: '26px', padding: '0 20px', fontWeight: 850, borderRadius: '2px', background: '#2563EB', color: 'white', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }} onClick={handleCreateAppointmentForProfilePatient}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="12" y1="5" x2="12" y2="19" />
                     <line x1="5" y1="12" x2="19" y2="12" />
@@ -4567,7 +4567,7 @@ const ReceptionistDashboard = () => {
                 </button>
                 <button 
                   className="btn btn-secondary" 
-                  style={{ width: '44px', height: '44px', padding: 0, borderRadius: '10px', background: '#EFF6FF', color: '#2563EB', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                  style={{ width: '44px', height: '26px', padding: 0, borderRadius: '2px', background: '#EFF6FF', color: '#2563EB', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
                   onClick={() => switchTab('appointments')}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -4583,13 +4583,13 @@ const ReceptionistDashboard = () => {
             <div className="mobile-stack" style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '32px', alignItems: 'start' }}>
               
               {/* Left Column */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 
                 {/* Patient Header Card */}
-                <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
+                <div className="glass-card" style={{ padding: '12px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-                      <div style={{ width: '80px', height: '80px', borderRadius: '12px', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <div style={{ width: '80px', height: '80px', borderRadius: '4px', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
                           <circle cx="12" cy="7" r="4" />
@@ -4610,7 +4610,7 @@ const ReceptionistDashboard = () => {
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                       <button 
                         className="btn" 
-                        style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', borderRadius: '8px', cursor: 'pointer', color: '#059669', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12.5px', fontWeight: 800 }}
+                        style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', borderRadius: '2px', cursor: 'pointer', color: '#059669', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12.5px', fontWeight: 800 }}
                         onClick={() => handleRePrintPatientSlip(selectedPatient)}
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -4623,7 +4623,7 @@ const ReceptionistDashboard = () => {
 
                       <button 
                         className="btn" 
-                        style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: '8px', cursor: 'pointer', color: '#2563EB', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12.5px', fontWeight: 800 }}
+                        style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: '2px', cursor: 'pointer', color: '#2563EB', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12.5px', fontWeight: 800 }}
                         onClick={handleViewAllLabReports}
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -4638,7 +4638,7 @@ const ReceptionistDashboard = () => {
 
                       <button 
                         className="btn" 
-                        style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', cursor: 'pointer', color: '#2563EB', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '2px', cursor: 'pointer', color: '#2563EB', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                         title="Edit Patient Info"
                         onClick={() => {
                           setFormData({
@@ -4666,58 +4666,58 @@ const ReceptionistDashboard = () => {
 
                   <div style={{ height: '1px', background: '#F1F5F9', margin: '20px 0' }}></div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '0.6fr 0.6fr 1.2fr 0.8fr 2fr', gap: '16px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '0.6fr 0.6fr 1.2fr 0.8fr 2fr', gap: '8px' }}>
                     <div>
                       <div style={{ color: '#94A3B8', fontSize: '11px', fontWeight: 800, letterSpacing: '0.5px', marginBottom: '6px', textTransform: 'uppercase' }}>Age</div>
-                      <div style={{ color: '#1A1D23', fontSize: '13.5px', fontWeight: 700 }}>{selectedPatient.age} Yrs</div>
+                      <div style={{ color: '#1A1D23', fontSize: '12px', fontWeight: 700 }}>{selectedPatient.age} Yrs</div>
                     </div>
                     <div>
                       <div style={{ color: '#94A3B8', fontSize: '11px', fontWeight: 800, letterSpacing: '0.5px', marginBottom: '6px', textTransform: 'uppercase' }}>Gender</div>
-                      <div style={{ color: '#1A1D23', fontSize: '13.5px', fontWeight: 700 }}>{selectedPatient.gender}</div>
+                      <div style={{ color: '#1A1D23', fontSize: '12px', fontWeight: 700 }}>{selectedPatient.gender}</div>
                     </div>
                     <div>
                       <div style={{ color: '#94A3B8', fontSize: '11px', fontWeight: 800, letterSpacing: '0.5px', marginBottom: '6px', textTransform: 'uppercase' }}>Contact</div>
-                      <div style={{ color: '#1A1D23', fontSize: '13.5px', fontWeight: 700 }}>
+                      <div style={{ color: '#1A1D23', fontSize: '12px', fontWeight: 700 }}>
                         {selectedPatient.contact}
                       </div>
                     </div>
                     <div>
                       <div style={{ color: '#94A3B8', fontSize: '11px', fontWeight: 800, letterSpacing: '0.5px', marginBottom: '6px', textTransform: 'uppercase' }}>Blood Group</div>
-                      <div style={{ color: '#1A1D23', fontSize: '13.5px', fontWeight: 700 }}>{selectedPatient.bloodGroup || 'B+'}</div>
+                      <div style={{ color: '#1A1D23', fontSize: '12px', fontWeight: 700 }}>{selectedPatient.bloodGroup || 'B+'}</div>
                     </div>
                     <div>
                       <div style={{ color: '#94A3B8', fontSize: '11px', fontWeight: 800, letterSpacing: '0.5px', marginBottom: '6px', textTransform: 'uppercase' }}>Email</div>
-                      <div style={{ color: '#1A1D23', fontSize: '13.5px', fontWeight: 700, wordBreak: 'break-all' }}>{selectedPatient.email || 'N/A'}</div>
+                      <div style={{ color: '#1A1D23', fontSize: '12px', fontWeight: 700, wordBreak: 'break-all' }}>{selectedPatient.email || 'N/A'}</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Sub cards: Contact Info and Vitals */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '24px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '12px' }}>
                   
                   {/* Contact Information */}
-                  <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
+                  <div className="glass-card" style={{ padding: '12px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                       </svg>
-                      <h3 style={{ fontSize: '16px', fontWeight: 900, color: '#2563EB', margin: 0 }}>Contact Information</h3>
+                      <h3 style={{ fontSize: '14px', fontWeight: 900, color: '#2563EB', margin: 0 }}>Contact Information</h3>
                     </div>
                     
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
                         <span style={{ color: '#64748B', fontWeight: 600 }}>Email:</span>
                         <span style={{ fontWeight: 700, color: '#1A1D23' }}>{selectedPatient.email || 'N/A'}</span>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
                         <span style={{ color: '#64748B', fontWeight: 600 }}>Primary Phone:</span>
                         <span style={{ fontWeight: 700, color: '#1A1D23' }}>{selectedPatient.contact}</span>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
                         <span style={{ color: '#64748B', fontWeight: 600 }}>Alternate Phone:</span>
                         <span style={{ fontWeight: 700, color: '#1A1D23' }}>{selectedPatient.alternateContact || 'N/A'}</span>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
                         <span style={{ color: '#64748B', fontWeight: 600 }}>Address:</span>
                         <span style={{ fontWeight: 700, color: '#1A1D23', textAlign: 'right', maxWidth: '180px' }}>{selectedPatient.address || 'N/A'}</span>
                       </div>
@@ -4730,13 +4730,13 @@ const ReceptionistDashboard = () => {
                   {(() => {
                     const latestVital = patientVitals && patientVitals.length > 0 ? patientVitals[0] : null;
                     return (
-                      <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
+                      <div className="glass-card" style={{ padding: '12px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                               <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
                             </svg>
-                            <h3 style={{ fontSize: '16px', fontWeight: 900, color: '#2563EB', margin: 0 }}>Vitals Summary</h3>
+                            <h3 style={{ fontSize: '14px', fontWeight: 900, color: '#2563EB', margin: 0 }}>Vitals Summary</h3>
                           </div>
                           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                             <span 
@@ -4761,7 +4761,7 @@ const ReceptionistDashboard = () => {
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
                           {/* BP */}
-                          <div style={{ background: '#F0FDF4', borderRadius: '12px', padding: '12px 10px', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid #DCFCE7' }}>
+                          <div style={{ background: '#F0FDF4', borderRadius: '4px', padding: '12px 10px', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid #DCFCE7' }}>
                             <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#DCFCE7', color: '#16A34A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                 <circle cx="12" cy="12" r="10"/>
@@ -4778,7 +4778,7 @@ const ReceptionistDashboard = () => {
                           </div>
 
                           {/* Heart Rate */}
-                          <div style={{ background: '#FFF5F5', borderRadius: '12px', padding: '12px 10px', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid #FEE2E2' }}>
+                          <div style={{ background: '#FFF5F5', borderRadius: '4px', padding: '12px 10px', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid #FEE2E2' }}>
                             <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
@@ -4793,7 +4793,7 @@ const ReceptionistDashboard = () => {
                           </div>
 
                           {/* Temp */}
-                          <div style={{ background: '#FFFBEB', borderRadius: '12px', padding: '12px 10px', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid #FEF3C7' }}>
+                          <div style={{ background: '#FFFBEB', borderRadius: '4px', padding: '12px 10px', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid #FEF3C7' }}>
                             <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#FEF3C7', color: '#D97706', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
@@ -4818,8 +4818,8 @@ const ReceptionistDashboard = () => {
                 </div>
 
                 {/* Appointment History Table */}
-                <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
-                  <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#0F172A', margin: '0 0 20px 0' }}>Appointments</h3>
+                <div className="glass-card" style={{ padding: '12px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
+                  <h3 style={{ fontSize: '14px', fontWeight: 900, color: '#0F172A', margin: '0 0 20px 0' }}>Appointments</h3>
                   
                   <div style={{ overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
@@ -4872,7 +4872,7 @@ const ReceptionistDashboard = () => {
                                       </svg>
                                     </div>
                                     <div>
-                                      <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#0F172A' }}>{getFormattedTableDate(app.date)}</div>
+                                      <div style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A' }}>{getFormattedTableDate(app.date)}</div>
                                       <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 600, marginTop: '2px' }}>{app.time}</div>
                                     </div>
                                   </div>
@@ -4880,7 +4880,7 @@ const ReceptionistDashboard = () => {
                                 
                                 {/* Doctor / Department */}
                                 <td style={{ padding: '16px 12px' }}>
-                                  <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#0F172A' }}>{app.doctorId?.name || 'Dr. Ankit Sharma'}</div>
+                                  <div style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A' }}>{app.doctorId?.name || 'Dr. Ankit Sharma'}</div>
                                   <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 600, marginTop: '2px' }}>{app.doctorId?.role || 'General Medicine'}</div>
                                 </td>
 
@@ -4911,7 +4911,7 @@ const ReceptionistDashboard = () => {
                                     const payStatus = associatedBill?.status || 'Unpaid';
                                     return (
                                       <div>
-                                        <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#1E293B' }}>₹{Number(feeVal).toFixed(2)}</div>
+                                        <div style={{ fontSize: '12px', fontWeight: 800, color: '#1E293B' }}>₹{Number(feeVal).toFixed(2)}</div>
                                         <div style={{ 
                                           fontSize: '10px', 
                                           color: payStatus === 'Paid' ? '#16A34A' : '#DC2626', 
@@ -4932,14 +4932,14 @@ const ReceptionistDashboard = () => {
                 </div>
 
                 {/* Dynamic Patient Journey Timeline */}
-                <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px', marginTop: '24px' }}>
+                <div className="glass-card" style={{ padding: '12px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px', marginTop: '24px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="12" cy="12" r="10"/>
                         <polyline points="12 6 12 12 16 14"/>
                       </svg>
-                      <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#0F172A', margin: 0 }}>Dynamic Patient Journey</h3>
+                      <h3 style={{ fontSize: '14px', fontWeight: 900, color: '#0F172A', margin: 0 }}>Dynamic Patient Journey</h3>
                     </div>
                     <span style={{ fontSize: '12px', background: '#EFF6FF', color: '#2563EB', padding: '4px 10px', borderRadius: '20px', fontWeight: 800 }}>
                       Live Track
@@ -5052,7 +5052,7 @@ const ReceptionistDashboard = () => {
 
                       if (journeyEvents.length === 0) {
                         return (
-                          <div style={{ padding: '20px', textAlign: 'center', color: '#64748B' }}>
+                          <div style={{ padding: '10px', textAlign: 'center', color: '#64748B' }}>
                             No journey records found for this patient.
                           </div>
                         );
@@ -5066,7 +5066,7 @@ const ReceptionistDashboard = () => {
                             marginBottom: '20px', 
                             background: '#F8FAFC', 
                             border: '1px solid #E2E8F0', 
-                            borderRadius: '12px', 
+                            borderRadius: '4px', 
                             padding: '16px',
                             borderLeft: `4px solid ${evt.color}`
                           }}
@@ -5118,12 +5118,12 @@ const ReceptionistDashboard = () => {
 
               {/* Right Column - Appointment Summary */}
               <div style={{ position: 'sticky', top: '24px' }}>
-                <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
-                  <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#0F172A', margin: 0 }}>Appointment Summary</h3>
+                <div className="glass-card" style={{ padding: '12px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
+                  <h3 style={{ fontSize: '14px', fontWeight: 900, color: '#0F172A', margin: 0 }}>Appointment Summary</h3>
                   
                   {selectedProfileAppointment ? (
                     <>
-                      <div style={{ fontSize: '13.5px', color: '#64748B', fontWeight: 700, marginTop: '6px' }}>
+                      <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 700, marginTop: '6px' }}>
                         Status: <span style={{ 
                           color: selectedProfileAppointment.status === 'Completed' ? '#3B82F6' : (selectedProfileAppointment.status === 'Cancelled' ? '#EF4444' : '#7E22CE'),
                           fontWeight: 800
@@ -5150,7 +5150,7 @@ const ReceptionistDashboard = () => {
                                 <input 
                                   type="date" 
                                   className="form-control" 
-                                  style={{ background: 'white', border: '1px solid #CBD5E1', borderRadius: '8px', height: '38px', width: '100%', padding: '0 10px', fontSize: '13px', fontWeight: 600 }}
+                                  style={{ background: 'white', border: '1px solid #CBD5E1', borderRadius: '2px', height: '26px', width: '100%', padding: '0 10px', fontSize: '13px', fontWeight: 600 }}
                                   value={rescheduleProfileDate}
                                   min={getLocalDateString()}
                                   onChange={(e) => setRescheduleProfileDate(e.target.value)} 
@@ -5158,13 +5158,13 @@ const ReceptionistDashboard = () => {
                                 <input 
                                   type="time" 
                                   className="form-control" 
-                                  style={{ background: 'white', border: '1px solid #CBD5E1', borderRadius: '8px', height: '38px', width: '100%', padding: '0 10px', fontSize: '13px', fontWeight: 600 }}
+                                  style={{ background: 'white', border: '1px solid #CBD5E1', borderRadius: '2px', height: '26px', width: '100%', padding: '0 10px', fontSize: '13px', fontWeight: 600 }}
                                   value={rescheduleProfileTime} 
                                   onChange={(e) => setRescheduleProfileTime(e.target.value)} 
                                 />
                               </div>
                             ) : (
-                              <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#0F172A', marginTop: '4px', lineHeight: '1.4' }}>
+                              <div style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A', marginTop: '4px', lineHeight: '1.4' }}>
                                 {getFormattedSummaryDate(selectedProfileAppointment.date)}<br />
                                 <span style={{ color: '#475569', fontWeight: 600 }}>{selectedProfileAppointment.time}</span>
                               </div>
@@ -5184,7 +5184,7 @@ const ReceptionistDashboard = () => {
                           </div>
                           <div>
                             <div style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Practitioner</div>
-                            <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#0F172A', marginTop: '4px', lineHeight: '1.4' }}>
+                            <div style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A', marginTop: '4px', lineHeight: '1.4' }}>
                               {selectedProfileAppointment.doctorId?.name || 'Dr. Julian Vance'}<br />
                               <span style={{ color: '#64748B', fontWeight: 500 }}>{selectedProfileAppointment.doctorId?.role || 'Senior Cardiologist'}</span>
                             </div>
@@ -5210,7 +5210,7 @@ const ReceptionistDashboard = () => {
                           </div>
                           <div>
                             <div style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Department</div>
-                            <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#0F172A', marginTop: '4px', lineHeight: '1.4' }}>
+                            <div style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A', marginTop: '4px', lineHeight: '1.4' }}>
                               {((selectedProfileAppointment.doctorId?.specialty || selectedProfileAppointment.doctorId?.role || 'Cardiology').replace('Doctor', '').trim() + ' Wing')}<br />
                               <span style={{ color: '#64748B', fontWeight: 500 }}>
                                 {(() => {
@@ -5238,7 +5238,7 @@ const ReceptionistDashboard = () => {
                           </div>
                           <div>
                             <div style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Location</div>
-                            <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#0F172A', marginTop: '4px', lineHeight: '1.4' }}>
+                            <div style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A', marginTop: '4px', lineHeight: '1.4' }}>
                               {currentUser?.tenantName || 'Main Medical Plaza'}<br />
                               <span style={{ color: '#64748B', fontWeight: 500 }}>{selectedProfileAppointment.doctorId?.address || 'Downtown Campus'}</span>
                             </div>
@@ -5255,11 +5255,11 @@ const ReceptionistDashboard = () => {
                               className="btn"
                               style={{ 
                                 width: '100%', 
-                                height: '46px', 
+                                height: '26px', 
                                 background: '#2563EB', 
                                 color: 'white', 
                                 border: 'none', 
-                                borderRadius: '10px', 
+                                borderRadius: '2px', 
                                 fontWeight: 800, 
                                 fontSize: '13px', 
                                 cursor: 'pointer',
@@ -5283,11 +5283,11 @@ const ReceptionistDashboard = () => {
                               className="btn"
                               style={{ 
                                 width: '100%', 
-                                height: '46px', 
+                                height: '26px', 
                                 background: '#EFF6FF', 
                                 color: '#2563EB', 
                                 border: '1px solid #BFDBFE', 
-                                borderRadius: '10px', 
+                                borderRadius: '2px', 
                                 fontWeight: 800, 
                                 fontSize: '13px', 
                                 cursor: 'pointer',
@@ -5306,7 +5306,7 @@ const ReceptionistDashboard = () => {
                             </button>
                           </>
                         ) : selectedProfileAppointment.status === 'Cancelled' ? (
-                          <div style={{ padding: '12px', background: '#FEF2F2', color: '#EF4444', borderRadius: '10px', fontSize: '13px', fontWeight: 800, textAlign: 'center', border: '1px solid #FEE2E2' }}>
+                          <div style={{ padding: '12px', background: '#FEF2F2', color: '#EF4444', borderRadius: '2px', fontSize: '13px', fontWeight: 800, textAlign: 'center', border: '1px solid #FEE2E2' }}>
                             Appointment Cancelled
                           </div>
                         ) : isReschedulingProfileAppt ? (
@@ -5315,11 +5315,11 @@ const ReceptionistDashboard = () => {
                               className="btn"
                               style={{ 
                                 width: '100%', 
-                                height: '46px', 
+                                height: '26px', 
                                 background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', 
                                 color: 'white', 
                                 border: 'none', 
-                                borderRadius: '10px', 
+                                borderRadius: '2px', 
                                 fontWeight: 800, 
                                 fontSize: '13px', 
                                 cursor: 'pointer',
@@ -5339,11 +5339,11 @@ const ReceptionistDashboard = () => {
                               className="btn"
                               style={{ 
                                 width: '100%', 
-                                height: '46px', 
+                                height: '26px', 
                                 background: '#F1F5F9', 
                                 color: '#64748B', 
                                 border: '1px solid #E2E8F0', 
-                                borderRadius: '10px', 
+                                borderRadius: '2px', 
                                 fontWeight: 800, 
                                 fontSize: '13px', 
                                 cursor: 'pointer',
@@ -5366,19 +5366,19 @@ const ReceptionistDashboard = () => {
                             </button>
                           </>
                         ) : cancelApptConfirmId === selectedProfileAppointment._id ? (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', background: '#FEF2F2', padding: '12px', borderRadius: '10px', border: '1px solid #FEE2E2', animation: 'fadeIn 0.2s ease-out' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', background: '#FEF2F2', padding: '12px', borderRadius: '2px', border: '1px solid #FEE2E2', animation: 'fadeIn 0.2s ease-out' }}>
                             <div style={{ fontSize: '12px', fontWeight: 800, color: '#EF4444', textAlign: 'center', marginBottom: '4px' }}>Cancel this appointment?</div>
                             <div style={{ display: 'flex', gap: '8px' }}>
                               <button 
                                 className="btn" 
-                                style={{ background: 'white', color: '#64748B', border: '1px solid #E2E8F0', fontWeight: 800, padding: '0', borderRadius: '8px', height: '36px', fontSize: '12.5px', flex: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
+                                style={{ background: 'white', color: '#64748B', border: '1px solid #E2E8F0', fontWeight: 800, padding: '0', borderRadius: '2px', height: '36px', fontSize: '12.5px', flex: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
                                 onClick={() => setCancelApptConfirmId(null)}
                               >
                                 Keep
                               </button>
                               <button 
                                 className="btn" 
-                                style={{ background: '#EF4444', color: 'white', border: 'none', fontWeight: 800, padding: '0', borderRadius: '8px', height: '36px', fontSize: '12.5px', flex: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
+                                style={{ background: '#EF4444', color: 'white', border: 'none', fontWeight: 800, padding: '0', borderRadius: '2px', height: '36px', fontSize: '12.5px', flex: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
                                 onClick={confirmCancelProfileAppointment}
                               >
                                 Confirm Cancel
@@ -5391,11 +5391,11 @@ const ReceptionistDashboard = () => {
                               className="btn"
                               style={{ 
                                 width: '100%', 
-                                height: '46px', 
+                                height: '26px', 
                                 background: 'white', 
                                 color: '#2563EB', 
                                 border: '1.5px solid #2563EB', 
-                                borderRadius: '10px', 
+                                borderRadius: '2px', 
                                 fontWeight: 800, 
                                 fontSize: '13px', 
                                 cursor: 'pointer',
@@ -5426,11 +5426,11 @@ const ReceptionistDashboard = () => {
                               className="btn"
                               style={{ 
                                 width: '100%', 
-                                height: '46px', 
+                                height: '26px', 
                                 background: 'white', 
                                 color: '#EF4444', 
                                 border: '1.5px solid #FCA5A5', 
-                                borderRadius: '10px', 
+                                borderRadius: '2px', 
                                 fontWeight: 800, 
                                 fontSize: '13px', 
                                 cursor: 'pointer',
@@ -5465,17 +5465,17 @@ const ReceptionistDashboard = () => {
 
             {/* View Prescription Modal */}
             {prescriptionModalOpen && selectedPrescription && (
-              <div onClick={() => setPrescriptionModalOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.45)', backdropFilter: 'blur(4px)', zIndex: 9000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+              <div onClick={() => setPrescriptionModalOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.45)', backdropFilter: 'blur(4px)', zIndex: 9000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px' }}>
                 <div onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: '20px', padding: '32px', width: '100%', maxWidth: '600px', boxShadow: '0 24px 64px rgba(0,0,0,0.15)', animation: 'slideUp 0.3s ease-out' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                     <div>
                       <div style={{ fontSize: '20px', fontWeight: 900, color: '#0F172A' }}>Prescription Details</div>
                       <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600, marginTop: '2px' }}>Issued by {selectedPrescription.doctorId?.name || 'Dr. Julian Vance'}</div>
                     </div>
-                    <button onClick={() => setPrescriptionModalOpen(false)} style={{ background: '#F1F5F9', border: 'none', borderRadius: '8px', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', fontSize: '16px', fontWeight: 'bold' }}>✕</button>
+                    <button onClick={() => setPrescriptionModalOpen(false)} style={{ background: '#F1F5F9', border: 'none', borderRadius: '2px', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', fontSize: '14px', fontWeight: 'bold' }}>✕</button>
                   </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '400px', overflowY: 'auto' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '400px', overflowY: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                       <thead>
                         <tr style={{ borderBottom: '2px solid #F1F5F9' }}>
@@ -5488,7 +5488,7 @@ const ReceptionistDashboard = () => {
                       <tbody>
                         {selectedPrescription.items && selectedPrescription.items.map((item, idx) => (
                           <tr key={idx} style={{ borderBottom: '1px solid #F1F5F9' }}>
-                            <td style={{ padding: '12px', fontSize: '13.5px', fontWeight: 850, color: '#0F172A' }}>{item.medicine}</td>
+                            <td style={{ padding: '12px', fontSize: '12px', fontWeight: 850, color: '#0F172A' }}>{item.medicine}</td>
                             <td style={{ padding: '12px', fontSize: '13px', fontWeight: 700, color: '#475569' }}>{item.dosage}</td>
                             <td style={{ padding: '12px', fontSize: '13px', fontWeight: 700, color: '#475569' }}>{item.duration}</td>
                             <td style={{ padding: '12px', fontSize: '12.5px', color: '#64748B', fontWeight: 600 }}>{item.instructions || 'After meals'}</td>
@@ -5505,17 +5505,17 @@ const ReceptionistDashboard = () => {
 
             {/* View All Lab Reports Modal */}
             {allLabsModalOpen && selectedPatient && (
-              <div onClick={() => setAllLabsModalOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.45)', backdropFilter: 'blur(4px)', zIndex: 9000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+              <div onClick={() => setAllLabsModalOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.45)', backdropFilter: 'blur(4px)', zIndex: 9000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px' }}>
                 <div onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: '20px', padding: '32px', width: '100%', maxWidth: '700px', boxShadow: '0 24px 64px rgba(0,0,0,0.15)', animation: 'slideUp 0.3s ease-out', display: 'flex', flexDirection: 'column', maxHeight: '90vh' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexShrink: 0 }}>
                     <div>
                       <div style={{ fontSize: '20px', fontWeight: 900, color: '#0F172A' }}>Lab Reports History</div>
                       <div style={{ fontSize: '13px', color: '#64748B', fontWeight: 600, marginTop: '2px' }}>Patient: {selectedPatient.name} ({getFormattedPatientId(selectedPatient._id)})</div>
                     </div>
-                    <button onClick={() => setAllLabsModalOpen(false)} style={{ background: '#F1F5F9', border: 'none', borderRadius: '8px', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', fontSize: '16px', fontWeight: 'bold' }}>✕</button>
+                    <button onClick={() => setAllLabsModalOpen(false)} style={{ background: '#F1F5F9', border: 'none', borderRadius: '2px', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', fontSize: '14px', fontWeight: 'bold' }}>✕</button>
                   </div>
 
-                  <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px', paddingRight: '4px' }}>
+                  <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', paddingRight: '4px' }}>
                     {patientLabReports.length === 0 ? (
                       <div style={{ textAlign: 'center', padding: '40px 20px', color: '#94A3B8', fontWeight: 600 }}>No lab reports recorded for this patient.</div>
                     ) : (
@@ -5526,7 +5526,7 @@ const ReceptionistDashboard = () => {
                             key={report._id} 
                             style={{ 
                               border: '1px solid #E2E8F0', 
-                              borderRadius: '12px', 
+                              borderRadius: '4px', 
                               background: '#F8FAFC', 
                               padding: '16px',
                               transition: 'all 0.2s ease-in-out'
@@ -5534,7 +5534,7 @@ const ReceptionistDashboard = () => {
                           >
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }} onClick={() => setSelectedReportDetail(isExpanded ? null : report)}>
                               <div>
-                                <div style={{ fontSize: '15px', fontWeight: 850, color: '#0F172A' }}>{report.testName}</div>
+                                <div style={{ fontSize: '12px', fontWeight: 850, color: '#0F172A' }}>{report.testName}</div>
                                 <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600, marginTop: '4px' }}>
                                   Ordered on: {new Date(report.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
                                 </div>
@@ -5574,7 +5574,7 @@ const ReceptionistDashboard = () => {
                                   padding: '16px', 
                                   background: 'white', 
                                   border: '1px solid #E2E8F0', 
-                                  borderRadius: '8px', 
+                                  borderRadius: '2px', 
                                   fontFamily: 'monospace', 
                                   fontSize: '13px', 
                                   color: '#1E293B', 
@@ -5616,7 +5616,7 @@ const ReceptionistDashboard = () => {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '28px' }}>
                       <div style={{ 
                         width: '52px', 
-                        height: '52px', 
+                        height: '26px', 
                         borderRadius: '50%', 
                         background: '#EFF6FF', 
                         color: '#3B82F6', 
@@ -5642,11 +5642,11 @@ const ReceptionistDashboard = () => {
                         className="form-control" 
                         placeholder="Search by Patient ID or Phone Number" 
                         style={{ 
-                          height: '52px', 
+                          height: '26px', 
                           paddingRight: '48px', 
                           paddingLeft: '16px',
-                          borderRadius: '10px', 
-                          fontSize: '14px', 
+                          borderRadius: '2px', 
+                          fontSize: '12px', 
                           fontWeight: 600,
                           border: '1px solid #CBD5E1',
                           width: '100%',
@@ -5660,7 +5660,7 @@ const ReceptionistDashboard = () => {
 
                     {/* Search Autocomplete List */}
                     {searchPatientQuery.trim().length > 0 && (
-                      <div data-lenis-prevent style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid #E2E8F0', borderRadius: '10px', background: '#F8FAFC', marginBottom: '20px' }}>
+                      <div data-lenis-prevent style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid #E2E8F0', borderRadius: '2px', background: '#F8FAFC', marginBottom: '20px' }}>
                         {patientsList.filter(p => {
                           const q = searchPatientQuery.toLowerCase();
                           return p.name.toLowerCase().includes(q) || p.contact.toLowerCase().includes(q) || p._id.toLowerCase().includes(q);
@@ -5766,335 +5766,213 @@ const ReceptionistDashboard = () => {
                   </div>
                 </div>
               ) : (
-                 <div className="glass-card" style={{ padding: '20px', marginBottom: '20px' }}>
+                 <div className="glass-card" style={{ padding: '10px', marginBottom: '20px' }}>
                   
 
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
-                      <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#3B82F6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '14px' }}>1</div>
-                      <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#1A1D23', margin: 0 }}>Patient Information</h2>
-                  </div>
-                  
-                  {/* Expanded Fields Form */}
-                  <div className="mobile-stack" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '16px' }}>
-                      <div className="form-group" style={{ marginBottom: '8px' }}>
-                          <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Full Name <span style={{ color: '#EF4444' }}>*</span></label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                      <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#3B82F6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '12px' }}>1</div>
+                                   {/* Expanded Fields Form (Dense Layout) */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'max-content 1fr max-content 1fr max-content 1fr', gap: '8px 12px', alignItems: 'center', marginBottom: '16px', background: '#F8FAFC', padding: '12px', border: '1px solid #CBD5E1', borderRadius: '4px' }}>
+                      
+                      <div style={{ fontSize: '12px', fontWeight: 700, color: '#333', textAlign: 'right' }}>Full Name <span style={{ color: '#EF4444' }}>*</span> :</div>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. Ramesh Mehta" 
+                        style={{ height: '26px', fontSize: '12px', padding: '2px 8px', borderRadius: '2px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: 500, border: '1px solid #CBD5E1', width: '100%', boxSizing: 'border-box' }} 
+                        value={formData.name} 
+                        onChange={e => setFormData({...formData, name: e.target.value})} 
+                        readOnly={isExistingPatient} 
+                      />
+
+                      <div style={{ fontSize: '12px', fontWeight: 700, color: '#333', textAlign: 'right' }}>Gender <span style={{ color: '#EF4444' }}>*</span> :</div>
+                      <select 
+                        style={{ height: '26px', fontSize: '12px', padding: '2px 8px', borderRadius: '2px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'pointer', fontWeight: 500, border: '1px solid #CBD5E1', width: '100%', boxSizing: 'border-box' }} 
+                        value={formData.gender} 
+                        onChange={e => setFormData({...formData, gender: e.target.value})} 
+                        disabled={isExistingPatient}
+                      >
+                          <option value="">Select Gender</option>
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
+                          <option value="Other">Other</option>
+                      </select>
+
+                      <div style={{ fontSize: '12px', fontWeight: 700, color: '#333', textAlign: 'right' }}>Age <span style={{ color: '#EF4444' }}>*</span> :</div>
+                      <input 
+                        type="number" 
+                        placeholder="e.g. 45" 
+                        style={{ height: '26px', fontSize: '12px', padding: '2px 8px', borderRadius: '2px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: 500, border: '1px solid #CBD5E1', width: '100%', boxSizing: 'border-box' }} 
+                        value={formData.age} 
+                        onChange={e => setFormData({...formData, age: e.target.value})} 
+                        readOnly={isExistingPatient}
+                      />
+
+                      <div style={{ fontSize: '12px', fontWeight: 700, color: '#333', textAlign: 'right' }}>Mobile <span style={{ color: '#EF4444' }}>*</span> :</div>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. 9876543210" 
+                        style={{ height: '26px', fontSize: '12px', padding: '2px 8px', borderRadius: '2px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: 500, border: '1px solid #E2E8F0', width: '100%', boxSizing: 'border-box' }} 
+                        value={formData.contact} 
+                        onChange={e => {
+                          const val = e.target.value.replace(/\D/g, '').substring(0, 10);
+                          setFormData({...formData, contact: val});
+                        }} 
+                        readOnly={isExistingPatient}
+                      />
+
+                      {bookingType === 'lab' ? (
+                        <>
+                          <div style={{ fontSize: '12px', fontWeight: 700, color: '#333', textAlign: 'right' }}>Referred By :</div>
                           <input 
                             type="text" 
-                            className="form-control" 
-                            placeholder="e.g. Ramesh Mehta" 
-                            style={{ height: '38px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: isExistingPatient ? 700 : 500 }} 
-                            value={formData.name} 
-                            onChange={e => setFormData({...formData, name: e.target.value})} 
-                            readOnly={isExistingPatient} 
+                            placeholder="e.g. Dr. Shah or Self" 
+                            style={{ height: '26px', fontSize: '12px', padding: '2px 8px', borderRadius: '2px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: 500, border: '1px solid #CBD5E1', width: '100%', boxSizing: 'border-box' }} 
+                            value={formData.referredBy || ''} 
+                            onChange={e => setFormData({...formData, referredBy: e.target.value})} 
+                            readOnly={isExistingPatient}
                           />
-                      </div>
-                      <div className="form-group" style={{ marginBottom: '8px' }}>
-                          <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Gender <span style={{ color: '#EF4444' }}>*</span></label>
+                        </>
+                      ) : (
+                        <>
+                          <div style={{ fontSize: '12px', fontWeight: 700, color: '#333', textAlign: 'right' }}>Blood Grp :</div>
                           <select 
-                            className="form-control" 
-                            style={{ height: '38px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'pointer', fontWeight: isExistingPatient ? 700 : 500 }} 
-                            value={formData.gender} 
-                            onChange={e => setFormData({...formData, gender: e.target.value})} 
+                            style={{ height: '26px', fontSize: '12px', padding: '2px 8px', borderRadius: '2px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'pointer', fontWeight: 500, border: '1px solid #CBD5E1', width: '100%', boxSizing: 'border-box' }} 
+                            value={formData.bloodGroup} 
+                            onChange={e => setFormData({...formData, bloodGroup: e.target.value})} 
                             disabled={isExistingPatient}
                           >
-                              <option value="">Select Gender</option>
-                              <option value="Male">Male</option>
-                              <option value="Female">Female</option>
-                              <option value="Other">Other</option>
+                              <option value="">Select</option>
+                              <option value="O+">O +ve</option>
+                              <option value="O-">O -ve</option>
+                              <option value="A+">A +ve</option>
+                              <option value="A-">A -ve</option>
+                              <option value="B+">B +ve</option>
+                              <option value="B-">B -ve</option>
+                              <option value="AB+">AB +ve</option>
+                              <option value="AB-">AB -ve</option>
                           </select>
-                      </div>
-                      <div className="form-group" style={{ marginBottom: '8px' }}>
-                          <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Age <span style={{ color: '#EF4444' }}>*</span></label>
-                          <input 
-                            type="number" 
-                            className="form-control" 
-                            placeholder="e.g. 45" 
-                            style={{ height: '38px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: isExistingPatient ? 700 : 500 }} 
-                            value={formData.age} 
-                            onChange={e => setFormData({...formData, age: e.target.value})} 
-                            readOnly={isExistingPatient}
-                          />
-                      </div>
-                      <div className="form-group" style={{ marginBottom: '8px' }}>
-                          <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Mobile Number <span style={{ color: '#EF4444' }}>*</span></label>
-                          <input 
-                            type="text" 
-                            className="form-control" 
-                            placeholder="e.g. 9876543210" 
-                            style={{ 
-                              height: '38px', 
-                              borderRadius: '8px', 
-                              background: isExistingPatient ? '#F1F5F9' : 'white', 
-                              cursor: isExistingPatient ? 'not-allowed' : 'text', 
-                              fontWeight: isExistingPatient ? 700 : 500,
-                              borderColor: '#E2E8F0'
-                            }} 
-                            value={formData.contact} 
-                            onChange={e => {
-                              const val = e.target.value.replace(/\D/g, '').substring(0, 10);
-                              setFormData({...formData, contact: val});
-                            }} 
-                            readOnly={isExistingPatient}
-                          />
-                      </div>
-                      {bookingType === 'lab' && (
-                        <div className="form-group" style={{ marginBottom: '8px' }}>
-                            <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Referred By</label>
-                            <input 
-                              type="text" 
-                              className="form-control" 
-                              placeholder="e.g. Dr. Rajesh Shah or Self" 
-                              style={{ height: '38px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: isExistingPatient ? 700 : 500 }} 
-                              value={formData.referredBy || ''} 
-                              onChange={e => setFormData({...formData, referredBy: e.target.value})} 
-                              readOnly={isExistingPatient}
-                            />
-                        </div>
-                      )}
-                      {bookingType !== 'lab' && bookingType !== 'service' && (
-                        <>
-                          <div className="form-group" style={{ marginBottom: '8px' }}>
-                              <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>
-                                  Email
-                              </label>
-                              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                  <input 
-                                    type="text" 
-                                    className="form-control" 
-                                    placeholder="e.g. ramesh.mehta@gmail.com" 
-                                    style={{ 
-                                        height: '38px', 
-                                        borderRadius: '8px', 
-                                        background: (isExistingPatient || otpVerified) ? '#F1F5F9' : 'white', 
-                                        cursor: (isExistingPatient || otpVerified) ? 'not-allowed' : 'text', 
-                                        fontWeight: (isExistingPatient || otpVerified) ? 700 : 500,
-                                        flex: 1
-                                    }} 
-                                    value={formData.email} 
-                                    onChange={e => setFormData({...formData, email: e.target.value})} 
-                                    readOnly={isExistingPatient || otpVerified}
-                                  />
-                                  {!isExistingPatient && !otpVerified && (
-                                      <button 
-                                          type="button" 
-                                          className="btn btn-primary" 
-                                          style={{ 
-                                              height: '38px', 
-                                              whiteSpace: 'nowrap', 
-                                              borderRadius: '8px', 
-                                              fontWeight: 700, 
-                                              padding: '0 16px',
-                                              background: '#3B82F6',
-                                              color: 'white',
-                                              border: 'none',
-                                              display: 'flex',
-                                              alignItems: 'center',
-                                              justifyContent: 'center',
-                                              gap: '8px',
-                                              cursor: sendingOtp ? 'not-allowed' : 'pointer'
-                                          }}
-                                          onClick={handleSendOtp}
-                                          disabled={sendingOtp}
-                                      >
-                                          {sendingOtp ? 'Sending...' : 'Send OTP'}
-                                      </button>
-                                  )}
-                                  {!isExistingPatient && otpVerified && (
-                                      <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                                          <span style={{ 
-                                              display: 'inline-flex', 
-                                              alignItems: 'center', 
-                                              color: '#10B981', 
-                                              fontWeight: 700, 
-                                              fontSize: '11px',
-                                              background: '#D1FAE5',
-                                              padding: '6px 8px',
-                                              borderRadius: '20px'
-                                          }}>
-                                              Verified
-                                          </span>
-                                          <button 
-                                              type="button" 
-                                              style={{ 
-                                                  background: 'transparent', 
-                                                  border: 'none', 
-                                                  color: '#EF4444', 
-                                                  fontWeight: 600, 
-                                                  fontSize: '11px',
-                                                  cursor: 'pointer',
-                                                  textDecoration: 'underline',
-                                                  padding: 0
-                                              }}
-                                              onClick={() => {
-                                                  setOtpVerified(false);
-                                                  setOtpSent(false);
-                                                  setVerificationOtp('');
-                                              }}
-                                          >
-                                              Change
-                                          </button>
-                                      </div>
-                                  )}
-                              </div>
-                          </div>
-
-                          {!isExistingPatient && otpSent && !otpVerified && (
-                              <div className="form-group" style={{ 
-                                  gridColumn: '1 / -1', 
-                                  background: '#F8FAFC', 
-                                  border: '1px dashed #CBD5E1', 
-                                  borderRadius: '12px', 
-                                  padding: '16px',
-                                  marginTop: '8px'
-                              }}>
-                                  <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', display: 'block', marginBottom: '8px' }}>
-                                      Enter 6-digit Verification OTP sent to {formData.email} <span style={{ color: '#EF4444' }}>*</span>
-                                  </label>
-                                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                                      <input 
-                                          type="text" 
-                                          className="form-control" 
-                                          maxLength={6}
-                                          placeholder="######" 
-                                          style={{ 
-                                              width: '140px',
-                                              height: '44px', 
-                                              textAlign: 'center', 
-                                              fontSize: '18px', 
-                                              fontWeight: 700, 
-                                              letterSpacing: '4px',
-                                              borderRadius: '8px',
-                                              border: '1px solid #CBD5E1'
-                                          }}
-                                          value={verificationOtp}
-                                          onChange={e => setVerificationOtp(e.target.value.replace(/\D/g, ''))}
-                                      />
-                                      <button 
-                                          type="button" 
-                                          className="btn btn-success" 
-                                          style={{ 
-                                              height: '44px', 
-                                              whiteSpace: 'nowrap', 
-                                              borderRadius: '8px', 
-                                              fontWeight: 700, 
-                                              padding: '0 20px',
-                                              background: '#10B981',
-                                              color: 'white',
-                                              border: 'none',
-                                              cursor: otpVerifying ? 'not-allowed' : 'pointer'
-                                          }}
-                                          onClick={handleVerifyOtp}
-                                          disabled={otpVerifying}
-                                      >
-                                          {otpVerifying ? 'Verifying...' : 'Verify OTP'}
-                                      </button>
-                                      <button 
-                                          type="button" 
-                                          style={{ 
-                                              background: 'transparent', 
-                                              border: 'none', 
-                                              color: '#64748B', 
-                                              fontWeight: 600, 
-                                              fontSize: '12px',
-                                              cursor: 'pointer'
-                                          }}
-                                          onClick={handleSendOtp}
-                                      >
-                                          Resend OTP
-                                      </button>
-                                  </div>
-                              </div>
-                          )}
                         </>
                       )}
-                      {bookingType !== 'lab' && bookingType !== 'service' && (
-                        <div className="form-group" style={{ marginBottom: '8px' }}>
-                            <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Blood Group</label>
-                            <select 
-                              className="form-control" 
-                              style={{ height: '38px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'pointer', fontWeight: isExistingPatient ? 700 : 500 }} 
-                              value={formData.bloodGroup} 
-                              onChange={e => setFormData({...formData, bloodGroup: e.target.value})} 
-                              disabled={isExistingPatient}
-                            >
-                                <option value="">Select Blood Group</option>
-                                <option value="O+">O +ve</option>
-                                <option value="O-">O -ve</option>
-                                <option value="A+">A +ve</option>
-                                <option value="A-">A -ve</option>
-                                <option value="B+">B +ve</option>
-                                <option value="B-">B -ve</option>
-                                <option value="AB+">AB +ve</option>
-                                <option value="AB-">AB -ve</option>
-                            </select>
-                        </div>
-                      )}
-                  </div>
 
-                  {bookingType !== 'lab' && bookingType !== 'service' && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-                      <div className="form-group" style={{ marginBottom: '8px' }}>
-                        <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Residential Address</label>
-                        <textarea 
-                          className="form-control" 
-                          placeholder="e.g. Flat 101, Green Park, Main Road" 
-                          style={{ minHeight: '50px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: isExistingPatient ? 700 : 500, padding: '8px 12px' }} 
-                          value={formData.address}
-                          onChange={e => setFormData({...formData, address: e.target.value})}
-                          readOnly={isExistingPatient}
-                        />
-                      </div>
-                      <div className="form-group" style={{ marginBottom: '8px' }}>
-                        <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Medical History (Comma Separated)</label>
-                        <textarea 
-                          className="form-control" 
-                          placeholder="e.g. Hypertension, Diabetes" 
-                          style={{ minHeight: '50px', borderRadius: '8px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: isExistingPatient ? 700 : 500, padding: '8px 12px' }} 
-                          value={formData.medicalHistory}
-                          onChange={e => setFormData({...formData, medicalHistory: e.target.value})}
-                          readOnly={isExistingPatient}
-                        />
-                      </div>
-                      <div className="form-group" style={{ marginBottom: '8px' }}>
-                        <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Allergies</label>
-                        <input 
-                          type="text"
-                          className="form-control" 
-                          placeholder="e.g. Penicillin, Peanuts, None" 
-                          style={{ height: '38px', borderRadius: '8px', background: 'white', cursor: 'text', fontWeight: 500 }} 
-                          value={formData.allergies}
-                          onChange={e => setFormData({...formData, allergies: e.target.value})}
-                        />
-                      </div>
-                      <div className="form-group" style={{ marginBottom: '8px' }}>
-                        <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Current Medications</label>
-                        <input 
-                          type="text"
-                          className="form-control" 
-                          placeholder="e.g. Metformin 500mg, Aspirin 75mg" 
-                          style={{ height: '38px', borderRadius: '8px', background: 'white', cursor: 'text', fontWeight: 500 }} 
-                          value={formData.currentMedications}
-                          onChange={e => setFormData({...formData, currentMedications: e.target.value})}
-                        />
-                      </div>
-                    </div>
-                  )}
+                      {bookingType !== 'lab' && bookingType !== 'service' && (
+                        <>
+                          <div style={{ fontSize: '12px', fontWeight: 700, color: '#333', textAlign: 'right' }}>Email :</div>
+                          <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                              <input 
+                                type="text" 
+                                placeholder="r.mehta@gmail.com" 
+                                style={{ height: '26px', fontSize: '12px', padding: '2px 8px', borderRadius: '2px', background: (isExistingPatient || otpVerified) ? '#F1F5F9' : 'white', cursor: (isExistingPatient || otpVerified) ? 'not-allowed' : 'text', fontWeight: 500, border: '1px solid #CBD5E1', flex: 1, minWidth: '0', boxSizing: 'border-box' }} 
+                                value={formData.email} 
+                                onChange={e => setFormData({...formData, email: e.target.value})} 
+                                readOnly={isExistingPatient || otpVerified}
+                              />
+                              {!isExistingPatient && !otpVerified && (
+                                  <button 
+                                      type="button" 
+                                      style={{ height: '26px', whiteSpace: 'nowrap', borderRadius: '2px', fontWeight: 600, padding: '0 8px', background: '#3B82F6', color: 'white', border: 'none', cursor: sendingOtp ? 'not-allowed' : 'pointer', fontSize: '11px' }}
+                                      onClick={handleSendOtp}
+                                      disabled={sendingOtp}
+                                  >
+                                      {sendingOtp ? '...' : 'OTP'}
+                                  </button>
+                              )}
+                              {!isExistingPatient && otpVerified && (
+                                  <span style={{ color: '#10B981', fontWeight: 700, fontSize: '10px' }}>Verified</span>
+                              )}
+                          </div>
+                        </>
+                      )}
+                      
+                      {bookingType !== 'lab' && bookingType !== 'service' && (
+                        <>
+                          <div style={{ fontSize: '12px', fontWeight: 700, color: '#333', textAlign: 'right' }}>Address :</div>
+                          <input 
+                            type="text"
+                            placeholder="Flat 101, Main Road" 
+                            style={{ height: '26px', fontSize: '12px', padding: '2px 8px', borderRadius: '2px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: 500, border: '1px solid #CBD5E1', width: '100%', gridColumn: 'span 3', boxSizing: 'border-box' }} 
+                            value={formData.address}
+                            onChange={e => setFormData({...formData, address: e.target.value})}
+                            readOnly={isExistingPatient}
+                          />
+
+                          <div style={{ fontSize: '12px', fontWeight: 700, color: '#333', textAlign: 'right' }}>Medical History :</div>
+                          <input 
+                            type="text"
+                            placeholder="e.g. Hypertension" 
+                            style={{ height: '26px', fontSize: '12px', padding: '2px 8px', borderRadius: '2px', background: isExistingPatient ? '#F1F5F9' : 'white', cursor: isExistingPatient ? 'not-allowed' : 'text', fontWeight: 500, border: '1px solid #CBD5E1', width: '100%', boxSizing: 'border-box' }} 
+                            value={formData.medicalHistory}
+                            onChange={e => setFormData({...formData, medicalHistory: e.target.value})}
+                            readOnly={isExistingPatient}
+                          />
+
+                          <div style={{ fontSize: '12px', fontWeight: 700, color: '#333', textAlign: 'right' }}>Allergies :</div>
+                          <input 
+                            type="text"
+                            placeholder="e.g. Penicillin" 
+                            style={{ height: '26px', fontSize: '12px', padding: '2px 8px', borderRadius: '2px', background: 'white', cursor: 'text', fontWeight: 500, border: '1px solid #CBD5E1', width: '100%', boxSizing: 'border-box' }} 
+                            value={formData.allergies}
+                            onChange={e => setFormData({...formData, allergies: e.target.value})}
+                          />
+
+                          <div style={{ fontSize: '12px', fontWeight: 700, color: '#333', textAlign: 'right' }}>Medications :</div>
+                          <input 
+                            type="text"
+                            placeholder="e.g. Metformin 500mg" 
+                            style={{ height: '26px', fontSize: '12px', padding: '2px 8px', borderRadius: '2px', background: 'white', cursor: 'text', fontWeight: 500, border: '1px solid #CBD5E1', width: '100%', boxSizing: 'border-box' }} 
+                            value={formData.currentMedications}
+                            onChange={e => setFormData({...formData, currentMedications: e.target.value})}
+                          />
+                        </>
+                      )}
+
+                      {!isExistingPatient && otpSent && !otpVerified && (
+                          <div style={{ gridColumn: '1 / -1', background: '#FEF2F2', border: '1px dashed #FCA5A5', borderRadius: '2px', padding: '6px', display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' }}>
+                              <label style={{ fontSize: '11px', fontWeight: 700, color: '#991B1B', margin: 0 }}>
+                                  Enter OTP sent to {formData.email}:
+                              </label>
+                              <input 
+                                  type="text" 
+                                  maxLength={6}
+                                  placeholder="######" 
+                                  style={{ width: '80px', height: '22px', textAlign: 'center', fontSize: '12px', fontWeight: 700, letterSpacing: '2px', borderRadius: '2px', border: '1px solid #FCA5A5', boxSizing: 'border-box' }}
+                                  value={verificationOtp}
+                                  onChange={e => setVerificationOtp(e.target.value.replace(/\D/g, ''))}
+                              />
+                              <button 
+                                  type="button" 
+                                  style={{ height: '22px', borderRadius: '2px', fontWeight: 600, padding: '0 8px', background: '#10B981', color: 'white', border: 'none', cursor: otpVerifying ? 'not-allowed' : 'pointer', fontSize: '11px' }}
+                                  onClick={handleVerifyOtp}
+                                  disabled={otpVerifying}
+                              >
+                                  {otpVerifying ? '...' : 'Verify'}
+                              </button>
+                              <button 
+                                  type="button" 
+                                  style={{ background: 'transparent', border: 'none', color: '#2563EB', fontWeight: 600, fontSize: '11px', cursor: 'pointer', textDecoration: 'underline' }}
+                                  onClick={handleSendOtp}
+                              >
+                                  Resend
+                              </button>
+                          </div>
+                      )}
+
+                  </div>
 
                   {/* Patient Vitals (Optional) during Registration / Appointment Booking */}
                   <div style={{ marginTop: '16px', marginBottom: '16px' }}>
                     <div 
-                      style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px', cursor: 'pointer', userSelect: 'none' }}
+                      style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', cursor: 'pointer', userSelect: 'none' }}
                       onClick={() => setVitalsCollapsed(!vitalsCollapsed)}
                     >
-                      <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#2563EB', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '14px' }}>
+                      <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#2563EB', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '12px' }}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
                         </svg>
                       </div>
-                      <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#1A1D23', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <h2 style={{ fontSize: '14px', fontWeight: 800, color: '#1A1D23', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                         Patient Vitals <span style={{ color: '#64748B', fontSize: '13px', fontWeight: 600 }}>(Optional)</span>
-                        <span style={{ fontSize: '11px', color: '#2563EB', background: '#EFF6FF', padding: '2px 8px', borderRadius: '12px', marginLeft: '8px', fontWeight: 700 }}>
+                        <span style={{ fontSize: '11px', color: '#2563EB', background: '#EFF6FF', padding: '2px 8px', borderRadius: '4px', marginLeft: '8px', fontWeight: 700 }}>
                           {vitalsCollapsed ? 'Show' : 'Hide'}
                         </span>
                       </h2>
@@ -6115,7 +5993,7 @@ const ReceptionistDashboard = () => {
                     </div>
                     
                     {!vitalsCollapsed && (
-                      <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '16px', borderRadius: '12px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+                      <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '16px', borderRadius: '4px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
                         <div className="form-group" style={{ margin: 0 }}>
                           <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Temperature (°F)</label>
                           <input 
@@ -6123,7 +6001,7 @@ const ReceptionistDashboard = () => {
                             step="0.1"
                             className="form-control" 
                             placeholder="e.g. 98.6"
-                            style={{ height: '44px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
+                            style={{ height: '26px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
                             value={vitalTemp} 
                             onChange={e => setVitalTemp(e.target.value)} 
                           />
@@ -6134,7 +6012,7 @@ const ReceptionistDashboard = () => {
                             type="number" 
                             className="form-control" 
                             placeholder="e.g. 72"
-                            style={{ height: '44px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
+                            style={{ height: '26px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
                             value={vitalPulse} 
                             onChange={e => setVitalPulse(e.target.value)} 
                           />
@@ -6145,7 +6023,7 @@ const ReceptionistDashboard = () => {
                             type="number" 
                             className="form-control" 
                             placeholder="e.g. 120"
-                            style={{ height: '44px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
+                            style={{ height: '26px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
                             value={vitalBpSys} 
                             onChange={e => setVitalBpSys(e.target.value)} 
                           />
@@ -6156,7 +6034,7 @@ const ReceptionistDashboard = () => {
                             type="number" 
                             className="form-control" 
                             placeholder="e.g. 80"
-                            style={{ height: '44px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
+                            style={{ height: '26px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
                             value={vitalBpDia} 
                             onChange={e => setVitalBpDia(e.target.value)} 
                           />
@@ -6167,7 +6045,7 @@ const ReceptionistDashboard = () => {
                             type="number" 
                             className="form-control" 
                             placeholder="e.g. 16"
-                            style={{ height: '44px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
+                            style={{ height: '26px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
                             value={vitalResp} 
                             onChange={e => setVitalResp(e.target.value)} 
                           />
@@ -6178,7 +6056,7 @@ const ReceptionistDashboard = () => {
                             type="number" 
                             className="form-control" 
                             placeholder="e.g. 98"
-                            style={{ height: '44px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
+                            style={{ height: '26px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
                             value={vitalSpo2} 
                             onChange={e => setVitalSpo2(e.target.value)} 
                           />
@@ -6190,7 +6068,7 @@ const ReceptionistDashboard = () => {
                             step="0.1"
                             className="form-control" 
                             placeholder="e.g. 70"
-                            style={{ height: '44px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
+                            style={{ height: '26px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
                             value={vitalWeight} 
                             onChange={e => setVitalWeight(e.target.value)} 
                           />
@@ -6201,7 +6079,7 @@ const ReceptionistDashboard = () => {
                             type="number" 
                             className="form-control" 
                             placeholder="e.g. 175"
-                            style={{ height: '44px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
+                            style={{ height: '26px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white' }} 
                             value={vitalHeight} 
                             onChange={e => setVitalHeight(e.target.value)} 
                           />
@@ -6214,15 +6092,15 @@ const ReceptionistDashboard = () => {
                     <div style={{ marginTop: '16px', marginBottom: '16px' }}>
                       {/* Document Uploads Header */}
                       <div 
-                        style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px', cursor: 'pointer', userSelect: 'none' }}
+                        style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', cursor: 'pointer', userSelect: 'none' }}
                         onClick={() => setDocsCollapsed(!docsCollapsed)}
                       >
-                          <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#8B5CF6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '14px' }}>
+                          <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#8B5CF6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '12px' }}>
                             <i data-lucide="folder-plus" style={{ width: '16px', height: '16px' }}></i>
                           </div>
-                          <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#1A1D23', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <h2 style={{ fontSize: '14px', fontWeight: 800, color: '#1A1D23', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                             Add Additional Documents <span style={{ color: '#64748B', fontSize: '13px', fontWeight: 600 }}>(Optional)</span>
-                            <span style={{ fontSize: '11px', color: '#8B5CF6', background: '#F5F3FF', padding: '2px 8px', borderRadius: '12px', marginLeft: '8px', fontWeight: 700 }}>
+                            <span style={{ fontSize: '11px', color: '#8B5CF6', background: '#F5F3FF', padding: '2px 8px', borderRadius: '4px', marginLeft: '8px', fontWeight: 700 }}>
                               {docsCollapsed ? 'Show' : 'Hide'}
                             </span>
                           </h2>
@@ -6243,15 +6121,15 @@ const ReceptionistDashboard = () => {
                       </div>
 
                       {!docsCollapsed && (
-                        <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '24px', borderRadius: '12px', marginBottom: '16px' }}>
-                          <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-end', marginBottom: '20px' }}>
+                        <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '12px', borderRadius: '4px', marginBottom: '16px' }}>
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end', marginBottom: '20px' }}>
                             <div style={{ flex: 1 }}>
                               <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: '6px', display: 'block' }}>Document Type</label>
                               <select 
                                 className="form-control" 
                                 value={newDocType} 
                                 onChange={e => setNewDocType(e.target.value)}
-                                style={{ width: '100%', height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '13px', fontWeight: 700, padding: '0 12px' }}
+                                style={{ width: '100%', height: '42px', borderRadius: '2px', border: '1px solid #CBD5E1', fontSize: '13px', fontWeight: 700, padding: '0 12px' }}
                               >
                                 <option value="Aadhar / Voter Card">Aadhar / Voter Card</option>
                                 <option value="Ultrasound Report">Ultrasound Report</option>
@@ -6267,7 +6145,7 @@ const ReceptionistDashboard = () => {
                                   type="file" 
                                   id="patient-doc-upload"
                                   className="form-control"
-                                  style={{ flex: 1, padding: '8px', height: '42px', fontSize: '13px', borderRadius: '8px', background: 'white' }}
+                                  style={{ flex: 1, padding: '8px', height: '42px', fontSize: '13px', borderRadius: '2px', background: 'white' }}
                                 />
                                 <button 
                                   type="button"
@@ -6280,7 +6158,7 @@ const ReceptionistDashboard = () => {
                                       showToast('Please select a file to upload', 'error');
                                     }
                                   }}
-                                  style={{ padding: '0 20px', background: '#2563EB', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', height: '42px' }}
+                                  style={{ padding: '0 20px', background: '#2563EB', color: 'white', border: 'none', borderRadius: '2px', fontWeight: 700, cursor: 'pointer', height: '42px' }}
                                 >
                                   Add Document
                                 </button>
@@ -6291,12 +6169,12 @@ const ReceptionistDashboard = () => {
                           {patientDocuments.length > 0 && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                               {patientDocuments.map((doc, idx) => (
-                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '8px' }}>
+                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '2px' }}>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                     <i data-lucide="file-text" style={{ width: '18px', color: '#64748B' }}></i>
                                     <div>
-                                      <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#0F172A' }}>{doc.name}</div>
-                                      <div style={{ fontSize: '11.5px', fontWeight: 600, color: '#64748B' }}>{doc.type} • {doc.size}</div>
+                                      <div style={{ fontSize: '12px', fontWeight: 700, color: '#0F172A' }}>{doc.name}</div>
+                                      <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748B' }}>{doc.type} • {doc.size}</div>
                                     </div>
                                   </div>
                                   <button 
@@ -6319,10 +6197,10 @@ const ReceptionistDashboard = () => {
 
                   {bookingType === 'opd' ? (
                     <>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                          <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#3B82F6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '14px' }}>2</div>
-                          <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#1A1D23', margin: 0 }}>Visit & Appointment Details</h2>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#3B82F6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '12px' }}>2</div>
+                          <h2 style={{ fontSize: '14px', fontWeight: 800, color: '#1A1D23', margin: 0 }}>Visit & Appointment Details</h2>
                         </div>
                         <span style={{ fontSize: '12px', fontWeight: 700, color: '#2563EB', background: '#EFF6FF', padding: '6px 12px', borderRadius: '20px', border: '1px solid #BFDBFE' }}>
                           Multi-Appointment Enabled
@@ -6331,13 +6209,13 @@ const ReceptionistDashboard = () => {
 
                       {/* Queued Appointments List for Same Patient */}
                       {additionalApptsList.length > 0 && (
-                        <div style={{ background: '#F8FAFC', border: '1.5px dashed #CBD5E1', borderRadius: '12px', padding: '16px', marginBottom: '24px' }}>
+                        <div style={{ background: '#F8FAFC', border: '1.5px dashed #CBD5E1', borderRadius: '4px', padding: '16px', marginBottom: '12px' }}>
                           <div style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '12px' }}>
                             Queued Appointments for Patient ({additionalApptsList.length})
                           </div>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             {additionalApptsList.map((appt, idx) => (
-                              <div key={appt.id || idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '8px' }}>
+                              <div key={appt.id || idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '2px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                   <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#EFF6FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '12px' }}>
                                     {idx + 1}
@@ -6363,9 +6241,9 @@ const ReceptionistDashboard = () => {
 
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
                           <div className="form-group" style={{ marginBottom: '8px' }}>
-                              <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Symptoms <span style={{ color: '#EF4444' }}>*</span></label>
+                              <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Symptoms <span style={{ color: '#EF4444' }}>*</span></label>
                               <div className="custom-dropdown-container" ref={symptomDropdownRef}>
-                                  <div className="custom-dropdown-trigger" onClick={() => !reschedulingAppointment && setSymptomDropdownOpen(!symptomDropdownOpen)} style={{ minHeight: '38px', height: 'auto', padding: '4px 12px', flexWrap: 'wrap', ...(reschedulingAppointment ? { cursor: 'not-allowed', background: '#F1F5F9' } : {}) }}>
+                                  <div className="custom-dropdown-trigger" onClick={() => !reschedulingAppointment && setSymptomDropdownOpen(!symptomDropdownOpen)} style={{ minHeight: '26px', height: 'auto', padding: '4px 12px', flexWrap: 'wrap', ...(reschedulingAppointment ? { cursor: 'not-allowed', background: '#F1F5F9' } : {}) }}>
                                       <div className="selected-items" data-lenis-prevent style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', width: '100%', gap: '6px' }}>
                                           {selectedSymptoms.map(s => (
                                             <div key={s} className="symptom-tag" style={{ margin: '2px 0' }}>
@@ -6422,8 +6300,8 @@ const ReceptionistDashboard = () => {
                               </div>
                           </div>
                           <div className="form-group" style={{ marginBottom: '8px' }}>
-                              <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Select Doctor <span style={{ color: '#EF4444' }}>*</span></label>
-                              <select className="form-control" style={{ height: '38px', borderRadius: '8px', background: reschedulingAppointment ? '#F1F5F9' : 'white', cursor: reschedulingAppointment ? 'not-allowed' : 'pointer', fontWeight: reschedulingAppointment ? 700 : 500 }} value={formData.doctorId} onChange={e => { setFormData({...formData, doctorId: e.target.value}); setSelectedSlot(''); }} disabled={!!reschedulingAppointment}>
+                              <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Select Doctor <span style={{ color: '#EF4444' }}>*</span></label>
+                              <select className="form-control" style={{ height: '26px', borderRadius: '2px', background: reschedulingAppointment ? '#F1F5F9' : 'white', cursor: reschedulingAppointment ? 'not-allowed' : 'pointer', fontWeight: reschedulingAppointment ? 700 : 500 }} value={formData.doctorId} onChange={e => { setFormData({...formData, doctorId: e.target.value}); setSelectedSlot(''); }} disabled={!!reschedulingAppointment}>
                                   <option value="">-- Choose Doctor --</option>
                                   {doctors.map(doc => (
                                       <option key={doc._id} value={doc._id}>{doc.name}</option>
@@ -6431,11 +6309,11 @@ const ReceptionistDashboard = () => {
                               </select>
                           </div>
                           <div className="form-group" style={{ marginBottom: '8px' }}>
-                              <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Appointment Date <span style={{ color: '#EF4444' }}>*</span></label>
+                              <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', marginBottom: '4px', display: 'block' }}>Appointment Date <span style={{ color: '#EF4444' }}>*</span></label>
                               <input 
                                   type="date" 
                                   className="form-control" 
-                                  style={{ height: '38px', borderRadius: '8px', background: 'white', border: '1px solid #CBD5E1', padding: '0 12px', fontWeight: 600 }} 
+                                  style={{ height: '26px', borderRadius: '2px', background: 'white', border: '1px solid #CBD5E1', padding: '0 12px', fontWeight: 600 }} 
                                   value={bookingDate} 
                                   min={getLocalDateString()} 
                                   onChange={e => {
@@ -6446,13 +6324,13 @@ const ReceptionistDashboard = () => {
                           </div>
                       </div>
 
-                      <div style={{ marginBottom: '24px' }}>
+                      <div style={{ marginBottom: '12px' }}>
                           <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, marginBottom: '12px', color: '#64748B' }}>Select Slot / Queue</label>
                           
                           {/* Doctor unavailability banner */}
                           {formData.doctorId && bookingDate && !receptionDoctorAvailability.available && (
                             <div style={{ 
-                              background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '12px', 
+                              background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '4px', 
                               padding: '14px 16px', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '12px'
                             }}>
                               <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -6470,7 +6348,7 @@ const ReceptionistDashboard = () => {
                           )}
 
                           {(!formData.doctorId || !bookingDate) ? (
-                            <div style={{ padding: '16px', background: '#F8FAFC', border: '1px dashed #CBD5E1', borderRadius: '10px', textAlign: 'center', color: '#64748B', fontSize: '13px', fontWeight: 600 }}>
+                            <div style={{ padding: '16px', background: '#F8FAFC', border: '1px dashed #CBD5E1', borderRadius: '2px', textAlign: 'center', color: '#64748B', fontSize: '13px', fontWeight: 600 }}>
                               Please select a Doctor and Appointment Date to view available slots.
                             </div>
                           ) : receptionDoctorAvailability.available && (
@@ -6615,7 +6493,7 @@ const ReceptionistDashboard = () => {
                             background: '#EFF6FF',
                             border: '1.5px solid #3B82F6',
                             color: '#2563EB',
-                            borderRadius: '8px',
+                            borderRadius: '2px',
                             padding: '10px 16px',
                             fontWeight: 800,
                             fontSize: '13px',
@@ -6641,7 +6519,7 @@ const ReceptionistDashboard = () => {
                               background: '#F8FAFC',
                               border: '1.5px solid #CBD5E1',
                               color: '#64748B',
-                              borderRadius: '8px',
+                              borderRadius: '2px',
                               padding: '10px 16px',
                               fontWeight: 800,
                               fontSize: '13px',
@@ -6658,14 +6536,14 @@ const ReceptionistDashboard = () => {
                       </div>
                     </>
                   ) : bookingType === 'lab' ? (
-                    <div style={{ background: '#ECFDF5', border: '1.5px solid #A7F3D0', borderRadius: '14px', padding: '24px', marginBottom: '32px' }}>
+                    <div style={{ background: '#ECFDF5', border: '1.5px solid #A7F3D0', borderRadius: '4px', padding: '12px', marginBottom: '16px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                           <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#059669', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
                             <i data-lucide="flask-conical" style={{ width: '20px', height: '20px' }}></i>
                           </div>
                           <div>
-                            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: '#065F46' }}>Direct Lab Test Selection (Walk-In OPD)</h3>
+                            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 800, color: '#065F46' }}>Direct Lab Test Selection (Walk-In OPD)</h3>
                             <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: '#047857' }}>Select single or multiple diagnostic lab tests for this patient order.</p>
                           </div>
                         </div>
@@ -6684,7 +6562,7 @@ const ReceptionistDashboard = () => {
                               type="text" 
                               className="form-control"
                               placeholder="Search and select lab test (e.g. CBC, Lipid, Thyroid, X-Ray)..."
-                              style={{ height: '46px', paddingLeft: '44px', paddingRight: '40px', borderRadius: '10px', background: 'white', fontWeight: 700, fontSize: '13.5px', border: '1.5px solid #A7F3D0' }}
+                              style={{ height: '26px', paddingLeft: '44px', paddingRight: '40px', borderRadius: '2px', background: 'white', fontWeight: 700, fontSize: '12px', border: '1.5px solid #A7F3D0' }}
                               value={labTestSearchQuery}
                               onFocus={() => setShowLabTestDropdown(true)}
                               onChange={e => {
@@ -6712,7 +6590,7 @@ const ReceptionistDashboard = () => {
                                 marginTop: '6px',
                                 background: '#FFFFFF',
                                 border: '1.5px solid #A7F3D0',
-                                borderRadius: '12px',
+                                borderRadius: '4px',
                                 boxShadow: '0 12px 30px rgba(0, 0, 0, 0.12)',
                                 zIndex: 9999,
                                 maxHeight: '260px',
@@ -6762,7 +6640,7 @@ const ReceptionistDashboard = () => {
                                       onMouseLeave={(e) => { if (!isAlreadyAdded) e.currentTarget.style.background = 'transparent'; }}
                                     >
                                       <div>
-                                        <div style={{ fontWeight: 800, fontSize: '13.5px', color: '#0F172A' }}>
+                                        <div style={{ fontWeight: 800, fontSize: '12px', color: '#0F172A' }}>
                                           {test.testName} {isAlreadyAdded && <span style={{ color: '#059669', fontSize: '11px', fontWeight: 700 }}>(Added)</span>}
                                         </div>
                                         <div style={{ fontSize: '11px', color: '#059669', fontWeight: 700, marginTop: '2px', display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -6770,7 +6648,7 @@ const ReceptionistDashboard = () => {
                                           {test.testCode && <span style={{ color: '#64748B' }}>Code: {test.testCode}</span>}
                                         </div>
                                       </div>
-                                      <div style={{ fontWeight: 900, fontSize: '14px', color: '#059669', background: '#ECFDF5', padding: '6px 12px', borderRadius: '8px', border: '1px solid #A7F3D0' }}>
+                                      <div style={{ fontWeight: 900, fontSize: '12px', color: '#059669', background: '#ECFDF5', padding: '6px 12px', borderRadius: '2px', border: '1px solid #A7F3D0' }}>
                                         ₹{Number(test.price || 0).toFixed(2)}
                                       </div>
                                     </div>
@@ -6784,16 +6662,16 @@ const ReceptionistDashboard = () => {
 
                       {/* Added Selected Lab Tests Pills & Summary */}
                       {selectedLabTestsList.length > 0 ? (
-                        <div style={{ background: '#FFFFFF', border: '1.5px solid #A7F3D0', borderRadius: '12px', padding: '16px' }}>
+                        <div style={{ background: '#FFFFFF', border: '1.5px solid #A7F3D0', borderRadius: '4px', padding: '16px' }}>
                           <div style={{ fontSize: '12px', fontWeight: 800, color: '#065F46', marginBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <span>Selected Tests for Lab Order ({selectedLabTestsList.length})</span>
-                            <span style={{ fontSize: '14px', fontWeight: 900, color: '#059669' }}>
+                            <span style={{ fontSize: '12px', fontWeight: 900, color: '#059669' }}>
                               Subtotal: ₹{selectedLabTestsList.reduce((sum, item) => sum + Number(item.price || 0), 0).toFixed(2)}
                             </span>
                           </div>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             {selectedLabTestsList.map((test, idx) => (
-                              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px' }}>
+                              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '2px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                   <span style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#059669', color: 'white', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 800 }}>{idx + 1}</span>
                                   <div>
@@ -6802,7 +6680,7 @@ const ReceptionistDashboard = () => {
                                   </div>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                  <span style={{ fontWeight: 900, fontSize: '14px', color: '#059669' }}>₹{Number(test.price || 0).toFixed(2)}</span>
+                                  <span style={{ fontWeight: 900, fontSize: '12px', color: '#059669' }}>₹{Number(test.price || 0).toFixed(2)}</span>
                                   <button
                                     type="button"
                                     onClick={() => setSelectedLabTestsList(selectedLabTestsList.filter((_, i) => i !== idx))}
@@ -6816,20 +6694,20 @@ const ReceptionistDashboard = () => {
                           </div>
                         </div>
                       ) : (
-                        <div style={{ padding: '16px', background: '#FFFFFF', border: '1.5px dashed #A7F3D0', borderRadius: '12px', textAlign: 'center', color: '#047857', fontSize: '13px', fontWeight: 600 }}>
+                        <div style={{ padding: '16px', background: '#FFFFFF', border: '1.5px dashed #A7F3D0', borderRadius: '4px', textAlign: 'center', color: '#047857', fontSize: '13px', fontWeight: 600 }}>
                           No lab tests added yet. Search and select tests above to build the lab order.
                         </div>
                       )}
                     </div>
                   ) : (
-                    <div style={{ background: '#F5F3FF', border: '1.5px solid #DDD6FE', borderRadius: '14px', padding: '24px', marginBottom: '32px' }}>
+                    <div style={{ background: '#F5F3FF', border: '1.5px solid #DDD6FE', borderRadius: '4px', padding: '12px', marginBottom: '16px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                           <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#7C3AED', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
                             <i data-lucide="sparkles" style={{ width: '20px', height: '20px' }}></i>
                           </div>
                           <div>
-                            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: '#5B21B6' }}>Direct Clinical Procedure / Service (Dental, Walk-In)</h3>
+                            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 800, color: '#5B21B6' }}>Direct Clinical Procedure / Service (Dental, Walk-In)</h3>
                             <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: '#6D28D9' }}>Select single or multiple dental, physiotherapy, or clinical specialty procedures for this patient.</p>
                           </div>
                         </div>
@@ -6848,7 +6726,7 @@ const ReceptionistDashboard = () => {
                               type="text" 
                               className="form-control"
                               placeholder="Search and select dental/clinical procedure (e.g. Root Canal, Scaling, Extraction, Braces)..."
-                              style={{ height: '46px', paddingLeft: '44px', paddingRight: '40px', borderRadius: '10px', background: 'white', fontWeight: 700, fontSize: '13.5px', border: '1.5px solid #C4B5FD' }}
+                              style={{ height: '26px', paddingLeft: '44px', paddingRight: '40px', borderRadius: '2px', background: 'white', fontWeight: 700, fontSize: '12px', border: '1.5px solid #C4B5FD' }}
                               value={serviceSearchQuery}
                               onFocus={() => setShowServiceDropdown(true)}
                               onChange={e => {
@@ -6876,7 +6754,7 @@ const ReceptionistDashboard = () => {
                                 marginTop: '6px',
                                 background: '#FFFFFF',
                                 border: '1.5px solid #C4B5FD',
-                                borderRadius: '12px',
+                                borderRadius: '4px',
                                 boxShadow: '0 12px 30px rgba(0, 0, 0, 0.12)',
                                 zIndex: 9999,
                                 maxHeight: '260px',
@@ -6926,7 +6804,7 @@ const ReceptionistDashboard = () => {
                                       onMouseLeave={(e) => { if (!isAlreadyAdded) e.currentTarget.style.background = 'transparent'; }}
                                     >
                                       <div>
-                                        <div style={{ fontWeight: 800, fontSize: '13.5px', color: '#0F172A' }}>
+                                        <div style={{ fontWeight: 800, fontSize: '12px', color: '#0F172A' }}>
                                           {srv.serviceName} {isAlreadyAdded && <span style={{ color: '#7C3AED', fontSize: '11px', fontWeight: 700 }}>(Added)</span>}
                                         </div>
                                         <div style={{ fontSize: '11px', color: '#7C3AED', fontWeight: 700, marginTop: '2px', display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -6934,7 +6812,7 @@ const ReceptionistDashboard = () => {
                                           {srv.serviceCode && <span style={{ color: '#64748B' }}>Code: {srv.serviceCode}</span>}
                                         </div>
                                       </div>
-                                      <div style={{ fontWeight: 900, fontSize: '14px', color: '#7C3AED', background: '#F5F3FF', padding: '6px 12px', borderRadius: '8px', border: '1px solid #C4B5FD' }}>
+                                      <div style={{ fontWeight: 900, fontSize: '12px', color: '#7C3AED', background: '#F5F3FF', padding: '6px 12px', borderRadius: '2px', border: '1px solid #C4B5FD' }}>
                                         ₹{Number(srv.price || 0).toFixed(2)}
                                       </div>
                                     </div>
@@ -6948,16 +6826,16 @@ const ReceptionistDashboard = () => {
 
                       {/* Added Selected Services Pills & Summary */}
                       {selectedServicesList.length > 0 ? (
-                        <div style={{ background: '#FFFFFF', border: '1.5px solid #DDD6FE', borderRadius: '12px', padding: '16px' }}>
+                        <div style={{ background: '#FFFFFF', border: '1.5px solid #DDD6FE', borderRadius: '4px', padding: '16px' }}>
                           <div style={{ fontSize: '12px', fontWeight: 800, color: '#5B21B6', marginBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <span>Selected Clinical Procedures ({selectedServicesList.length})</span>
-                            <span style={{ fontSize: '14px', fontWeight: 900, color: '#7C3AED' }}>
+                            <span style={{ fontSize: '12px', fontWeight: 900, color: '#7C3AED' }}>
                               Subtotal: ₹{selectedServicesList.reduce((sum, item) => sum + Number(item.price || 0), 0).toFixed(2)}
                             </span>
                           </div>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             {selectedServicesList.map((srv, idx) => (
-                              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: '8px' }}>
+                              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: '2px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                   <span style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#7C3AED', color: 'white', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 800 }}>{idx + 1}</span>
                                   <div>
@@ -6966,7 +6844,7 @@ const ReceptionistDashboard = () => {
                                   </div>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                  <span style={{ fontWeight: 900, fontSize: '14px', color: '#7C3AED' }}>₹{Number(srv.price || 0).toFixed(2)}</span>
+                                  <span style={{ fontWeight: 900, fontSize: '12px', color: '#7C3AED' }}>₹{Number(srv.price || 0).toFixed(2)}</span>
                                   <button
                                     type="button"
                                     onClick={() => setSelectedServicesList(selectedServicesList.filter((_, i) => i !== idx))}
@@ -6980,7 +6858,7 @@ const ReceptionistDashboard = () => {
                           </div>
                         </div>
                       ) : (
-                        <div style={{ padding: '16px', background: '#FFFFFF', border: '1.5px dashed #DDD6FE', borderRadius: '12px', textAlign: 'center', color: '#6D28D9', fontSize: '13px', fontWeight: 600 }}>
+                        <div style={{ padding: '16px', background: '#FFFFFF', border: '1.5px dashed #DDD6FE', borderRadius: '4px', textAlign: 'center', color: '#6D28D9', fontSize: '13px', fontWeight: 600 }}>
                           No clinical procedures added yet. Search and select procedures above.
                         </div>
                       )}
@@ -6990,31 +6868,31 @@ const ReceptionistDashboard = () => {
                   {!isExistingPatient && bookingType !== 'lab' && bookingType !== 'service' && (
                     <>
                       {/* DPDP Consent Module */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px' }}>
-                          <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#64748B', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '14px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                          <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#64748B', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '12px' }}>
                             <i data-lucide="shield-check" style={{ width: '16px', height: '16px' }}></i>
                           </div>
-                          <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#1A1D23', margin: 0 }}>Patient Consent</h2>
+                          <h2 style={{ fontSize: '14px', fontWeight: 800, color: '#1A1D23', margin: 0 }}>Patient Consent</h2>
                       </div>
-                      <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '16px', borderRadius: '12px', marginBottom: '20px' }}>
+                      <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '16px', borderRadius: '4px', marginBottom: '20px' }}>
                         <div style={{ fontSize: '13px', color: '#475569', marginBottom: '12px', fontWeight: 600 }}>
                           Patient consent is required for EMR creation and medical data processing. The patient has the right to withdraw this consent at any time.
                         </div>
                         <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', marginBottom: '10px' }}>
                           <input type="checkbox" checked={dpdpConsent.emrCreation} onChange={e => setDpdpConsent({...dpdpConsent, emrCreation: e.target.checked})} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
-                          <span style={{ fontSize: '14px', fontWeight: 800, color: '#1E293B' }}>Consent for EMR Records Creation (Mandatory for Consultation)</span>
+                          <span style={{ fontSize: '12px', fontWeight: 800, color: '#1E293B' }}>Consent for EMR Records Creation (Mandatory for Consultation)</span>
                         </label>
                         <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
                           <input type="checkbox" checked={dpdpConsent.dataSharing} onChange={e => setDpdpConsent({...dpdpConsent, dataSharing: e.target.checked})} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
-                          <span style={{ fontSize: '14px', fontWeight: 700, color: '#475569' }}>Consent for De-identified Data Sharing (Research / Analytics)</span>
+                          <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569' }}>Consent for De-identified Data Sharing (Research / Analytics)</span>
                         </label>
                       </div>
                     </>
                   )}
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
-                      <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#3B82F6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '14px' }}>3</div>
-                      <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#1A1D23', margin: 0 }}>Billing & Payment Summary</h2>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+                      <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#3B82F6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '12px' }}>3</div>
+                      <h2 style={{ fontSize: '14px', fontWeight: 800, color: '#1A1D23', margin: 0 }}>Billing & Payment Summary</h2>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '340px 1fr', gap: '40px', marginBottom: '48px' }}>
@@ -7062,7 +6940,7 @@ const ReceptionistDashboard = () => {
                                       placeholder="e.g. Senior Citizen / Staff Relative"
                                       value={bookingDiscountReason}
                                       onChange={e => setBookingDiscountReason(e.target.value)}
-                                      style={{ width: '100%', height: '32px', borderRadius: '6px', border: '1px solid #FCA5A5', padding: '0 8px', fontSize: '11.5px', fontWeight: 600, background: '#FFF5F5', color: '#991B1B' }}
+                                      style={{ width: '100%', height: '32px', borderRadius: '6px', border: '1px solid #FCA5A5', padding: '0 8px', fontSize: '12px', fontWeight: 600, background: '#FFF5F5', color: '#991B1B' }}
                                       required
                                     />
                                   </div>
@@ -7089,12 +6967,12 @@ const ReceptionistDashboard = () => {
                       <div>
                           <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, marginBottom: '12px', color: '#64748B' }}>Payment Method / Status</label>
                           {reschedulingAppointment ? (
-                              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#D1FAE5', color: '#065F46', padding: '12px 20px', borderRadius: '8px', fontWeight: 800, fontSize: '14px', border: '1px solid #A7F3D0' }}>
+                              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#D1FAE5', color: '#065F46', padding: '12px 20px', borderRadius: '2px', fontWeight: 800, fontSize: '12px', border: '1px solid #A7F3D0' }}>
                                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                                   Paid (Original Payment Preserved)
                               </div>
                           ) : (
-                              <div className="payment-grid" style={{ marginBottom: '24px' }}>
+                              <div className="payment-grid" style={{ marginBottom: '12px' }}>
                                   {['Cash', 'UPI', 'Other'].map(method => {
                                       const getIcon = () => {
                                           if (method === 'Cash') {
@@ -7127,7 +7005,7 @@ const ReceptionistDashboard = () => {
                                               key={method} 
                                               className={`pay-btn ${bookingPaymentMethod === method ? 'active' : ''}`} 
                                               onClick={() => setBookingPaymentMethod(method)}
-                                              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px 16px', borderRadius: '8px', cursor: 'pointer', transition: '0.2s' }}
+                                              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px 16px', borderRadius: '2px', cursor: 'pointer', transition: '0.2s' }}
                                           >
                                               {getIcon()}
                                               <span style={{ fontWeight: 800 }}>{method}</span>
@@ -7156,7 +7034,7 @@ const ReceptionistDashboard = () => {
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '20px' }}>
-                      <button className="btn btn-primary" style={{ width: '400px', height: '54px', fontWeight: 800, fontSize: '16px', borderRadius: '10px', justifyContent: 'center', gap: '12px' }} onClick={reschedulingAppointment ? handleRescheduleSubmit : (bookingType === 'lab' ? handleCreateLabOrder : bookingType === 'service' ? handleCreateServiceOrder : handleCreateAppointment)} disabled={loading}>
+                      <button className="btn btn-primary" style={{ width: '400px', height: '54px', fontWeight: 800, fontSize: '14px', borderRadius: '2px', justifyContent: 'center', gap: '12px' }} onClick={reschedulingAppointment ? handleRescheduleSubmit : (bookingType === 'lab' ? handleCreateLabOrder : bookingType === 'service' ? handleCreateServiceOrder : handleCreateAppointment)} disabled={loading}>
                           <i data-lucide={reschedulingAppointment ? "calendar-days" : (bookingType === 'lab' ? "flask-conical" : bookingType === 'service' ? "sparkles" : "qr-code")}></i> 
                           {loading 
                             ? (reschedulingAppointment ? 'Rescheduling Appointment...' : (bookingType === 'lab' ? 'Creating Lab Order...' : bookingType === 'service' ? 'Creating Service Order...' : 'Registering & Booking...')) 
@@ -7174,12 +7052,12 @@ const ReceptionistDashboard = () => {
           <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out' }}>
             
             {/* Header: Title + Button Group */}
-            <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+            <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#1A1D23' }}>Appointments</h2>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <button 
                   className="btn btn-primary" 
-                  style={{ display: 'flex', alignItems: 'center', gap: '8px', height: '38px', padding: '0 16px', borderRadius: '10px', fontWeight: 700, fontSize: '13px' }} 
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', height: '26px', padding: '0 16px', borderRadius: '2px', fontWeight: 700, fontSize: '13px' }} 
                   onClick={() => switchTab('registration-form')}
                 >
                   <i data-lucide="plus" style={{ width: '16px', height: '16px' }}></i> Create Appointment
@@ -7188,9 +7066,9 @@ const ReceptionistDashboard = () => {
                   className="btn" 
                   style={{ 
                     width: '38px', 
-                    height: '38px', 
+                    height: '26px', 
                     padding: 0,
-                    borderRadius: '10px', 
+                    borderRadius: '2px', 
                     background: showDateFilter ? '#2563EB' : '#EFF6FF', 
                     color: showDateFilter ? '#FFFFFF' : '#2563EB', 
                     display: 'flex', 
@@ -7213,9 +7091,9 @@ const ReceptionistDashboard = () => {
 
             {/* Sliding Date Range Filter Panel */}
             {showDateFilter && (
-              <div className="glass-card" style={{ padding: '24px', marginBottom: '24px', animation: 'slideDown 0.3s ease-out', border: '1px solid #BFDBFE', background: '#F8FAFC' }}>
+              <div className="glass-card" style={{ padding: '12px', marginBottom: '12px', animation: 'slideDown 0.3s ease-out', border: '1px solid #BFDBFE', background: '#F8FAFC' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#1E293B', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <h4 style={{ fontSize: '12px', fontWeight: 800, color: '#1E293B', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <i data-lucide="calendar-days" style={{ width: '18px', color: 'var(--primary)' }}></i> Select Appointment Date Range
                   </h4>
                   {(startDate || endDate) && (
@@ -7235,7 +7113,7 @@ const ReceptionistDashboard = () => {
                     <input 
                       type="date" 
                       className="form-control" 
-                      style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px' }} 
+                      style={{ height: '40px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px' }} 
                       value={startDate} 
                       onChange={e => setStartDate(e.target.value)} 
                     />
@@ -7245,7 +7123,7 @@ const ReceptionistDashboard = () => {
                     <input 
                       type="date" 
                       className="form-control" 
-                      style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px' }} 
+                      style={{ height: '40px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px' }} 
                       value={endDate} 
                       onChange={e => setEndDate(e.target.value)} 
                     />
@@ -7255,7 +7133,7 @@ const ReceptionistDashboard = () => {
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button 
                       className="btn btn-secondary" 
-                      style={{ height: '40px', fontSize: '12px', fontWeight: 700, padding: '0 16px', borderRadius: '8px', border: '1px solid #E2E8F0', background: 'white' }} 
+                      style={{ height: '40px', fontSize: '12px', fontWeight: 700, padding: '0 16px', borderRadius: '2px', border: '1px solid #E2E8F0', background: 'white' }} 
                       onClick={() => {
                         const todayStr = new Date().toISOString().split('T')[0];
                         setStartDate(todayStr);
@@ -7266,7 +7144,7 @@ const ReceptionistDashboard = () => {
                     </button>
                     <button 
                       className="btn btn-secondary" 
-                      style={{ height: '40px', fontSize: '12px', fontWeight: 700, padding: '0 16px', borderRadius: '8px', border: '1px solid #E2E8F0', background: 'white' }} 
+                      style={{ height: '40px', fontSize: '12px', fontWeight: 700, padding: '0 16px', borderRadius: '2px', border: '1px solid #E2E8F0', background: 'white' }} 
                       onClick={() => {
                         const today = new Date();
                         const past7 = new Date();
@@ -7279,7 +7157,7 @@ const ReceptionistDashboard = () => {
                     </button>
                     <button 
                       className="btn btn-secondary" 
-                      style={{ height: '40px', fontSize: '12px', fontWeight: 700, padding: '0 16px', borderRadius: '8px', border: '1px solid #E2E8F0', background: 'white' }} 
+                      style={{ height: '40px', fontSize: '12px', fontWeight: 700, padding: '0 16px', borderRadius: '2px', border: '1px solid #E2E8F0', background: 'white' }} 
                       onClick={() => {
                         const today = new Date();
                         const past30 = new Date();
@@ -7334,7 +7212,7 @@ const ReceptionistDashboard = () => {
                       }}
                     >
                       {pill.label}
-                      <span style={{ fontSize: '11px', background: apptTypeFilter === pill.key ? 'rgba(255,255,255,0.7)' : '#F1F5F9', padding: '2px 6px', borderRadius: '10px', color: apptTypeFilter === pill.key ? pill.color : '#64748B' }}>
+                      <span style={{ fontSize: '11px', background: apptTypeFilter === pill.key ? 'rgba(255,255,255,0.7)' : '#F1F5F9', padding: '2px 6px', borderRadius: '2px', color: apptTypeFilter === pill.key ? pill.color : '#64748B' }}>
                         {pill.count}
                       </span>
                     </button>
@@ -7343,20 +7221,20 @@ const ReceptionistDashboard = () => {
               );
             })()}
 
-            <div style={{ display: 'flex', gap: '16px', marginBottom: '20px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', alignItems: 'center' }}>
               <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center' }}>
                 <i data-lucide="search" style={{ position: 'absolute', left: '16px', color: '#64748B', width: '16px' }}></i>
                 <input 
                   type="text" 
                   placeholder="Search appointments by patient name, doctor, test or service..." 
-                  style={{ background: 'white', border: '1px solid #CBD5E1', paddingLeft: '44px', height: '42px', width: '100%', borderRadius: '10px', fontSize: '13px', fontWeight: 600, outline: 'none', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
+                  style={{ background: 'white', border: '1px solid #CBD5E1', paddingLeft: '44px', height: '42px', width: '100%', borderRadius: '2px', fontSize: '13px', fontWeight: 600, outline: 'none', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
                   value={appointmentSearch}
                   onChange={(e) => setAppointmentSearch(e.target.value)}
                 />
               </div>
             </div>
 
-            <div className="glass-card" style={{ padding: '24px' }}>
+            <div className="glass-card" style={{ padding: '12px' }}>
               <div className="table-responsive">
                 <table className="elite-table" style={{ margin: 0 }}>
                   <thead style={{ background: '#F8FAFC' }}>
@@ -7399,7 +7277,7 @@ const ReceptionistDashboard = () => {
                                 <span style={{
                                   padding: '4px 8px',
                                   borderRadius: '6px',
-                                  fontSize: '11.5px',
+                                  fontSize: '12px',
                                   fontWeight: 700,
                                   background: app.type === 'Lab Test' ? '#ECFDF5' : '#F5F3FF',
                                   color: app.type === 'Lab Test' ? '#10B981' : '#8B5CF6',
@@ -7500,7 +7378,7 @@ const ReceptionistDashboard = () => {
                                 <span style={{
                                   padding: '4px 8px',
                                   borderRadius: '6px',
-                                  fontSize: '11.5px',
+                                  fontSize: '12px',
                                   fontWeight: 700,
                                   background: '#EFF6FF',
                                   color: '#2563EB',
@@ -7581,7 +7459,7 @@ const ReceptionistDashboard = () => {
                               >
                                 <td style={{ paddingLeft: '24px' }}>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#7C3AED', fontSize: '12px', fontWeight: 700 }}>
-                                    <span style={{ fontSize: '16px', color: '#A78BFA' }}>↳</span>
+                                    <span style={{ fontSize: '14px', color: '#A78BFA' }}>↳</span>
                                     <span>Add-On Visit</span>
                                   </div>
                                 </td>
@@ -7648,23 +7526,23 @@ const ReceptionistDashboard = () => {
         {/* STAFF TAB */}
         {activeTab === 'staff' && (
             <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out' }}>
-              <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                   <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#1A1D23' }}>Staff Management</h2>
               </div>
-              <div style={{ display: 'flex', gap: '16px', marginBottom: '20px', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', alignItems: 'center' }}>
                 <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center' }}>
                   <i data-lucide="search" style={{ position: 'absolute', left: '16px', color: '#64748B', width: '16px' }}></i>
                   <input 
                     type="text" 
                     placeholder="Search staff by name, role, or ID..." 
-                    style={{ background: 'white', border: '1px solid #CBD5E1', paddingLeft: '44px', height: '42px', width: '100%', borderRadius: '10px', fontSize: '13px', fontWeight: 600, outline: 'none', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
+                    style={{ background: 'white', border: '1px solid #CBD5E1', paddingLeft: '44px', height: '42px', width: '100%', borderRadius: '2px', fontSize: '13px', fontWeight: 600, outline: 'none', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
                     value={staffSearch}
                     onChange={(e) => setStaffSearch(e.target.value)}
                   />
                 </div>
               </div>
 
-              <div className="glass-card" style={{ padding: '24px' }}>
+              <div className="glass-card" style={{ padding: '12px' }}>
                   <div className="table-responsive">
                     <table className="elite-table" style={{ margin: 0 }}>
                         <thead style={{ background: '#F8FAFC' }}>
@@ -7742,26 +7620,26 @@ const ReceptionistDashboard = () => {
         {/* BILLING TAB */}
         {activeTab === 'billing' && (
             <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                   <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#1A1D23' }}>Finance & Billing</h2>
                   <button className="btn btn-primary" onClick={handleExportBillingCSV}><i data-lucide="download"></i> Export Report</button>
               </div>
-              <div className="ph-kpi-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginBottom: '24px' }}>
-                  <div className="kpi-card semantic-card-info" style={{ padding: '24px' }}>
+              <div className="ph-kpi-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginBottom: '12px' }}>
+                  <div className="kpi-card semantic-card-info" style={{ padding: '12px' }}>
                       <div className="kpi-icon-box" style={{ background: '#F0FDF4', color: '#10B981' }}><i data-lucide="trending-up"></i></div>
                       <div>
                         <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 800 }}>TOTAL REVENUE</div>
                         <div style={{ fontSize: '24px', fontWeight: 900 }}>₹{bills.filter(b => b.status === 'Paid').reduce((sum, b) => sum + (b.totalAmount || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</div>
                       </div>
                   </div>
-                  <div className="kpi-card semantic-card-warning" style={{ padding: '24px' }}>
+                  <div className="kpi-card semantic-card-warning" style={{ padding: '12px' }}>
                       <div className="kpi-icon-box" style={{ background: '#FFFBEB', color: '#F59E0B' }}><i data-lucide="clock"></i></div>
                       <div>
                         <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 800 }}>PENDING PAYMENTS</div>
                         <div style={{ fontSize: '24px', fontWeight: 900 }}>₹{bills.filter(b => b.status === 'Unpaid' || !b.status).reduce((sum, b) => sum + (b.totalAmount || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</div>
                       </div>
                   </div>
-                  <div className="kpi-card semantic-card-info" style={{ padding: '24px' }}>
+                  <div className="kpi-card semantic-card-info" style={{ padding: '12px' }}>
                       <div className="kpi-icon-box" style={{ background: '#EEF2FF', color: '#6366F1' }}><i data-lucide="credit-card"></i></div>
                       <div>
                         <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 800 }}>TRANSACTIONS TODAY</div>
@@ -7769,20 +7647,20 @@ const ReceptionistDashboard = () => {
                       </div>
                   </div>
               </div>
-              <div style={{ display: 'flex', gap: '16px', marginBottom: '20px', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', alignItems: 'center' }}>
                 <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center' }}>
                   <i data-lucide="search" style={{ position: 'absolute', left: '16px', color: '#64748B', width: '16px' }}></i>
                   <input 
                     type="text" 
                     placeholder="Search invoices by patient name, Invoice ID, or status..." 
-                    style={{ background: 'white', border: '1px solid #CBD5E1', paddingLeft: '44px', height: '42px', width: '100%', borderRadius: '10px', fontSize: '13px', fontWeight: 600, outline: 'none', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
+                    style={{ background: 'white', border: '1px solid #CBD5E1', paddingLeft: '44px', height: '42px', width: '100%', borderRadius: '2px', fontSize: '13px', fontWeight: 600, outline: 'none', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
                     value={billingSearch}
                     onChange={(e) => setBillingSearch(e.target.value)}
                   />
                 </div>
               </div>
 
-              <div className="glass-card" style={{ padding: '24px' }}>
+              <div className="glass-card" style={{ padding: '12px' }}>
                   <div className="table-responsive">
                     <table className="elite-table" style={{ margin: 0 }}>
                         <thead style={{ background: '#F8FAFC' }}>
@@ -7870,7 +7748,7 @@ const ReceptionistDashboard = () => {
         {/* PROFILE TAB */}
         {activeTab === 'profile' && (
           <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out' }}>
-            <div className="dashboard-header" style={{ marginBottom: '32px' }}>
+            <div className="dashboard-header" style={{ marginBottom: '16px' }}>
               <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#1A1D23' }}>My Profile</h2>
               <p style={{ color: '#64748B', fontWeight: 600 }}>Manage your personal information and security</p>
             </div>
@@ -7884,26 +7762,26 @@ const ReceptionistDashboard = () => {
                   </div>
                 </div>
                 <h3 style={{ fontSize: '20px', fontWeight: 900, color: '#1A1D23', marginBottom: '4px' }}>{user.name || 'Roshni Singh'}</h3>
-                <p style={{ fontSize: '14px', color: '#64748B', fontWeight: 700, marginBottom: '24px' }}>Senior Receptionist</p>
+                <p style={{ fontSize: '12px', color: '#64748B', fontWeight: 700, marginBottom: '12px' }}>Senior Receptionist</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', textAlign: 'left' }}>
-                  <div style={{ padding: '12px', background: '#F8FAFC', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ padding: '12px', background: '#F8FAFC', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <i data-lucide="mail" style={{ width: '18px', color: 'var(--primary)' }}></i>
                     <span style={{ fontSize: '13px', fontWeight: 600 }}>{user.email || 'roshni@curoxa.com'}</span>
                   </div>
-                  <div style={{ padding: '12px', background: '#F8FAFC', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ padding: '12px', background: '#F8FAFC', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <i data-lucide="phone" style={{ width: '18px', color: 'var(--primary)' }}></i>
                     <span style={{ fontSize: '13px', fontWeight: 600 }}>+91 98765 43210</span>
                   </div>
                 </div>
                 <button className="btn btn-secondary" style={{ width: '100%', marginTop: '32px', justifyContent: 'center', color: 'var(--danger)', border: '1px solid #FEE2E2' }} onClick={handleLogout}>
-                  <i data-lucide="log-out"></i> Logout Account
+                  <i data-lucide="log-out"></i> Logout
                 </button>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <div className="glass-card" style={{ padding: '32px' }}>
-                  <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '24px' }}>Edit Profile</h3>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+                  <h3 style={{ fontSize: '14px', fontWeight: 800, marginBottom: '12px' }}>Edit Profile</h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '12px' }}>
                     <div className="form-group">
                       <label>Full Name</label>
                       <input type="text" className="form-control" defaultValue={user.name || 'Roshni Singh'} style={{ height: '48px' }} />
@@ -7925,8 +7803,8 @@ const ReceptionistDashboard = () => {
                 </div>
 
                 <div className="glass-card" style={{ padding: '32px' }}>
-                  <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '24px' }}>Change Password</h3>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+                  <h3 style={{ fontSize: '14px', fontWeight: 800, marginBottom: '12px' }}>Change Password</h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', marginBottom: '12px' }}>
                     <div className="form-group">
                       <label>Current Password</label>
                       <input type="password" className="form-control" placeholder="********" style={{ height: '48px' }} />
@@ -7950,62 +7828,62 @@ const ReceptionistDashboard = () => {
         {/* SETTINGS TAB */}
         {activeTab === 'settings' && (
           <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out' }}>
-            <div className="dashboard-header" style={{ marginBottom: '32px' }}>
+            <div className="dashboard-header" style={{ marginBottom: '16px' }}>
               <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#1A1D23' }}>System Settings</h2>
               <p style={{ color: '#64748B', fontWeight: 600 }}>Configure your workspace and preferences</p>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-              <div className="glass-card" style={{ padding: '24px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
-                  <div style={{ width: '40px', height: '40px', background: '#EFF6FF', color: 'var(--primary)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><i data-lucide="bell" style={{ width: '20px' }}></i></div>
-                  <h3 style={{ fontSize: '16px', fontWeight: 800 }}>Notifications</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '12px' }}>
+              <div className="glass-card" style={{ padding: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <div style={{ width: '40px', height: '40px', background: '#EFF6FF', color: 'var(--primary)', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><i data-lucide="bell" style={{ width: '20px' }}></i></div>
+                  <h3 style={{ fontSize: '14px', fontWeight: 800 }}>Notifications</h3>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div><div style={{ fontSize: '14px', fontWeight: 700 }}>Email Alerts</div><div style={{ fontSize: '12px', color: '#64748B' }}>Receive daily summaries</div></div>
+                    <div><div style={{ fontSize: '12px', fontWeight: 700 }}>Email Alerts</div><div style={{ fontSize: '12px', color: '#64748B' }}>Receive daily summaries</div></div>
                     <input type="checkbox" defaultChecked />
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div><div style={{ fontSize: '14px', fontWeight: 700 }}>Push Notifications</div><div style={{ fontSize: '12px', color: '#64748B' }}>Instant app alerts</div></div>
+                    <div><div style={{ fontSize: '12px', fontWeight: 700 }}>Push Notifications</div><div style={{ fontSize: '12px', color: '#64748B' }}>Instant app alerts</div></div>
                     <input type="checkbox" defaultChecked />
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div><div style={{ fontSize: '14px', fontWeight: 700 }}>SMS Updates</div><div style={{ fontSize: '12px', color: '#64748B' }}>Patient appointment reminders</div></div>
+                    <div><div style={{ fontSize: '12px', fontWeight: 700 }}>SMS Updates</div><div style={{ fontSize: '12px', color: '#64748B' }}>Patient appointment reminders</div></div>
                     <input type="checkbox" />
                   </div>
                 </div>
               </div>
 
-              <div className="glass-card" style={{ padding: '24px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
-                  <div style={{ width: '40px', height: '40px', background: '#F0FDF4', color: '#10B981', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><i data-lucide="shield" style={{ width: '20px' }}></i></div>
-                  <h3 style={{ fontSize: '16px', fontWeight: 800 }}>Privacy & Security</h3>
+              <div className="glass-card" style={{ padding: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <div style={{ width: '40px', height: '40px', background: '#F0FDF4', color: '#10B981', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><i data-lucide="shield" style={{ width: '20px' }}></i></div>
+                  <h3 style={{ fontSize: '14px', fontWeight: 800 }}>Privacy & Security</h3>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div><div style={{ fontSize: '14px', fontWeight: 700 }}>Two-Factor Auth</div><div style={{ fontSize: '12px', color: '#64748B' }}>Extra layer of security</div></div>
+                    <div><div style={{ fontSize: '12px', fontWeight: 700 }}>Two-Factor Auth</div><div style={{ fontSize: '12px', color: '#64748B' }}>Extra layer of security</div></div>
                     <button className="btn btn-secondary" style={{ fontSize: '11px', padding: '6px 12px' }}>Enable</button>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div><div style={{ fontSize: '14px', fontWeight: 700 }}>Active Sessions</div><div style={{ fontSize: '12px', color: '#64748B' }}>Manage logged-in devices</div></div>
+                    <div><div style={{ fontSize: '12px', fontWeight: 700 }}>Active Sessions</div><div style={{ fontSize: '12px', color: '#64748B' }}>Manage logged-in devices</div></div>
                     <button className="btn btn-secondary" style={{ fontSize: '11px', padding: '6px 12px' }}>View</button>
                   </div>
                 </div>
               </div>
 
-              <div className="glass-card" style={{ padding: '24px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
-                  <div style={{ width: '40px', height: '40px', background: '#FFFBEB', color: '#F59E0B', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><i data-lucide="palette" style={{ width: '20px' }}></i></div>
-                  <h3 style={{ fontSize: '16px', fontWeight: 800 }}>Appearance</h3>
+              <div className="glass-card" style={{ padding: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <div style={{ width: '40px', height: '40px', background: '#FFFBEB', color: '#F59E0B', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><i data-lucide="palette" style={{ width: '20px' }}></i></div>
+                  <h3 style={{ fontSize: '14px', fontWeight: 800 }}>Appearance</h3>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div><div style={{ fontSize: '14px', fontWeight: 700 }}>Dark Mode</div><div style={{ fontSize: '12px', color: '#64748B' }}>Toggle system theme</div></div>
+                    <div><div style={{ fontSize: '12px', fontWeight: 700 }}>Dark Mode</div><div style={{ fontSize: '12px', color: '#64748B' }}>Toggle system theme</div></div>
                     <button className="btn btn-secondary" style={{ fontSize: '11px', padding: '6px 12px' }}>Enable</button>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div><div style={{ fontSize: '14px', fontWeight: 700 }}>Compact View</div><div style={{ fontSize: '12px', color: '#64748B' }}>Higher density layout</div></div>
+                    <div><div style={{ fontSize: '12px', fontWeight: 700 }}>Compact View</div><div style={{ fontSize: '12px', color: '#64748B' }}>Higher density layout</div></div>
                     <input type="checkbox" />
                   </div>
                 </div>
@@ -8069,7 +7947,7 @@ const ReceptionistDashboard = () => {
                 </div>
                 <button
                   onClick={() => switchTab('new-indent')}
-                  style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#2563EB', color: 'white', border: 'none', borderRadius: '10px', padding: '0 20px', height: '44px', fontWeight: 800, fontSize: '13.5px', cursor: 'pointer', boxShadow: '0 4px 12px rgba(37,99,235,0.25)' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#2563EB', color: 'white', border: 'none', borderRadius: '2px', padding: '0 20px', height: '26px', fontWeight: 800, fontSize: '12px', cursor: 'pointer', boxShadow: '0 4px 12px rgba(37,99,235,0.25)' }}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                   Create New Indent
@@ -8082,7 +7960,7 @@ const ReceptionistDashboard = () => {
                 {/* Card Header: count + search + sort */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid #F1F5F9' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <span style={{ fontSize: '16px', fontWeight: 900, color: '#0F172A' }}>Total Purchase Indents</span>
+                    <span style={{ fontSize: '14px', fontWeight: 900, color: '#0F172A' }}>Total Purchase Indents</span>
                     <span style={{ background: '#EF4444', color: 'white', borderRadius: '99px', padding: '2px 10px', fontSize: '12px', fontWeight: 800 }}>{filtered.length}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -8093,7 +7971,7 @@ const ReceptionistDashboard = () => {
                         placeholder="Search"
                         value={indentSearch}
                         onChange={e => { setIndentSearch(e.target.value); setIndentPage(1); }}
-                        style={{ paddingLeft: '32px', paddingRight: '12px', height: '36px', border: '1px solid #E2E8F0', borderRadius: '8px', fontSize: '13px', outline: 'none', width: '180px', background: '#F8FAFC', fontFamily: 'inherit' }}
+                        style={{ paddingLeft: '32px', paddingRight: '12px', height: '36px', border: '1px solid #E2E8F0', borderRadius: '2px', fontSize: '13px', outline: 'none', width: '180px', background: '#F8FAFC', fontFamily: 'inherit' }}
                       />
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12.5px', fontWeight: 700, color: '#64748B' }}>
@@ -8157,13 +8035,13 @@ const ReceptionistDashboard = () => {
                                 }}
                               />
                             </td>
-                            <td onClick={() => { setSelectedIndent(ind); setShowIndentModal(true); }} style={{ padding: '14px 20px', fontWeight: 800, color: '#0F172A', fontSize: '13.5px' }}>{ind.indentId}</td>
+                            <td onClick={() => { setSelectedIndent(ind); setShowIndentModal(true); }} style={{ padding: '14px 20px', fontWeight: 800, color: '#0F172A', fontSize: '12px' }}>{ind.indentId}</td>
                             <td onClick={() => { setSelectedIndent(ind); setShowIndentModal(true); }} style={{ padding: '14px 20px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: avatarColors[idx % avatarColors.length], color: avatarText[idx % avatarText.length], display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 900, flexShrink: 0 }}>
+                                <div style={{ width: '32px', height: '32px', borderRadius: '2px', background: avatarColors[idx % avatarColors.length], color: avatarText[idx % avatarText.length], display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 900, flexShrink: 0 }}>
                                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
                                 </div>
-                                <span style={{ fontWeight: 700, color: '#1E293B', fontSize: '13.5px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '300px' }} title={(ind.items || []).map(it => it.name).join(', ')}>
+                                <span style={{ fontWeight: 700, color: '#1E293B', fontSize: '12px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '300px' }} title={(ind.items || []).map(it => it.name).join(', ')}>
                                   {(ind.items || []).map(it => it.name).join(', ') || 'No Items'}
                                 </span>
                               </div>
@@ -8174,12 +8052,12 @@ const ReceptionistDashboard = () => {
                                 {ind.priority}
                               </span>
                             </td>
-                            <td onClick={() => { setSelectedIndent(ind); setShowIndentModal(true); }} style={{ padding: '14px 20px', fontWeight: 700, color: '#475569', fontSize: '13.5px' }}>{ind.totalQty}</td>
+                            <td onClick={() => { setSelectedIndent(ind); setShowIndentModal(true); }} style={{ padding: '14px 20px', fontWeight: 700, color: '#475569', fontSize: '12px' }}>{ind.totalQty}</td>
                             <td onClick={() => { setSelectedIndent(ind); setShowIndentModal(true); }} style={{ padding: '14px 20px' }}>
                               <span style={statusStyle(ind.status)}>{ind.status}</span>
                             </td>
                             <td onClick={e => e.stopPropagation()} style={{ padding: '14px 20px' }}>
-                              <div style={{ cursor: 'pointer', color: '#94A3B8', fontSize: '18px', letterSpacing: '2px', lineHeight: 1, userSelect: 'none' }} title="Actions">⋮</div>
+                              <div style={{ cursor: 'pointer', color: '#94A3B8', fontSize: '14px', letterSpacing: '2px', lineHeight: 1, userSelect: 'none' }} title="Actions">⋮</div>
                             </td>
                           </tr>
                         );
@@ -8202,21 +8080,21 @@ const ReceptionistDashboard = () => {
                     Results
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <button onClick={() => setIndentPage(p => Math.max(1, p - 1))} disabled={indentPage === 1} style={{ padding: '6px 12px', border: '1px solid #E2E8F0', borderRadius: '8px', background: 'white', cursor: indentPage === 1 ? 'not-allowed' : 'pointer', fontWeight: 700, color: '#475569', fontSize: '13px', opacity: indentPage === 1 ? 0.5 : 1 }}>Prev</button>
+                    <button onClick={() => setIndentPage(p => Math.max(1, p - 1))} disabled={indentPage === 1} style={{ padding: '6px 12px', border: '1px solid #E2E8F0', borderRadius: '2px', background: 'white', cursor: indentPage === 1 ? 'not-allowed' : 'pointer', fontWeight: 700, color: '#475569', fontSize: '13px', opacity: indentPage === 1 ? 0.5 : 1 }}>Prev</button>
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map(pg => (
-                      <button key={pg} onClick={() => setIndentPage(pg)} style={{ padding: '6px 10px', border: pg === indentPage ? 'none' : '1px solid #E2E8F0', borderRadius: '8px', background: pg === indentPage ? '#2563EB' : 'white', color: pg === indentPage ? 'white' : '#475569', fontWeight: 800, fontSize: '13px', cursor: 'pointer', minWidth: '32px' }}>{pg}</button>
+                      <button key={pg} onClick={() => setIndentPage(pg)} style={{ padding: '6px 10px', border: pg === indentPage ? 'none' : '1px solid #E2E8F0', borderRadius: '2px', background: pg === indentPage ? '#2563EB' : 'white', color: pg === indentPage ? 'white' : '#475569', fontWeight: 800, fontSize: '13px', cursor: 'pointer', minWidth: '32px' }}>{pg}</button>
                     ))}
-                    <button onClick={() => setIndentPage(p => Math.min(totalPages, p + 1))} disabled={indentPage === totalPages} style={{ padding: '6px 12px', border: '1px solid #E2E8F0', borderRadius: '8px', background: 'white', cursor: indentPage === totalPages ? 'not-allowed' : 'pointer', fontWeight: 700, color: '#475569', fontSize: '13px', opacity: indentPage === totalPages ? 0.5 : 1 }}>Next</button>
+                    <button onClick={() => setIndentPage(p => Math.min(totalPages, p + 1))} disabled={indentPage === totalPages} style={{ padding: '6px 12px', border: '1px solid #E2E8F0', borderRadius: '2px', background: 'white', cursor: indentPage === totalPages ? 'not-allowed' : 'pointer', fontWeight: 700, color: '#475569', fontSize: '13px', opacity: indentPage === totalPages ? 0.5 : 1 }}>Next</button>
                   </div>
                 </div>
               </div>
 
               {/* Floating Bulk Action Bar for Indents */}
               {selectedIndentIds.length > 0 && (
-                <div style={{ background: '#0F172A', color: 'white', padding: '14px 22px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '16px', boxShadow: '0 12px 28px rgba(15, 23, 42, 0.3)', border: '1px solid #334155', animation: 'slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+                <div style={{ background: '#0F172A', color: 'white', padding: '14px 22px', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '16px', boxShadow: '0 12px 28px rgba(15, 23, 42, 0.3)', border: '1px solid #334155', animation: 'slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <span style={{ background: '#2563EB', color: 'white', padding: '4px 12px', borderRadius: '6px', fontSize: '12.5px', fontWeight: 800 }}>{selectedIndentIds.length} Selected</span>
-                    <span style={{ fontSize: '13.5px', fontWeight: 700, color: '#E2E8F0' }}>Batch Operations for Purchase Indents</span>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#E2E8F0' }}>Batch Operations for Purchase Indents</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <button 
@@ -8224,14 +8102,14 @@ const ReceptionistDashboard = () => {
                       onClick={() => {
                         alert(`Approve batch request submitted for ${selectedIndentIds.length} selected indents.`);
                       }}
-                      style={{ padding: '8px 16px', background: '#059669', color: 'white', border: 'none', borderRadius: '8px', fontSize: '12.5px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 4px 12px rgba(5,150,105,0.25)' }}
+                      style={{ padding: '8px 16px', background: '#059669', color: 'white', border: 'none', borderRadius: '2px', fontSize: '12.5px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 4px 12px rgba(5,150,105,0.25)' }}
                     >
                       Batch Approve
                     </button>
                     <button 
                       type="button" 
                       onClick={() => setSelectedIndentIds([])}
-                      style={{ padding: '8px 14px', background: 'transparent', color: '#94A3B8', border: '1px solid #475569', borderRadius: '8px', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer' }}
+                      style={{ padding: '8px 14px', background: 'transparent', color: '#94A3B8', border: '1px solid #475569', borderRadius: '2px', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer' }}
                     >
                       Clear Selection
                     </button>
@@ -8389,10 +8267,10 @@ const ReceptionistDashboard = () => {
             <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out', paddingBottom: '40px' }}>
               
               {/* Back Link */}
-              <div style={{ marginBottom: '24px' }}>
+              <div style={{ marginBottom: '12px' }}>
                 <button
                   onClick={() => switchTab('indent')}
-                  style={{ background: 'none', border: 'none', color: '#2563EB', fontWeight: 800, fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', padding: 0 }}
+                  style={{ background: 'none', border: 'none', color: '#2563EB', fontWeight: 800, fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', padding: 0 }}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
                   Back to Indents
@@ -8400,9 +8278,9 @@ const ReceptionistDashboard = () => {
               </div>
 
               {/* Title Header */}
-              <div style={{ marginBottom: '32px' }}>
+              <div style={{ marginBottom: '16px' }}>
                 <h1 style={{ fontSize: '26px', fontWeight: 900, color: '#0F172A', margin: '0 0 8px 0' }}>New Indent Request</h1>
-                <p style={{ fontSize: '14px', color: '#64748B', fontWeight: 600, margin: 0 }}>Request pharmaceuticals and medical supplies for your department.</p>
+                <p style={{ fontSize: '12px', color: '#64748B', fontWeight: 600, margin: 0 }}>Request pharmaceuticals and medical supplies for your department.</p>
               </div>
 
               {/* Grid Container */}
@@ -8413,20 +8291,20 @@ const ReceptionistDashboard = () => {
                   
                   {/* Card 1: Indent Information */}
                   <div className="glass-card" style={{ padding: '32px', position: 'relative' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px', borderBottom: '1px solid #F1F5F9', paddingBottom: '16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px', borderBottom: '1px solid #F1F5F9', paddingBottom: '16px' }}>
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                      <span style={{ fontSize: '16px', fontWeight: 900, color: '#0F172A' }}>Indent Information</span>
+                      <span style={{ fontSize: '14px', fontWeight: 900, color: '#0F172A' }}>Indent Information</span>
                     </div>
 
                     {/* Row 1 Grid */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px', marginBottom: '24px' }} className="mobile-stack">
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '12px' }} className="mobile-stack">
                       {/* Department */}
                       <div>
                         <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.5px' }}>Department <span style={{ color: '#EF4444' }}>*</span></label>
                         <select
                           value={newIndentDept}
                           onChange={e => setNewIndentDept(e.target.value)}
-                          style={{ width: '100%', height: '44px', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '0 12px', fontSize: '14px', fontWeight: 600, outline: 'none', background: '#F8FAFC', fontFamily: 'inherit' }}
+                          style={{ width: '100%', height: '26px', border: '1px solid #E2E8F0', borderRadius: '2px', padding: '0 12px', fontSize: '12px', fontWeight: 600, outline: 'none', background: '#F8FAFC', fontFamily: 'inherit' }}
                         >
                           <option value="Pharmacy">Pharmacy</option>
                           <option value="Reception">Reception</option>
@@ -8441,7 +8319,7 @@ const ReceptionistDashboard = () => {
                         <select
                           value={newIndentType}
                           onChange={e => setNewIndentType(e.target.value)}
-                          style={{ width: '100%', height: '44px', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '0 12px', fontSize: '14px', fontWeight: 600, outline: 'none', background: '#F8FAFC', fontFamily: 'inherit' }}
+                          style={{ width: '100%', height: '26px', border: '1px solid #E2E8F0', borderRadius: '2px', padding: '0 12px', fontSize: '12px', fontWeight: 600, outline: 'none', background: '#F8FAFC', fontFamily: 'inherit' }}
                         >
                           <option value="Pharmaceuticals">Pharmaceuticals</option>
                           <option value="Medical Supplies">Medical Supplies</option>
@@ -8459,20 +8337,20 @@ const ReceptionistDashboard = () => {
                             value={newIndentReqDate}
                             min={getLocalDateString()}
                             onChange={e => setNewIndentReqDate(e.target.value)}
-                            style={{ width: '100%', height: '44px', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '0 12px', fontSize: '14px', fontWeight: 600, outline: 'none', background: '#F8FAFC', fontFamily: 'inherit' }}
+                            style={{ width: '100%', height: '26px', border: '1px solid #E2E8F0', borderRadius: '2px', padding: '0 12px', fontSize: '12px', fontWeight: 600, outline: 'none', background: '#F8FAFC', fontFamily: 'inherit' }}
                           />
                         </div>
                       </div>
                     </div>
 
                     {/* Row 2 Grid */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px', marginBottom: '24px' }} className="mobile-stack">
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '12px' }} className="mobile-stack">
                       {/* Requested By (Custom Dropdown) */}
                       <div style={{ position: 'relative' }}>
                         <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.5px' }}>Requested By <span style={{ color: '#EF4444' }}>*</span></label>
                         <div 
                           onClick={() => setShowReqByDropdown(!showReqByDropdown)}
-                          style={{ width: '100%', height: '44px', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#F8FAFC', cursor: 'pointer', userSelect: 'none' }}
+                          style={{ width: '100%', height: '26px', border: '1px solid #E2E8F0', borderRadius: '2px', padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#F8FAFC', cursor: 'pointer', userSelect: 'none' }}
                         >
                           {(() => {
                             const selectedUser = indentUsers.find(u => u.name === newIndentRequestedBy) || indentUsers[0];
@@ -8492,7 +8370,7 @@ const ReceptionistDashboard = () => {
                         </div>
 
                         {showReqByDropdown && (
-                          <div style={{ position: 'absolute', top: '75px', left: 0, right: 0, background: 'white', borderRadius: '10px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)', border: '1px solid #E2E8F0', zIndex: 100, overflow: 'hidden' }}>
+                          <div style={{ position: 'absolute', top: '75px', left: 0, right: 0, background: 'white', borderRadius: '2px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)', border: '1px solid #E2E8F0', zIndex: 100, overflow: 'hidden' }}>
                             {indentUsers.map(u => (
                               <div
                                 key={u.name}
@@ -8526,7 +8404,7 @@ const ReceptionistDashboard = () => {
                           placeholder="Enter contact number"
                           value={newIndentContact}
                           onChange={e => setNewIndentContact(e.target.value)}
-                          style={{ width: '100%', height: '44px', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '0 12px', fontSize: '14px', fontWeight: 600, outline: 'none', background: '#F8FAFC', fontFamily: 'inherit' }}
+                          style={{ width: '100%', height: '26px', border: '1px solid #E2E8F0', borderRadius: '2px', padding: '0 12px', fontSize: '12px', fontWeight: 600, outline: 'none', background: '#F8FAFC', fontFamily: 'inherit' }}
                         />
                       </div>
 
@@ -8536,7 +8414,7 @@ const ReceptionistDashboard = () => {
                         <select
                           value={newIndentPriority}
                           onChange={e => setNewIndentPriority(e.target.value)}
-                          style={{ width: '100%', height: '44px', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '0 12px', fontSize: '14px', fontWeight: 600, outline: 'none', background: '#F8FAFC', fontFamily: 'inherit' }}
+                          style={{ width: '100%', height: '26px', border: '1px solid #E2E8F0', borderRadius: '2px', padding: '0 12px', fontSize: '12px', fontWeight: 600, outline: 'none', background: '#F8FAFC', fontFamily: 'inherit' }}
                         >
                           <option value="Normal">Normal</option>
                           <option value="Urgent">Urgent</option>
@@ -8554,20 +8432,20 @@ const ReceptionistDashboard = () => {
                         placeholder="Enter purpose or additional remarks (optional)"
                         value={newIndentRemarks}
                         onChange={e => setNewIndentRemarks(e.target.value.slice(0, 250))}
-                        style={{ width: '100%', height: '80px', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '12px', fontSize: '14px', fontWeight: 600, outline: 'none', background: '#F8FAFC', resize: 'none', fontFamily: 'inherit' }}
+                        style={{ width: '100%', height: '80px', border: '1px solid #E2E8F0', borderRadius: '2px', padding: '12px', fontSize: '12px', fontWeight: 600, outline: 'none', background: '#F8FAFC', resize: 'none', fontFamily: 'inherit' }}
                       />
                     </div>
                   </div>
 
                   {/* Card 2: Add Pharmaceuticals */}
                   <div className="glass-card" style={{ padding: '32px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px', borderBottom: '1px solid #F1F5F9', paddingBottom: '16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px', borderBottom: '1px solid #F1F5F9', paddingBottom: '16px' }}>
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
-                      <span style={{ fontSize: '16px', fontWeight: 900, color: '#0F172A' }}>Add Pharmaceuticals</span>
+                      <span style={{ fontSize: '14px', fontWeight: 900, color: '#0F172A' }}>Add Pharmaceuticals</span>
                     </div>
 
                     {/* Search / Add Custom Item row */}
-                    <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', position: 'relative' }} className="mobile-stack">
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', position: 'relative' }} className="mobile-stack">
                       
                       {/* Search box wrapper */}
                       <div ref={medicineSearchContainerRef} style={{ flex: 1, position: 'relative' }}>
@@ -8582,12 +8460,12 @@ const ReceptionistDashboard = () => {
                             setShowMedicineSuggestions(true);
                           }}
                           onFocus={() => setShowMedicineSuggestions(true)}
-                          style={{ width: '100%', height: '44px', border: '1px solid #E2E8F0', borderRadius: '10px', paddingLeft: '44px', paddingRight: '16px', fontSize: '14px', fontWeight: 600, outline: 'none', background: '#F8FAFC', fontFamily: 'inherit' }}
+                          style={{ width: '100%', height: '26px', border: '1px solid #E2E8F0', borderRadius: '2px', paddingLeft: '44px', paddingRight: '16px', fontSize: '12px', fontWeight: 600, outline: 'none', background: '#F8FAFC', fontFamily: 'inherit' }}
                         />
 
                         {/* Autocomplete Dropdown */}
                         {showMedicineSuggestions && medicineSearchQuery.trim() !== '' && (
-                          <div style={{ position: 'absolute', top: '48px', left: 0, right: 0, background: 'white', borderRadius: '10px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)', border: '1px solid #E2E8F0', zIndex: 100, overflow: 'hidden' }}>
+                          <div style={{ position: 'absolute', top: '48px', left: 0, right: 0, background: 'white', borderRadius: '2px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)', border: '1px solid #E2E8F0', zIndex: 100, overflow: 'hidden' }}>
                             {filteredMeds.length === 0 ? (
                               <div style={{ padding: '14px 16px', fontSize: '13px', color: '#94A3B8', fontWeight: 600 }}>No matching medicines found. Click "+ Add Another Item" below to add custom item.</div>
                             ) : (
@@ -8600,7 +8478,7 @@ const ReceptionistDashboard = () => {
                                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                                 >
                                   <div>
-                                    <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#1E293B' }}>{med.name}</div>
+                                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#1E293B' }}>{med.name}</div>
                                     <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 600 }}>{med.category} · SKU: {med.sku} · MRP: ₹{med.mrp || 50}</div>
                                   </div>
                                   <div style={{ fontSize: '12px', fontWeight: 700, color: med.stock > 20 ? '#16A34A' : med.stock > 0 ? '#D97706' : '#DC2626' }}>
@@ -8630,7 +8508,7 @@ const ReceptionistDashboard = () => {
                         <tbody>
                           {selectedMedicines.length === 0 ? (
                             <tr>
-                              <td colSpan={6} style={{ padding: '36px', textAlign: 'center', color: '#94A3B8', fontWeight: 600, fontSize: '13.5px' }}>
+                              <td colSpan={6} style={{ padding: '36px', textAlign: 'center', color: '#94A3B8', fontWeight: 600, fontSize: '12px' }}>
                                 No items added yet. Search above or click "+ Add Another Item" below to begin.
                               </td>
                             </tr>
@@ -8642,7 +8520,7 @@ const ReceptionistDashboard = () => {
                                 {/* Medicine / Item */}
                                 <td style={{ padding: '16px', minWidth: '300px' }}>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%' }}>
-                                    <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: theme.bg, color: theme.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <div style={{ width: '36px', height: '36px', borderRadius: '2px', background: theme.bg, color: theme.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
                                     </div>
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1, minWidth: 0 }}>
@@ -8662,7 +8540,7 @@ const ReceptionistDashboard = () => {
                                                   }
                                                 }, 150);
                                               }}
-                                              style={{ height: '36px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 10px', fontSize: '13px', fontWeight: 600, outline: 'none', width: '100%', background: '#FFFFFF', boxSizing: 'border-box' }}
+                                              style={{ height: '36px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 10px', fontSize: '13px', fontWeight: 600, outline: 'none', width: '100%', background: '#FFFFFF', boxSizing: 'border-box' }}
                                             />
                                             {activeCustomRowFocus === idx && (() => {
                                               const typedVal = (item.name || '').trim().toLowerCase();
@@ -8689,7 +8567,7 @@ const ReceptionistDashboard = () => {
                                                     padding: '6px', 
                                                     maxHeight: '220px', 
                                                     boxShadow: '0 10px 25px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04)',
-                                                    borderRadius: '10px',
+                                                    borderRadius: '2px',
                                                     border: '1px solid #E2E8F0',
                                                     background: '#ffffff',
                                                     overflowY: 'auto'
@@ -8746,14 +8624,14 @@ const ReceptionistDashboard = () => {
                                               placeholder="MRP"
                                               value={item.mrp !== undefined && item.mrp !== null ? item.mrp : ''}
                                               onChange={e => handleUpdateItem(idx, 'mrp', Math.max(0, Number(e.target.value) || 0))}
-                                              style={{ height: '36px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 8px', fontSize: '13px', fontWeight: 600, outline: 'none', width: '64px', background: '#FFFFFF' }}
+                                              style={{ height: '36px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 8px', fontSize: '13px', fontWeight: 600, outline: 'none', width: '64px', background: '#FFFFFF' }}
                                               title="Unit MRP Price"
                                             />
                                           </div>
                                         </div>
                                       ) : (
                                         <>
-                                          <span style={{ fontWeight: 700, color: '#1E293B', fontSize: '13.5px' }}>{item.name}</span>
+                                          <span style={{ fontWeight: 700, color: '#1E293B', fontSize: '12px' }}>{item.name}</span>
                                           <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 600 }}>{item.unit} · MRP: ₹{item.mrp}</span>
                                         </>
                                       )}
@@ -8794,7 +8672,7 @@ const ReceptionistDashboard = () => {
 
                                 {/* Required Qty */}
                                 <td style={{ padding: '16px', textAlign: 'center' }}>
-                                  <div style={{ display: 'inline-flex', alignItems: 'center', border: '1px solid #E2E8F0', borderRadius: '8px', overflow: 'hidden', background: '#F8FAFC' }}>
+                                  <div style={{ display: 'inline-flex', alignItems: 'center', border: '1px solid #E2E8F0', borderRadius: '2px', overflow: 'hidden', background: '#F8FAFC' }}>
                                     <button
                                       onClick={() => handleUpdateItem(idx, 'requiredQty', Math.max(1, (Number(item.requiredQty) || 0) - 1))}
                                       style={{ width: '32px', height: '32px', border: 'none', background: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#475569', fontWeight: 800 }}
@@ -8818,7 +8696,7 @@ const ReceptionistDashboard = () => {
 
                                 {/* Available Stock */}
                                 <td style={{ padding: '16px', textAlign: 'center' }}>
-                                  <span style={{ fontSize: '14px', fontWeight: 800, color: item.availableStock > 20 ? '#10B981' : item.availableStock > 0 ? '#F59E0B' : '#EF4444' }}>
+                                  <span style={{ fontSize: '12px', fontWeight: 800, color: item.availableStock > 20 ? '#10B981' : item.availableStock > 0 ? '#F59E0B' : '#EF4444' }}>
                                     {item.availableStock}
                                   </span>
                                 </td>
@@ -8846,7 +8724,7 @@ const ReceptionistDashboard = () => {
                     <div style={{ marginTop: '20px' }}>
                       <button
                         onClick={handleAddCustomItem}
-                        style={{ background: 'none', border: '1px solid #2563EB', color: '#2563EB', borderRadius: '10px', padding: '0 16px', height: '38px', fontWeight: 800, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                        style={{ background: 'none', border: '1px solid #2563EB', color: '#2563EB', borderRadius: '2px', padding: '0 16px', height: '26px', fontWeight: 800, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                         Add Another Item
@@ -8864,30 +8742,30 @@ const ReceptionistDashboard = () => {
                   <div className="glass-card" style={{ padding: '28px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', borderBottom: '1px solid #F1F5F9', paddingBottom: '12px' }}>
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                      <span style={{ fontSize: '15px', fontWeight: 900, color: '#0F172A' }}>Indent Summary</span>
+                      <span style={{ fontSize: '12px', fontWeight: 900, color: '#0F172A' }}>Indent Summary</span>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '13.5px', color: '#64748B', fontWeight: 600 }}>Total Items</span>
-                        <span style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A' }}>{totalItems}</span>
+                        <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>Total Items</span>
+                        <span style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A' }}>{totalItems}</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '13.5px', color: '#64748B', fontWeight: 600 }}>Total Quantity</span>
-                        <span style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A' }}>{totalQuantity}</span>
+                        <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>Total Quantity</span>
+                        <span style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A' }}>{totalQuantity}</span>
                       </div>
 
                       <hr style={{ border: 'none', borderTop: '1px solid #E2E8F0', margin: '12px 0 6px 0' }} />
 
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontSize: '14.5px', fontWeight: 800, color: '#0F172A' }}>Estimated Total</span>
-                        <span style={{ fontSize: '18px', fontWeight: 900, color: '#2563EB' }}>
+                        <span style={{ fontSize: '14px', fontWeight: 900, color: '#2563EB' }}>
                           {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(estimatedTotal)}
                         </span>
                       </div>
 
                       {/* Info Alert Box */}
-                      <div style={{ background: '#EFF6FF', border: '1px solid #DBEAFE', borderRadius: '10px', padding: '14px 16px', display: 'flex', gap: '12px', marginTop: '16px' }}>
+                      <div style={{ background: '#EFF6FF', border: '1px solid #DBEAFE', borderRadius: '2px', padding: '14px 16px', display: 'flex', gap: '12px', marginTop: '16px' }}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                         <div style={{ fontSize: '12.5px', color: '#1E40AF', fontWeight: 600, lineHeight: '1.4' }}>
                           <div style={{ fontWeight: 800, marginBottom: '2px' }}>This is an indent request.</div>
@@ -8899,14 +8777,14 @@ const ReceptionistDashboard = () => {
 
                   {/* Card 4: Attachments */}
                   <div className="glass-card" style={{ padding: '28px' }}>
-                    <span style={{ display: 'block', fontSize: '14px', fontWeight: 900, color: '#0F172A', marginBottom: '16px' }}>Attachments (Optional)</span>
+                    <span style={{ display: 'block', fontSize: '12px', fontWeight: 900, color: '#0F172A', marginBottom: '16px' }}>Attachments (Optional)</span>
                     
                     <label 
                       htmlFor="indent-attachments-file"
                       style={{ 
                         display: 'block', 
                         border: '2px dashed #CBD5E1', 
-                        borderRadius: '12px', 
+                        borderRadius: '4px', 
                         padding: '32px 20px', 
                         textAlign: 'center', 
                         background: '#F8FAFC', 
@@ -8924,7 +8802,7 @@ const ReceptionistDashboard = () => {
                         style={{ display: 'none' }} 
                       />
                       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '12px', color: '#94A3B8' }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                      <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#475569', marginBottom: '4px' }}>
+                      <div style={{ fontSize: '12px', fontWeight: 700, color: '#475569', marginBottom: '4px' }}>
                         Drag & drop files here
                       </div>
                       <div style={{ fontSize: '13px', fontWeight: 700, color: '#2563EB', textDecoration: 'underline', marginBottom: '8px' }}>
@@ -8939,7 +8817,7 @@ const ReceptionistDashboard = () => {
                     {newIndentAttachments.length > 0 && (
                       <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {newIndentAttachments.map((fName, idx) => (
-                          <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#EFF6FF', borderRadius: '8px', padding: '8px 12px', border: '1px solid #DBEAFE' }}>
+                          <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#EFF6FF', borderRadius: '2px', padding: '8px 12px', border: '1px solid #DBEAFE' }}>
                             <span style={{ fontSize: '12px', fontWeight: 700, color: '#1E40AF', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '200px' }} title={fName}>
                               {fName}
                             </span>
@@ -8958,14 +8836,14 @@ const ReceptionistDashboard = () => {
                   {/* Card 5: Additional Notes */}
                   <div className="glass-card" style={{ padding: '28px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                      <span style={{ fontSize: '14px', fontWeight: 900, color: '#0F172A' }}>Additional Notes (Optional)</span>
+                      <span style={{ fontSize: '12px', fontWeight: 900, color: '#0F172A' }}>Additional Notes (Optional)</span>
                       <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 700 }}>{newIndentAdditionalNotes.length}/250</span>
                     </div>
                     <textarea
                       placeholder="Enter any additional information..."
                       value={newIndentAdditionalNotes}
                       onChange={e => setNewIndentAdditionalNotes(e.target.value.slice(0, 250))}
-                      style={{ width: '100%', height: '80px', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '12px', fontSize: '13.5px', fontWeight: 600, outline: 'none', background: '#F8FAFC', resize: 'none', fontFamily: 'inherit' }}
+                      style={{ width: '100%', height: '80px', border: '1px solid #E2E8F0', borderRadius: '2px', padding: '12px', fontSize: '12px', fontWeight: 600, outline: 'none', background: '#F8FAFC', resize: 'none', fontFamily: 'inherit' }}
                     />
                   </div>
 
@@ -8977,22 +8855,22 @@ const ReceptionistDashboard = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '32px', borderTop: '1px solid #F1F5F9', paddingTop: '24px' }}>
                 <button
                   onClick={() => switchTab('indent')}
-                  style={{ height: '44px', border: '1px solid #E2E8F0', background: 'white', color: '#475569', borderRadius: '10px', padding: '0 24px', fontWeight: 800, fontSize: '13.5px', cursor: 'pointer' }}
+                  style={{ height: '26px', border: '1px solid #E2E8F0', background: 'white', color: '#475569', borderRadius: '2px', padding: '0 24px', fontWeight: 800, fontSize: '12px', cursor: 'pointer' }}
                 >
                   Cancel
                 </button>
-                <div style={{ display: 'flex', gap: '16px' }}>
+                <div style={{ display: 'flex', gap: '8px' }}>
                   <button
                     onClick={() => handleSubmitIndent('Draft')}
                     disabled={loading}
-                    style={{ height: '44px', border: '1.5px solid #2563EB', background: 'white', color: '#2563EB', borderRadius: '10px', padding: '0 24px', fontWeight: 800, fontSize: '13.5px', cursor: 'pointer', opacity: loading ? 0.7 : 1 }}
+                    style={{ height: '26px', border: '1.5px solid #2563EB', background: 'white', color: '#2563EB', borderRadius: '2px', padding: '0 24px', fontWeight: 800, fontSize: '12px', cursor: 'pointer', opacity: loading ? 0.7 : 1 }}
                   >
                     Save as Draft
                   </button>
                   <button
                     onClick={() => handleSubmitIndent('Pending')}
                     disabled={loading}
-                    style={{ height: '44px', border: 'none', background: '#2563EB', color: 'white', borderRadius: '10px', padding: '0 24px', fontWeight: 800, fontSize: '13.5px', cursor: 'pointer', opacity: loading ? 0.7 : 1 }}
+                    style={{ height: '26px', border: 'none', background: '#2563EB', color: 'white', borderRadius: '2px', padding: '0 24px', fontWeight: 800, fontSize: '12px', cursor: 'pointer', opacity: loading ? 0.7 : 1 }}
                     onMouseEnter={e => e.currentTarget.style.background = '#1D4ED8'}
                     onMouseLeave={e => e.currentTarget.style.background = '#2563EB'}
                   >
@@ -9007,14 +8885,14 @@ const ReceptionistDashboard = () => {
 
         {/* TAB: DOCTOR DYNAMIC COVERAGE */}
         {activeTab === 'doctor_cover' && (
-          <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out', padding: '24px' }}>
+          <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out', padding: '12px' }}>
             {/* Header gradient card */}
             <div className="glass-card" style={{
               background: 'linear-gradient(135deg, #FFE4E6 0%, #FECDD3 100%)',
               border: '1px solid #FDA4AF',
               padding: '28px',
               borderRadius: '20px',
-              marginBottom: '24px',
+              marginBottom: '12px',
               position: 'relative',
               overflow: 'hidden'
             }}>
@@ -9044,7 +8922,7 @@ const ReceptionistDashboard = () => {
             </div>
 
             {/* Sub-navigation inside coverage */}
-            <div style={{ display: 'flex', gap: '12px', background: '#F8FAFC', padding: '8px', borderRadius: '12px', border: '1px solid #E2E8F0', marginBottom: '24px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '12px', background: '#F8FAFC', padding: '8px', borderRadius: '4px', border: '1px solid #E2E8F0', marginBottom: '12px', flexWrap: 'wrap' }}>
               {coverageState['dr-consult']?.on && (
                 <button 
                   className={`btn-cover-tab ${doctorSubTab === 'consult' ? 'active doctor' : ''}`}
@@ -9088,9 +8966,9 @@ const ReceptionistDashboard = () => {
             </div>
 
             {doctorSubTab === 'consult' && (
-              <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+              <div className="glass-card" style={{ padding: '12px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                  <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+                  <h3 style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
                     <i data-lucide="users" style={{ color: '#E11D48' }}></i>
                     Consultation Roster
                   </h3>
@@ -9099,26 +8977,26 @@ const ReceptionistDashboard = () => {
                   </span>
                 </div>
                 {selectedConsultation ? (
-                  <div style={{ border: '1px solid #E2E8F0', borderRadius: '16px', padding: '24px', background: '#F8FAFC', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.01)' }}>
+                  <div style={{ border: '1px solid #E2E8F0', borderRadius: '16px', padding: '12px', background: '#F8FAFC', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.01)' }}>
                     {/* Patient Profile Summary Card */}
-                    <div className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', background: 'white', borderRadius: '12px', border: '1px solid #E2E8F0', marginBottom: '24px' }}>
+                    <div className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', background: 'white', borderRadius: '4px', border: '1px solid #E2E8F0', marginBottom: '12px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                         <div style={{
                           width: '46px',
-                          height: '46px',
-                          borderRadius: '12px',
+                          height: '26px',
+                          borderRadius: '4px',
                           background: '#FFF1F2',
                           color: '#E11D48',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           fontWeight: 800,
-                          fontSize: '18px'
+                          fontSize: '14px'
                         }}>
                           <i data-lucide="user"></i>
                         </div>
                         <div>
-                          <div style={{ fontSize: '16px', fontWeight: 800, color: '#0F172A' }}>{selectedConsultation.name}</div>
+                          <div style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A' }}>{selectedConsultation.name}</div>
                           <div style={{ fontSize: '12.5px', color: '#64748B', marginTop: '2px', fontWeight: 600 }}>
                             Patient ID: <span style={{ fontFamily: 'monospace', color: '#334155', fontWeight: 700 }}>{selectedConsultation.patientId || 'N/A'}</span> · {selectedConsultation.age}y ({selectedConsultation.gender})
                           </div>
@@ -9136,7 +9014,7 @@ const ReceptionistDashboard = () => {
                     </div>
 
                     {/* Step-navigation within the Examination workspace */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '24px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                       <button 
                         type="button"
                         className={`btn-cover-tab ${examineStep === 'notes' ? 'active doctor' : ''}`}
@@ -9169,11 +9047,11 @@ const ReceptionistDashboard = () => {
                       </button>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', minHeight: '260px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minHeight: '260px' }}>
                       {/* STEP 1: SOAP CLINICAL NOTES */}
                       {examineStep === 'notes' && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-                          <div className="glass-card" style={{ background: '#FFFDFD', padding: '18px', border: '1px solid #FEE2E2', borderRadius: '12px' }}>
+                          <div className="glass-card" style={{ background: '#FFFDFD', padding: '18px', border: '1px solid #FEE2E2', borderRadius: '4px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                               <i data-lucide="clipboard-list" style={{ color: '#E11D48', width: '18px', height: '18px' }}></i>
                               <label style={{ fontSize: '12px', fontWeight: 800, color: '#9F1239', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Chief Complaints / Symptoms</label>
@@ -9181,7 +9059,7 @@ const ReceptionistDashboard = () => {
                             <div style={{ fontSize: '14.5px', color: '#3F0712', fontWeight: 650, lineHeight: '1.4' }}>{selectedConsultation.symptoms}</div>
                           </div>
                           <div>
-                            <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '6px', display: 'block', letterSpacing: '0.5px' }}>Diagnosis</label>
+                            <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '6px', display: 'block', letterSpacing: '0.5px' }}>Diagnosis</label>
                             <input 
                               type="text" 
                               placeholder="e.g. Acute Viral Bronchitis" 
@@ -9190,25 +9068,25 @@ const ReceptionistDashboard = () => {
                                 setConsultationDiagnosis(e.target.value);
                                 setConsultationRxDiagnosis(e.target.value);
                               }} 
-                              style={{ width: '100%', height: '42px', border: '1px solid #CBD5E1', borderRadius: '10px', padding: '0 14px', fontSize: '13.5px', fontWeight: 650, outline: 'none', background: 'white', transition: 'border 0.2s' }} 
+                              style={{ width: '100%', height: '42px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 14px', fontSize: '12px', fontWeight: 650, outline: 'none', background: 'white', transition: 'border 0.2s' }} 
                               onFocus={e => e.target.style.borderColor = '#E11D48'}
                               onBlur={e => e.target.style.borderColor = '#CBD5E1'}
                             />
                           </div>
                           <div>
-                            <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '6px', display: 'block', letterSpacing: '0.5px' }}>SOAP / Clinical Notes</label>
+                            <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '6px', display: 'block', letterSpacing: '0.5px' }}>SOAP / Clinical Notes</label>
                             <textarea 
                               placeholder="Write clinical examination findings, vitals summary, and clinical advice..." 
                               value={consultationNotes} 
                               onChange={e => setConsultationNotes(e.target.value)} 
-                              style={{ width: '100%', height: '110px', border: '1px solid #CBD5E1', borderRadius: '10px', padding: '12px 14px', fontSize: '13.5px', fontWeight: 650, outline: 'none', resize: 'none', background: 'white', transition: 'border 0.2s' }} 
+                              style={{ width: '100%', height: '110px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '12px 14px', fontSize: '12px', fontWeight: 650, outline: 'none', resize: 'none', background: 'white', transition: 'border 0.2s' }} 
                               onFocus={e => e.target.style.borderColor = '#E11D48'}
                               onBlur={e => e.target.style.borderColor = '#CBD5E1'}
                             />
                           </div>
 
-                          <div style={{ marginTop: '8px', padding: '14px', background: '#F1F5F9', borderRadius: '10px', display: 'flex', gap: '24px', border: '1px solid #E2E8F0' }}>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13.5px', fontWeight: 700, color: '#334155', cursor: 'pointer' }}>
+                          <div style={{ marginTop: '8px', padding: '14px', background: '#F1F5F9', borderRadius: '2px', display: 'flex', gap: '12px', border: '1px solid #E2E8F0' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '12px', fontWeight: 700, color: '#334155', cursor: 'pointer' }}>
                               <input 
                                 type="checkbox" 
                                 checked={hasPrescriptionEnabled} 
@@ -9221,9 +9099,9 @@ const ReceptionistDashboard = () => {
                                 }} 
                                 style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#E11D48' }}
                               />
-                              Prescribe Medications
+                              Prescribe Medicines
                             </label>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13.5px', fontWeight: 700, color: '#334155', cursor: 'pointer' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '12px', fontWeight: 700, color: '#334155', cursor: 'pointer' }}>
                               <input 
                                 type="checkbox" 
                                 checked={hasLabOrderEnabled} 
@@ -9244,11 +9122,11 @@ const ReceptionistDashboard = () => {
 
                       {/* STEP 2: PRESCRIPTION WRITER */}
                       {examineStep === 'prescriptions' && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <h4 style={{ margin: 0, fontSize: '14.5px', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '6px' }}>
                               <i data-lucide="pill" style={{ color: '#E11D48' }}></i>
-                              Prescribe Medications
+                              Prescribe Medicines
                             </h4>
                             <button 
                               type="button" 
@@ -9261,7 +9139,7 @@ const ReceptionistDashboard = () => {
                             </button>
                           </div>
 
-                          <div style={{ background: 'white', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '8px', overflowX: 'auto', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+                          <div style={{ background: 'white', borderRadius: '4px', border: '1px solid #E2E8F0', padding: '8px', overflowX: 'auto', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                               <thead>
                                 <tr style={{ borderBottom: '1px solid #F1F5F9' }}>
@@ -9300,7 +9178,7 @@ const ReceptionistDashboard = () => {
                                             }
                                           }, 150);
                                         }}
-                                        style={{ width: '160px', height: '36px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 10px', fontSize: '13px', outline: 'none', background: 'white' }} 
+                                        style={{ width: '160px', height: '36px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 10px', fontSize: '13px', outline: 'none', background: 'white' }} 
                                         required 
                                       />
                                       {activeMedFocus === med.id && (() => {
@@ -9322,7 +9200,7 @@ const ReceptionistDashboard = () => {
                                               position: 'absolute', top: 'calc(100% + 4px)', left: 0, 
                                               width: '260px', zIndex: 1200, padding: '4px',
                                               boxShadow: '0 10px 30px rgba(15, 23, 42, 0.15)', 
-                                              background: 'white', borderRadius: '10px', 
+                                              background: 'white', borderRadius: '2px', 
                                               border: '1px solid #E2E8F0',
                                               maxHeight: '180px', overflowY: 'auto'
                                             }}
@@ -9385,7 +9263,7 @@ const ReceptionistDashboard = () => {
                                           const val = e.target.value;
                                           setConsultationRxMedicines(prev => prev.map(m => m.id === med.id ? { ...m, dose: val } : m));
                                         }} 
-                                        style={{ width: '85px', height: '36px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 8px', fontSize: '13px', outline: 'none' }} 
+                                        style={{ width: '85px', height: '36px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 8px', fontSize: '13px', outline: 'none' }} 
                                       />
                                     </td>
                                     <td style={{ padding: '8px' }}>
@@ -9397,7 +9275,7 @@ const ReceptionistDashboard = () => {
                                           const val = e.target.value;
                                           setConsultationRxMedicines(prev => prev.map(m => m.id === med.id ? { ...m, freq: val } : m));
                                         }} 
-                                        style={{ width: '85px', height: '36px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 8px', fontSize: '13px', outline: 'none' }} 
+                                        style={{ width: '85px', height: '36px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 8px', fontSize: '13px', outline: 'none' }} 
                                       />
                                     </td>
                                     <td style={{ padding: '8px' }}>
@@ -9409,7 +9287,7 @@ const ReceptionistDashboard = () => {
                                           const val = e.target.value;
                                           setConsultationRxMedicines(prev => prev.map(m => m.id === med.id ? { ...m, duration: val } : m));
                                         }} 
-                                        style={{ width: '85px', height: '36px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 8px', fontSize: '13px', outline: 'none' }} 
+                                        style={{ width: '85px', height: '36px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 8px', fontSize: '13px', outline: 'none' }} 
                                       />
                                     </td>
                                     <td style={{ padding: '8px' }}>
@@ -9419,7 +9297,7 @@ const ReceptionistDashboard = () => {
                                           const val = e.target.value;
                                           setConsultationRxMedicines(prev => prev.map(m => m.id === med.id ? { ...m, timing: val } : m));
                                         }} 
-                                        style={{ height: '36px', border: '1px solid #CBD5E1', borderRadius: '8px', fontSize: '12.5px', fontWeight: 600, outline: 'none', cursor: 'pointer', padding: '0 4px', background: 'white' }}
+                                        style={{ height: '36px', border: '1px solid #CBD5E1', borderRadius: '2px', fontSize: '12.5px', fontWeight: 600, outline: 'none', cursor: 'pointer', padding: '0 4px', background: 'white' }}
                                       >
                                         <option value="After Food">After Food</option>
                                         <option value="Before Food">Before Food</option>
@@ -9432,7 +9310,7 @@ const ReceptionistDashboard = () => {
                                         type="button" 
                                         className="btn-cover-action doctor-outline" 
                                         onClick={() => setConsultationRxMedicines(prev => prev.filter(m => m.id !== med.id))} 
-                                        style={{ color: '#EF4444', borderColor: '#FEE2E2', padding: '6px 10px', fontSize: '11.5px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                                        style={{ color: '#EF4444', borderColor: '#FEE2E2', padding: '6px 10px', fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                                       >
                                         <i data-lucide="trash-2" style={{ width: '12px', height: '12px' }}></i>
                                         Delete
@@ -9461,13 +9339,13 @@ const ReceptionistDashboard = () => {
 
                       {/* STEP 3: LAB ORDERS */}
                       {examineStep === 'labs' && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                           <h4 style={{ margin: 0, fontSize: '14.5px', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '6px' }}>
                             <i data-lucide="beaker" style={{ color: '#E11D48' }}></i>
                             Order Lab Investigations
                           </h4>
                           <div>
-                            <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '8px', display: 'block', letterSpacing: '0.5px' }}>Search & Select Laboratory Investigations</label>
+                            <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '8px', display: 'block', letterSpacing: '0.5px' }}>Search & Select Laboratory Investigations</label>
                             
                             <div style={{ position: 'relative' }}>
                               <input 
@@ -9480,7 +9358,7 @@ const ReceptionistDashboard = () => {
                                 }}
                                 onFocus={() => setShowLabSuggestions(true)}
                                 onBlur={() => setTimeout(() => setShowLabSuggestions(false), 200)}
-                                style={{ width: '100%', height: '42px', border: '1px solid #CBD5E1', borderRadius: '10px', padding: '0 14px', fontSize: '13.5px', fontWeight: 650, outline: 'none', background: 'white' }} 
+                                style={{ width: '100%', height: '42px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 14px', fontSize: '12px', fontWeight: 650, outline: 'none', background: 'white' }} 
                               />
                               
                               {showLabSuggestions && labSearchQuery.trim() && (
@@ -9493,7 +9371,7 @@ const ReceptionistDashboard = () => {
                                     right: 0,
                                     background: 'white',
                                     border: '1px solid #E2E8F0',
-                                    borderRadius: '10px',
+                                    borderRadius: '2px',
                                     boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
                                     zIndex: 10,
                                     marginTop: '4px',
@@ -9547,7 +9425,7 @@ const ReceptionistDashboard = () => {
                                   {lab}
                                   <span 
                                     onClick={() => setConsultationLabTests(prev => prev.filter(item => item !== lab))}
-                                    style={{ cursor: 'pointer', fontSize: '14px', fontWeight: 'bold', color: '#7C3AED', display: 'inline-flex', alignItems: 'center' }}
+                                    style={{ cursor: 'pointer', fontSize: '12px', fontWeight: 'bold', color: '#7C3AED', display: 'inline-flex', alignItems: 'center' }}
                                   >
                                     ×
                                   </span>
@@ -9582,7 +9460,7 @@ const ReceptionistDashboard = () => {
                             if (examineStep === 'labs') setExamineStep('prescriptions');
                             setTimeout(() => window.lucide && window.lucide.createIcons(), 100);
                           }}
-                          style={{ flex: 1, height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                          style={{ flex: 1, height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                         >
                           <i data-lucide="arrow-left" style={{ width: '16px', height: '16px' }}></i>
                           Back
@@ -9598,7 +9476,7 @@ const ReceptionistDashboard = () => {
                             else if (examineStep === 'prescriptions') setExamineStep('labs');
                             setTimeout(() => window.lucide && window.lucide.createIcons(), 100);
                           }}
-                          style={{ flex: 1, height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                          style={{ flex: 1, height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                         >
                           Next Step
                           <i data-lucide="arrow-right" style={{ width: '16px', height: '16px' }}></i>
@@ -9608,7 +9486,7 @@ const ReceptionistDashboard = () => {
                       <button 
                         type="button"
                         className="btn-cover-action doctor-primary" 
-                        style={{ flex: 2, height: '44px', background: '#10B981', borderColor: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                        style={{ flex: 2, height: '26px', background: '#10B981', borderColor: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                         onMouseEnter={e => e.currentTarget.style.background = '#059669'}
                         onMouseLeave={e => e.currentTarget.style.background = '#10B981'}
                         onClick={async () => {
@@ -9699,7 +9577,7 @@ const ReceptionistDashboard = () => {
                         placeholder="Search patient by name or patient ID..." 
                         value={doctorSearchQuery}
                         onChange={e => setDoctorSearchQuery(e.target.value)}
-                        style={{ width: '100%', height: '40px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 12px 0 36px', fontSize: '13.5px', outline: 'none', color: '#0F172A', boxSizing: 'border-box' }}
+                        style={{ width: '100%', height: '40px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 12px 0 36px', fontSize: '12px', outline: 'none', color: '#0F172A', boxSizing: 'border-box' }}
                       />
                       <i data-lucide="search" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', width: '16px', height: '16px', color: '#64748B', display: 'flex', alignItems: 'center' }}></i>
                     </div>
@@ -9735,20 +9613,20 @@ const ReceptionistDashboard = () => {
                                       alignItems: 'center',
                                       justifyContent: 'center',
                                       fontWeight: 800,
-                                      fontSize: '14px',
+                                      fontSize: '12px',
                                       border: '1px solid rgba(0,0,0,0.05)'
                                     }}>
                                       {initials}
                                     </div>
                                   </td>
                                   <td>
-                                    <div style={{ fontWeight: 800, color: '#1E293B', fontSize: '14px' }}>{item.name}</div>
+                                    <div style={{ fontWeight: 800, color: '#1E293B', fontSize: '12px' }}>{item.name}</div>
                                     <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px', fontWeight: 600 }}>
                                       Patient ID: <span style={{ fontFamily: 'monospace', color: '#334155', fontWeight: 700 }}>{item.patientId || 'N/A'}</span> · {item.age}y ({item.gender})
                                     </div>
                                   </td>
                                   <td>
-                                    <div style={{ fontWeight: 700, color: '#475569', fontSize: '13.5px' }}>{item.reason || 'Routine Checkup'}</div>
+                                    <div style={{ fontWeight: 700, color: '#475569', fontSize: '12px' }}>{item.reason || 'Routine Checkup'}</div>
                                     {item.notes && <div style={{ fontSize: '11px', color: '#94A3B8', marginTop: '2px' }}>{item.notes}</div>}
                                   </td>
                                   <td>
@@ -9756,7 +9634,7 @@ const ReceptionistDashboard = () => {
                                       background: item.status === 'Completed' ? '#E6F4EA' : item.status === 'Checked Out' ? '#EFF6FF' : '#FFF7ED',
                                       color: item.status === 'Completed' ? '#059669' : item.status === 'Checked Out' ? '#2563EB' : '#D97706',
                                       fontWeight: 800,
-                                      fontSize: '11.5px'
+                                      fontSize: '12px'
                                     }}>{item.status}</span>
                                   </td>
                                   <td style={{ textAlign: 'right' }}>
@@ -9813,8 +9691,8 @@ const ReceptionistDashboard = () => {
 
             {/* SUBTAB: PRESCRIPTION WRITER */}
             {doctorSubTab === 'prescriptions' && (
-              <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div className="glass-card" style={{ padding: '12px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <i data-lucide="pill" style={{ color: '#E11D48' }}></i>
                   Emergency Prescription Composer
                 </h3>
@@ -9860,8 +9738,8 @@ const ReceptionistDashboard = () => {
                 }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
                     <div>
-                      <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '8px', display: 'block', letterSpacing: '0.5px' }}>Patient Name / ID</label>
-                      <select value={rxPatientId} onChange={e => setRxPatientId(e.target.value)} style={{ width: '100%', height: '42px', border: '1px solid #CBD5E1', borderRadius: '10px', padding: '0 12px', fontSize: '13.5px', fontWeight: 700, color: '#334155', cursor: 'pointer', outline: 'none', background: 'white' }} required>
+                      <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '8px', display: 'block', letterSpacing: '0.5px' }}>Patient Name / ID</label>
+                      <select value={rxPatientId} onChange={e => setRxPatientId(e.target.value)} style={{ width: '100%', height: '42px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 12px', fontSize: '12px', fontWeight: 700, color: '#334155', cursor: 'pointer', outline: 'none', background: 'white' }} required>
                         <option value="">Select Patient...</option>
                         {patientsList.map(p => (
                           <option key={p._id} value={p._id}>{p.name} ({p.contact || 'No contact'})</option>
@@ -9869,12 +9747,12 @@ const ReceptionistDashboard = () => {
                       </select>
                     </div>
                     <div>
-                      <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '8px', display: 'block', letterSpacing: '0.5px' }}>Diagnosis</label>
-                      <input type="text" placeholder="e.g. Hypertension, Viral Fever" value={rxDiagnosis} onChange={e => setRxDiagnosis(e.target.value)} style={{ width: '100%', height: '42px', border: '1px solid #CBD5E1', borderRadius: '10px', padding: '0 14px', fontSize: '13.5px', fontWeight: 650, outline: 'none', background: 'white' }} required />
+                      <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '8px', display: 'block', letterSpacing: '0.5px' }}>Diagnosis</label>
+                      <input type="text" placeholder="e.g. Hypertension, Viral Fever" value={rxDiagnosis} onChange={e => setRxDiagnosis(e.target.value)} style={{ width: '100%', height: '42px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 14px', fontSize: '12px', fontWeight: 650, outline: 'none', background: 'white' }} required />
                     </div>
                   </div>
 
-                  <div style={{ marginBottom: '24px' }}>
+                  <div style={{ marginBottom: '12px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                       <h4 style={{ margin: 0, fontSize: '14.5px', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <i data-lucide="list" style={{ color: '#E11D48', width: '16px', height: '16px' }}></i>
@@ -9886,7 +9764,7 @@ const ReceptionistDashboard = () => {
                       </button>
                     </div>
 
-                    <div style={{ background: 'white', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '8px', overflowX: 'auto' }}>
+                    <div style={{ background: 'white', borderRadius: '4px', border: '1px solid #E2E8F0', padding: '8px', overflowX: 'auto' }}>
                       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
                           <tr style={{ borderBottom: '1px solid #F1F5F9' }}>
@@ -9924,7 +9802,7 @@ const ReceptionistDashboard = () => {
                                       }
                                     }, 150);
                                   }}
-                                  style={{ width: '160px', height: '36px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 10px', fontSize: '13px', outline: 'none' }} 
+                                  style={{ width: '160px', height: '36px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 10px', fontSize: '13px', outline: 'none' }} 
                                   required 
                                 />
                                 {activeMedFocus === med.id && (() => {
@@ -9946,7 +9824,7 @@ const ReceptionistDashboard = () => {
                                         position: 'absolute', top: 'calc(100% + 4px)', left: 0, 
                                         width: '260px', zIndex: 1200, padding: '4px',
                                         boxShadow: '0 10px 30px rgba(15, 23, 42, 0.15)', 
-                                        background: 'white', borderRadius: '10px', 
+                                        background: 'white', borderRadius: '2px', 
                                         border: '1px solid #E2E8F0',
                                         maxHeight: '180px', overflowY: 'auto'
                                       }}
@@ -10004,25 +9882,25 @@ const ReceptionistDashboard = () => {
                                 <input type="text" value={med.dose} placeholder="e.g. 1 Tab" onChange={e => {
                                   const val = e.target.value;
                                   setRxMedicines(prev => prev.map(m => m.id === med.id ? { ...m, dose: val } : m));
-                                }} style={{ width: '85px', height: '36px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 8px', fontSize: '13px', outline: 'none' }} />
+                                }} style={{ width: '85px', height: '36px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 8px', fontSize: '13px', outline: 'none' }} />
                               </td>
                               <td style={{ padding: '8px' }}>
                                 <input type="text" value={med.freq} placeholder="e.g. OD" onChange={e => {
                                   const val = e.target.value;
                                   setRxMedicines(prev => prev.map(m => m.id === med.id ? { ...m, freq: val } : m));
-                                }} style={{ width: '85px', height: '36px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 8px', fontSize: '13px', outline: 'none' }} />
+                                }} style={{ width: '85px', height: '36px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 8px', fontSize: '13px', outline: 'none' }} />
                               </td>
                               <td style={{ padding: '8px' }}>
                                 <input type="text" value={med.duration} placeholder="e.g. 5 Days" onChange={e => {
                                   const val = e.target.value;
                                   setRxMedicines(prev => prev.map(m => m.id === med.id ? { ...m, duration: val } : m));
-                                }} style={{ width: '85px', height: '36px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 8px', fontSize: '13px', outline: 'none' }} />
+                                }} style={{ width: '85px', height: '36px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 8px', fontSize: '13px', outline: 'none' }} />
                               </td>
                               <td style={{ padding: '8px' }}>
                                 <select value={med.timing} onChange={e => {
                                   const val = e.target.value;
                                   setRxMedicines(prev => prev.map(m => m.id === med.id ? { ...m, timing: val } : m));
-                                }} style={{ height: '36px', border: '1px solid #CBD5E1', borderRadius: '8px', fontSize: '12.5px', fontWeight: 600, outline: 'none', cursor: 'pointer', padding: '0 4px', background: 'white' }}>
+                                }} style={{ height: '36px', border: '1px solid #CBD5E1', borderRadius: '2px', fontSize: '12.5px', fontWeight: 600, outline: 'none', cursor: 'pointer', padding: '0 4px', background: 'white' }}>
                                   <option value="After Food">After Food</option>
                                   <option value="Before Food">Before Food</option>
                                   <option value="Empty Stomach">Empty Stomach</option>
@@ -10030,7 +9908,7 @@ const ReceptionistDashboard = () => {
                                 </select>
                               </td>
                               <td style={{ padding: '8px', textAlign: 'right' }}>
-                                <button type="button" disabled={rxMedicines.length === 1} className="btn-cover-action doctor-outline" onClick={() => setRxMedicines(prev => prev.filter(m => m.id !== med.id))} style={{ color: '#EF4444', borderColor: '#FEE2E2', padding: '6px 10px', fontSize: '11.5px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                <button type="button" disabled={rxMedicines.length === 1} className="btn-cover-action doctor-outline" onClick={() => setRxMedicines(prev => prev.filter(m => m.id !== med.id))} style={{ color: '#EF4444', borderColor: '#FEE2E2', padding: '6px 10px', fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                   <i data-lucide="trash-2" style={{ width: '12px', height: '12px' }}></i>
                                   Delete
                                 </button>
@@ -10042,7 +9920,7 @@ const ReceptionistDashboard = () => {
                     </div>
                   </div>
 
-                  <button type="submit" className="btn-cover-action doctor-primary" style={{ width: '100%', height: '46px', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <button type="submit" className="btn-cover-action doctor-primary" style={{ width: '100%', height: '26px', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                     <i data-lucide="send" style={{ width: '16px', height: '16px' }}></i>
                     Save & Dispatch Prescription to Pharmacy
                   </button>
@@ -10052,8 +9930,8 @@ const ReceptionistDashboard = () => {
 
             {/* SUBTAB: LAB ORDERS */}
             {doctorSubTab === 'labs' && (
-              <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div className="glass-card" style={{ padding: '12px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <i data-lucide="beaker" style={{ color: '#E11D48' }}></i>
                   Clinical Diagnostic Referral
                 </h3>
@@ -10088,8 +9966,8 @@ const ReceptionistDashboard = () => {
                 }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
                     <div>
-                      <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '8px', display: 'block', letterSpacing: '0.5px' }}>Patient Name</label>
-                      <select name="labPatientId" value={labPatientId} onChange={e => setLabPatientId(e.target.value)} style={{ width: '100%', height: '42px', border: '1px solid #CBD5E1', borderRadius: '10px', padding: '0 12px', fontSize: '13.5px', fontWeight: 700, color: '#334155', cursor: 'pointer', outline: 'none', background: 'white' }} required>
+                      <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '8px', display: 'block', letterSpacing: '0.5px' }}>Patient Name</label>
+                      <select name="labPatientId" value={labPatientId} onChange={e => setLabPatientId(e.target.value)} style={{ width: '100%', height: '42px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 12px', fontSize: '12px', fontWeight: 700, color: '#334155', cursor: 'pointer', outline: 'none', background: 'white' }} required>
                         <option value="">Select Patient...</option>
                         {patientsList.map(p => (
                           <option key={p._id} value={p._id}>{p.name} ({p.contact || 'No contact'})</option>
@@ -10097,7 +9975,7 @@ const ReceptionistDashboard = () => {
                       </select>
                     </div>
                     <div>
-                      <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '8px', display: 'block', letterSpacing: '0.5px' }}>Search & Select Laboratory Investigations</label>
+                      <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '8px', display: 'block', letterSpacing: '0.5px' }}>Search & Select Laboratory Investigations</label>
                       
                       <div style={{ position: 'relative' }}>
                         <input 
@@ -10110,7 +9988,7 @@ const ReceptionistDashboard = () => {
                           }}
                           onFocus={() => setShowSlipLabSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowSlipLabSuggestions(false), 200)}
-                          style={{ width: '100%', height: '42px', border: '1px solid #CBD5E1', borderRadius: '10px', padding: '0 12px', fontSize: '13.5px', fontWeight: 650, outline: 'none', background: 'white' }} 
+                          style={{ width: '100%', height: '42px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 12px', fontSize: '12px', fontWeight: 650, outline: 'none', background: 'white' }} 
                         />
                         
                         {showSlipLabSuggestions && slipLabSearchQuery.trim() && (
@@ -10123,7 +10001,7 @@ const ReceptionistDashboard = () => {
                               right: 0,
                               background: 'white',
                               border: '1px solid #E2E8F0',
-                              borderRadius: '10px',
+                              borderRadius: '2px',
                               boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
                               zIndex: 10,
                               marginTop: '4px',
@@ -10176,7 +10054,7 @@ const ReceptionistDashboard = () => {
                             {lab}
                             <span 
                               onClick={() => setSlipLabTests(prev => prev.filter(item => item !== lab))}
-                              style={{ cursor: 'pointer', fontSize: '14px', fontWeight: 'bold', color: '#7C3AED', display: 'inline-flex', alignItems: 'center' }}
+                              style={{ cursor: 'pointer', fontSize: '12px', fontWeight: 'bold', color: '#7C3AED', display: 'inline-flex', alignItems: 'center' }}
                             >
                               ×
                             </span>
@@ -10185,7 +10063,7 @@ const ReceptionistDashboard = () => {
                       </div>
                     </div>
                   </div>
-                  <button type="submit" className="btn-cover-action doctor-primary" style={{ width: '100%', height: '46px', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <button type="submit" className="btn-cover-action doctor-primary" style={{ width: '100%', height: '26px', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                     <i data-lucide="file-text" style={{ width: '16px', height: '16px' }}></i>
                     Issue Lab Investigation Referral Slip
                   </button>
@@ -10195,8 +10073,8 @@ const ReceptionistDashboard = () => {
 
             {/* SUBTAB: PHARMACY STOCK VIEW */}
             {doctorSubTab === 'stock' && (
-              <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div className="glass-card" style={{ padding: '12px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <i data-lucide="clipboard-list" style={{ color: '#E11D48' }}></i>
                   Pharmacy Live Formulary Status
                 </h3>
@@ -10221,8 +10099,8 @@ const ReceptionistDashboard = () => {
                           : { background: '#FEE2E2', color: '#DC2626' };
                         return (
                           <tr key={idx}>
-                            <td style={{ padding: '14px 10px', fontWeight: 700, color: '#1E293B', fontSize: '13.5px' }}>{item.name}</td>
-                            <td style={{ padding: '14px 10px', fontWeight: 800, color: '#0F172A', fontSize: '13.5px' }}>{item.stock} {item.unit}</td>
+                            <td style={{ padding: '14px 10px', fontWeight: 700, color: '#1E293B', fontSize: '12px' }}>{item.name}</td>
+                            <td style={{ padding: '14px 10px', fontWeight: 800, color: '#0F172A', fontSize: '12px' }}>{item.stock} {item.unit}</td>
                             <td style={{ padding: '14px 10px' }}>
                               <span className={`badge-pill ${badgeClass}`} style={{ ...badgeStyle, fontSize: '11px', fontWeight: 800 }}>
                                 {item.status}
@@ -10241,14 +10119,14 @@ const ReceptionistDashboard = () => {
 
         {/* TAB: LAB DYNAMIC COVERAGE */}
         {activeTab === 'lab_cover' && (
-          <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out', padding: '24px' }}>
+          <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out', padding: '12px' }}>
             {/* Emerald header card */}
             <div className="glass-card" style={{
               background: 'linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%)',
               border: '1px solid #6EE7B7',
               padding: '28px',
               borderRadius: '20px',
-              marginBottom: '24px',
+              marginBottom: '12px',
               position: 'relative',
               overflow: 'hidden'
             }}>
@@ -10277,7 +10155,7 @@ const ReceptionistDashboard = () => {
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '12px', background: '#F8FAFC', padding: '8px', borderRadius: '12px', border: '1px solid #E2E8F0', marginBottom: '24px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '12px', background: '#F8FAFC', padding: '8px', borderRadius: '4px', border: '1px solid #E2E8F0', marginBottom: '12px', flexWrap: 'wrap' }}>
               {coverageState['lt-queue']?.on && (
                 <button 
                   className={`btn-cover-tab ${labSubTab === 'tests' ? 'active lab' : ''}`}
@@ -10302,9 +10180,9 @@ const ReceptionistDashboard = () => {
 
             {/* SUBTAB: TESTS QUEUE */}
             {labSubTab === 'tests' && (
-              <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+              <div className="glass-card" style={{ padding: '12px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                  <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+                  <h3 style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
                     <i data-lucide="test-tube" style={{ color: '#059669' }}></i>
                     Diagnostic Test Orders Queue
                   </h3>
@@ -10319,12 +10197,12 @@ const ReceptionistDashboard = () => {
                     placeholder="Search patient by name or test ID..." 
                     value={labSearchQuery}
                     onChange={e => setLabSearchQuery(e.target.value)}
-                    style={{ width: '100%', height: '40px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 12px 0 36px', fontSize: '13.5px', outline: 'none', color: '#0F172A', boxSizing: 'border-box' }}
+                    style={{ width: '100%', height: '40px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 12px 0 36px', fontSize: '12px', outline: 'none', color: '#0F172A', boxSizing: 'border-box' }}
                   />
                   <i data-lucide="search" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', width: '16px', height: '16px', color: '#64748B', display: 'flex', alignItems: 'center' }}></i>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {coverageLabRequests
                     .filter(t => 
                       t.name?.toLowerCase().includes(labSearchQuery.toLowerCase()) || 
@@ -10340,14 +10218,14 @@ const ReceptionistDashboard = () => {
                       ? { background: '#FEF3C7', color: '#D97706' } 
                       : { background: '#E2E8F0', color: '#475569' };
                     return (
-                      <div key={test.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', border: '1px solid #E2E8F0', borderRadius: '14px', background: '#F8FAFC', transition: 'all 0.2s' }}>
+                      <div key={test.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', border: '1px solid #E2E8F0', borderRadius: '4px', background: '#F8FAFC', transition: 'all 0.2s' }}>
                         <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
-                          <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#ECFDF5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <div style={{ width: '42px', height: '42px', borderRadius: '2px', background: '#ECFDF5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <i data-lucide="test-tube"></i>
                           </div>
                           <div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                              <span style={{ fontSize: '15px', fontWeight: 800, color: '#1E293B' }}>{test.name}</span>
+                              <span style={{ fontSize: '12px', fontWeight: 800, color: '#1E293B' }}>{test.name}</span>
                               <span className="badge-pill" style={{ ...priorityStyle, fontSize: '10px', padding: '3px 8px', fontWeight: 800 }}>{test.priority} Priority</span>
                             </div>
                             <span style={{ fontSize: '13px', color: '#475569', fontWeight: 600, display: 'block', marginTop: '6px' }}>
@@ -10398,14 +10276,14 @@ const ReceptionistDashboard = () => {
                             </button>
                           ) : (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                              <span style={{ fontSize: '13.5px', color: '#059669', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                              <span style={{ fontSize: '12px', color: '#059669', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                 <i data-lucide="check-circle" style={{ width: '15px', height: '15px' }}></i>
                                 Signed & Dispatched
                               </span>
                               <button 
                                 type="button"
                                 className="btn-cover-action lab-primary"
-                                style={{ background: '#475569', color: 'white', padding: '6px 12px', fontSize: '11.5px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                                style={{ background: '#475569', color: 'white', padding: '6px 12px', fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                                 onClick={() => {
                                   setSelectedCoverageLabTest(test);
                                   setShowCoverageLabDetailsModal(true);
@@ -10426,8 +10304,8 @@ const ReceptionistDashboard = () => {
 
             {/* SUBTAB: REAGENTS */}
             {labSubTab === 'reagents' && (
-              <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div className="glass-card" style={{ padding: '12px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <i data-lucide="beaker" style={{ color: '#059669' }}></i>
                   Diagnostic Reagents Ledger
                 </h3>
@@ -10450,8 +10328,8 @@ const ReceptionistDashboard = () => {
                           : { background: '#FEE2E2', color: '#DC2626' };
                         return (
                           <tr key={idx}>
-                            <td style={{ padding: '14px 10px', fontWeight: 700, color: '#1E293B', fontSize: '13.5px' }}>{item.name}</td>
-                            <td style={{ padding: '14px 10px', fontWeight: 800, color: '#0F172A', fontSize: '13.5px' }}>{item.level}</td>
+                            <td style={{ padding: '14px 10px', fontWeight: 700, color: '#1E293B', fontSize: '12px' }}>{item.name}</td>
+                            <td style={{ padding: '14px 10px', fontWeight: 800, color: '#0F172A', fontSize: '12px' }}>{item.level}</td>
                             <td style={{ padding: '14px 10px', color: '#64748B', fontSize: '13px', fontWeight: 600 }}>{item.minSafe}</td>
                             <td style={{ padding: '14px 10px' }}>
                               <span className={`badge-pill ${isSafe ? 'new' : 'revisit'}`} style={{ ...badgeStyle, fontSize: '11px', fontWeight: 800 }}>
@@ -10493,14 +10371,14 @@ const ReceptionistDashboard = () => {
 
         {/* TAB: PHARMACY DYNAMIC COVERAGE */}
         {activeTab === 'pharmacy_cover' && (
-          <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out', padding: '24px' }}>
+          <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out', padding: '12px' }}>
             {/* Royal blue header card */}
             <div className="glass-card" style={{
               background: 'linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%)',
               border: '1px solid #93C5FD',
               padding: '28px',
               borderRadius: '20px',
-              marginBottom: '24px',
+              marginBottom: '12px',
               position: 'relative',
               overflow: 'hidden'
             }}>
@@ -10529,7 +10407,7 @@ const ReceptionistDashboard = () => {
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '12px', background: '#F8FAFC', padding: '8px', borderRadius: '12px', border: '1px solid #E2E8F0', marginBottom: '24px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '12px', background: '#F8FAFC', padding: '8px', borderRadius: '4px', border: '1px solid #E2E8F0', marginBottom: '12px', flexWrap: 'wrap' }}>
               {coverageState['ph-queue']?.on && (
                 <button 
                   className={`btn-cover-tab ${pharmacySubTab === 'queue' ? 'active pharmacy' : ''}`}
@@ -10554,9 +10432,9 @@ const ReceptionistDashboard = () => {
 
             {/* SUBTAB: DISPENSING QUEUE */}
             {pharmacySubTab === 'queue' && (
-              <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+              <div className="glass-card" style={{ padding: '12px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                  <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+                  <h3 style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
                     <i data-lucide="pill" style={{ color: '#2563EB' }}></i>
                     Active Prescription Dispensing Queue
                   </h3>
@@ -10571,12 +10449,12 @@ const ReceptionistDashboard = () => {
                     placeholder="Search patient by name or Rx ID..." 
                     value={pharmacySearchQuery}
                     onChange={e => setPharmacySearchQuery(e.target.value)}
-                    style={{ width: '100%', height: '40px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 12px 0 36px', fontSize: '13.5px', outline: 'none', color: '#0F172A', boxSizing: 'border-box' }}
+                    style={{ width: '100%', height: '40px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 12px 0 36px', fontSize: '12px', outline: 'none', color: '#0F172A', boxSizing: 'border-box' }}
                   />
                   <i data-lucide="search" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', width: '16px', height: '16px', color: '#64748B', display: 'flex', alignItems: 'center' }}></i>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {coveragePharmacyQueue
                     .filter(p => 
                       p.patient?.toLowerCase().includes(pharmacySearchQuery.toLowerCase()) || 
@@ -10584,14 +10462,14 @@ const ReceptionistDashboard = () => {
                       p.med?.toLowerCase().includes(pharmacySearchQuery.toLowerCase())
                     )
                     .map(item => (
-                    <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', border: '1px solid #E2E8F0', borderRadius: '14px', background: '#F8FAFC', transition: 'all 0.2s' }}>
+                    <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', border: '1px solid #E2E8F0', borderRadius: '4px', background: '#F8FAFC', transition: 'all 0.2s' }}>
                       <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
-                        <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#EBF5FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ width: '42px', height: '42px', borderRadius: '2px', background: '#EBF5FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <i data-lucide="package"></i>
                         </div>
                         <div>
-                          <span style={{ fontSize: '15px', fontWeight: 800, color: '#1E293B' }}>{item.patient}</span>
-                          <span style={{ fontSize: '13.5px', color: '#475569', fontWeight: 600, display: 'block', marginTop: '6px' }}>
+                          <span style={{ fontSize: '12px', fontWeight: 800, color: '#1E293B' }}>{item.patient}</span>
+                          <span style={{ fontSize: '12px', color: '#475569', fontWeight: 600, display: 'block', marginTop: '6px' }}>
                             Medication: <b style={{ color: '#2563EB' }}>{item.med}</b> · Qty: <span style={{ fontWeight: 800, color: '#0F172A' }}>{item.qty}</span>
                           </span>
                           <span style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 550, display: 'block', marginTop: '4px' }}>
@@ -10621,8 +10499,8 @@ const ReceptionistDashboard = () => {
 
             {/* SUBTAB: STOCK */}
             {pharmacySubTab === 'stock' && (
-              <div className="glass-card" style={{ padding: '24px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div className="glass-card" style={{ padding: '12px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <i data-lucide="package" style={{ color: '#2563EB' }}></i>
                   Medicine Formulary Inventory
                 </h3>
@@ -10648,8 +10526,8 @@ const ReceptionistDashboard = () => {
                           : { background: '#FEE2E2', color: '#DC2626' };
                         return (
                           <tr key={idx}>
-                            <td style={{ padding: '14px 10px', fontWeight: 700, color: '#1E293B', fontSize: '13.5px' }}>{item.name}</td>
-                            <td style={{ padding: '14px 10px', fontWeight: 800, color: '#0F172A', fontSize: '13.5px' }}>{item.stock} {item.unit}</td>
+                            <td style={{ padding: '14px 10px', fontWeight: 700, color: '#1E293B', fontSize: '12px' }}>{item.name}</td>
+                            <td style={{ padding: '14px 10px', fontWeight: 800, color: '#0F172A', fontSize: '12px' }}>{item.stock} {item.unit}</td>
                             <td style={{ padding: '14px 10px' }}>
                               <span className={`badge-pill ${badgeClass}`} style={{ ...badgeStyle, fontSize: '11px', fontWeight: 800 }}>
                                 {item.status}
@@ -10709,23 +10587,23 @@ const ReceptionistDashboard = () => {
       {detailsModalOpen && selectedAppointment && (
         <div className="details-modal-overlay" onClick={() => { setDetailsModalOpen(false); setShowDeleteConfirm(false); }}>
           <div className="details-modal-card" onClick={e => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <h2 style={{ fontSize: '20px', fontWeight: 900, color: '#1A1D23' }}>Appointment Details</h2>
               <button className="btn-close" onClick={() => { setDetailsModalOpen(false); setShowDeleteConfirm(false); }}><i data-lucide="x"></i></button>
             </div>
             
-            <div style={{ marginBottom: '32px' }}>
-              <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '24px' }}>
-                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 800 }}>
+            <div style={{ marginBottom: '16px' }}>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '12px' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '4px', background: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 800 }}>
                   {getInitials(selectedAppointment.patientId?.name)}
                 </div>
                 <div>
-                  <div style={{ fontWeight: 800, fontSize: '18px', color: '#1A1D23' }}>{selectedAppointment.patientId?.name}</div>
+                  <div style={{ fontWeight: 800, fontSize: '14px', color: '#1A1D23' }}>{selectedAppointment.patientId?.name}</div>
                   <div style={{ fontSize: '13px', color: '#64748B', fontWeight: 600 }}>ID: #{selectedAppointment.patientId?._id?.substring(18).toUpperCase()}</div>
                 </div>
               </div>
               
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
                 {(() => {
                   const originalStatus = appointments.find(a => a._id === selectedAppointment._id)?.status || selectedAppointment.status;
                   const isLocked = originalStatus === 'Cancelled' || originalStatus === 'Completed' || originalStatus === 'Checked Out';
@@ -10733,24 +10611,24 @@ const ReceptionistDashboard = () => {
 
                   if (isLocked) {
                     return (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', padding: '10px 14px', borderRadius: '8px', fontSize: '12.5px', color: '#92400E', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', padding: '10px 14px', borderRadius: '2px', fontSize: '12.5px', color: '#92400E', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <i data-lucide="lock" style={{ width: '14px', height: '14px', flexShrink: 0 }}></i>
                           <span>Status Lock: This appointment has been {originalStatus}. It cannot be rescheduled or modified.</span>
                         </div>
 
                         {isCompleted && (
                           <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '16px' }}>
-                            <h3 style={{ fontSize: '14px', fontWeight: 800, color: '#1E293B', marginBottom: '12px' }}>Clinical Summary</h3>
+                            <h3 style={{ fontSize: '12px', fontWeight: 800, color: '#1E293B', marginBottom: '12px' }}>Clinical Summary</h3>
                             
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginTop: '16px' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '16px' }}>
                               <div>
                                 <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', marginBottom: '6px' }}>Prescribed Medicines</div>
                                 {selectedAppointmentDetails.prescriptions.length === 0 ? (
                                   <div style={{ fontSize: '13px', color: '#64748B', fontStyle: 'italic' }}>No active prescription.</div>
                                 ) : (
                                   selectedAppointmentDetails.prescriptions.map((presc, idx) => (
-                                    <div key={presc._id || idx} style={{ background: '#EFF6FF', padding: '10px 12px', borderRadius: '8px', marginBottom: '6px', border: '1px solid #DBEAFE' }}>
+                                    <div key={presc._id || idx} style={{ background: '#EFF6FF', padding: '10px 12px', borderRadius: '2px', marginBottom: '6px', border: '1px solid #DBEAFE' }}>
                                       {(presc.items || []).map((item, i) => (
                                         <div key={i} style={{ fontSize: '13px', color: '#1E293B', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
                                           <i data-lucide="pill" style={{ width: '13px', height: '13px', color: '#2563EB' }}></i> {item.name} - {item.dosage} ({item.duration})
@@ -10766,7 +10644,7 @@ const ReceptionistDashboard = () => {
                                 {selectedAppointmentDetails.labs.length === 0 ? (
                                   <div style={{ fontSize: '13px', color: '#64748B', fontStyle: 'italic' }}>No lab tests ordered.</div>
                                 ) : (
-                                  <div style={{ background: '#F0FDF4', padding: '10px 12px', borderRadius: '8px', border: '1px solid #DCFCE7' }}>
+                                  <div style={{ background: '#F0FDF4', padding: '10px 12px', borderRadius: '2px', border: '1px solid #DCFCE7' }}>
                                     {selectedAppointmentDetails.labs.map((lab, idx) => (
                                       <div key={lab._id || idx} style={{ fontSize: '13px', color: '#16A34A', fontWeight: 600, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                                         <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -10786,12 +10664,12 @@ const ReceptionistDashboard = () => {
                   }
 
                   return (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       <div>
                         <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, marginBottom: '8px', color: '#1A1D23' }}>Reschedule Doctor</label>
                         <select
                           className="form-control"
-                          style={{ background: 'white', border: '1px solid #CBD5E1', borderRadius: '10px', height: '44px', width: '100%', padding: '0 12px', fontWeight: 600, appearance: 'none', cursor: 'pointer' }}
+                          style={{ background: 'white', border: '1px solid #CBD5E1', borderRadius: '2px', height: '26px', width: '100%', padding: '0 12px', fontWeight: 600, appearance: 'none', cursor: 'pointer' }}
                           value={selectedAppointment.doctorId?._id || selectedAppointment.doctorId || ''}
                           onChange={(e) => {
                             const newDocId = e.target.value;
@@ -10811,7 +10689,7 @@ const ReceptionistDashboard = () => {
                         <input 
                           type="date" 
                           className="form-control" 
-                          style={{ background: 'white', border: '1px solid #CBD5E1', borderRadius: '10px', height: '44px', width: '100%', padding: '0 12px', fontWeight: 600 }}
+                          style={{ background: 'white', border: '1px solid #CBD5E1', borderRadius: '2px', height: '26px', width: '100%', padding: '0 12px', fontWeight: 600 }}
                           value={(() => {
                             if (!selectedAppointment.date) return '';
                             const d = new Date(selectedAppointment.date);
@@ -10827,7 +10705,7 @@ const ReceptionistDashboard = () => {
                       </div>
 
                       {!rescheduleAvailability.available && (
-                        <div style={{ color: '#EF4444', background: '#FEF2F2', padding: '12px', borderRadius: '10px', fontSize: '12px', fontWeight: 700, border: '1px solid #FEE2E2' }}>
+                        <div style={{ color: '#EF4444', background: '#FEF2F2', padding: '12px', borderRadius: '2px', fontSize: '12px', fontWeight: 700, border: '1px solid #FEE2E2' }}>
                           Doctor Unavailable: {rescheduleAvailability.reason || 'Doctor is on leave or weekly off'}
                         </div>
                       )}
@@ -10835,7 +10713,7 @@ const ReceptionistDashboard = () => {
                       {rescheduleAvailability.available && (
                         <div>
                           <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, marginBottom: '8px', color: '#1A1D23' }}>Reschedule Time Slot</label>
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '8px', maxHeight: '140px', overflowY: 'auto', paddingRight: '4px', border: '1px solid #E2E8F0', padding: '10px', borderRadius: '10px', background: '#F8FAFC' }}>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '8px', maxHeight: '140px', overflowY: 'auto', paddingRight: '4px', border: '1px solid #E2E8F0', padding: '10px', borderRadius: '2px', background: '#F8FAFC' }}>
                             {(rescheduleAvailability.slots && rescheduleAvailability.slots.length > 0 ? rescheduleAvailability.slots : DEFAULT_RECEPTION_SLOTS).map(time => {
                               const docId = selectedAppointment.doctorId?._id || selectedAppointment.doctorId;
                               const cleanTimeSlotStr = (s) => s ? s.split(/\(Limit:/i)[0].trim().toLowerCase() : '';
@@ -10875,9 +10753,9 @@ const ReceptionistDashboard = () => {
                                   disabled={isFull}
                                   onClick={() => setSelectedAppointment({ ...selectedAppointment, time })}
                                   style={{
-                                    minHeight: '38px',
+                                    minHeight: '26px',
                                     padding: '4px 8px',
-                                    borderRadius: '8px',
+                                    borderRadius: '2px',
                                     border: isSelected ? '2px solid #2563EB' : '1px solid #CBD5E1',
                                     background: isFull ? '#E2E8F0' : (isSelected ? '#EFF6FF' : 'white'),
                                     color: isFull ? '#94A3B8' : (isSelected ? '#2563EB' : '#1E293B'),
@@ -10911,7 +10789,7 @@ const ReceptionistDashboard = () => {
                 });
                 if (!associatedBill) return null;
                 return (
-                  <div style={{ marginTop: '24px', padding: '16px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
+                  <div style={{ marginTop: '24px', padding: '16px', borderRadius: '4px', background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                       <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Billing & Invoice</span>
                       <span className={`status-badge ${associatedBill.status === 'Paid' ? 'available' : 'pending'}`} style={{ margin: 0, padding: '4px 10px', fontSize: '11px', fontWeight: 700 }}>
@@ -10940,8 +10818,8 @@ const ReceptionistDashboard = () => {
                         className="btn btn-primary animate-in"
                         style={{
                           width: '100%',
-                          height: '38px',
-                          borderRadius: '8px',
+                          height: '26px',
+                          borderRadius: '2px',
                           fontSize: '12px',
                           fontWeight: 800,
                           marginTop: '14px',
@@ -10982,19 +10860,19 @@ const ReceptionistDashboard = () => {
                   return (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', animation: 'fadeIn 0.2s ease-out' }}>
                       <span style={{ fontSize: '12px', fontWeight: 800, color: '#EF4444' }}>Are you sure?</span>
-                      <button className="btn" style={{ background: '#F1F5F9', color: '#64748B', fontWeight: 800, padding: '0 16px', borderRadius: '10px', height: '44px', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
-                      <button className="btn" style={{ background: '#EF4444', color: 'white', fontWeight: 800, padding: '0 20px', borderRadius: '10px', height: '44px', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => { handleDeleteAppointment(selectedAppointment._id); setShowDeleteConfirm(false); }}>Confirm Delete</button>
+                      <button className="btn" style={{ background: '#F1F5F9', color: '#64748B', fontWeight: 800, padding: '0 16px', borderRadius: '2px', height: '26px', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
+                      <button className="btn" style={{ background: '#EF4444', color: 'white', fontWeight: 800, padding: '0 20px', borderRadius: '2px', height: '26px', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => { handleDeleteAppointment(selectedAppointment._id); setShowDeleteConfirm(false); }}>Confirm Delete</button>
                     </div>
                   );
                 }
 
                 return (
                   <>
-                    <button className="btn" style={{ background: '#FEE2E2', color: '#EF4444', fontWeight: 800, padding: '0 20px', borderRadius: '10px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setShowDeleteConfirm(true)}>Delete</button>
+                    <button className="btn" style={{ background: '#FEE2E2', color: '#EF4444', fontWeight: 800, padding: '0 20px', borderRadius: '2px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setShowDeleteConfirm(true)}>Delete</button>
                     {!isLocked ? (
-                      <button className="btn btn-primary" style={{ fontWeight: 800, padding: '0 24px', borderRadius: '10px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleUpdateAppointment(selectedAppointment)}>Save Changes</button>
+                      <button className="btn btn-primary" style={{ fontWeight: 800, padding: '0 24px', borderRadius: '2px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleUpdateAppointment(selectedAppointment)}>Save Changes</button>
                     ) : (
-                      <button className="btn btn-secondary" style={{ fontWeight: 800, padding: '0 24px', borderRadius: '10px', height: '44px', background: '#F1F5F9', color: '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => { setDetailsModalOpen(false); setShowDeleteConfirm(false); }}>Close</button>
+                      <button className="btn btn-secondary" style={{ fontWeight: 800, padding: '0 24px', borderRadius: '2px', height: '26px', background: '#F1F5F9', color: '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => { setDetailsModalOpen(false); setShowDeleteConfirm(false); }}>Close</button>
                     )}
                   </>
                 );
@@ -11009,7 +10887,7 @@ const ReceptionistDashboard = () => {
         <div className="details-modal-overlay" onClick={() => setShowCoverageLabModal(false)} style={{ zIndex: 5000 }}>
           <div className="details-modal-card" onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: '500px', padding: '28px', borderRadius: '16px', background: 'white' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', margin: 0 }}>Enter Diagnostic Lab Results</h3>
+              <h3 style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A', margin: 0 }}>Enter Diagnostic Lab Results</h3>
               <button 
                 type="button" 
                 onClick={() => setShowCoverageLabModal(false)} 
@@ -11017,7 +10895,7 @@ const ReceptionistDashboard = () => {
               >✕</button>
             </div>
             
-            <div style={{ background: '#F8FAFC', padding: '12px 16px', borderRadius: '8px', marginBottom: '20px' }}>
+            <div style={{ background: '#F8FAFC', padding: '12px 16px', borderRadius: '2px', marginBottom: '20px' }}>
               <div style={{ fontSize: '13px', color: '#64748B', fontWeight: 600 }}>Patient: <b style={{ color: '#0F172A' }}>{selectedCoverageLabTest.name}</b></div>
               <div style={{ fontSize: '13px', color: '#64748B', fontWeight: 600, marginTop: '4px' }}>Test Type: <b style={{ color: '#0F172A' }}>{selectedCoverageLabTest.test}</b></div>
             </div>
@@ -11054,7 +10932,7 @@ const ReceptionistDashboard = () => {
                     value={coverageLabParams.value} 
                     onChange={e => setCoverageLabParams({ ...coverageLabParams, value: e.target.value })}
                     required
-                    style={{ flex: 1, height: '40px', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '0 12px', outline: 'none' }}
+                    style={{ flex: 1, height: '40px', border: '1px solid #E2E8F0', borderRadius: '2px', padding: '0 12px', outline: 'none' }}
                   />
                   <input 
                     type="text" 
@@ -11062,7 +10940,7 @@ const ReceptionistDashboard = () => {
                     value={coverageLabParams.unit} 
                     onChange={e => setCoverageLabParams({ ...coverageLabParams, unit: e.target.value })}
                     required
-                    style={{ width: '150px', height: '40px', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '0 12px', outline: 'none' }}
+                    style={{ width: '150px', height: '40px', border: '1px solid #E2E8F0', borderRadius: '2px', padding: '0 12px', outline: 'none' }}
                   />
                 </div>
               </div>
@@ -11074,14 +10952,14 @@ const ReceptionistDashboard = () => {
                   value={coverageLabRemarks} 
                   onChange={e => setCoverageLabRemarks(e.target.value)}
                   required
-                  style={{ width: '100%', height: '80px', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '8px 12px', outline: 'none', resize: 'none' }}
+                  style={{ width: '100%', height: '80px', border: '1px solid #E2E8F0', borderRadius: '2px', padding: '8px 12px', outline: 'none', resize: 'none' }}
                 />
               </div>
 
-              <div style={{ marginBottom: '24px' }}>
+              <div style={{ marginBottom: '12px' }}>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: '#64748B', marginBottom: '6px', textTransform: 'uppercase' }}>Upload Diagnostic Report Document</label>
                 <div 
-                  style={{ border: '2px dashed #CBD5E1', borderRadius: '8px', padding: '16px', textAlign: 'center', cursor: 'pointer', background: '#F8FAFC' }}
+                  style={{ border: '2px dashed #CBD5E1', borderRadius: '2px', padding: '16px', textAlign: 'center', cursor: 'pointer', background: '#F8FAFC' }}
                   onClick={() => {
                     const input = document.createElement('input');
                     input.type = 'file';
@@ -11105,11 +10983,11 @@ const ReceptionistDashboard = () => {
                 <button 
                   type="button" 
                   onClick={() => setShowCoverageLabModal(false)}
-                  style={{ height: '40px', padding: '0 16px', background: '#F1F5F9', border: 'none', borderRadius: '8px', fontWeight: 700, color: '#475569', cursor: 'pointer' }}
+                  style={{ height: '40px', padding: '0 16px', background: '#F1F5F9', border: 'none', borderRadius: '2px', fontWeight: 700, color: '#475569', cursor: 'pointer' }}
                 >Cancel</button>
                 <button 
                   type="submit" 
-                  style={{ height: '40px', padding: '0 20px', background: '#059669', border: 'none', borderRadius: '8px', fontWeight: 700, color: 'white', cursor: 'pointer' }}
+                  style={{ height: '40px', padding: '0 20px', background: '#059669', border: 'none', borderRadius: '2px', fontWeight: 700, color: 'white', cursor: 'pointer' }}
                 >Finalize & Dispatch</button>
               </div>
             </form>
@@ -11121,7 +10999,7 @@ const ReceptionistDashboard = () => {
         <div className="details-modal-overlay" onClick={() => setShowCoveragePharmacyPaymentModal(false)} style={{ zIndex: 5000 }}>
           <div className="details-modal-card" onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: '500px', padding: '28px', borderRadius: '16px', background: 'white' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', margin: 0 }}>Settle Bill & Dispense Medication</h3>
+              <h3 style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A', margin: 0 }}>Settle Bill & Dispense Medication</h3>
               <button 
                 type="button" 
                 onClick={() => setShowCoveragePharmacyPaymentModal(false)} 
@@ -11129,7 +11007,7 @@ const ReceptionistDashboard = () => {
               >✕</button>
             </div>
             
-            <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '12px', marginBottom: '20px', border: '1px solid #E2E8F0' }}>
+            <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '4px', marginBottom: '20px', border: '1px solid #E2E8F0' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <span style={{ fontSize: '13px', color: '#64748B', fontWeight: 600 }}>Patient:</span>
                 <b style={{ fontSize: '13px', color: '#0F172A' }}>{selectedCoveragePharmacyRx.patient}</b>
@@ -11143,8 +11021,8 @@ const ReceptionistDashboard = () => {
                 <span style={{ fontSize: '13px', color: '#0F172A', fontWeight: 700, maxWidth: '280px', textAlign: 'right' }}>{selectedCoveragePharmacyRx.med}</span>
               </div>
               <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '14px', color: '#0F172A', fontWeight: 800 }}>Amount Due:</span>
-                <span style={{ fontSize: '18px', color: '#2563EB', fontWeight: 900 }}>₹{(selectedCoveragePharmacyRx.amountVal || 550).toFixed(2)}</span>
+                <span style={{ fontSize: '12px', color: '#0F172A', fontWeight: 800 }}>Amount Due:</span>
+                <span style={{ fontSize: '14px', color: '#2563EB', fontWeight: 900 }}>₹{(selectedCoveragePharmacyRx.amountVal || 550).toFixed(2)}</span>
               </div>
             </div>
 
@@ -11165,7 +11043,7 @@ const ReceptionistDashboard = () => {
                     }}
                     style={{
                       height: '42px',
-                      borderRadius: '8px',
+                      borderRadius: '2px',
                       border: active ? '2px solid #2563EB' : '1px solid #CBD5E1',
                       background: active ? '#EFF6FF' : 'white',
                       color: active ? '#2563EB' : '#475569',
@@ -11187,8 +11065,8 @@ const ReceptionistDashboard = () => {
 
             {/* Interactive Forms */}
             {coveragePharmacyPaymentMode === 'UPI' && (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', padding: '16px', background: '#F8FAFC', borderRadius: '12px', border: '1px dashed #CBD5E1', marginBottom: '20px' }}>
-                <div style={{ padding: '8px', background: 'white', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', padding: '16px', background: '#F8FAFC', borderRadius: '4px', border: '1px dashed #CBD5E1', marginBottom: '20px' }}>
+                <div style={{ padding: '8px', background: 'white', borderRadius: '2px', border: '1px solid #E2E8F0' }}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="#0F172A" strokeWidth="1.8">
                     <rect x="1" y="1" width="6" height="6" rx="1" />
                     <rect x="1" y="17" width="6" height="6" rx="1" />
@@ -11207,9 +11085,9 @@ const ReceptionistDashboard = () => {
             {coveragePharmacyPaymentMode === 'Cash' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '11.5px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: '6px' }}>Cash Amount Received</label>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: '6px' }}>Cash Amount Received</label>
                   <div style={{ position: 'relative' }}>
-                    <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontWeight: 800, color: '#475569', fontSize: '14px' }}>₹</span>
+                    <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontWeight: 800, color: '#475569', fontSize: '12px' }}>₹</span>
                     <input 
                       type="number" 
                       placeholder="Enter amount given" 
@@ -11220,8 +11098,8 @@ const ReceptionistDashboard = () => {
                         height: '40px', 
                         paddingLeft: '28px', 
                         border: '1px solid #CBD5E1', 
-                        borderRadius: '8px', 
-                        fontSize: '14px', 
+                        borderRadius: '2px', 
+                        fontSize: '12px', 
                         fontWeight: 700, 
                         outline: 'none',
                         color: '#0F172A',
@@ -11235,7 +11113,7 @@ const ReceptionistDashboard = () => {
                     background: '#ECFDF5', 
                     border: '1px solid #A7F3D0', 
                     padding: '10px 14px', 
-                    borderRadius: '8px', 
+                    borderRadius: '2px', 
                     color: '#047857', 
                     display: 'flex', 
                     justifyContent: 'space-between', 
@@ -11251,13 +11129,13 @@ const ReceptionistDashboard = () => {
             )}
 
             {coveragePharmacyPaymentMode === 'Card' && (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '16px', background: '#F8FAFC', borderRadius: '12px', border: '1px solid #E2E8F0', textAlign: 'center', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '16px', background: '#F8FAFC', borderRadius: '4px', border: '1px solid #E2E8F0', textAlign: 'center', marginBottom: '20px' }}>
                 <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#EFF6FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
                 </div>
                 <div>
-                  <div style={{ fontWeight: 800, color: '#1E293B', fontSize: '13.5px' }}>POS Terminal Active</div>
-                  <div style={{ fontSize: '11.5px', color: '#64748B', marginTop: '4px', fontWeight: 600 }}>Please tap or insert the customer's Credit/Debit card.</div>
+                  <div style={{ fontWeight: 800, color: '#1E293B', fontSize: '12px' }}>POS Terminal Active</div>
+                  <div style={{ fontSize: '12px', color: '#64748B', marginTop: '4px', fontWeight: 600 }}>Please tap or insert the customer's Credit/Debit card.</div>
                 </div>
               </div>
             )}
@@ -11266,12 +11144,12 @@ const ReceptionistDashboard = () => {
               <button 
                 type="button" 
                 onClick={() => setShowCoveragePharmacyPaymentModal(false)}
-                style={{ height: '40px', padding: '0 16px', background: '#F1F5F9', border: 'none', borderRadius: '8px', fontWeight: 700, color: '#475569', cursor: 'pointer' }}
+                style={{ height: '40px', padding: '0 16px', background: '#F1F5F9', border: 'none', borderRadius: '2px', fontWeight: 700, color: '#475569', cursor: 'pointer' }}
               >Cancel</button>
               <button 
                 type="button" 
                 onClick={handleConfirmCoveragePharmacyPayment}
-                style={{ height: '40px', padding: '0 20px', background: '#10B981', border: 'none', borderRadius: '8px', fontWeight: 800, color: 'white', cursor: 'pointer' }}
+                style={{ height: '40px', padding: '0 20px', background: '#10B981', border: 'none', borderRadius: '2px', fontWeight: 800, color: 'white', cursor: 'pointer' }}
               >Confirm Pay & Dispense</button>
             </div>
           </div>
@@ -11284,7 +11162,7 @@ const ReceptionistDashboard = () => {
           <div className="details-modal-overlay" onClick={() => setShowCoverageLabDetailsModal(false)} style={{ zIndex: 5000 }}>
             <div className="details-modal-card" onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: '480px', padding: '28px', borderRadius: '16px', background: 'white' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', margin: 0 }}>Lab Report Details</h3>
+                <h3 style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A', margin: 0 }}>Lab Report Details</h3>
                 <button 
                   type="button" 
                   onClick={() => setShowCoverageLabDetailsModal(false)} 
@@ -11292,33 +11170,33 @@ const ReceptionistDashboard = () => {
                 >✕</button>
               </div>
 
-              <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '12px', marginBottom: '20px', border: '1px solid #E2E8F0' }}>
+              <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '4px', marginBottom: '20px', border: '1px solid #E2E8F0' }}>
                 <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, marginBottom: '6px' }}>PATIENT</div>
-                <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A' }}>{selectedCoverageLabTest.name}</div>
+                <div style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A' }}>{selectedCoverageLabTest.name}</div>
                 <div style={{ fontSize: '11px', color: '#94A3B8', marginTop: '2px' }}>Order ID: #{selectedCoverageLabTest.id}</div>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '24px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '12px' }}>
                 <div>
                   <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Test Conducted</span>
-                  <span style={{ fontSize: '14px', fontWeight: 700, color: '#1E293B' }}>{selectedCoverageLabTest.test}</span>
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#1E293B' }}>{selectedCoverageLabTest.test}</span>
                 </div>
                 <div>
                   <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Reported Value</span>
-                  <span style={{ fontSize: '15px', fontWeight: 800, color: '#059669', background: '#ECFDF5', padding: '4px 8px', borderRadius: '6px', display: 'inline-block' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 800, color: '#059669', background: '#ECFDF5', padding: '4px 8px', borderRadius: '6px', display: 'inline-block' }}>
                     {parsed.parameters?.value || 'N/A'} {parsed.parameters?.unit || ''}
                   </span>
                 </div>
                 <div>
                   <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Clinical Observations & Remarks</span>
-                  <p style={{ fontSize: '13.5px', color: '#334155', background: '#F8FAFC', padding: '12px', borderRadius: '8px', border: '1px solid #F1F5F9', margin: 0, fontWeight: 600, lineHeight: 1.5 }}>
+                  <p style={{ fontSize: '12px', color: '#334155', background: '#F8FAFC', padding: '12px', borderRadius: '2px', border: '1px solid #F1F5F9', margin: 0, fontWeight: 600, lineHeight: 1.5 }}>
                     {parsed.remarks || 'No remarks provided.'}
                   </p>
                 </div>
                 {parsed.document && (
                   <div>
                     <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Attached Document</span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', background: '#EFF6FF', borderRadius: '8px', border: '1px solid #BFDBFE' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', background: '#EFF6FF', borderRadius: '2px', border: '1px solid #BFDBFE' }}>
                       <span style={{ fontSize: '13px', fontWeight: 700, color: '#1E40AF', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{parsed.document}</span>
                       <a 
                         href="#" 
@@ -11334,7 +11212,7 @@ const ReceptionistDashboard = () => {
                 <button 
                   type="button" 
                   onClick={() => setShowCoverageLabDetailsModal(false)}
-                  style={{ height: '40px', padding: '0 20px', background: '#0F172A', border: 'none', borderRadius: '8px', fontWeight: 700, color: 'white', cursor: 'pointer' }}
+                  style={{ height: '40px', padding: '0 20px', background: '#0F172A', border: 'none', borderRadius: '2px', fontWeight: 700, color: 'white', cursor: 'pointer' }}
                 >Close</button>
               </div>
             </div>
@@ -11346,8 +11224,8 @@ const ReceptionistDashboard = () => {
       {showProfileEditModal && (
         <div className="details-modal-overlay" onClick={() => setShowProfileEditModal(false)} style={{ zIndex: 4000 }}>
           <div className="details-modal-card" onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: '440px', padding: '28px', borderRadius: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', margin: 0 }}>Edit Receptionist Profile</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <h2 style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A', margin: 0 }}>Edit Receptionist Profile</h2>
               <button 
                 onClick={() => setShowProfileEditModal(false)}
                 style={{ background: 'none', border: 'none', color: '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px', borderRadius: '50%' }}
@@ -11357,19 +11235,19 @@ const ReceptionistDashboard = () => {
             </div>
 
             {profileError && (
-              <div style={{ padding: '12px', borderRadius: '8px', background: '#FEF2F2', border: '1px solid #FCA5A5', color: '#DC2626', fontSize: '13px', fontWeight: 600, marginBottom: '16px' }}>
+              <div style={{ padding: '12px', borderRadius: '2px', background: '#FEF2F2', border: '1px solid #FCA5A5', color: '#DC2626', fontSize: '13px', fontWeight: 600, marginBottom: '16px' }}>
                 {profileError}
               </div>
             )}
 
             {profileSuccess && (
-              <div style={{ padding: '12px', borderRadius: '8px', background: '#F0FDF4', border: '1px solid #86EFAC', color: '#16A34A', fontSize: '13px', fontWeight: 600, marginBottom: '16px' }}>
+              <div style={{ padding: '12px', borderRadius: '2px', background: '#F0FDF4', border: '1px solid #86EFAC', color: '#16A34A', fontSize: '13px', fontWeight: 600, marginBottom: '16px' }}>
                 {profileSuccess}
               </div>
             )}
 
             <form onSubmit={handleUpdateProfileSubmit}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px', marginBottom: '24px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px', marginBottom: '12px' }}>
                 {profileEditAvatar ? (
                   <img 
                     src={profileEditAvatar} 
@@ -11383,7 +11261,7 @@ const ReceptionistDashboard = () => {
                 )}
                 
                 <div>
-                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 14px', background: '#FFF7ED', color: '#EA580C', borderRadius: '8px', fontSize: '12px', fontWeight: 800, cursor: 'pointer', border: '1px dashed #F59E0B' }}>
+                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 14px', background: '#FFF7ED', color: '#EA580C', borderRadius: '2px', fontSize: '12px', fontWeight: 800, cursor: 'pointer', border: '1px dashed #F59E0B' }}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
                     Upload Picture
                     <input 
@@ -11423,7 +11301,7 @@ const ReceptionistDashboard = () => {
                 <input 
                   type="text" 
                   className="form-control" 
-                  style={{ width: '100%', border: '1px solid #CBD5E1', borderRadius: '8px', height: '40px', padding: '0 12px', fontSize: '13px', fontWeight: 600, backgroundColor: '#F1F5F9', cursor: 'not-allowed' }}
+                  style={{ width: '100%', border: '1px solid #CBD5E1', borderRadius: '2px', height: '40px', padding: '0 12px', fontSize: '13px', fontWeight: 600, backgroundColor: '#F1F5F9', cursor: 'not-allowed' }}
                   value={profileEditName} 
                   disabled
                   required 
@@ -11436,7 +11314,7 @@ const ReceptionistDashboard = () => {
                 <input 
                   type="email" 
                   className="form-control" 
-                  style={{ width: '100%', border: '1px solid #CBD5E1', borderRadius: '8px', height: '40px', padding: '0 12px', fontSize: '13px', fontWeight: 600, backgroundColor: '#F1F5F9', cursor: 'not-allowed' }}
+                  style={{ width: '100%', border: '1px solid #CBD5E1', borderRadius: '2px', height: '40px', padding: '0 12px', fontSize: '13px', fontWeight: 600, backgroundColor: '#F1F5F9', cursor: 'not-allowed' }}
                   value={profileEditEmail} 
                   disabled
                   required 
@@ -11447,7 +11325,7 @@ const ReceptionistDashboard = () => {
               <button 
                 type="submit" 
                 className="btn btn-primary" 
-                style={{ width: '100%', height: '44px', fontWeight: 800, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ width: '100%', height: '26px', fontWeight: 800, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 disabled={profileEditLoading}
               >
                 {profileEditLoading ? 'Saving...' : 'Save Profile Changes'}
@@ -11459,29 +11337,29 @@ const ReceptionistDashboard = () => {
 
       {showPaymentModal && selectedBillForPayment && (
         <div className="details-modal-overlay" data-lenis-prevent onClick={() => { setShowPaymentModal(false); setPendingRegistrationPayload(null); }}>
-          <div className="details-modal-card" onClick={e => e.stopPropagation()} style={{ maxWidth: '480px', padding: '24px' }}>
+          <div className="details-modal-card" onClick={e => e.stopPropagation()} style={{ maxWidth: '480px', padding: '12px' }}>
             <div className="details-modal-header" style={{ marginBottom: '20px', borderBottom: '1px solid #F1F5F9', paddingBottom: '12px' }}>
-              <span className="details-modal-title" style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A' }}>Process Appointment Payment</span>
+              <span className="details-modal-title" style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A' }}>Process Appointment Payment</span>
               <button className="details-modal-close" onClick={() => { setShowPaymentModal(false); setPendingRegistrationPayload(null); }}>✕</button>
             </div>
             
-            <form onSubmit={handleMarkAsPaidSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <form onSubmit={handleMarkAsPaidSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', marginBottom: '6px' }}>Patient Name</label>
                 <input 
                   type="text" 
-                  style={{ width: '100%', height: '40px', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '0 12px', fontSize: '14px', fontWeight: 600, backgroundColor: '#F8FAFC' }}
+                  style={{ width: '100%', height: '40px', border: '1px solid #E2E8F0', borderRadius: '2px', padding: '0 12px', fontSize: '12px', fontWeight: 600, backgroundColor: '#F8FAFC' }}
                   value={selectedBillForPayment.patientId?.name || 'Unknown'} 
                   readOnly 
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', marginBottom: '6px' }}>Total Charge</label>
                   <input 
                     type="text" 
-                    style={{ width: '100%', height: '40px', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '0 12px', fontSize: '14px', fontWeight: 700, backgroundColor: '#F8FAFC' }}
+                    style={{ width: '100%', height: '40px', border: '1px solid #E2E8F0', borderRadius: '2px', padding: '0 12px', fontSize: '12px', fontWeight: 700, backgroundColor: '#F8FAFC' }}
                     value={`₹${selectedBillForPayment.totalAmount.toLocaleString()}`} 
                     readOnly 
                   />
@@ -11493,7 +11371,7 @@ const ReceptionistDashboard = () => {
                       type="number" 
                       min="0"
                       max={allowedDiscountPercent}
-                      style={{ width: '100%', height: '40px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 28px 0 12px', fontSize: '14px', fontWeight: 800 }}
+                      style={{ width: '100%', height: '40px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 28px 0 12px', fontSize: '12px', fontWeight: 800 }}
                       value={discountPercent} 
                       onChange={e => setDiscountPercent(Math.min(allowedDiscountPercent, Math.max(0, Number(e.target.value))))} 
                     />
@@ -11509,7 +11387,7 @@ const ReceptionistDashboard = () => {
                   <input 
                     type="text" 
                     placeholder="e.g. Senior Citizen / Staff Relative"
-                    style={{ width: '100%', height: '40px', border: '1px solid #FCA5A5', borderRadius: '8px', padding: '0 12px', fontSize: '13.5px', fontWeight: 600 }}
+                    style={{ width: '100%', height: '40px', border: '1px solid #FCA5A5', borderRadius: '2px', padding: '0 12px', fontSize: '12px', fontWeight: 600 }}
                     value={discountReason} 
                     onChange={e => setDiscountReason(e.target.value)} 
                     required={discountPercent > 0}
@@ -11520,7 +11398,7 @@ const ReceptionistDashboard = () => {
               <div>
                 <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', marginBottom: '6px' }}>Payment Method</label>
                 <select 
-                  style={{ width: '100%', height: '40px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 8px', fontSize: '13.5px', fontWeight: 600, background: 'white' }}
+                  style={{ width: '100%', height: '40px', border: '1px solid #CBD5E1', borderRadius: '2px', padding: '0 8px', fontSize: '12px', fontWeight: 600, background: 'white' }}
                   value={paymentMethod}
                   onChange={e => setPaymentMethod(e.target.value)}
                 >
@@ -11531,7 +11409,7 @@ const ReceptionistDashboard = () => {
                 </select>
               </div>
 
-              <div style={{ backgroundColor: '#F8FAFC', borderRadius: '8px', padding: '16px', marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '8px', border: '1px solid #E2E8F0' }}>
+              <div style={{ backgroundColor: '#F8FAFC', borderRadius: '2px', padding: '16px', marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '8px', border: '1px solid #E2E8F0' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#64748B', fontWeight: 600 }}>
                   <span>Original Total:</span>
                   <span>₹{selectedBillForPayment.totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
@@ -11542,15 +11420,15 @@ const ReceptionistDashboard = () => {
                     <span>-₹{((selectedBillForPayment.totalAmount * discountPercent) / 100).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                   </div>
                 )}
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '15px', color: '#0F172A', fontWeight: 850, borderTop: '1px dashed #CBD5E1', paddingTop: '8px', marginTop: '4px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#0F172A', fontWeight: 850, borderTop: '1px dashed #CBD5E1', paddingTop: '8px', marginTop: '4px' }}>
                   <span>Net Payable Amount:</span>
                   <span style={{ color: '#2563EB', fontSize: '17px' }}>₹{(selectedBillForPayment.totalAmount - (selectedBillForPayment.totalAmount * discountPercent) / 100).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                 </div>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px', borderTop: '1px solid #F1F5F9', paddingTop: '16px' }}>
-                <button type="button" className="btn btn-secondary" style={{ height: '40px', padding: '0 20px', borderRadius: '8px', fontWeight: 700 }} onClick={() => { setShowPaymentModal(false); setPendingRegistrationPayload(null); }}>Cancel</button>
-                <button type="submit" className="btn btn-primary" style={{ height: '40px', padding: '0 24px', borderRadius: '8px', fontWeight: 800, background: 'var(--primary-gradient)', border: 'none' }} disabled={isSettlingPayment}>
+                <button type="button" className="btn btn-secondary" style={{ height: '40px', padding: '0 20px', borderRadius: '2px', fontWeight: 700 }} onClick={() => { setShowPaymentModal(false); setPendingRegistrationPayload(null); }}>Cancel</button>
+                <button type="submit" className="btn btn-primary" style={{ height: '40px', padding: '0 24px', borderRadius: '2px', fontWeight: 800, background: 'var(--primary-gradient)', border: 'none' }} disabled={isSettlingPayment}>
                   {isSettlingPayment ? 'Processing Payment & Registering...' : 'Complete Payment'}
                 </button>
               </div>
@@ -11568,31 +11446,31 @@ const ReceptionistDashboard = () => {
           return { color: '#D97706', fontWeight: 800 };
         };
         return (
-          <div onClick={() => { setShowIndentModal(false); setSelectedIndent(null); }} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.45)', backdropFilter: 'blur(4px)', zIndex: 9000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div onClick={() => { setShowIndentModal(false); setSelectedIndent(null); }} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.45)', backdropFilter: 'blur(4px)', zIndex: 9000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px' }}>
             <div onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: '20px', padding: '32px', width: '100%', maxWidth: '600px', boxShadow: '0 24px 64px rgba(0,0,0,0.15)', animation: 'slideUp 0.3s ease-out', display: 'flex', flexDirection: 'column', maxHeight: '90vh' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexShrink: 0 }}>
                 <div>
                   <div style={{ fontSize: '20px', fontWeight: 900, color: '#0F172A' }}>Indent Order Summary</div>
                   <div style={{ fontSize: '13px', color: '#64748B', fontWeight: 600, marginTop: '2px' }}>ID: {selectedIndent.indentId}</div>
                 </div>
-                <button onClick={() => { setShowIndentModal(false); setSelectedIndent(null); }} style={{ background: '#F1F5F9', border: 'none', borderRadius: '8px', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', fontSize: '16px', fontWeight: 'bold' }}>✕</button>
+                <button onClick={() => { setShowIndentModal(false); setSelectedIndent(null); }} style={{ background: '#F1F5F9', border: 'none', borderRadius: '2px', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', fontSize: '14px', fontWeight: 'bold' }}>✕</button>
               </div>
 
               <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '20px', paddingRight: '4px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                   <div>
                     <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 800, textTransform: 'uppercase' }}>Department</span>
-                    <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#1E293B', marginTop: '2px' }}>{selectedIndent.department}</div>
+                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#1E293B', marginTop: '2px' }}>{selectedIndent.department}</div>
                   </div>
                   <div>
                     <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 800, textTransform: 'uppercase' }}>Requested Date</span>
-                    <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#1E293B', marginTop: '2px' }}>
+                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#1E293B', marginTop: '2px' }}>
                       {new Date(selectedIndent.createdAt || selectedIndent.requiredDate).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
                     </div>
                   </div>
                   <div>
                     <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 800, textTransform: 'uppercase' }}>Requested By</span>
-                    <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#1E293B', marginTop: '2px' }}>{selectedIndent.requestedBy}</div>
+                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#1E293B', marginTop: '2px' }}>{selectedIndent.requestedBy}</div>
                   </div>
                   <div>
                     <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 800, textTransform: 'uppercase' }}>Status</span>
@@ -11604,7 +11482,7 @@ const ReceptionistDashboard = () => {
 
                 <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: '16px' }}>
                   <h4 style={{ fontSize: '13px', fontWeight: 800, color: '#475569', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Items Ordered</h4>
-                  <div style={{ border: '1px solid #E2E8F0', borderRadius: '10px', overflow: 'hidden' }}>
+                  <div style={{ border: '1px solid #E2E8F0', borderRadius: '2px', overflow: 'hidden' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                       <thead>
                         <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
@@ -11637,7 +11515,7 @@ const ReceptionistDashboard = () => {
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', padding: '20px 0 0 0', borderTop: '1px solid #F1F5F9', flexShrink: 0, marginTop: '20px' }}>
                 <button 
                   onClick={() => { setShowIndentModal(false); setSelectedIndent(null); }}
-                  style={{ height: '40px', padding: '0 16px', borderRadius: '8px', border: '1px solid #E2E8F0', background: 'white', cursor: 'pointer', fontWeight: 700, fontSize: '13px', color: '#64748B' }}
+                  style={{ height: '40px', padding: '0 16px', borderRadius: '2px', border: '1px solid #E2E8F0', background: 'white', cursor: 'pointer', fontWeight: 700, fontSize: '13px', color: '#64748B' }}
                 >
                   Close
                 </button>
@@ -11660,7 +11538,7 @@ const ReceptionistDashboard = () => {
                         setLoading(false);
                       }
                     }}
-                    style={{ height: '40px', padding: '0 20px', borderRadius: '8px', border: 'none', background: '#2563EB', color: 'white', cursor: 'pointer', fontWeight: 800, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    style={{ height: '40px', padding: '0 20px', borderRadius: '2px', border: 'none', background: '#2563EB', color: 'white', cursor: 'pointer', fontWeight: 800, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12" />
@@ -11694,7 +11572,7 @@ const ReceptionistDashboard = () => {
                 zIndex: 999999,
                 background: '#FFFFFF',
                 border: '1.5px solid #E2E8F0',
-                borderRadius: '12px',
+                borderRadius: '4px',
                 boxShadow: '0 12px 30px rgba(0, 0, 0, 0.18)',
                 width: '215px',
                 overflow: 'hidden',
@@ -11774,7 +11652,7 @@ const ReceptionistDashboard = () => {
 
       {/* PAYMENT & DIAGNOSTIC LAB / CLINICAL ORDER SLIP PDF MODAL */}
       {showSlipPdfModal && activeSlipData && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(4px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(4px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px' }}>
           <style>{`
             @media print {
               @page {
@@ -11926,7 +11804,7 @@ const ReceptionistDashboard = () => {
             <div style={{ borderBottom: '2px solid #2563EB', paddingBottom: '16px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#2563EB', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(37,99,235,0.3)', flexShrink: 0 }}>
+                  <div style={{ width: '42px', height: '42px', borderRadius: '2px', background: '#2563EB', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(37,99,235,0.3)', flexShrink: 0 }}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h5v5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2z"/>
                     </svg>
@@ -11944,21 +11822,21 @@ const ReceptionistDashboard = () => {
             </div>
 
             {/* Patient Meta Details */}
-            <div style={{ background: '#F8FAFC', borderRadius: '12px', padding: '16px', border: '1px solid #E2E8F0', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px', position: 'relative', zIndex: 1, WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+            <div style={{ background: '#F8FAFC', borderRadius: '4px', padding: '16px', border: '1px solid #E2E8F0', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '20px', position: 'relative', zIndex: 1, WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
               <div>
                 <span style={{ fontSize: '10px', fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>PATIENT NAME</span>
-                <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A', marginTop: '2px' }}>{activeSlipData.patientName}</div>
+                <div style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A', marginTop: '2px' }}>{activeSlipData.patientName}</div>
                 <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, marginTop: '2px' }}>UHID: {activeSlipData.patientId}</div>
               </div>
               <div>
                 <span style={{ fontSize: '10px', fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>AGE / GENDER / CONTACT</span>
-                <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#334155', marginTop: '2px' }}>{activeSlipData.ageGender}</div>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: '#334155', marginTop: '2px' }}>{activeSlipData.ageGender}</div>
                 <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 600, marginTop: '2px' }}>Phone: {activeSlipData.contact}</div>
               </div>
             </div>
 
             {/* Order & Payment Items Table */}
-            <div style={{ border: '1px solid #E2E8F0', borderRadius: '10px', overflow: 'hidden', marginBottom: '20px', position: 'relative', zIndex: 1 }}>
+            <div style={{ border: '1px solid #E2E8F0', borderRadius: '2px', overflow: 'hidden', marginBottom: '20px', position: 'relative', zIndex: 1 }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                 <thead>
                   <tr style={{ background: '#F1F5F9', borderBottom: '1px solid #E2E8F0', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
@@ -11980,10 +11858,10 @@ const ReceptionistDashboard = () => {
             </div>
 
             {/* Price Summary & Payment Status */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#F0FDF4', border: '1.5px solid #BBF7D0', padding: '14px 18px', borderRadius: '10px', marginBottom: '20px', position: 'relative', zIndex: 1, WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#F0FDF4', border: '1.5px solid #BBF7D0', padding: '14px 18px', borderRadius: '2px', marginBottom: '20px', position: 'relative', zIndex: 1, WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
               <div>
                 <span style={{ fontSize: '11px', fontWeight: 800, color: '#15803D', textTransform: 'uppercase', letterSpacing: '0.5px' }}>PAYMENT STATUS</span>
-                <div style={{ fontSize: '14px', fontWeight: 900, color: '#166534', display: 'flex', alignItems: 'center', gap: '8px', marginTop: '3px' }}>
+                <div style={{ fontSize: '12px', fontWeight: 900, color: '#166534', display: 'flex', alignItems: 'center', gap: '8px', marginTop: '3px' }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#15803D" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                     <polyline points="22 4 12 14.01 9 11.01"/>
@@ -11998,7 +11876,7 @@ const ReceptionistDashboard = () => {
             </div>
 
             {/* Instructions, Barcode & Signature */}
-            <div style={{ background: '#F8FAFC', border: '1px dashed #CBD5E1', padding: '14px 16px', borderRadius: '8px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 1, WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+            <div style={{ background: '#F8FAFC', border: '1px dashed #CBD5E1', padding: '14px 16px', borderRadius: '2px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 1, WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginTop: '1px', shrink: 0 }}>
                   <circle cx="12" cy="12" r="10"/>
@@ -12006,7 +11884,7 @@ const ReceptionistDashboard = () => {
                   <line x1="12" y1="8" x2="12.01" y2="8"/>
                 </svg>
                 <div>
-                  <div style={{ fontSize: '11.5px', color: '#334155', fontWeight: 700 }}>
+                  <div style={{ fontSize: '12px', color: '#334155', fontWeight: 700 }}>
                     <strong>Instructions:</strong> Please present this computer-generated official receipt at the counter.
                   </div>
                   <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '2px' }}>Authorized Signature / Computer Generated Receipt</div>
@@ -12067,7 +11945,7 @@ const ReceptionistDashboard = () => {
               <button
                 type="button"
                 onClick={() => window.print()}
-                style={{ padding: '10px 18px', background: '#F8FAFC', border: '1px solid #CBD5E1', borderRadius: '8px', color: '#334155', fontWeight: 700, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.15s ease' }}
+                style={{ padding: '10px 18px', background: '#F8FAFC', border: '1px solid #CBD5E1', borderRadius: '2px', color: '#334155', fontWeight: 700, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.15s ease' }}
                 onMouseEnter={e => e.currentTarget.style.background = '#F1F5F9'}
                 onMouseLeave={e => e.currentTarget.style.background = '#F8FAFC'}
               >
@@ -12081,7 +11959,7 @@ const ReceptionistDashboard = () => {
               <button
                 type="button"
                 onClick={() => window.print()}
-                style={{ padding: '10px 18px', background: '#059669', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 800, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(5,150,105,0.25)', transition: 'all 0.15s ease' }}
+                style={{ padding: '10px 18px', background: '#059669', border: 'none', borderRadius: '2px', color: 'white', fontWeight: 800, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(5,150,105,0.25)', transition: 'all 0.15s ease' }}
                 onMouseEnter={e => e.currentTarget.style.background = '#047857'}
                 onMouseLeave={e => e.currentTarget.style.background = '#059669'}
               >
@@ -12102,7 +11980,7 @@ const ReceptionistDashboard = () => {
                   const url = `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(message)}`;
                   window.open(url, '_blank');
                 }}
-                style={{ padding: '10px 18px', background: '#2563EB', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 800, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(37,99,235,0.25)', transition: 'all 0.15s ease' }}
+                style={{ padding: '10px 18px', background: '#2563EB', border: 'none', borderRadius: '2px', color: 'white', fontWeight: 800, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(37,99,235,0.25)', transition: 'all 0.15s ease' }}
                 onMouseEnter={e => e.currentTarget.style.background = '#1D4ED8'}
                 onMouseLeave={e => e.currentTarget.style.background = '#2563EB'}
               >
@@ -12120,10 +11998,10 @@ const ReceptionistDashboard = () => {
 
       {/* RECORD / EDIT VITALS MODAL */}
       {showVitalsModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(4px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(4px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px' }}>
           <div className="glass-card" style={{ background: 'white', borderRadius: '16px', border: '1.5px solid #C4B5FD', padding: '28px', width: '100%', maxWidth: '520px', boxShadow: '0 20px 40px rgba(0,0,0,0.12)', animation: 'slideUp 0.3s ease-out' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid #F1F5F9', paddingBottom: '12px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#1A1D23', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', borderBottom: '1px solid #F1F5F9', paddingBottom: '12px' }}>
+              <h3 style={{ fontSize: '14px', fontWeight: 900, color: '#1A1D23', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
                 </svg>
@@ -12139,7 +12017,7 @@ const ReceptionistDashboard = () => {
             </div>
 
             <form onSubmit={handleSaveVitals}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '12px' }}>
                 <div className="form-group" style={{ margin: 0 }}>
                   <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Temperature (°F)</label>
                   <input 
@@ -12147,7 +12025,7 @@ const ReceptionistDashboard = () => {
                     step="0.1" 
                     className="form-control" 
                     placeholder="e.g. 98.6"
-                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    style={{ height: '40px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
                     value={vitalTemp}
                     onChange={e => setVitalTemp(e.target.value)}
                   />
@@ -12159,7 +12037,7 @@ const ReceptionistDashboard = () => {
                     type="number" 
                     className="form-control" 
                     placeholder="e.g. 72"
-                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    style={{ height: '40px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
                     value={vitalPulse}
                     onChange={e => setVitalPulse(e.target.value)}
                   />
@@ -12171,7 +12049,7 @@ const ReceptionistDashboard = () => {
                     type="number" 
                     className="form-control" 
                     placeholder="e.g. 120"
-                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    style={{ height: '40px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
                     value={vitalBpSys}
                     onChange={e => setVitalBpSys(e.target.value)}
                   />
@@ -12183,7 +12061,7 @@ const ReceptionistDashboard = () => {
                     type="number" 
                     className="form-control" 
                     placeholder="e.g. 80"
-                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    style={{ height: '40px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
                     value={vitalBpDia}
                     onChange={e => setVitalBpDia(e.target.value)}
                   />
@@ -12195,7 +12073,7 @@ const ReceptionistDashboard = () => {
                     type="number" 
                     className="form-control" 
                     placeholder="e.g. 16"
-                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    style={{ height: '40px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
                     value={vitalResp}
                     onChange={e => setVitalResp(e.target.value)}
                   />
@@ -12207,7 +12085,7 @@ const ReceptionistDashboard = () => {
                     type="number" 
                     className="form-control" 
                     placeholder="e.g. 98"
-                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    style={{ height: '40px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
                     value={vitalSpo2}
                     onChange={e => setVitalSpo2(e.target.value)}
                   />
@@ -12220,7 +12098,7 @@ const ReceptionistDashboard = () => {
                     step="0.1" 
                     className="form-control" 
                     placeholder="e.g. 68.5"
-                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    style={{ height: '40px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
                     value={vitalWeight}
                     onChange={e => setVitalWeight(e.target.value)}
                   />
@@ -12232,7 +12110,7 @@ const ReceptionistDashboard = () => {
                     type="number" 
                     className="form-control" 
                     placeholder="e.g. 170"
-                    style={{ height: '40px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
+                    style={{ height: '40px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', width: '100%' }}
                     value={vitalHeight}
                     onChange={e => setVitalHeight(e.target.value)}
                   />
@@ -12243,7 +12121,7 @@ const ReceptionistDashboard = () => {
                 <button 
                   type="button" 
                   className="btn btn-secondary" 
-                  style={{ height: '42px', padding: '0 20px', borderRadius: '8px', border: '1.5px solid #CBD5E1', background: 'white', color: '#475569', fontWeight: 700 }}
+                  style={{ height: '42px', padding: '0 20px', borderRadius: '2px', border: '1.5px solid #CBD5E1', background: 'white', color: '#475569', fontWeight: 700 }}
                   onClick={() => setShowVitalsModal(false)}
                 >
                   Cancel
@@ -12251,7 +12129,7 @@ const ReceptionistDashboard = () => {
                 <button 
                   type="submit" 
                   className="btn btn-primary" 
-                  style={{ height: '42px', padding: '0 24px', borderRadius: '8px', background: '#2563EB', color: 'white', fontWeight: 800, border: 'none' }}
+                  style={{ height: '42px', padding: '0 24px', borderRadius: '2px', background: '#2563EB', color: 'white', fontWeight: 800, border: 'none' }}
                   disabled={loading}
                 >
                   {loading ? 'Saving...' : 'Save Vitals'}
@@ -12264,24 +12142,24 @@ const ReceptionistDashboard = () => {
 
       {/* BATCH SMS / BROADCAST COMMUNICATION MODAL */}
       {showBatchSmsModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(6px)', zIndex: 999999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(6px)', zIndex: 999999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px' }}>
           <div style={{ background: '#FFFFFF', borderRadius: '16px', width: '100%', maxWidth: '540px', padding: '28px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', border: '1px solid #E2E8F0', animation: 'zoomIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)' }}>
             
             {/* Modal Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', paddingBottom: '14px', borderBottom: '1px solid #F1F5F9' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#EFF6FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '38px', height: '26px', borderRadius: '2px', background: '#EFF6FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 </div>
                 <div>
                   <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 800, color: '#0F172A' }}>Dispatch Batch SMS / Notification</h3>
-                  <span style={{ fontSize: '11.5px', color: '#64748B', fontWeight: 600 }}>Broadcast SMS alert to {selectedPatientIds.length} selected patient(s)</span>
+                  <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>Broadcast SMS alert to {selectedPatientIds.length} selected patient(s)</span>
                 </div>
               </div>
               <button 
                 type="button" 
                 onClick={() => setShowBatchSmsModal(false)}
-                style={{ background: '#F1F5F9', border: 'none', borderRadius: '8px', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748B' }}
+                style={{ background: '#F1F5F9', border: 'none', borderRadius: '2px', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748B' }}
               >
                 ✕
               </button>
@@ -12289,12 +12167,12 @@ const ReceptionistDashboard = () => {
 
             {/* Selected Patients Summary Chips */}
             <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '11.5px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
                 RECIPIENTS ({selectedPatientIds.length})
               </label>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', maxHeight: '90px', overflowY: 'auto', padding: '10px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', maxHeight: '90px', overflowY: 'auto', padding: '10px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '2px' }}>
                 {patientsList.filter(p => selectedPatientIds.includes(p._id)).map(p => (
-                  <span key={p._id} style={{ background: '#EFF6FF', color: '#1D4ED8', border: '1px solid #BFDBFE', padding: '3px 8px', borderRadius: '6px', fontSize: '11.5px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <span key={p._id} style={{ background: '#EFF6FF', color: '#1D4ED8', border: '1px solid #BFDBFE', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                     👤 {p.name} ({p.contact})
                   </span>
                 ))}
@@ -12303,7 +12181,7 @@ const ReceptionistDashboard = () => {
 
             {/* Template Selector */}
             <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '11.5px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
                 SMS TEMPLATE
               </label>
               <select 
@@ -12319,7 +12197,7 @@ const ReceptionistDashboard = () => {
                     setBatchSmsMessage('Dear Valued Patient, Curoxa Medical Center wishes you good health! Our specialized OPD clinics are open Mon-Sat 9 AM - 8 PM.');
                   }
                 }}
-                style={{ width: '100%', height: '42px', borderRadius: '10px', border: '1px solid #CBD5E1', padding: '0 12px', fontSize: '13px', fontWeight: 700, color: '#0F172A', background: '#FFFFFF', outline: 'none' }}
+                style={{ width: '100%', height: '42px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', fontSize: '13px', fontWeight: 700, color: '#0F172A', background: '#FFFFFF', outline: 'none' }}
               >
                 <option value="reminder">Appointment & Visit Reminder</option>
                 <option value="lab">Lab Test Result Ready Notification</option>
@@ -12331,7 +12209,7 @@ const ReceptionistDashboard = () => {
             {/* Message Body Textarea */}
             <div style={{ marginBottom: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <label style={{ fontSize: '11.5px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>MESSAGE CONTENT</label>
+                <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>MESSAGE CONTENT</label>
                 <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700 }}>{batchSmsMessage.length} chars (1 SMS per patient)</span>
               </div>
               <textarea 
@@ -12339,7 +12217,7 @@ const ReceptionistDashboard = () => {
                 value={batchSmsMessage}
                 onChange={(e) => setBatchSmsMessage(e.target.value)}
                 placeholder="Enter SMS message content to broadcast..."
-                style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #CBD5E1', fontSize: '13px', fontFamily: 'inherit', color: '#0F172A', outline: 'none', background: '#F8FAFC', resize: 'none' }}
+                style={{ width: '100%', padding: '12px', borderRadius: '2px', border: '1px solid #CBD5E1', fontSize: '13px', fontFamily: 'inherit', color: '#0F172A', outline: 'none', background: '#F8FAFC', resize: 'none' }}
               />
             </div>
 
@@ -12348,7 +12226,7 @@ const ReceptionistDashboard = () => {
               <button 
                 type="button" 
                 onClick={() => setShowBatchSmsModal(false)}
-                style={{ padding: '10px 18px', background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '8px', color: '#475569', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}
+                style={{ padding: '10px 18px', background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '2px', color: '#475569', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}
               >
                 Cancel
               </button>
@@ -12365,7 +12243,7 @@ const ReceptionistDashboard = () => {
                     setTimeout(() => setBatchSmsSuccessToast(''), 4500);
                   }, 1000);
                 }}
-                style={{ padding: '10px 22px', background: '#2563EB', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 800, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(37,99,235,0.25)', opacity: batchSmsSending ? 0.7 : 1 }}
+                style={{ padding: '10px 22px', background: '#2563EB', border: 'none', borderRadius: '2px', color: 'white', fontWeight: 800, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(37,99,235,0.25)', opacity: batchSmsSending ? 0.7 : 1 }}
               >
                 {batchSmsSending ? 'Dispatching SMS...' : `Dispatch SMS to ${selectedPatientIds.length} Patient(s)`}
               </button>
@@ -12376,24 +12254,24 @@ const ReceptionistDashboard = () => {
 
       {/* SUCCESS TOAST NOTIFICATION */}
       {batchSmsSuccessToast && (
-        <div style={{ position: 'fixed', bottom: '28px', right: '28px', background: '#0F172A', color: 'white', padding: '14px 20px', borderRadius: '12px', border: '1px solid #22C55E', boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)', display: 'flex', alignItems: 'center', gap: '12px', zIndex: 999999, animation: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)' }}>
-          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#22C55E', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '14px' }}>✓</div>
-          <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#F8FAFC' }}>{batchSmsSuccessToast}</div>
+        <div style={{ position: 'fixed', bottom: '28px', right: '28px', background: '#0F172A', color: 'white', padding: '14px 20px', borderRadius: '4px', border: '1px solid #22C55E', boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)', display: 'flex', alignItems: 'center', gap: '12px', zIndex: 999999, animation: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#22C55E', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '12px' }}>✓</div>
+          <div style={{ fontSize: '12px', fontWeight: 700, color: '#F8FAFC' }}>{batchSmsSuccessToast}</div>
         </div>
       )}
       {/* View Lab Report Modal (Rendered globally so it can be opened from any tab) */}
       {labModalOpen && selectedLabRequest && (
-        <div onClick={() => setLabModalOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.45)', backdropFilter: 'blur(4px)', zIndex: 9000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+        <div onClick={() => setLabModalOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.45)', backdropFilter: 'blur(4px)', zIndex: 9000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px' }}>
           <div onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: '20px', padding: '32px', width: '100%', maxWidth: '600px', boxShadow: '0 24px 64px rgba(0,0,0,0.15)', animation: 'slideUp 0.3s ease-out' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <div>
                 <div style={{ fontSize: '20px', fontWeight: 900, color: '#0F172A' }}>Lab Investigation Report</div>
                 <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600, marginTop: '2px' }}>Test Name: {selectedLabRequest.testName}</div>
               </div>
-              <button onClick={() => setLabModalOpen(false)} style={{ background: '#F1F5F9', border: 'none', borderRadius: '8px', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', fontSize: '16px', fontWeight: 'bold' }}>✕</button>
+              <button onClick={() => setLabModalOpen(false)} style={{ background: '#F1F5F9', border: 'none', borderRadius: '2px', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', fontSize: '14px', fontWeight: 'bold' }}>✕</button>
             </div>
 
-            <div style={{ padding: '20px', background: '#F8FAFC', borderRadius: '12px', border: '1px solid #E2E8F0', whiteSpace: 'pre-wrap', fontFamily: 'monospace', fontSize: '13px', color: '#1E293B', lineHeight: '1.6', maxHeight: '400px', overflowY: 'auto' }}>
+            <div style={{ padding: '10px', background: '#F8FAFC', borderRadius: '4px', border: '1px solid #E2E8F0', whiteSpace: 'pre-wrap', fontFamily: 'monospace', fontSize: '13px', color: '#1E293B', lineHeight: '1.6', maxHeight: '400px', overflowY: 'auto' }}>
               {selectedLabRequest.results || 'Report is pending completion.'}
             </div>
           </div>

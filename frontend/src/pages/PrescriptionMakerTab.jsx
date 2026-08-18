@@ -60,6 +60,7 @@ export default function PrescriptionMakerTab({
   const [activeMedFocus, setActiveMedFocus] = useState(null);
   const [isHoveringSuggestions, setIsHoveringSuggestions] = useState(false);
   const [showLayoutPopover, setShowLayoutPopover] = useState(false);
+  const [notesCollapsed, setNotesCollapsed] = useState(false);
 
   const [noteTemplates, setNoteTemplates] = useState(() => {
     try {
@@ -1113,7 +1114,7 @@ export default function PrescriptionMakerTab({
             ) : (
               <div style={{ padding: '24px', textAlign: 'center', background: '#F8FAFC', borderRadius: '12px', border: '1.5px dashed #E2E8F0' }}>
                 <p style={{ margin: 0, fontSize: '13.5px', color: '#64748B', fontWeight: 600 }}>No medications added yet.</p>
-                <p style={{ margin: '4px 0 16px 0', fontSize: '11px', color: '#94A3B8' }}>Please prescribe medications from the sidebar drawer.</p>
+                <p style={{ margin: '4px 0 16px 0', fontSize: '11px', color: '#94A3B8' }}>Please prescribe medicines from the sidebar drawer.</p>
                 <button 
                   onClick={() => {
                     setDrawerMedName('');
@@ -1173,29 +1174,45 @@ export default function PrescriptionMakerTab({
 
           {/* Notes for Patient */}
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#64748B', letterSpacing: '0.05em', margin: 0 }}>NOTES FOR PATIENT</label>
+            <div 
+              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', cursor: 'pointer', userSelect: 'none' }}
+              onClick={() => setNotesCollapsed(!notesCollapsed)}
+            >
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#64748B', letterSpacing: '0.05em', margin: 0, cursor: 'pointer' }}>
+                NOTES FOR PATIENT {notesCollapsed ? '(Hidden)' : ''}
+              </label>
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="16" height="16" 
+                viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" 
+                style={{ transition: 'transform 0.2s', transform: notesCollapsed ? 'none' : 'rotate(180deg)' }}
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
             </div>
-            <div style={{ border: '1px solid #E2E8F0', borderRadius: '12px', padding: '24px', background: '#F8FAFC' }}>
-              {/* Render typed notes as bullet points */}
-              {soap.plan && soap.plan.trim() !== '' && (
-                <ul style={{ paddingLeft: '8px', margin: '0 0 16px 0', fontSize: '14px', color: '#1E293B', fontWeight: 600, lineHeight: 1.8, listStyle: 'none' }}>
-                  {soap.plan.split('\n').filter(line => line.trim() !== '').map((line, i) => (
-                    <li key={i} style={{ marginBottom: '6px', display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                      <span style={{ color: '#2563EB', fontSize: '8px', marginTop: '7px', flexShrink: 0 }}>●</span>
-                      <span>{line.trim()}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <textarea 
-                data-lenis-prevent
-                value={soap.plan}
-                onChange={e => setSoap(prev => ({ ...prev, plan: e.target.value }))}
-                placeholder="Type patient instructions here (each line becomes a bullet point)..." 
-                style={{ width: '100%', border: 'none', background: 'transparent', outline: 'none', fontSize: '13.5px', color: '#475569', resize: 'none', minHeight: '70px', fontWeight: 500, boxSizing: 'border-box' }}
-              />
-            </div>
+            
+            {!notesCollapsed && (
+              <div style={{ border: '1px solid #E2E8F0', borderRadius: '12px', padding: '24px', background: '#F8FAFC' }}>
+                {/* Render typed notes as bullet points */}
+                {soap.plan && soap.plan.trim() !== '' && (
+                  <ul style={{ paddingLeft: '8px', margin: '0 0 16px 0', fontSize: '14px', color: '#1E293B', fontWeight: 600, lineHeight: 1.8, listStyle: 'none' }}>
+                    {soap.plan.split('\n').filter(line => line.trim() !== '').map((line, i) => (
+                      <li key={i} style={{ marginBottom: '6px', display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                        <span style={{ color: '#2563EB', fontSize: '8px', marginTop: '7px', flexShrink: 0 }}>●</span>
+                        <span>{line.trim()}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <textarea 
+                  data-lenis-prevent
+                  value={soap.plan}
+                  onChange={e => setSoap(prev => ({ ...prev, plan: e.target.value }))}
+                  placeholder="Type patient instructions here (each line becomes a bullet point)..." 
+                  style={{ width: '100%', border: 'none', background: 'transparent', outline: 'none', fontSize: '13.5px', color: '#475569', resize: 'none', minHeight: '70px', fontWeight: 500, boxSizing: 'border-box' }}
+                />
+              </div>
+            )}
           </div>
 
           {/* Follow-Up Section */}
@@ -1684,7 +1701,7 @@ export default function PrescriptionMakerTab({
             {/* Header */}
             <div style={{ padding: '24px 32px', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 800, color: '#1E3A8A' }}>Prescribe Medications</h3>
+                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 800, color: '#1E3A8A' }}>Prescribe Medicines</h3>
                 <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#64748B', fontWeight: 600 }}>
                   {selectedPatient?.name || 'N/A'} | {selectedPatient?.uhid || 'N/A'}
                 </p>

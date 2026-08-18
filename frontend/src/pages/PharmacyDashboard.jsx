@@ -2703,7 +2703,7 @@ const PharmacyDashboard = () => {
                 onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                 onClick={handleLogout}
               >
-                <i data-lucide="log-out" style={{ width: '16px', height: '16px' }}></i> Logout Account
+                <i data-lucide="log-out" style={{ width: '16px', height: '16px' }}></i> Logout
               </div>
             </div>
           )}

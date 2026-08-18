@@ -6503,7 +6503,7 @@ const AdminDashboard = () => {
                 onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                 onClick={handleLogout}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg> Logout Account
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg> Logout
               </div>
             </div>
           )}
@@ -11095,9 +11095,7 @@ const AdminDashboard = () => {
                           </div>
                         </div>
 
-                        {/* Rx icon */}
-                        <div style={{ fontSize: '14px', fontWeight: 900, color: '#2563EB', marginBottom: '4px' }}>Rx</div>
-
+                        {/* Removed Rx icon as requested */}
                         {/* Medicines List */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '12px' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '8.5px' }}>

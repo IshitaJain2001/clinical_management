@@ -1874,7 +1874,7 @@ const DoctorDashboard = () => {
                   }
                   
                   blockHTML = '<div style="margin-bottom: 15px; page-break-inside: avoid; break-inside: avoid;">' +
-                    '<div style="font-family: Outfit, sans-serif; font-size: 12px; font-weight: 900; color: #800020; border-bottom: 1.5px solid #800020; padding-bottom: 3px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Rx (Prescribed Medicines) ' + (start > 0 ? '(Contd.)' : '') + '</div>' +
+                    '<div style="font-family: Outfit, sans-serif; font-size: 12px; font-weight: 900; color: #800020; border-bottom: 1.5px solid #800020; padding-bottom: 3px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Prescribed Medicines ' + (start > 0 ? '(Contd.)' : '') + '</div>' +
                     '<div style="display: flex; flex-direction: column; gap: 4px; padding-left: 2px;">' + itemsHTML + '</div>' +
                   '</div>';
                   
@@ -4544,11 +4544,6 @@ I have scanned the medical reference databases, but couldn't find a direct match
           <a href="#" className={`nav-link ${activeTab === 'dash' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('dash'); setMobileSidebarOpen(false); }}>
             <i data-lucide="layout-grid"></i> Dashboard
           </a>
-          {(currentUser?.role === 'doctor' || (coverageState['dr-consult']?.on || coverageState['dr-discharge']?.on || coverageState['dr-history']?.on)) && (
-            <a href="#" className={`nav-link ${['consultations', 'patient-profile'].includes(activeTab) ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('consultations'); setMobileSidebarOpen(false); }}>
-              <i data-lucide="activity"></i> Patient Info
-            </a>
-          )}
           {(currentUser?.role === 'doctor' || (coverageState['dr-consult']?.on || coverageState['dr-history']?.on)) && (
             <a href="#" className={`nav-link ${activeTab === 'appointments' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('appointments'); setMobileSidebarOpen(false); }}>
               <i data-lucide="calendar"></i> Appointments
@@ -4562,6 +4557,11 @@ I have scanned the medical reference databases, but couldn't find a direct match
           {(currentUser?.role === 'doctor' || coverageState['dr-rx']?.on) && (
             <a href="#" className={`nav-link ${activeTab === 'prescriptions' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('prescriptions'); setMobileSidebarOpen(false); }}>
               <i data-lucide="file-text"></i> Prescriptions
+            </a>
+          )}
+          {(currentUser?.role === 'doctor' || (coverageState['dr-consult']?.on || coverageState['dr-discharge']?.on || coverageState['dr-history']?.on)) && (
+            <a href="#" className={`nav-link ${['consultations', 'patient-profile'].includes(activeTab) ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('consultations'); setMobileSidebarOpen(false); }}>
+              <i data-lucide="activity"></i> Patient Records
             </a>
           )}
           {currentUser?.role === 'doctor' && (
@@ -4699,7 +4699,7 @@ I have scanned the medical reference databases, but couldn't find a direct match
                   handleLogout();
                 }}
               >
-                <i data-lucide="log-out" style={{ width: '16px', height: '16px' }}></i> Logout Account
+                <i data-lucide="log-out" style={{ width: '16px', height: '16px' }}></i> Logout
               </div>
             </div>
           )}
