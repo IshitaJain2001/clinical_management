@@ -11,6 +11,7 @@ router.get('/', verifyToken, tenantMiddleware, async (req, res) => {
     const filter = { tenantId: req.tenantId };
     if (req.query.action) filter.action = req.query.action;
     if (req.query.actor) filter.actor = req.query.actor;
+    if (req.query.target) filter.target = req.query.target;
     const limit = Math.min(parseInt(req.query.limit, 10) || 50, 500);
     const logs = await AuditLog.find(filter)
       .sort({ timestamp: -1 })

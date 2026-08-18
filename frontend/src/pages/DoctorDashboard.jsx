@@ -957,6 +957,7 @@ const DoctorDashboard = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const searchContainerRef = useRef(null);
   const [pastPrescriptions, setPastPrescriptions] = useState([]);
+  const [activePrescriptionLogs, setActivePrescriptionLogs] = useState([]);
   
   // Real-time Interactive Calendar & Dynamic Data Flow states
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -1034,6 +1035,27 @@ const DoctorDashboard = () => {
   // Redesigned Prescription States
   const [diagnosisText, setDiagnosisText] = useState('');
   const [sendToPharmacy, setSendToPharmacy] = useState(true);
+
+  useEffect(() => {
+    if (showAppOverviewModal && selectedOverviewApp) {
+      const data = getOverviewData();
+      const rxId = data?.prescription?._id;
+      if (rxId) {
+        api.get(`/audit-logs?target=${rxId}`)
+          .then(res => {
+            setActivePrescriptionLogs(res.data || []);
+          })
+          .catch(err => {
+            console.error("Failed to fetch prescription logs:", err);
+            setActivePrescriptionLogs([]);
+          });
+      } else {
+        setActivePrescriptionLogs([]);
+      }
+    } else {
+      setActivePrescriptionLogs([]);
+    }
+  }, [showAppOverviewModal, selectedOverviewApp]);
 
   // Custom Letterhead State for PDF Printing (Fetched dynamically from Admin configurations)
   const [customLetterhead, setCustomLetterhead] = useState(null);
@@ -1269,6 +1291,7 @@ const DoctorDashboard = () => {
         }
       }
 
+      window.__currentLetterhead = customLetterhead;
       const iframe = document.createElement('iframe');
       iframe.style.position = 'fixed';
       iframe.style.left = '-9999px';
@@ -1468,8 +1491,8 @@ const DoctorDashboard = () => {
             const tests = ${jsonTests};
             const activeTemplate = "${customSettings.template}";
             const digitalPreset = "${customSettings.digitalPreset}";
-            const hasCustomLetterhead = ${customLetterhead || letterheadUrl ? 'true' : 'false'};
-            const letterheadUrl = ${customLetterhead ? JSON.stringify(customLetterhead) : JSON.stringify(letterheadUrl || '')};
+            const hasCustomLetterhead = window.parent.__currentLetterhead ? true : false;
+            const letterheadUrl = window.parent.__currentLetterhead || '';
             const topSpacer = ${topSpacerDetected};
             const bottomSpacer = ${bottomSpacerDetected};
             const xLeftVal = ${xLeft};
@@ -10904,6 +10927,43 @@ I have scanned the medical reference databases, but couldn't find a direct match
                     <div style={{ color: '#94A3B8', fontSize: '9.5px', marginTop: '4px', fontWeight: 550, letterSpacing: '0.2px' }}>Signature & Seal</div>
                   </div>
                 </div>
+
+                {/* Prescription Edit History / Version Logs */}
+                {activePrescriptionLogs.length > 0 && (
+                  <div className="no-print" style={{ marginTop: '28px', padding: '16px', background: '#F8FAFC', border: '1px dashed #CBD5E1', borderRadius: '12px', textAlign: 'left' }}>
+                    <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: '13px', fontWeight: 800, color: '#1E3A8A', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                      Prescription Revision History (Edits: {activePrescriptionLogs.length})
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {activePrescriptionLogs.map((log, idx) => {
+                        const dateStr = new Date(log.timestamp).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                        const isCreation = log.action === 'prescription_created';
+                        return (
+                          <div key={log._id} style={{ display: 'flex', gap: '12px', fontSize: '12px', borderBottom: idx === activePrescriptionLogs.length - 1 ? 'none' : '1px solid #E2E8F0', paddingBottom: '10px' }}>
+                            <div style={{ color: '#64748B', fontWeight: 650, width: '125px', flexShrink: 0 }}>{dateStr}</div>
+                            <div style={{ flexGrow: 1 }}>
+                              <span style={{ fontWeight: 800, color: isCreation ? '#15803D' : '#D97706' }}>
+                                {isCreation ? 'Prescription Created' : 'Prescription Edited'}
+                              </span>
+                              <span style={{ color: '#64748B', marginLeft: '6px' }}>by {log.actorName} ({log.actorRole})</span>
+                              {log.metadata?.diff && Array.isArray(log.metadata.diff) && (
+                                <ul style={{ margin: '4px 0 0 0', paddingLeft: '16px', color: '#475569', listStyleType: 'disc' }}>
+                                  {log.metadata.diff.map((change, cIdx) => (
+                                    <li key={cIdx}>{change}</li>
+                                  ))}
+                                </ul>
+                              )}
+                              {!isCreation && !log.metadata?.diff && (
+                                <div style={{ color: '#64748B', fontStyle: 'italic', marginTop: '2px' }}>General updates made.</div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 {/* Repeating Footer for print (repeats bottom-0 fixed position, hidden on screen) */}
                 <div className="print-page-footer print-only">

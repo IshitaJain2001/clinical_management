@@ -135,16 +135,37 @@ router.put("/:id", async (req, res) => {
       updateObj,
       { returnDocument: "after" }
     ).populate("patientId", "name");
-
     let pharmacistChanged = false;
     let labTechChanged = false;
+    const diffDetails = [];
 
-    // 1. Compare medicines (pharmacist changes)
+    // 1. Compare medicines (pharmacist/doctor changes)
     if (items !== undefined && previous.items) {
-      const prevItems = previous.items.map(i => `${i.medicine}-${i.dosage}-${i.quantity}-${i.instructions}`);
-      const newItems = items.map(i => `${i.medicine}-${i.dosage}-${i.quantity}-${i.instructions}`);
-      if (prevItems.length !== newItems.length || prevItems.some((val, idx) => val !== newItems[idx])) {
-        pharmacistChanged = true;
+      const prevMap = new Map(previous.items.map(i => [i.medicine, i]));
+      const newMap = new Map(items.map(i => [i.medicine, i]));
+
+      for (const [name, newItem] of newMap) {
+        if (!prevMap.has(name)) {
+          diffDetails.push(`Added medicine: ${name} (${newItem.dosage}, ${newItem.duration})`);
+          pharmacistChanged = true;
+        } else {
+          const oldItem = prevMap.get(name);
+          const changes = [];
+          if (oldItem.dosage !== newItem.dosage) changes.push(`dose (${oldItem.dosage} -> ${newItem.dosage})`);
+          if (oldItem.duration !== newItem.duration) changes.push(`duration (${oldItem.duration} -> ${newItem.duration})`);
+          if (oldItem.instructions !== newItem.instructions) changes.push(`instructions (${oldItem.instructions} -> ${newItem.instructions})`);
+          if (changes.length > 0) {
+            diffDetails.push(`Modified ${name}: ${changes.join(', ')}`);
+            pharmacistChanged = true;
+          }
+        }
+      }
+
+      for (const [name, oldItem] of prevMap) {
+        if (!newMap.has(name)) {
+          diffDetails.push(`Removed medicine: ${name}`);
+          pharmacistChanged = true;
+        }
       }
     }
 
@@ -155,14 +176,13 @@ router.put("/:id", async (req, res) => {
       const existingNames = existingLabs.map(l => l.testName.trim().toLowerCase());
       const newNames = labs.map(l => l.trim().toLowerCase());
 
-      // Find to delete
       const toDelete = existingLabs.filter(l => !newNames.includes(l.testName.trim().toLowerCase()));
       if (toDelete.length > 0) {
         await LabRequest.deleteMany({ _id: { $in: toDelete.map(l => l._id) } });
+        diffDetails.push(`Removed lab tests: ${toDelete.map(l => l.testName).join(', ')}`);
         labTechChanged = true;
       }
 
-      // Find to create
       const toCreate = labs.filter(name => !existingNames.includes(name.trim().toLowerCase()));
       for (const test of toCreate) {
         await LabRequest.create({
@@ -175,10 +195,22 @@ router.put("/:id", async (req, res) => {
         });
         labTechChanged = true;
       }
+      if (toCreate.length > 0) {
+        diffDetails.push(`Added lab tests: ${toCreate.join(', ')}`);
+      }
     }
 
     // 3. Update Appointment diagnosis/notes if provided
     if (activeAppId && (diagnosis !== undefined || notes !== undefined)) {
+      const previousApp = await Appointment.findById(activeAppId).lean();
+      if (previousApp) {
+        if (diagnosis !== undefined && diagnosis !== previousApp.diagnosis) {
+          diffDetails.push(`Updated diagnosis: "${previousApp.diagnosis || 'None'}" -> "${diagnosis}"`);
+        }
+        if (notes !== undefined && notes !== previousApp.notes) {
+          diffDetails.push(`Updated symptoms/subjective notes`);
+        }
+      }
       const appUpdate = {};
       if (diagnosis !== undefined) appUpdate.diagnosis = diagnosis;
       if (notes !== undefined) appUpdate.notes = notes;
@@ -237,7 +269,8 @@ router.put("/:id", async (req, res) => {
         pharmacistChanged,
         labTechChanged,
         from: previous.status, 
-        to: status || prescription.status 
+        to: status || prescription.status,
+        diff: diffDetails.length > 0 ? diffDetails : ["General updates"]
       },
     }).catch(() => {});
 
