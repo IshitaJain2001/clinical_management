@@ -5831,8 +5831,16 @@ I have scanned the medical reference databases, but couldn't find a direct match
                           ))
                         ) : (
                           <tr>
-                            <td colSpan="5" style={{ textAlign: 'center', padding: '32px', color: '#64748B', fontSize: '14px', fontWeight: 600 }}>
-                              No appointments scheduled for this date.
+                            <td colSpan="5" style={{ textAlign: 'center', padding: '48px 24px', background: '#FAFAFA' }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3B82F6' }}>
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                                </div>
+                                <div>
+                                  <h4 style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: 700, color: '#334155' }}>No Appointments</h4>
+                                  <p style={{ margin: 0, fontSize: '12.5px', color: '#64748B', fontWeight: 500 }}>There are no patients scheduled for {selectedDateStr === new Date().toISOString().split('T')[0] ? 'today' : 'this date'}.</p>
+                                </div>
+                              </div>
                             </td>
                           </tr>
                         )}
@@ -6021,8 +6029,14 @@ I have scanned the medical reference databases, but couldn't find a direct match
                         </div>
                       ))
                     ) : (
-                      <div style={{ textAlign: 'center', padding: '24px', color: '#64748B', fontSize: '14px', fontWeight: 600 }}>
-                        No recent consultations found.
+                      <div style={{ textAlign: 'center', padding: '40px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#F5F3FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8B5CF6' }}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        </div>
+                        <div>
+                          <h4 style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: 700, color: '#334155' }}>No Consultations</h4>
+                          <p style={{ margin: 0, fontSize: '12.5px', color: '#64748B', fontWeight: 500 }}>No completed or in-progress consultations yet.</p>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -6043,8 +6057,14 @@ I have scanned the medical reference databases, but couldn't find a direct match
                       
                       if (todaysLabs.length === 0) {
                         return (
-                          <div style={{ padding: '16px', textAlign: 'center', color: '#64748B', fontSize: '13px', fontWeight: 600 }}>
-                            No lab reports ordered today.
+                          <div style={{ textAlign: 'center', padding: '40px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#F0FDF4', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#16A34A' }}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 2v7.31"/><path d="M14 9.3V1.99"/><path d="M8.5 2h7"/><path d="M14 9.3a6.5 6.5 0 1 1-4 0"/><path d="M5.52 16h12.96"/></svg>
+                            </div>
+                            <div>
+                              <h4 style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: 700, color: '#334155' }}>No Lab Reports</h4>
+                              <p style={{ margin: 0, fontSize: '12.5px', color: '#64748B', fontWeight: 500 }}>You haven't ordered any lab tests today.</p>
+                            </div>
                           </div>
                         );
                       }
