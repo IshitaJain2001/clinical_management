@@ -5768,6 +5768,7 @@ const ReceptionistDashboard = () => {
   .impressive-input { transition: all 0.2s ease-in-out; border: 1px solid #0F172A; }
   .impressive-input:focus:not([readonly]) { border-color: #3B82F6 !important; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important; outline: none; background: white !important; }
   .impressive-input:hover:not([readonly]):not(:focus) { border-color: #94A3B8; }
+  .required-empty { border-color: #EF4444 !important; box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important; }
   
   .impressive-select { transition: all 0.2s ease-in-out; border: 1px solid #0F172A; }
   .impressive-select:focus:not([disabled]) { border-color: #3B82F6 !important; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important; outline: none; }
@@ -5805,6 +5806,7 @@ const ReceptionistDashboard = () => {
                     {/* Patient Info Grid */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'minmax(250px, 1fr) minmax(250px, 1fr) minmax(250px, 1fr)', gap: '8px 24px' }}>
                       {(() => {
+                        const isFormStarted = Boolean(formData.name || formData.contact || formData.age || formData.title);
                         const renderField = (label, children, isReq=false) => (
                           <div style={{ display: 'flex', alignItems: 'center' }}>
                             <div style={{ width: '100px', fontSize: '11.5px', fontWeight: 600, color: '#475569', display: 'flex', alignItems: 'center' }}>
@@ -5820,7 +5822,7 @@ const ReceptionistDashboard = () => {
 
                         return (
                           <>
-                            {renderField("Mobile No.", <input type="text" className="impressive-input" style={inputStyle} value={formData.contact} onChange={e => { const val = e.target.value.replace(/\D/g, '').substring(0, 10); setFormData({...formData, contact: val}); }} readOnly={isExistingPatient} />)}
+                            {renderField("Mobile No.", <input type="text" className={`impressive-input ${!formData.contact && isFormStarted ? \'required-empty\' : \'\'}`} style={inputStyle} value={formData.contact} onChange={e => { const val = e.target.value.replace(/\D/g, '').substring(0, 10); setFormData({...formData, contact: val}); }} readOnly={isExistingPatient} />)}
                             {renderField("Title", 
                               <select 
                                 style={selectStyle} 
@@ -5842,14 +5844,14 @@ const ReceptionistDashboard = () => {
                                 <option value="Prefer not to say">Prefer not to say</option>
                               </select>, true
                             )}
-                            {renderField("Patient Name", <input type="text" className="impressive-input" style={inputStyle} value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} readOnly={isExistingPatient} />)}
+                            {renderField("Patient Name", <input type="text" className={`impressive-input ${!formData.name && isFormStarted ? \'required-empty\' : \'\'}`} style={inputStyle} value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} readOnly={isExistingPatient} />)}
                             {renderField("Gender", 
-                              <select className="impressive-select" style={selectStyle} value={formData.gender} onChange={e => setFormData({...formData, gender: e.target.value})} disabled={isExistingPatient}>
+                              <select className={`impressive-select ${!formData.gender && isFormStarted ? \'required-empty\' : \'\'}`} style={selectStyle} value={formData.gender} onChange={e => setFormData({...formData, gender: e.target.value})} disabled={isExistingPatient}>
                                 <option value="">--Select--</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option>
                               </select>, true
                             )}
 
-                            {renderField("Age (Yrs)", <input type="number" className="impressive-input" style={inputStyle} value={formData.age} onChange={e => setFormData({...formData, age: e.target.value})} readOnly={isExistingPatient} />)}
+                            {renderField("Age (Yrs)", <input type="number" className={`impressive-input ${!formData.age && isFormStarted ? \'required-empty\' : \'\'}`} style={inputStyle} value={formData.age} onChange={e => setFormData({...formData, age: e.target.value})} readOnly={isExistingPatient} />)}
                             {renderField("Email", 
                               <>
                                 <input type="text" className="impressive-input" style={{...inputStyle, background: (isExistingPatient || otpVerified) ? '#F8FAFC' : 'white'}} value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} readOnly={isExistingPatient || otpVerified} />
@@ -5968,6 +5970,7 @@ const ReceptionistDashboard = () => {
                     {/* Vitals and Consent */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'minmax(250px, 1fr) minmax(250px, 1fr) minmax(250px, 1fr)', gap: '8px 24px' }}>
                       {(() => {
+                        const isFormStarted = Boolean(formData.name || formData.contact || formData.age || formData.title);
                         const renderField = (label, children, isReq=false) => (
                           <div style={{ display: 'flex', alignItems: 'center' }}>
                             <div style={{ width: '100px', fontSize: '11.5px', fontWeight: 600, color: '#475569', display: 'flex', alignItems: 'center' }}>
