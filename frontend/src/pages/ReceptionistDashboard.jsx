@@ -6079,7 +6079,7 @@ const ReceptionistDashboard = () => {
                               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#475569', marginBottom: '6px' }}><span>Gross Amount</span><span style={{ fontWeight: 600 }}>₹{subtotalVal.toFixed(2)}</span></div>
                               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#EF4444', marginBottom: '8px' }}><span>Discount Amount</span><span style={{ fontWeight: 600 }}>-₹{discAmt.toFixed(2)}</span></div>
                               <div style={{ borderTop: '1px dashed #CBD5E1', margin: '8px 0' }}></div>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: 900, background: \'linear-gradient(135deg, #10B981 0%, #059669 100%)', padding: '8px 12px', borderRadius: '6px', color: 'white', margin: '-4px -8px' }}><span>Net Amount</span><span>₹{finalTotalVal.toFixed(2)}</span></div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: 900, background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', padding: '8px 12px', borderRadius: '6px', color: 'white', margin: '-4px -8px' }}><span>Net Amount</span><span>₹{finalTotalVal.toFixed(2)}</span></div>
                             </div>
                           );
                         })()}
