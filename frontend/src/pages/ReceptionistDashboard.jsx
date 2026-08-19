@@ -5825,6 +5825,7 @@ const ReceptionistDashboard = () => {
                             {renderField("Mobile No.", <input type="text" className={`impressive-input ${!formData.contact && isFormStarted ? 'required-empty' : ''}`} style={inputStyle} value={formData.contact} onChange={e => { const val = e.target.value.replace(/\D/g, '').substring(0, 10); setFormData({...formData, contact: val}); }} readOnly={isExistingPatient} />)}
                             {renderField("Title", 
                               <select 
+                                className={`impressive-select ${!formData.title && isFormStarted ? 'required-empty' : ''}`}
                                 style={selectStyle} 
                                 value={formData.title || ''} 
                                 onChange={e => {
