@@ -5797,30 +5797,28 @@ const ReceptionistDashboard = () => {
                         return (
                           <>
                             {renderField("Mobile No.", <input type="text" style={inputStyle} value={formData.contact} onChange={e => { const val = e.target.value.replace(/\D/g, '').substring(0, 10); setFormData({...formData, contact: val}); }} readOnly={isExistingPatient} />)}
-                            {renderField("Patient Name", 
-                              <div style={{ display: 'flex', gap: '6px', width: '100%' }}>
-                                <select 
-                                  style={{ ...inputStyle, width: '75px', padding: '0 4px', cursor: isExistingPatient ? 'not-allowed' : 'pointer', background: isExistingPatient ? '#F8FAFC' : '#F1F5F9' }} 
-                                  value={formData.title || ''} 
-                                  onChange={e => {
-                                    const selectedTitle = e.target.value;
-                                    let autoGender = formData.gender;
-                                    if (selectedTitle === 'Mr.') autoGender = 'Male';
-                                    else if (selectedTitle === 'Mrs.' || selectedTitle === 'Miss') autoGender = 'Female';
-                                    else if (selectedTitle === 'Prefer not to say') autoGender = 'Other';
-                                    setFormData({...formData, title: selectedTitle, gender: autoGender});
-                                  }} 
-                                  disabled={isExistingPatient}
-                                >
-                                  <option value="">Title</option>
-                                  <option value="Mr.">Mr.</option>
-                                  <option value="Mrs.">Mrs.</option>
-                                  <option value="Miss">Miss</option>
-                                  <option value="Prefer not to say">Prefer not to say</option>
-                                </select>
-                                <input type="text" style={{...inputStyle, flex: 1}} value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} readOnly={isExistingPatient} />
-                              </div>
+                            {renderField("Title", 
+                              <select 
+                                style={selectStyle} 
+                                value={formData.title || ''} 
+                                onChange={e => {
+                                  const selectedTitle = e.target.value;
+                                  let autoGender = formData.gender;
+                                  if (selectedTitle === 'Mr.') autoGender = 'Male';
+                                  else if (selectedTitle === 'Mrs.' || selectedTitle === 'Miss') autoGender = 'Female';
+                                  else if (selectedTitle === 'Prefer not to say') autoGender = 'Other';
+                                  setFormData({...formData, title: selectedTitle, gender: autoGender});
+                                }} 
+                                disabled={isExistingPatient}
+                              >
+                                <option value="">--Select--</option>
+                                <option value="Mr.">Mr.</option>
+                                <option value="Mrs.">Mrs.</option>
+                                <option value="Miss">Miss</option>
+                                <option value="Prefer not to say">Prefer not to say</option>
+                              </select>
                             )}
+                            {renderField("Patient Name", <input type="text" style={inputStyle} value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} readOnly={isExistingPatient} />)}
                             {renderField("Gender", 
                               <select style={selectStyle} value={formData.gender} onChange={e => setFormData({...formData, gender: e.target.value})} disabled={isExistingPatient}>
                                 <option value="">--Select--</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option>
