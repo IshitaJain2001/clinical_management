@@ -5617,7 +5617,7 @@ const ReceptionistDashboard = () => {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                     <div style={{
                       width: '52px',
-                      height: '20px',
+                      height: '52px',
                       borderRadius: '50%',
                       background: '#EFF6FF',
                       color: '#3B82F6',
@@ -5626,11 +5626,11 @@ const ReceptionistDashboard = () => {
                       justifyContent: 'center',
                       flexShrink: 0
                     }}>
-                      <i data-lucide="user" style={{ width: '26px', height: '20px' }}></i>
+                      <i data-lucide="user" style={{ width: '26px', height: '26px' }}></i>
                     </div>
                     <div>
                       <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#0F172A', margin: '0 0 4px 0', fontFamily: "'Inter', sans-serif" }}>Registered Patient</h2>
-                      <p style={{ fontSize: '10px', color: '#64748B', margin: 0, fontWeight: 500, lineHeight: '1.4' }}>
+                      <p style={{ fontSize: '13px', color: '#64748B', margin: 0, fontWeight: 500, lineHeight: '1.4' }}>
                         Search and select an existing patient to book an appointment.
                       </p>
                     </div>
@@ -5643,11 +5643,11 @@ const ReceptionistDashboard = () => {
                       className="form-control"
                       placeholder="Search by Patient ID or Phone Number"
                       style={{
-                        height: '20px',
+                        height: '46px',
                         paddingRight: '48px',
                         paddingLeft: '16px',
-                        borderRadius: '2px',
-                        fontSize: '10px',
+                        borderRadius: '8px',
+                        fontSize: '14px',
                         fontWeight: 600,
                         border: '1px solid #CBD5E1',
                         width: '100%',
@@ -5656,7 +5656,7 @@ const ReceptionistDashboard = () => {
                       value={searchPatientQuery}
                       onChange={e => setSearchPatientQuery(e.target.value)}
                     />
-                    <i data-lucide="search" style={{ position: 'absolute', right: '16px', top: '16px', color: '#94A3B8', width: '20px', height: '20px' }}></i>
+                    <i data-lucide="search" style={{ position: 'absolute', right: '16px', top: '13px', color: '#94A3B8', width: '20px', height: '20px' }}></i>
                   </div>
 
                   {/* Search Autocomplete List */}
@@ -5667,7 +5667,7 @@ const ReceptionistDashboard = () => {
                         return p.name.toLowerCase().includes(q) || p.contact.toLowerCase().includes(q) || p._id.toLowerCase().includes(q);
                       }).length === 0 ? (
                         <div
-                          style={{ padding: '4px', textAlign: 'center', color: '#64748B', fontSize: '10px', fontWeight: 600, cursor: 'pointer', transition: '0.2s' }}
+                          style={{ padding: '16px', textAlign: 'center', color: '#64748B', fontSize: '14px', fontWeight: 600, cursor: 'pointer', transition: '0.2s' }}
                           onClick={() => {
                             setSelectedPatient(null);
                             const isNumeric = /^\d+$/.test(searchPatientQuery.trim());
