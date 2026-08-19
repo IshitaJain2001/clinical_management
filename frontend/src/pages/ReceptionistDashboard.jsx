@@ -5759,9 +5759,10 @@ const ReceptionistDashboard = () => {
                 </div>
               </div>
 ) : (
-              // ==========================================
-              // ACTUAL DENSE FORM LAYOUT
-              // ==========================================
+              <>
+              {/* ========================================== */}
+              {/* ACTUAL DENSE FORM LAYOUT */}
+              {/* ========================================== */}
               
 <style>{`
   .impressive-input { transition: all 0.2s ease-in-out; border: 1px solid #0F172A; }
@@ -6078,6 +6079,7 @@ const ReceptionistDashboard = () => {
 
                 </div>
               </div>
+              </>
             )}
           </div>
         )}
