@@ -5762,10 +5762,30 @@ const ReceptionistDashboard = () => {
               // ==========================================
               // ACTUAL DENSE FORM LAYOUT
               // ==========================================
-              <div style={{ background: 'white', borderRadius: '10px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 120px)', overflow: 'hidden', border: '1px solid #E2E8F0' }}>
+              
+<style>{`
+  .impressive-input { transition: all 0.2s ease-in-out; border: 1px solid #0F172A; }
+  .impressive-input:focus:not([readonly]) { border-color: #3B82F6 !important; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important; outline: none; background: white !important; }
+  .impressive-input:hover:not([readonly]):not(:focus) { border-color: #94A3B8; }
+  
+  .impressive-select { transition: all 0.2s ease-in-out; border: 1px solid #0F172A; }
+  .impressive-select:focus:not([disabled]) { border-color: #3B82F6 !important; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important; outline: none; }
+  
+  .impressive-btn-main { background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important; box-shadow: 0 4px 14px rgba(37,99,235,0.3) !important; transition: all 0.2s; }
+  .impressive-btn-main:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37,99,235,0.4) !important; background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%) !important; }
+  .impressive-btn-main:active { transform: translateY(1px); box-shadow: 0 2px 4px rgba(37,99,235,0.3) !important; }
+  
+  .vitals-box { background: linear-gradient(to right, #FFF1F2, #FFF7ED) !important; border-color: #FECDD3 !important; }
+  .billing-box { background: linear-gradient(to right, #F0FDF4, #ECFDF5) !important; border-color: #A7F3D0 !important; }
+  
+  .slot-btn { transition: all 0.2s ease; }
+  .slot-btn:hover:not(.slot-full) { border-color: #3B82F6 !important; transform: scale(1.02); }
+`}</style>
+<div style={{ background: 'white', borderRadius: '12px', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04)', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 120px)', overflow: 'hidden', border: '1px solid #E2E8F0' }}>
+
                 
                 {/* Header / Title Bar */}
-                <div style={{ background: '#F8FAFC', padding: '12px 16px', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ background: 'linear-gradient(90deg, #F0F9FF 0%, #FFFFFF 100%)', padding: '12px 16px', borderBottom: '1px solid #E2E8F0', borderLeft: '4px solid #3B82F6', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: '#EFF6FF', color: '#3B82F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <i data-lucide="clipboard-list" style={{ width: '16px', height: '16px' }}></i>
                   </div>
@@ -5791,12 +5811,12 @@ const ReceptionistDashboard = () => {
                             <div style={{ flex: 1, display: 'flex', minWidth: 0 }}>{children}</div>
                           </div>
                         );
-                        const inputStyle = { width: '100%', height: '26px', fontSize: '12px', padding: '0 8px', border: '1px solid #CBD5E1', borderRadius: '4px', background: isExistingPatient ? '#F8FAFC' : 'white', color: '#0F172A', outline: 'none' };
+                        const inputStyle = { width: '100%', height: '28px', fontSize: '13px', padding: '0 8px', borderRadius: '6px', background: isExistingPatient ? '#F8FAFC' : 'white', color: '#0F172A' };
                         const selectStyle = { ...inputStyle, padding: '0 4px', cursor: isExistingPatient ? 'not-allowed' : 'pointer' };
 
                         return (
                           <>
-                            {renderField("Mobile No.", <input type="text" style={inputStyle} value={formData.contact} onChange={e => { const val = e.target.value.replace(/\D/g, '').substring(0, 10); setFormData({...formData, contact: val}); }} readOnly={isExistingPatient} />)}
+                            {renderField("Mobile No.", <input type="text" className="impressive-input" style={inputStyle} value={formData.contact} onChange={e => { const val = e.target.value.replace(/\D/g, '').substring(0, 10); setFormData({...formData, contact: val}); }} readOnly={isExistingPatient} />)}
                             {renderField("Title", 
                               <select 
                                 style={selectStyle} 
@@ -5818,38 +5838,38 @@ const ReceptionistDashboard = () => {
                                 <option value="Prefer not to say">Prefer not to say</option>
                               </select>
                             )}
-                            {renderField("Patient Name", <input type="text" style={inputStyle} value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} readOnly={isExistingPatient} />)}
+                            {renderField("Patient Name", <input type="text" className="impressive-input" style={inputStyle} value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} readOnly={isExistingPatient} />)}
                             {renderField("Gender", 
-                              <select style={selectStyle} value={formData.gender} onChange={e => setFormData({...formData, gender: e.target.value})} disabled={isExistingPatient}>
+                              <select className="impressive-select" style={selectStyle} value={formData.gender} onChange={e => setFormData({...formData, gender: e.target.value})} disabled={isExistingPatient}>
                                 <option value="">--Select--</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option>
                               </select>
                             )}
 
-                            {renderField("Age (Yrs)", <input type="number" style={inputStyle} value={formData.age} onChange={e => setFormData({...formData, age: e.target.value})} readOnly={isExistingPatient} />)}
+                            {renderField("Age (Yrs)", <input type="number" className="impressive-input" style={inputStyle} value={formData.age} onChange={e => setFormData({...formData, age: e.target.value})} readOnly={isExistingPatient} />)}
                             {renderField("Email", 
                               <>
-                                <input type="text" style={{...inputStyle, background: (isExistingPatient || otpVerified) ? '#F8FAFC' : 'white'}} value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} readOnly={isExistingPatient || otpVerified} />
+                                <input type="text" className="impressive-input" style={{...inputStyle, background: (isExistingPatient || otpVerified) ? '#F8FAFC' : 'white'}} value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} readOnly={isExistingPatient || otpVerified} />
                                 {!isExistingPatient && !otpVerified && <button type="button" onClick={handleSendOtp} style={{ height: '26px', fontSize: '11px', marginLeft: '6px', background: '#EFF6FF', color: '#2563EB', border: '1px solid #BFDBFE', borderRadius: '4px', padding: '0 10px', fontWeight: 600, cursor: 'pointer' }}>Verify</button>}
                               </>
                             )}
                             {bookingType === 'lab' ? (
-                              renderField("Referred By", <input type="text" style={inputStyle} value={formData.referredBy || ''} onChange={e => setFormData({...formData, referredBy: e.target.value})} readOnly={isExistingPatient} />)
+                              renderField("Referred By", <input type="text" className="impressive-input" style={inputStyle} value={formData.referredBy || ''} onChange={e => setFormData({...formData, referredBy: e.target.value})} readOnly={isExistingPatient} />)
                             ) : (
                               renderField("Blood Group", 
-                                <select style={selectStyle} value={formData.bloodGroup} onChange={e => setFormData({...formData, bloodGroup: e.target.value})} disabled={isExistingPatient}>
+                                <select className="impressive-select" style={selectStyle} value={formData.bloodGroup} onChange={e => setFormData({...formData, bloodGroup: e.target.value})} disabled={isExistingPatient}>
                                   <option value="">--Select--</option><option value="O+">O+</option><option value="O-">O-</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="AB+">AB+</option><option value="AB-">AB-</option>
                                 </select>
                               )
                             )}
 
                             <div style={{ gridColumn: 'span 2' }}>
-                              {renderField("Address", <input type="text" style={inputStyle} value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} readOnly={isExistingPatient} />)}
+                              {renderField("Address", <input type="text" className="impressive-input" style={inputStyle} value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} readOnly={isExistingPatient} />)}
                             </div>
-                            {renderField("Medical Hist.", <input type="text" style={inputStyle} value={formData.medicalHistory} onChange={e => setFormData({...formData, medicalHistory: e.target.value})} readOnly={isExistingPatient} />)}
+                            {renderField("Medical Hist.", <input type="text" className="impressive-input" style={inputStyle} value={formData.medicalHistory} onChange={e => setFormData({...formData, medicalHistory: e.target.value})} readOnly={isExistingPatient} />)}
                             
-                            {renderField("Allergies", <input type="text" style={{...inputStyle, background: 'white'}} value={formData.allergies} onChange={e => setFormData({...formData, allergies: e.target.value})} />)}
+                            {renderField("Allergies", <input type="text" className="impressive-input" style={{...inputStyle, background: 'white'}} value={formData.allergies} onChange={e => setFormData({...formData, allergies: e.target.value})} />)}
                             <div style={{ gridColumn: 'span 2' }}>
-                              {renderField("Current Meds.", <input type="text" style={{...inputStyle, background: 'white'}} value={formData.currentMedications} onChange={e => setFormData({...formData, currentMedications: e.target.value})} />)}
+                              {renderField("Current Meds.", <input type="text" className="impressive-input" style={{...inputStyle, background: 'white'}} value={formData.currentMedications} onChange={e => setFormData({...formData, currentMedications: e.target.value})} />)}
                             </div>
                           </>
                         );
@@ -5874,7 +5894,7 @@ const ReceptionistDashboard = () => {
                           return (
                             <>
                               {renderField("Symptoms", 
-                                <input type="text" style={inputStyle} placeholder="Type & press Enter..." value={symptomSearchQuery} onChange={e => setSymptomSearchQuery(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && symptomSearchQuery.trim()) { toggleSymptom(symptomSearchQuery.trim()); setSymptomSearchQuery(''); } }} disabled={!!reschedulingAppointment} />
+                                <input type="text" className="impressive-input" style={inputStyle} placeholder="Type & press Enter..." value={symptomSearchQuery} onChange={e => setSymptomSearchQuery(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && symptomSearchQuery.trim()) { toggleSymptom(symptomSearchQuery.trim()); setSymptomSearchQuery(''); } }} disabled={!!reschedulingAppointment} />
                               )}
                               {renderField("Doctor", 
                                 <select style={inputStyle} value={formData.doctorId} onChange={e => { setFormData({...formData, doctorId: e.target.value}); setSelectedSlot(''); }} disabled={!!reschedulingAppointment}>
@@ -5883,7 +5903,7 @@ const ReceptionistDashboard = () => {
                                 </select>
                               )}
                               {renderField("Date", 
-                                <input type="date" style={inputStyle} value={bookingDate} min={getLocalDateString()} onChange={e => { setBookingDate(e.target.value); setSelectedSlot(''); }} disabled={!!reschedulingAppointment} />
+                                <input type="date" className="impressive-input" style={inputStyle} value={bookingDate} min={getLocalDateString()} onChange={e => { setBookingDate(e.target.value); setSelectedSlot(''); }} disabled={!!reschedulingAppointment} />
                               )}
                             </>
                           );
@@ -5956,13 +5976,13 @@ const ReceptionistDashboard = () => {
                         return (
                           <>
                             {renderField("Temp (°F)", <input type="number" step="0.1" style={inputStyle} value={vitalTemp} onChange={e => setVitalTemp(e.target.value)} />)}
-                            {renderField("Pulse (bpm)", <input type="number" style={inputStyle} value={vitalPulse} onChange={e => setVitalPulse(e.target.value)} />)}
+                            {renderField("Pulse (bpm)", <input type="number" className="impressive-input" style={inputStyle} value={vitalPulse} onChange={e => setVitalPulse(e.target.value)} />)}
                             {renderField("Weight (kg)", <input type="number" step="0.1" style={inputStyle} value={vitalWeight} onChange={e => setVitalWeight(e.target.value)} />)}
-                            {renderField("BP Sys", <input type="number" style={inputStyle} value={vitalBpSys} onChange={e => setVitalBpSys(e.target.value)} />)}
-                            {renderField("BP Dia", <input type="number" style={inputStyle} value={vitalBpDia} onChange={e => setVitalBpDia(e.target.value)} />)}
-                            {renderField("Height (cm)", <input type="number" style={inputStyle} value={vitalHeight} onChange={e => setVitalHeight(e.target.value)} />)}
+                            {renderField("BP Sys", <input type="number" className="impressive-input" style={inputStyle} value={vitalBpSys} onChange={e => setVitalBpSys(e.target.value)} />)}
+                            {renderField("BP Dia", <input type="number" className="impressive-input" style={inputStyle} value={vitalBpDia} onChange={e => setVitalBpDia(e.target.value)} />)}
+                            {renderField("Height (cm)", <input type="number" className="impressive-input" style={inputStyle} value={vitalHeight} onChange={e => setVitalHeight(e.target.value)} />)}
                             
-                            <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '24px', alignItems: 'center', marginTop: '4px', background: '#F8FAFC', padding: '10px 16px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
+                            <div className="vitals-box" style={{ gridColumn: '1 / -1', display: 'flex', gap: '24px', alignItems: 'center', marginTop: '4px', padding: '10px 16px', borderRadius: '8px', border: '1px solid' }}>
                               <span style={{ fontSize: '12px', fontWeight: 700, color: '#334155' }}>Patient Consent:</span>
                               <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', cursor: 'pointer', color: '#475569', fontWeight: 500 }}>
                                 <input type="checkbox" checked={dpdpConsent.emrCreation} onChange={e => setDpdpConsent({...dpdpConsent, emrCreation: e.target.checked})} style={{ width: '14px', height: '14px', accentColor: '#2563EB' }} /> EMR Records Creation
@@ -5977,7 +5997,7 @@ const ReceptionistDashboard = () => {
                     </div>
 
                     {/* Bottom Billing Table Area */}
-                    <div style={{ marginTop: 'auto', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '16px' }}>
+                    <div className="billing-box" style={{ marginTop: 'auto', border: '1px solid', borderRadius: '10px', padding: '16px', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}>
                       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px' }}>
                         
                         {/* Payment Details */}
@@ -6017,7 +6037,7 @@ const ReceptionistDashboard = () => {
                               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#475569', marginBottom: '6px' }}><span>Gross Amount</span><span style={{ fontWeight: 600 }}>₹{subtotalVal.toFixed(2)}</span></div>
                               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#EF4444', marginBottom: '8px' }}><span>Discount Amount</span><span style={{ fontWeight: 600 }}>-₹{discAmt.toFixed(2)}</span></div>
                               <div style={{ borderTop: '1px dashed #CBD5E1', margin: '8px 0' }}></div>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '15px', fontWeight: 800, color: '#0F172A' }}><span>Net Amount</span><span style={{ color: '#10B981' }}>₹{finalTotalVal.toFixed(2)}</span></div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: 900, color: '#0F172A', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', padding: '8px 12px', borderRadius: '6px', color: 'white', margin: '-4px -8px' }}><span>Net Amount</span><span>₹{finalTotalVal.toFixed(2)}</span></div>
                             </div>
                           );
                         })()}
@@ -6051,8 +6071,8 @@ const ReceptionistDashboard = () => {
 
                     <button type="button" onClick={() => { setSelectedPatient(null); setIsExistingPatient(null); setFormData({name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '', referredBy: '', allergies: 'None', currentMedications: ''}); }} style={{ width: '100%', padding: '10px 0', fontSize: '12px', fontWeight: 600, background: '#F1F5F9', color: '#475569', border: '1px solid #CBD5E1', borderRadius: '6px', cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={e => e.target.style.background = '#E2E8F0'} onMouseOut={e => e.target.style.background = '#F1F5F9'}>Clear / Cancel</button>
                     
-                    <button type="button" onClick={reschedulingAppointment ? handleRescheduleSubmit : (bookingType === 'lab' ? handleCreateLabOrder : bookingType === 'service' ? handleCreateServiceOrder : handleCreateAppointment)} disabled={loading} style={{ width: '100%', padding: '14px 0', fontSize: '14px', fontWeight: 800, background: '#2563EB', color: 'white', border: 'none', borderRadius: '6px', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 4px 6px -1px rgba(37, 99, 235, 0.2), 0 2px 4px -1px rgba(37, 99, 235, 0.1)', transition: 'all 0.2s' }} onMouseOver={e => !loading && (e.target.style.background = '#1D4ED8')} onMouseOut={e => !loading && (e.target.style.background = '#2563EB')}>
-                      <i data-lucide="check-circle" style={{ width: '16px' }}></i> {loading ? 'Saving...' : (reschedulingAppointment ? 'Reschedule' : 'Register Patient')}
+                    <button type="button" className="impressive-btn-main" onClick={reschedulingAppointment ? handleRescheduleSubmit : (bookingType === 'lab' ? handleCreateLabOrder : bookingType === 'service' ? handleCreateServiceOrder : handleCreateAppointment)} disabled={loading} style={{ width: '100%', padding: '14px 0', fontSize: '15px', fontWeight: 900, color: 'white', border: 'none', borderRadius: '8px', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                      <i data-lucide="check-circle" style={{ width: '18px' }}></i> {loading ? 'Saving...' : (reschedulingAppointment ? 'Reschedule' : 'Register Patient')}
                     </button>
                   </div>
 
