@@ -5806,7 +5806,7 @@ const ReceptionistDashboard = () => {
                     {/* Patient Info Grid */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'minmax(250px, 1fr) minmax(250px, 1fr) minmax(250px, 1fr)', gap: '8px 24px' }}>
                       {(() => {
-                        const isFormStarted = Boolean(formData.name || formData.contact || formData.age || formData.title);
+                        const isFormStarted = Boolean(formData.age || formData.title || formData.gender || formData.doctorId || formData.address);
                         const renderField = (label, children, isReq=false) => (
                           <div style={{ display: 'flex', alignItems: 'center' }}>
                             <div style={{ width: '100px', fontSize: '11.5px', fontWeight: 600, color: '#475569', display: 'flex', alignItems: 'center' }}>
@@ -5904,7 +5904,7 @@ const ReceptionistDashboard = () => {
                                 <input type="text" className="impressive-input" style={inputStyle} placeholder="Type & press Enter..." value={symptomSearchQuery} onChange={e => setSymptomSearchQuery(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && symptomSearchQuery.trim()) { toggleSymptom(symptomSearchQuery.trim()); setSymptomSearchQuery(''); } }} disabled={!!reschedulingAppointment} />
                               )}
                               {renderField("Doctor", 
-                                <select style={inputStyle} value={formData.doctorId} onChange={e => { setFormData({...formData, doctorId: e.target.value}); setSelectedSlot(''); }} disabled={!!reschedulingAppointment}>
+                                <select className="impressive-select" style={inputStyle} value={formData.doctorId} onChange={e => { setFormData({...formData, doctorId: e.target.value}); setSelectedSlot(''); }} disabled={!!reschedulingAppointment}>
                                   <option value="">-- Choose Doctor --</option>
                                   {doctors.map(doc => (<option key={doc._id} value={doc._id}>{doc.name}</option>))}
                                 </select>
@@ -5971,7 +5971,7 @@ const ReceptionistDashboard = () => {
                     {/* Vitals and Consent */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'minmax(250px, 1fr) minmax(250px, 1fr) minmax(250px, 1fr)', gap: '8px 24px' }}>
                       {(() => {
-                        const isFormStarted = Boolean(formData.name || formData.contact || formData.age || formData.title);
+                        const isFormStarted = Boolean(formData.age || formData.title || formData.gender || formData.doctorId || formData.address);
                         const renderField = (label, children, isReq=false) => (
                           <div style={{ display: 'flex', alignItems: 'center' }}>
                             <div style={{ width: '100px', fontSize: '11.5px', fontWeight: 600, color: '#475569', display: 'flex', alignItems: 'center' }}>
@@ -5986,9 +5986,9 @@ const ReceptionistDashboard = () => {
 
                         return (
                           <>
-                            {renderField("Temp (°F)", <input type="number" step="0.1" style={inputStyle} value={vitalTemp} onChange={e => setVitalTemp(e.target.value)} />)}
+                            {renderField("Temp (°F)", <input type="number" step="0.1" className="impressive-input" style={inputStyle} value={vitalTemp} onChange={e => setVitalTemp(e.target.value)} />)}
                             {renderField("Pulse (bpm)", <input type="number" className="impressive-input" style={inputStyle} value={vitalPulse} onChange={e => setVitalPulse(e.target.value)} />)}
-                            {renderField("Weight (kg)", <input type="number" step="0.1" style={inputStyle} value={vitalWeight} onChange={e => setVitalWeight(e.target.value)} />)}
+                            {renderField("Weight (kg)", <input type="number" step="0.1" className="impressive-input" style={inputStyle} value={vitalWeight} onChange={e => setVitalWeight(e.target.value)} />)}
                             {renderField("BP Sys", <input type="number" className="impressive-input" style={inputStyle} value={vitalBpSys} onChange={e => setVitalBpSys(e.target.value)} />)}
                             {renderField("BP Dia", <input type="number" className="impressive-input" style={inputStyle} value={vitalBpDia} onChange={e => setVitalBpDia(e.target.value)} />)}
                             {renderField("Height (cm)", <input type="number" className="impressive-input" style={inputStyle} value={vitalHeight} onChange={e => setVitalHeight(e.target.value)} />)}
@@ -6016,7 +6016,7 @@ const ReceptionistDashboard = () => {
                           <div style={{ display: 'flex', alignItems: 'center' }}>
                             <div style={{ width: '100px', fontSize: '12px', fontWeight: 700, color: '#334155' }}>Currency</div>
                             <div style={{ width: '12px', fontSize: '12px', color: '#94A3B8' }}>:</div>
-                            <select style={{ height: '28px', fontSize: '12px', padding: '0 8px', border: '1px solid #CBD5E1', borderRadius: '4px', width: '120px', background: 'white' }}><option>INR (₹)</option></select>
+                            <select className="impressive-select" style={{ height: '28px', fontSize: '12px', padding: '0 8px', border: '1px solid #CBD5E1', borderRadius: '4px', width: '120px', background: 'white' }}><option>INR (₹)</option></select>
                           </div>
 
                           <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -6075,7 +6075,7 @@ const ReceptionistDashboard = () => {
                     {!isExistingPatient && otpSent && !otpVerified && (
                       <div style={{ background: '#FEF2F2', padding: '12px', borderRadius: '8px', border: '1px solid #FECACA', marginBottom: '8px' }}>
                         <div style={{ fontSize: '11px', fontWeight: 700, color: '#991B1B', marginBottom: '6px' }}>Verify Mobile/Email OTP</div>
-                        <input type="text" maxLength={6} placeholder="######" style={{ width: '100%', height: '30px', textAlign: 'center', border: '1px solid #FCA5A5', borderRadius: '4px', fontSize: '14px', letterSpacing: '2px', fontWeight: 'bold', marginBottom: '8px' }} value={verificationOtp} onChange={e => setVerificationOtp(e.target.value.replace(/\D/g, ''))} />
+                        <input type="text" maxLength={6} placeholder="######" className="impressive-input" style={{ width: '100%', height: '30px', textAlign: 'center', border: '1px solid #FCA5A5', borderRadius: '4px', fontSize: '14px', letterSpacing: '2px', fontWeight: 'bold', marginBottom: '8px' }} value={verificationOtp} onChange={e => setVerificationOtp(e.target.value.replace(/\D/g, ''))} />
                         <button type="button" onClick={handleVerifyOtp} disabled={otpVerifying} style={{ width: '100%', background: '#EF4444', color: 'white', border: 'none', padding: '8px 0', borderRadius: '4px', fontWeight: 600, cursor: 'pointer', fontSize: '12px' }}>{otpVerifying ? 'Verifying...' : 'Submit OTP'}</button>
                       </div>
                     )}
