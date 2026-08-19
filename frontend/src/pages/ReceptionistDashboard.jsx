@@ -5902,7 +5902,37 @@ const ReceptionistDashboard = () => {
                           return (
                             <>
                               {renderField("Symptoms", 
-                                <input type="text" className="impressive-input" style={inputStyle} placeholder="Type & press Enter..." value={symptomSearchQuery} onChange={e => setSymptomSearchQuery(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && symptomSearchQuery.trim()) { toggleSymptom(symptomSearchQuery.trim()); setSymptomSearchQuery(''); } }} disabled={!!reschedulingAppointment} />
+                                <div className="custom-dropdown-container" style={{ width: '100%', position: 'relative' }}>
+                                  <div className="custom-dropdown-trigger impressive-input" onClick={() => !reschedulingAppointment && setSymptomDropdownOpen(!symptomDropdownOpen)} style={{ ...inputStyle, display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: reschedulingAppointment ? 'not-allowed' : 'pointer', padding: '0 8px', height: 'auto', minHeight: '26px', opacity: reschedulingAppointment ? 0.6 : 1 }}>
+                                      <div className="selected-items" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', padding: '2px 0' }} data-lenis-prevent>
+                                          {selectedSymptoms.length > 0 ? (
+                                              selectedSymptoms.map(s => (
+                                                <div key={s} className="symptom-tag" style={{ background: '#F1F5F9', color: '#334155', padding: '2px 6px', fontSize: '10.5px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '4px', border: '1px solid #E2E8F0', fontWeight: 600 }}>
+                                                    {s}
+                                                    <span 
+                                                      onClick={(e) => { e.stopPropagation(); !reschedulingAppointment && toggleSymptom(s); }}
+                                                      style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                                                    >
+                                                        <i data-lucide="x" style={{ pointerEvents: 'none', width: '12px', height: '12px' }}></i>
+                                                    </span>
+                                                </div>
+                                              ))
+                                          ) : (
+                                              <span style={{ color: '#94A3B8', fontSize: '11px', fontWeight: 500 }}>Select symptoms...</span>
+                                          )}
+                                      </div>
+                                      <i data-lucide="chevron-down" style={{ width: '14px', height: '14px', color: '#94A3B8', transition: '0.3s', transform: symptomDropdownOpen ? 'rotate(180deg)' : 'none' }}></i>
+                                  </div>
+                                  {symptomDropdownOpen && (
+                                      <div className="dropdown-options-box show" style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'white', border: '1px solid #CBD5E1', borderRadius: '4px', marginTop: '4px', maxHeight: '150px', overflowY: 'auto', zIndex: 100, boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }} data-lenis-prevent>
+                                          {availableSymptoms.map(s => (
+                                              <div key={s} className="option-item" onClick={() => { toggleSymptom(s); setSymptomDropdownOpen(false); }} style={{ padding: '6px 12px', fontSize: '11.5px', cursor: 'pointer', borderBottom: '1px solid #F1F5F9', fontWeight: 600, color: '#334155' }} onMouseOver={e => e.target.style.background = '#F8FAFC'} onMouseOut={e => e.target.style.background = 'white'}>
+                                                {s}
+                                              </div>
+                                          ))}
+                                      </div>
+                                  )}
+                                </div>
                               )}
                               {renderField("Doctor", 
                                 <select className="impressive-select" style={inputStyle} value={formData.doctorId} onChange={e => { setFormData({...formData, doctorId: e.target.value}); setSelectedSlot(''); }} disabled={!!reschedulingAppointment}>
@@ -6049,7 +6079,7 @@ const ReceptionistDashboard = () => {
                               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#475569', marginBottom: '6px' }}><span>Gross Amount</span><span style={{ fontWeight: 600 }}>₹{subtotalVal.toFixed(2)}</span></div>
                               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#EF4444', marginBottom: '8px' }}><span>Discount Amount</span><span style={{ fontWeight: 600 }}>-₹{discAmt.toFixed(2)}</span></div>
                               <div style={{ borderTop: '1px dashed #CBD5E1', margin: '8px 0' }}></div>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: 900, color: '#0F172A', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', padding: '8px 12px', borderRadius: '6px', color: 'white', margin: '-4px -8px' }}><span>Net Amount</span><span>₹{finalTotalVal.toFixed(2)}</span></div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: 900, background: \'linear-gradient(135deg, #10B981 0%, #059669 100%)', padding: '8px 12px', borderRadius: '6px', color: 'white', margin: '-4px -8px' }}><span>Net Amount</span><span>₹{finalTotalVal.toFixed(2)}</span></div>
                             </div>
                           );
                         })()}
