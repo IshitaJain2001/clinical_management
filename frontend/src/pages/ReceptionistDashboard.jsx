@@ -5805,9 +5805,12 @@ const ReceptionistDashboard = () => {
                     {/* Patient Info Grid */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'minmax(250px, 1fr) minmax(250px, 1fr) minmax(250px, 1fr)', gap: '8px 24px' }}>
                       {(() => {
-                        const renderField = (label, children) => (
+                        const renderField = (label, children, isReq=false) => (
                           <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <div style={{ width: '100px', fontSize: '11.5px', fontWeight: 600, color: '#475569' }}>{label}</div>
+                            <div style={{ width: '100px', fontSize: '11.5px', fontWeight: 600, color: '#475569', display: 'flex', alignItems: 'center' }}>
+                              {label}
+                              {isReq && <span style={{ color: '#EF4444', fontSize: '16px', marginLeft: '3px', marginTop: '4px' }}>*</span>}
+                            </div>
                             <div style={{ width: '12px', fontSize: '11.5px', color: '#94A3B8' }}>:</div>
                             <div style={{ flex: 1, display: 'flex', minWidth: 0 }}>{children}</div>
                           </div>
@@ -5837,13 +5840,13 @@ const ReceptionistDashboard = () => {
                                 <option value="Mrs.">Mrs.</option>
                                 <option value="Miss">Miss</option>
                                 <option value="Prefer not to say">Prefer not to say</option>
-                              </select>
+                              </select>, true
                             )}
                             {renderField("Patient Name", <input type="text" className="impressive-input" style={inputStyle} value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} readOnly={isExistingPatient} />)}
                             {renderField("Gender", 
                               <select className="impressive-select" style={selectStyle} value={formData.gender} onChange={e => setFormData({...formData, gender: e.target.value})} disabled={isExistingPatient}>
                                 <option value="">--Select--</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option>
-                              </select>
+                              </select>, true
                             )}
 
                             {renderField("Age (Yrs)", <input type="number" className="impressive-input" style={inputStyle} value={formData.age} onChange={e => setFormData({...formData, age: e.target.value})} readOnly={isExistingPatient} />)}
@@ -5965,9 +5968,12 @@ const ReceptionistDashboard = () => {
                     {/* Vitals and Consent */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'minmax(250px, 1fr) minmax(250px, 1fr) minmax(250px, 1fr)', gap: '8px 24px' }}>
                       {(() => {
-                        const renderField = (label, children) => (
+                        const renderField = (label, children, isReq=false) => (
                           <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <div style={{ width: '100px', fontSize: '11.5px', fontWeight: 600, color: '#475569' }}>{label}</div>
+                            <div style={{ width: '100px', fontSize: '11.5px', fontWeight: 600, color: '#475569', display: 'flex', alignItems: 'center' }}>
+                              {label}
+                              {isReq && <span style={{ color: '#EF4444', fontSize: '16px', marginLeft: '3px', marginTop: '4px' }}>*</span>}
+                            </div>
                             <div style={{ width: '12px', fontSize: '11.5px', color: '#94A3B8' }}>:</div>
                             <div style={{ flex: 1, display: 'flex', minWidth: 0 }}>{children}</div>
                           </div>
