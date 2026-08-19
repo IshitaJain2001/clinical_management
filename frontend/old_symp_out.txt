@@ -1,0 +1,60 @@
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </div>
+
+                    <div style={{ height: '1px', background: '#E2E8F0', margin: '4px 0' }}></div>
+
+                    {/* Visit & Appointment Details */}
+                    {bookingType === 'opd' && (
+                      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(250px, 1fr) minmax(250px, 1fr) minmax(250px, 1fr)', gap: '8px 24px' }}>
+                        {(() => {
+                          const renderField = (label, children) => (
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                              <div style={{ width: '100px', fontSize: '11.5px', fontWeight: 600, color: '#475569' }}>{label}</div>
+                              <div style={{ width: '12px', fontSize: '11.5px', color: '#94A3B8' }}>:</div>
+                              <div style={{ flex: 1, display: 'flex', minWidth: 0 }}>{children}</div>
+                            </div>
+                          );
+                          const inputStyle = { width: '100%', height: '26px', fontSize: '12px', padding: '0 8px', border: '1px solid #CBD5E1', borderRadius: '4px', background: 'white', color: '#0F172A', outline: 'none' };
+
+                          return (
+                            <>
+                              {renderField("Symptoms", 
+                                <input type="text" className="impressive-input" style={inputStyle} placeholder="Type & press Enter..." value={symptomSearchQuery} onChange={e => setSymptomSearchQuery(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && symptomSearchQuery.trim()) { toggleSymptom(symptomSearchQuery.trim()); setSymptomSearchQuery(''); } }} disabled={!!reschedulingAppointment} />
+                              )}
+                              {renderField("Doctor", 
+                                <select className="impressive-select" style={inputStyle} value={formData.doctorId} onChange={e => { setFormData({...formData, doctorId: e.target.value}); setSelectedSlot(''); }} disabled={!!reschedulingAppointment}>
+                                  <option value="">-- Choose Doctor --</option>
+                                  {doctors.map(doc => (<option key={doc._id} value={doc._id}>{doc.name}</option>))}
+                                </select>
+                              )}
+                              {renderField("Date", 
+                                <input type="date" className="impressive-input" style={inputStyle} value={bookingDate} min={getLocalDateString()} onChange={e => { setBookingDate(e.target.value); setSelectedSlot(''); }} disabled={!!reschedulingAppointment} />
+                              )}
+                            </>
+                          );
+                        })()}
+
+                        <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '8px', flexWrap: 'wrap', minHeight: '24px', alignItems: 'center' }}>
+                          {selectedSymptoms.length > 0 && <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 600, marginRight: '8px' }}>Added Symptoms:</span>}
+                          {selectedSymptoms.map(s => (
+                            <div key={s} style={{ background: '#F1F5F9', color: '#334155', padding: '4px 10px', fontSize: '11px', borderRadius: '12px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 500 }}>
+                              {s} <span onClick={() => !reschedulingAppointment && toggleSymptom(s)} style={{ cursor: 'pointer', color: '#94A3B8', fontWeight: 'bold' }}>├ù</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'flex-start', border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '12px', background: '#F8FAFC', minHeight: '60px' }}>
+                          <div style={{ width: '100px', fontSize: '11.5px', fontWeight: 700, color: '#334155', marginTop: '6px' }}>Available Slots</div>
+                          <div style={{ width: '12px', fontSize: '11.5px', color: '#94A3B8', marginTop: '6px' }}>:</div>
+                          <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                            {(!formData.doctorId || !bookingDate) ? (
+                              <span style={{ fontSize: '12px', color: '#94A3B8', marginTop: '4px', fontStyle: 'italic' }}>Please select a doctor and date to view slots</span>
+                            ) : !receptionDoctorAvailability.available ? (
+                              <span style={{ fontSize: '12px', color: '#DC2626', fontWeight: 600, marginTop: '4px' }}><i data-lucide="alert-circle" style={{ width: '14px', verticalAlign: 'middle', marginRight: '4px' }}></i>Doctor Unavailable ({receptionDoctorAvailability.reason || 'Leave'})</span>
+                            ) : (
+                              (receptionDoctorAvailability.slots || DEFAULT_RECEPTION_SLOTS).map(time => {
+                                let limit = 5;
+                                const match = time.match(/\(Limit:\s*(\d+)\)/i);
