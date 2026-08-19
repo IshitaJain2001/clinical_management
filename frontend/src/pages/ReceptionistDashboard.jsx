@@ -5602,7 +5602,7 @@ const ReceptionistDashboard = () => {
           </div>
         )}
 
-                                                                {/* REGISTRATION FORM TAB */}
+                                                                        {/* REGISTRATION FORM TAB */}
         {activeTab === 'registration-form' && (
           <div className="tab-content active" style={{ animation: 'slideUp 0.4s ease-out' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
@@ -5791,7 +5791,7 @@ const ReceptionistDashboard = () => {
                     {/* Patient Info Grid */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'minmax(250px, 1fr) minmax(250px, 1fr) minmax(250px, 1fr)', gap: '8px 24px' }}>
                       {(() => {
-                        const Field = ({ label, children }) => (
+                        const renderField = (label, children) => (
                           <div style={{ display: 'flex', alignItems: 'center' }}>
                             <div style={{ width: '100px', fontSize: '11.5px', fontWeight: 600, color: '#475569' }}>{label}</div>
                             <div style={{ width: '12px', fontSize: '11.5px', color: '#94A3B8' }}>:</div>
@@ -5803,37 +5803,39 @@ const ReceptionistDashboard = () => {
 
                         return (
                           <>
-                            <Field label="Mobile No."><input type="text" style={inputStyle} value={formData.contact} onChange={e => { const val = e.target.value.replace(/\D/g, '').substring(0, 10); setFormData({...formData, contact: val}); }} readOnly={isExistingPatient} /></Field>
-                            <Field label="Patient Name"><input type="text" style={inputStyle} value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} readOnly={isExistingPatient} /></Field>
-                            <Field label="Gender">
+                            {renderField("Mobile No.", <input type="text" style={inputStyle} value={formData.contact} onChange={e => { const val = e.target.value.replace(/\D/g, '').substring(0, 10); setFormData({...formData, contact: val}); }} readOnly={isExistingPatient} />)}
+                            {renderField("Patient Name", <input type="text" style={inputStyle} value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} readOnly={isExistingPatient} />)}
+                            {renderField("Gender", 
                               <select style={selectStyle} value={formData.gender} onChange={e => setFormData({...formData, gender: e.target.value})} disabled={isExistingPatient}>
                                 <option value="">--Select--</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option>
                               </select>
-                            </Field>
+                            )}
 
-                            <Field label="Age (Yrs)"><input type="number" style={inputStyle} value={formData.age} onChange={e => setFormData({...formData, age: e.target.value})} readOnly={isExistingPatient} /></Field>
-                            <Field label="Email">
-                              <input type="text" style={{...inputStyle, background: (isExistingPatient || otpVerified) ? '#F8FAFC' : 'white'}} value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} readOnly={isExistingPatient || otpVerified} />
-                              {!isExistingPatient && !otpVerified && <button type="button" onClick={handleSendOtp} style={{ height: '26px', fontSize: '11px', marginLeft: '6px', background: '#EFF6FF', color: '#2563EB', border: '1px solid #BFDBFE', borderRadius: '4px', padding: '0 10px', fontWeight: 600, cursor: 'pointer' }}>Verify</button>}
-                            </Field>
+                            {renderField("Age (Yrs)", <input type="number" style={inputStyle} value={formData.age} onChange={e => setFormData({...formData, age: e.target.value})} readOnly={isExistingPatient} />)}
+                            {renderField("Email", 
+                              <>
+                                <input type="text" style={{...inputStyle, background: (isExistingPatient || otpVerified) ? '#F8FAFC' : 'white'}} value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} readOnly={isExistingPatient || otpVerified} />
+                                {!isExistingPatient && !otpVerified && <button type="button" onClick={handleSendOtp} style={{ height: '26px', fontSize: '11px', marginLeft: '6px', background: '#EFF6FF', color: '#2563EB', border: '1px solid #BFDBFE', borderRadius: '4px', padding: '0 10px', fontWeight: 600, cursor: 'pointer' }}>Verify</button>}
+                              </>
+                            )}
                             {bookingType === 'lab' ? (
-                              <Field label="Referred By"><input type="text" style={inputStyle} value={formData.referredBy || ''} onChange={e => setFormData({...formData, referredBy: e.target.value})} readOnly={isExistingPatient} /></Field>
+                              renderField("Referred By", <input type="text" style={inputStyle} value={formData.referredBy || ''} onChange={e => setFormData({...formData, referredBy: e.target.value})} readOnly={isExistingPatient} />)
                             ) : (
-                              <Field label="Blood Group">
+                              renderField("Blood Group", 
                                 <select style={selectStyle} value={formData.bloodGroup} onChange={e => setFormData({...formData, bloodGroup: e.target.value})} disabled={isExistingPatient}>
                                   <option value="">--Select--</option><option value="O+">O+</option><option value="O-">O-</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="AB+">AB+</option><option value="AB-">AB-</option>
                                 </select>
-                              </Field>
+                              )
                             )}
 
                             <div style={{ gridColumn: 'span 2' }}>
-                              <Field label="Address"><input type="text" style={inputStyle} value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} readOnly={isExistingPatient} /></Field>
+                              {renderField("Address", <input type="text" style={inputStyle} value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} readOnly={isExistingPatient} />)}
                             </div>
-                            <Field label="Medical Hist."><input type="text" style={inputStyle} value={formData.medicalHistory} onChange={e => setFormData({...formData, medicalHistory: e.target.value})} readOnly={isExistingPatient} /></Field>
+                            {renderField("Medical Hist.", <input type="text" style={inputStyle} value={formData.medicalHistory} onChange={e => setFormData({...formData, medicalHistory: e.target.value})} readOnly={isExistingPatient} />)}
                             
-                            <Field label="Allergies"><input type="text" style={{...inputStyle, background: 'white'}} value={formData.allergies} onChange={e => setFormData({...formData, allergies: e.target.value})} /></Field>
+                            {renderField("Allergies", <input type="text" style={{...inputStyle, background: 'white'}} value={formData.allergies} onChange={e => setFormData({...formData, allergies: e.target.value})} />)}
                             <div style={{ gridColumn: 'span 2' }}>
-                              <Field label="Current Meds."><input type="text" style={{...inputStyle, background: 'white'}} value={formData.currentMedications} onChange={e => setFormData({...formData, currentMedications: e.target.value})} /></Field>
+                              {renderField("Current Meds.", <input type="text" style={{...inputStyle, background: 'white'}} value={formData.currentMedications} onChange={e => setFormData({...formData, currentMedications: e.target.value})} />)}
                             </div>
                           </>
                         );
@@ -5846,7 +5848,7 @@ const ReceptionistDashboard = () => {
                     {bookingType === 'opd' && (
                       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(250px, 1fr) minmax(250px, 1fr) minmax(250px, 1fr)', gap: '8px 24px' }}>
                         {(() => {
-                          const Field = ({ label, children }) => (
+                          const renderField = (label, children) => (
                             <div style={{ display: 'flex', alignItems: 'center' }}>
                               <div style={{ width: '100px', fontSize: '11.5px', fontWeight: 600, color: '#475569' }}>{label}</div>
                               <div style={{ width: '12px', fontSize: '11.5px', color: '#94A3B8' }}>:</div>
@@ -5857,18 +5859,18 @@ const ReceptionistDashboard = () => {
 
                           return (
                             <>
-                              <Field label="Symptoms">
+                              {renderField("Symptoms", 
                                 <input type="text" style={inputStyle} placeholder="Type & press Enter..." value={symptomSearchQuery} onChange={e => setSymptomSearchQuery(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && symptomSearchQuery.trim()) { toggleSymptom(symptomSearchQuery.trim()); setSymptomSearchQuery(''); } }} disabled={!!reschedulingAppointment} />
-                              </Field>
-                              <Field label="Doctor">
+                              )}
+                              {renderField("Doctor", 
                                 <select style={inputStyle} value={formData.doctorId} onChange={e => { setFormData({...formData, doctorId: e.target.value}); setSelectedSlot(''); }} disabled={!!reschedulingAppointment}>
                                   <option value="">-- Choose Doctor --</option>
                                   {doctors.map(doc => (<option key={doc._id} value={doc._id}>{doc.name}</option>))}
                                 </select>
-                              </Field>
-                              <Field label="Date">
+                              )}
+                              {renderField("Date", 
                                 <input type="date" style={inputStyle} value={bookingDate} min={getLocalDateString()} onChange={e => { setBookingDate(e.target.value); setSelectedSlot(''); }} disabled={!!reschedulingAppointment} />
-                              </Field>
+                              )}
                             </>
                           );
                         })()}
@@ -5928,7 +5930,7 @@ const ReceptionistDashboard = () => {
                     {/* Vitals and Consent */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'minmax(250px, 1fr) minmax(250px, 1fr) minmax(250px, 1fr)', gap: '8px 24px' }}>
                       {(() => {
-                        const Field = ({ label, children }) => (
+                        const renderField = (label, children) => (
                           <div style={{ display: 'flex', alignItems: 'center' }}>
                             <div style={{ width: '100px', fontSize: '11.5px', fontWeight: 600, color: '#475569' }}>{label}</div>
                             <div style={{ width: '12px', fontSize: '11.5px', color: '#94A3B8' }}>:</div>
@@ -5939,12 +5941,12 @@ const ReceptionistDashboard = () => {
 
                         return (
                           <>
-                            <Field label="Temp (°F)"><input type="number" step="0.1" style={inputStyle} value={vitalTemp} onChange={e => setVitalTemp(e.target.value)} /></Field>
-                            <Field label="Pulse (bpm)"><input type="number" style={inputStyle} value={vitalPulse} onChange={e => setVitalPulse(e.target.value)} /></Field>
-                            <Field label="Weight (kg)"><input type="number" step="0.1" style={inputStyle} value={vitalWeight} onChange={e => setVitalWeight(e.target.value)} /></Field>
-                            <Field label="BP Sys"><input type="number" style={inputStyle} value={vitalBpSys} onChange={e => setVitalBpSys(e.target.value)} /></Field>
-                            <Field label="BP Dia"><input type="number" style={inputStyle} value={vitalBpDia} onChange={e => setVitalBpDia(e.target.value)} /></Field>
-                            <Field label="Height (cm)"><input type="number" style={inputStyle} value={vitalHeight} onChange={e => setVitalHeight(e.target.value)} /></Field>
+                            {renderField("Temp (°F)", <input type="number" step="0.1" style={inputStyle} value={vitalTemp} onChange={e => setVitalTemp(e.target.value)} />)}
+                            {renderField("Pulse (bpm)", <input type="number" style={inputStyle} value={vitalPulse} onChange={e => setVitalPulse(e.target.value)} />)}
+                            {renderField("Weight (kg)", <input type="number" step="0.1" style={inputStyle} value={vitalWeight} onChange={e => setVitalWeight(e.target.value)} />)}
+                            {renderField("BP Sys", <input type="number" style={inputStyle} value={vitalBpSys} onChange={e => setVitalBpSys(e.target.value)} />)}
+                            {renderField("BP Dia", <input type="number" style={inputStyle} value={vitalBpDia} onChange={e => setVitalBpDia(e.target.value)} />)}
+                            {renderField("Height (cm)", <input type="number" style={inputStyle} value={vitalHeight} onChange={e => setVitalHeight(e.target.value)} />)}
                             
                             <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '24px', alignItems: 'center', marginTop: '4px', background: '#F8FAFC', padding: '10px 16px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
                               <span style={{ fontSize: '12px', fontWeight: 700, color: '#334155' }}>Patient Consent:</span>
