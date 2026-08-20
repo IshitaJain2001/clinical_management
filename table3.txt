@@ -1,0 +1,66 @@
+r: '#475569', fontWeight: 700, cursor: 'pointer' }} onClick={() => switchTab('appointments')}>View All</button>
+              </div>
+              <div style={{ overflowX: 'auto' }}>
+                <table className="premium-table">
+                  <thead>
+                    <tr>
+                      <th>Patient ID</th>
+                      <th>Patient Name</th>
+                      <th>Doctor Name</th>
+                      <th>Status</th>
+                      <th>Date & Time</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {getLatestAppointmentsList().length > 0 ? (
+                      getLatestAppointmentsList().map((app, idx) => (
+                        <tr key={idx}>
+                          <td style={{ fontWeight: 800, color: '#2563EB' }}>
+                            {app.patientId._id}
+                          </td>
+                          <td>
+                            <div 
+                              style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
+                              onClick={() => handleOpenPatientProfile(app.rawObj?.patientId)}
+                              onMouseEnter={(e) => { e.currentTarget.querySelector('.patient-name-span').style.color = '#2563EB'; }}
+                              onMouseLeave={(e) => { e.currentTarget.querySelector('.patient-name-span').style.color = '#0F172A'; }}
+                            >
+                              <div style={{
+                                width: '28px',
+                                height: '28px',
+                                borderRadius: '50%',
+                                background: '#EFF6FF',
+                                color: '#2563EB',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontWeight: 700,
+                                fontSize: '11px',
+                                border: '1px solid #E2E8F0'
+                              }}>
+                                {app.patientId.name ? app.patientId.name.split(' ').map(p => p[0]).join('').substring(0, 2).toUpperCase() : 'PT'}
+                              </div>
+                              <span className="patient-name-span" style={{ fontWeight: 800, color: '#0F172A', transition: 'color 0.2s' }}>{app.patientId.name}</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                              <div style={{
+                                width: '28px',
+                                height: '28px',
+                                borderRadius: '50%',
+                                background: '#F5F3FF',
+                                color: '#7C3AED',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontWeight: 700,
+                                fontSize: '11px',
+                                border: '1px solid #E2E8F0'
+                              }}>
+                                {app.doctorId.name ? app.doctorId.name.split(' ').map(p => p[0]).join('').substring(0, 2).toUpperCase() : 'DR'}
+                              </div>
+                              <span style={{ fontWeight: 700, color: '#334155' }}>{app.doctorId.name}</span>
+                            </div>
+                          </td>
+                          <

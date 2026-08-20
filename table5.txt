@@ -1,0 +1,80 @@
+                   <i data-lucide="filter" style={{ width: '18px' }}></i> Filter
+                    </button>
+                    <button 
+                      className="btn btn-secondary" 
+                      style={{ padding: '0 16px', height: '26px', display: 'flex', alignItems: 'center', gap: '8px', background: '#EFF6FF', border: 'none', color: '#2563EB' }}
+                      onClick={handleExportPatientsCSV}
+                    >
+                      <i data-lucide="download" style={{ width: '18px' }}></i> Export
+                    </button>
+                </div>
+              </div>
+
+              {/* Sliding Patient Filter Panel */}
+              {showPatientFilters && (
+                <div className="glass-card" style={{ padding: '12px', marginBottom: '12px', animation: 'slideDown 0.3s ease-out', border: '1.5px solid #BFDBFE', background: '#F8FAFC', borderRadius: '4px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                    <h4 style={{ fontSize: '12px', fontWeight: 800, color: '#1E293B', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <i data-lucide="filter" style={{ width: '18px', color: '#2563EB' }}></i> Select Patient Filters
+                    </h4>
+                    {(patientGenderFilter !== 'All' || patientStartRegDate || patientEndRegDate || patientBookingTypeFilter !== 'All') && (
+                      <button 
+                        className="btn" 
+                        style={{ fontSize: '12px', padding: '4px 10px', background: 'transparent', color: '#EF4444', fontWeight: 700, border: 'none', cursor: 'pointer' }}
+                        onClick={() => { 
+                          setPatientGenderFilter('All'); 
+                          setPatientStartRegDate(''); 
+                          setPatientEndRegDate(''); 
+                          setPatientBookingTypeFilter('All');
+                        }}
+                      >
+                        Clear Filters
+                      </button>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+                    <div className="form-group" style={{ margin: 0, flex: 1, minWidth: '150px' }}>
+                      <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Gender</label>
+                      <select 
+                        className="form-control" 
+                        style={{ height: '40px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }}
+                        value={patientGenderFilter}
+                        onChange={e => setPatientGenderFilter(e.target.value)}
+                      >
+                        <option value="All">All Genders</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group" style={{ margin: 0, flex: 1, minWidth: '180px' }}>
+                      <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Booking Type</label>
+                      <select 
+                        className="form-control" 
+                        style={{ height: '40px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }}
+                        value={patientBookingTypeFilter}
+                        onChange={e => setPatientBookingTypeFilter(e.target.value)}
+                      >
+                        <option value="All">All Patients (No filter)</option>
+                        <option value="Appointments">Patients with Appointments</option>
+                        <option value="Lab Tests">Patients with Lab Tests</option>
+                        <option value="Clinical Services">Patients with Clinical Services</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group" style={{ margin: 0, flex: 1, minWidth: '180px' }}>
+                      <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Registered From (Calendar)</label>
+                      <input 
+                        type="date" 
+                        className="form-control" 
+                        style={{ height: '40px', borderRadius: '2px', border: '1px solid #CBD5E1', padding: '0 12px', background: 'white', fontWeight: 600, color: '#334155', width: '100%' }} 
+                        value={patientStartRegDate} 
+                        onChange={e => setPatientStartRegDate(e.target.value)} 
+                      />
+                    </div>
+
+                    <div className="form-group" style={{ margin: 0, flex: 1, minWidth: '180px' }}>
+                      <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Registered To (Calendar)</label>
+                      <i
