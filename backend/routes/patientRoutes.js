@@ -110,6 +110,27 @@ router.post('/', async (req, res) => {
       userAgent: req.headers['user-agent'] || 'System UI'
     });
 
+    
+    // Automatically create a User account for the patient so they can login to the portal
+    try {
+      const User = require('../models/User');
+      const existingUser = await User.findOne({ tenantId: req.tenantId, staff_id: cleanContact });
+      if (!existingUser) {
+        await User.create({
+          tenantId: req.tenantId,
+          staff_id: cleanContact,
+          name: name,
+          email: cleanEmail !== 'n/a' ? cleanEmail : undefined,
+          phone: cleanContact,
+          role: 'patient',
+          password_hash: 'not-applicable', // Patient logs in via OTP
+          status: 'Active'
+        });
+      }
+    } catch (userErr) {
+      console.warn("Failed to create User record for patient:", userErr);
+    }
+
     const io = req.app.get("io");
     if (io && req.tenantId) {
       io.to(req.tenantId).emit("data_changed", { type: "patients" });
