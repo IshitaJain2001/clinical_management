@@ -2393,7 +2393,8 @@ const ReceptionistDashboard = () => {
           otp: verificationOtp,
           dpdpConsent: dpdpConsent,
           patientDocuments: patientDocuments,
-          referredBy: formData.referredBy || ''
+          referredBy: formData.referredBy || '',
+          avatar: patientPhoto || ''
         });
         finalPatientId = patientRes.data._id;
         patientObj = patientRes.data;
@@ -2409,7 +2410,8 @@ const ReceptionistDashboard = () => {
             contact: selectedPatient.contact,
             currentMedications: formData.currentMedications || selectedPatient.currentMedications || '',
             allergies: formData.allergies !== undefined ? formData.allergies : (selectedPatient.allergies || 'None'),
-            medicalHistory: formData.medicalHistory ? formData.medicalHistory.split(',').map(item => item.trim()) : selectedPatient.medicalHistory
+            medicalHistory: formData.medicalHistory ? formData.medicalHistory.split(',').map(item => item.trim()) : selectedPatient.medicalHistory,
+            ...(patientPhoto && patientPhoto.startsWith('data:image') ? { avatar: patientPhoto } : {})
           });
         } catch (err) {
           console.error("Failed to update patient details for existing patient:", err);
@@ -4588,11 +4590,15 @@ const ReceptionistDashboard = () => {
                 <div className="glass-card" style={{ padding: '12px', background: 'white', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-                      <div style={{ width: '80px', height: '80px', borderRadius: '4px', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-                          <circle cx="12" cy="7" r="4" />
-                        </svg>
+                      <div style={{ width: '80px', height: '80px', borderRadius: '4px', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
+                        {selectedPatient.avatar ? (
+                          <img src={selectedPatient.avatar} alt="Patient Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                          </svg>
+                        )}
                       </div>
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -6114,8 +6120,8 @@ const ReceptionistDashboard = () => {
                   {/* Action Sidebar (Right) */}
                   <div style={{ width: '220px', background: '#F8FAFC', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', borderLeft: '1px solid #E2E8F0' }}>
                     
-                    <input type="file" id="patientPhotoUpload" style={{ display: 'none' }} accept="image/png, image/jpeg" onChange={(e) => { if (e.target.files && e.target.files[0]) { setPatientPhoto(URL.createObjectURL(e.target.files[0])); } }} />
-                    <input type="file" id="patientCameraUpload" style={{ display: 'none' }} accept="image/png, image/jpeg" capture="environment" onChange={(e) => { if (e.target.files && e.target.files[0]) { setPatientPhoto(URL.createObjectURL(e.target.files[0])); } }} />
+                    <input type="file" id="patientPhotoUpload" style={{ display: 'none' }} accept="image/png, image/jpeg" onChange={(e) => { if (e.target.files && e.target.files[0]) { const file = e.target.files[0]; const reader = new FileReader(); reader.onloadend = () => { setPatientPhoto(reader.result); }; reader.readAsDataURL(file); } }} />
+                    <input type="file" id="patientCameraUpload" style={{ display: 'none' }} accept="image/png, image/jpeg" capture="environment" onChange={(e) => { if (e.target.files && e.target.files[0]) { const file = e.target.files[0]; const reader = new FileReader(); reader.onloadend = () => { setPatientPhoto(reader.result); }; reader.readAsDataURL(file); } }} />
                     <div style={{ width: '100%', height: '160px', borderRadius: '8px', border: '2px dashed #CBD5E1', background: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', position: 'relative', overflow: 'hidden' }}>
                       {patientPhoto ? (
                         <img src={patientPhoto} alt="Patient" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
