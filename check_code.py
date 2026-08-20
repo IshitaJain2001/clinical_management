@@ -1,8 +1,8 @@
-with open(r'D:\rizwan\frontend\src\pages\ReceptionistDashboard.jsx', 'r', encoding='utf-8') as f:
+main_file = r'D:\rizwan\frontend\src\pages\ReceptionistDashboard.jsx'
+with open(main_file, 'r', encoding='utf-8') as f:
     text = f.read()
 
-start_idx = text.find('renderField("Mobile No."')
-if start_idx != -1:
-    print(text[start_idx:start_idx+1000])
-else:
-    print('Not found')
+target = 'className="dropdown-options-box show"'
+idx = text.find(target)
+if idx != -1:
+    print(text[idx-50:idx+1500])
