@@ -1983,18 +1983,43 @@ router.post('/patient-portal/verify-otp', async (req, res) => {
       await user.save();
 
       const jwt = require('jsonwebtoken');
+      const { getJwtSecret } = require('../config/env');
+      let secretKey;
+      try { secretKey = getJwtSecret(); } catch(e) { secretKey = process.env.JWT_SECRET || 'secret_key'; }
+
+      let targetId = user._id;
+      let patientDoc = null;
+      if (user.role === 'patient') {
+        patientDoc = await Patient.findOne({
+          $or: [
+            { contact: user.staff_id },
+            { email: user.email }
+          ]
+        });
+        if (patientDoc) {
+          targetId = patientDoc._id;
+        }
+      }
+
       const tokenPayload = {
-        id: user._id,
+        id: targetId,
+        userId: user._id,
         staff_id: user.staff_id,
         role: user.role,
         tenantId: user.tenantId
       };
-      const token = jwt.sign(tokenPayload, process.env.JWT_SECRET || 'secret_key', { expiresIn: '24h' });
+      const token = jwt.sign(tokenPayload, secretKey, { expiresIn: '24h' });
+
+      const returnUserObj = {
+        ...user.toObject(),
+        id: targetId,
+        password_hash: undefined
+      };
 
       return res.json({ 
         message: 'Login successful', 
         token, 
-        user: { ...user.toObject(), password_hash: undefined },
+        user: returnUserObj,
         isNewUser: false
       });
     } else {
@@ -2018,7 +2043,9 @@ router.post('/patient-portal/verify-otp', async (req, res) => {
       await TempPatientOTP.deleteOne({ emailOrPhone: input });
 
       const jwt = require('jsonwebtoken');
-      const tempToken = jwt.sign({ emailOrPhone: input, isNewPatient: true, role: 'patient' }, process.env.JWT_SECRET || 'secret_key', { expiresIn: '1h' });
+      let tempSecret;
+      try { tempSecret = getJwtSecret(); } catch(e) { tempSecret = process.env.JWT_SECRET || 'secret_key'; }
+      const tempToken = jwt.sign({ emailOrPhone: input, isNewPatient: true, role: 'patient' }, tempSecret, { expiresIn: '1h' });
 
       return res.json({
         message: 'OTP verified. Proceed to registration.',

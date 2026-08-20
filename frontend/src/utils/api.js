@@ -86,7 +86,7 @@ api.interceptors.response.use(
       error.config.url.includes('/forgot-password')
     );
 
-    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+    if (error.response && error.response.status === 401) {
       const isSubscriptionError = error.response.data && 
         (typeof error.response.data.error === 'string') && 
         (error.response.data.error.toLowerCase().includes('limit') || 
