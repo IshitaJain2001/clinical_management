@@ -61,8 +61,11 @@ const PatientPortalLogin = () => {
         });
       } else {
         // Existing user, log them in
+        const loggedUser = response.data.user || {};
         localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        localStorage.setItem('user', JSON.stringify(loggedUser));
+        localStorage.setItem('tenantId', loggedUser.tenantId || 'city_hospital');
+        window.dispatchEvent(new CustomEvent('curoxa_login_success'));
         navigate('/patient');
       }
     } catch (err) {

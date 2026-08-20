@@ -90,9 +90,9 @@ const ProtectedRoute = ({ children, targetRole }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // Patient route has its own role target
-  if (targetRole === 'patient' && user.role !== 'patient') {
-    return <Navigate to="/login" replace />;
+  // Patient route can be accessed by any user who logged in via Patient Portal, or admins/staff inspecting it
+  if (targetRole === 'patient') {
+    return children;
   }
 
   // Subscription feature gating:
@@ -117,7 +117,7 @@ const ProtectedRoute = ({ children, targetRole }) => {
   }
 
   // Allow direct role or admin OR active coverage for targetRole
-  const hasDirectRole = user.role === targetRole || user.role === 'admin' || (targetRole === 'inventory' && (user.role === 'pharmacy' || user.role === 'admin'));
+  const hasDirectRole = targetRole === 'patient' || user.role === targetRole || user.role === 'admin' || (targetRole === 'inventory' && (user.role === 'pharmacy' || user.role === 'admin'));
   const hasCoverage = checkHasCoverage(user.name, targetRole === 'inventory' ? 'pharmacy' : targetRole);
 
   if (!hasDirectRole && !hasCoverage) {
