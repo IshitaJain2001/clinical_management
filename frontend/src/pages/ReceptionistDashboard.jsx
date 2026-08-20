@@ -4429,10 +4429,7 @@ const ReceptionistDashboard = () => {
                             <td style={{ color: '#64748B', fontWeight: 600 }}>{getFormattedPatientId(p._id)}</td>
                             <td>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => handleOpenPatientProfile(p)}>
-                                    <div style={{ width: '32px', height: '22px', borderRadius: '50%', background: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '12px' }}>
-                                      {getInitials(p.name)}
-                                    </div>
-                                    <span style={{ fontWeight: 700, color: '#1A1D23' }}>{p.name}</span>
+                                    <span style={{ fontWeight: 700, color: '#1A1D23' }}>{p.name} {p.age ? `(${p.age} Yrs)` : ''}</span>
                                 </div>
                             </td>
                             <td style={{ color: '#64748B', fontWeight: 600 }}>{p.gender}</td>
