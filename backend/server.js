@@ -37,6 +37,28 @@ const PORT = process.env.PORT || 5000;
 // Trust proxy so rate limiters see correct client IPs behind reverse proxies
 app.set("trust proxy", 1);
 
+// 1. CORS FIRST — Ensures every request/response (including preflights & errors) has CORS headers
+const corsOptions = {
+  origin: true,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'x-tenant-id',
+    'x-bypass-consent-emergency',
+    'Cache-Control',
+    'Pragma',
+    'Expires',
+    'x-requested-with',
+    'Accept',
+    'Origin'
+  ],
+  exposedHeaders: ['Content-Disposition']
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
 // Connect to MongoDB
 connectDB();
 
@@ -133,27 +155,7 @@ const apiLimiter = rateLimit({
 // Middleware — compression first so all downstream JSON responses are gzipped
 app.use(compression());
 
-const corsOptions = {
-  origin: true, // Allow any requesting origin dynamically (reflects Origin header with credentials support)
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
-  allowedHeaders: [
-    'Content-Type',
-    'Authorization',
-    'x-tenant-id',
-    'x-bypass-consent-emergency',
-    'Cache-Control',
-    'Pragma',
-    'Expires',
-    'x-requested-with',
-    'Accept',
-    'Origin'
-  ],
-  exposedHeaders: ['Content-Disposition']
-};
 
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
 
 // Security middlewares (allow cross-origin requests from Render frontend)
 app.use(helmet({
