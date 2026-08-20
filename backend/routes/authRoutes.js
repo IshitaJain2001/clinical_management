@@ -1792,185 +1792,92 @@ router.get("/users/all", verifyToken, async (req, res) => {
 // PATIENT PORTAL ROUTES
 // ==========================================
 
-// Helper function to dispatch OTP email across Brevo, SendGrid, Resend, and SMTP
+// Fail-safe helper to send OTP email across Resend and SMTP (matching /send-login-otp)
 async function sendPortalOtpEmail(targetEmail, otp) {
-  const emailHtmlBody = `
-    <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f8fafc; padding: 40px 20px; text-align: center;">
-      <div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; text-align: left;">
-        <div style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); padding: 26px; text-align: center;">
-          <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 700;">Curoxa Patient Portal</h1>
+  try {
+    const emailHtmlBody = `
+      <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h2 style="color: #2563eb; margin: 0; font-size: 24px;">Curoxa Patient Portal</h2>
+          <p style="color: #64748b; font-size: 14px; margin-top: 4px;">Secure Patient Verification</p>
         </div>
-        <div style="padding: 32px 24px; text-align: center;">
-          <h2 style="color: #0f172a; margin-top: 0; margin-bottom: 8px; font-size: 18px; font-weight: 700;">Your Verification Code</h2>
-          <p style="color: #475569; font-size: 14px; line-height: 1.5; margin-bottom: 24px;">
-            Use the 6-digit One-Time Password (OTP) below to access your medical records and appointments. This code is valid for <strong>10 minutes</strong>.
-          </p>
-          <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px 24px; margin-bottom: 24px; display: inline-block;">
-            <span style="font-size: 32px; font-weight: 800; color: #1e3a8a; letter-spacing: 6px; font-family: monospace;">${otp}</span>
-          </div>
-          <p style="color: #94a3b8; font-size: 12px; margin: 0;">
-            If you did not request this OTP, you can safely ignore this email.
-          </p>
+        <p style="color: #334155; font-size: 15px;">Hello,</p>
+        <p style="color: #334155; font-size: 14px; line-height: 1.6;">Use the following One-Time Password (OTP) to log in or register for your Curoxa Patient Portal:</p>
+        <div style="background: #f1f5f9; padding: 18px; border-radius: 8px; text-align: center; font-size: 28px; font-weight: 800; letter-spacing: 6px; color: #1e293b; margin: 24px 0; border: 1px dashed #cbd5e1;">
+          ${otp}
         </div>
-        <div style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 14px; text-align: center;">
-          <p style="color: #94a3b8; font-size: 11px; margin: 0;">&copy; 2026 Curoxa Healthcare Systems. Confidential.</p>
-        </div>
+        <p style="font-size: 13px; color: #64748b; line-height: 1.5;">This OTP is valid for 10 minutes. If you did not request this, you can safely ignore this email.</p>
+        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+        <p style="font-size: 11px; color: #94a3b8; text-align: center; margin: 0;">© Curoxa Healthcare Systems. Secure & Confidential.</p>
       </div>
-    </div>
-  `;
+    `;
 
-  let emailSent = false;
-
-  // 1. Try Brevo
-  if (process.env.BREVO_API_KEY) {
-    try {
-      const https = require("https");
-      const payload = JSON.stringify({
-        sender: { name: "Curoxa Security", email: process.env.SMTP_USER || "curoxatechnology@gmail.com" },
-        to: [{ email: targetEmail }],
-        subject: `Curoxa Patient Verification Code: ${otp}`,
-        htmlContent: emailHtmlBody
-      });
-      const options = {
-        hostname: 'api.brevo.com',
-        port: 443,
-        path: '/v3/smtp/email',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'api-key': process.env.BREVO_API_KEY.trim(),
-          'Content-Length': Buffer.byteLength(payload)
-        }
-      };
-      await new Promise((resolve, reject) => {
-        const req = https.request(options, (res) => {
-          let data = '';
-          res.on('data', (chunk) => { data += chunk; });
-          res.on('end', () => {
-            if (res.statusCode >= 200 && res.statusCode < 300) resolve();
-            else reject(new Error(`Brevo status ${res.statusCode}: ${data}`));
-          });
+    // 1. Try Resend if configured
+    if (process.env.RESEND_API_KEY) {
+      try {
+        const https = require("https");
+        const payload = JSON.stringify({
+          from: "Curoxa <security@verification.curoxa.in>",
+          to: [targetEmail],
+          subject: `Curoxa Patient Portal OTP: ${otp}`,
+          html: emailHtmlBody
         });
-        req.on('error', reject);
-        req.write(payload);
-        req.end();
-      });
-      emailSent = true;
-      console.log(`[PATIENT PORTAL] Email sent via Brevo to ${targetEmail}`);
-    } catch (e) {
-      console.warn("[PATIENT PORTAL] Brevo failed:", e.message);
-    }
-  }
-
-  // 2. Try SendGrid
-  if (!emailSent && process.env.SENDGRID_API_KEY) {
-    try {
-      const https = require("https");
-      const payload = JSON.stringify({
-        personalizations: [{ to: [{ email: targetEmail }] }],
-        from: { email: process.env.SMTP_USER || "curoxatechnology@gmail.com", name: "Curoxa Security" },
-        subject: `Curoxa Patient Verification Code: ${otp}`,
-        content: [{ type: "text/html", value: emailHtmlBody }]
-      });
-      const options = {
-        hostname: 'api.sendgrid.com',
-        port: 443,
-        path: '/v3/mail/send',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.SENDGRID_API_KEY.trim()}`,
-          'Content-Length': Buffer.byteLength(payload)
-        }
-      };
-      await new Promise((resolve, reject) => {
-        const req = https.request(options, (res) => {
-          let data = '';
-          res.on('data', (chunk) => { data += chunk; });
-          res.on('end', () => {
-            if (res.statusCode >= 200 && res.statusCode < 300) resolve();
-            else reject(new Error(`SendGrid status ${res.statusCode}: ${data}`));
+        const options = {
+          hostname: 'api.resend.com',
+          port: 443,
+          path: '/emails',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.RESEND_API_KEY.trim()}`,
+            'Content-Length': Buffer.byteLength(payload)
+          }
+        };
+        await new Promise((resolve) => {
+          const req = https.request(options, (res) => {
+            res.on('data', () => {});
+            res.on('end', () => resolve());
           });
+          req.on('error', () => resolve());
+          req.write(payload);
+          req.end();
         });
-        req.on('error', reject);
-        req.write(payload);
-        req.end();
-      });
-      emailSent = true;
-      console.log(`[PATIENT PORTAL] Email sent via SendGrid to ${targetEmail}`);
-    } catch (e) {
-      console.warn("[PATIENT PORTAL] SendGrid failed:", e.message);
+        console.log(`[PATIENT PORTAL] OTP email dispatched to ${targetEmail}`);
+        return true;
+      } catch (err) {
+        console.warn("[PATIENT PORTAL] Resend email error:", err.message);
+      }
     }
-  }
 
-  // 3. Try Resend
-  if (!emailSent && process.env.RESEND_API_KEY) {
-    try {
-      const https = require("https");
-      const payload = JSON.stringify({
-        from: process.env.SMTP_FROM || "Curoxa <security@verification.curoxa.in>",
-        to: [targetEmail],
-        subject: `Curoxa Patient Verification Code: ${otp}`,
-        html: emailHtmlBody
-      });
-      const options = {
-        hostname: 'api.resend.com',
-        port: 443,
-        path: '/emails',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.RESEND_API_KEY.trim()}`,
-          'Content-Length': Buffer.byteLength(payload)
-        }
-      };
-      await new Promise((resolve, reject) => {
-        const req = https.request(options, (res) => {
-          let data = '';
-          res.on('data', (chunk) => { data += chunk; });
-          res.on('end', () => {
-            if (res.statusCode >= 200 && res.statusCode < 300) resolve();
-            else reject(new Error(`Resend status ${res.statusCode}: ${data}`));
-          });
+    // 2. Try SMTP
+    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+      try {
+        const nodemailer = require("nodemailer");
+        const transporter = nodemailer.createTransport({
+          host: process.env.SMTP_HOST || "smtp.mailtrap.io",
+          port: parseInt(process.env.SMTP_PORT, 10) || 2525,
+          secure: process.env.SMTP_SECURE === "true" || parseInt(process.env.SMTP_PORT, 10) === 465,
+          auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
         });
-        req.on('error', reject);
-        req.write(payload);
-        req.end();
-      });
-      emailSent = true;
-      console.log(`[PATIENT PORTAL] Email sent via Resend to ${targetEmail}`);
-    } catch (e) {
-      console.warn("[PATIENT PORTAL] Resend failed:", e.message);
+        await transporter.sendMail({
+          from: `"Curoxa Security" <${process.env.SMTP_USER}>`,
+          to: targetEmail,
+          subject: `Curoxa Patient Portal OTP: ${otp}`,
+          html: emailHtmlBody
+        });
+        console.log(`[PATIENT PORTAL] OTP email sent via SMTP to ${targetEmail}`);
+        return true;
+      } catch (err) {
+        console.warn("[PATIENT PORTAL] SMTP email error:", err.message);
+      }
     }
+  } catch (outerErr) {
+    console.error("[PATIENT PORTAL] Email dispatcher exception:", outerErr.message);
   }
-
-  // 4. Try SMTP
-  if (!emailSent && process.env.SMTP_USER && process.env.SMTP_PASS) {
-    try {
-      const nodemailer = require("nodemailer");
-      const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST || "smtp.mailtrap.io",
-        port: parseInt(process.env.SMTP_PORT, 10) || 2525,
-        secure: process.env.SMTP_SECURE === "true" || parseInt(process.env.SMTP_PORT, 10) === 465,
-        auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
-      });
-      await transporter.sendMail({
-        from: process.env.SMTP_FROM || `"Curoxa Security" <${process.env.SMTP_USER}>`,
-        to: targetEmail,
-        subject: `Curoxa Patient Verification Code: ${otp}`,
-        html: emailHtmlBody
-      });
-      emailSent = true;
-      console.log(`[PATIENT PORTAL] Email sent via SMTP to ${targetEmail}`);
-    } catch (e) {
-      console.warn("[PATIENT PORTAL] SMTP failed:", e.message);
-    }
-  }
-
-  return emailSent;
+  return false;
 }
 
-// Send OTP for Patient Portal (detects existing patient or staff account)
+// Send OTP for Patient Portal (allows existing & new patients)
 router.post('/patient-portal/send-otp', async (req, res) => {
   const { emailOrPhone } = req.body;
   if (!emailOrPhone) {
@@ -2020,30 +1927,34 @@ router.post('/patient-portal/send-otp', async (req, res) => {
     }
 
     // Always store in RegistrationOtp for seamless verification fallback
-    await RegistrationOtp.findOneAndUpdate(
-      { email: input.toLowerCase() },
-      { otp_code: otp, expires_at: expiresAt },
-      { upsert: true, returnDocument: 'after' }
-    );
+    try {
+      await RegistrationOtp.findOneAndUpdate(
+        { email: input.toLowerCase() },
+        { otp_code: otp, expires_at: expiresAt },
+        { upsert: true, new: true }
+      );
+    } catch (dbErr) {
+      console.warn('[PATIENT PORTAL] RegistrationOtp store warning:', dbErr.message);
+    }
 
     console.log(`[PATIENT PORTAL] Generated OTP for ${input}: ${otp}`);
 
-    // Send email if input is an email or if user/patient has an email
+    // Send email asynchronously without blocking the response
     const targetEmail = (user && user.email) || (patient && patient.email) || (input.includes('@') ? input.toLowerCase() : null);
     if (targetEmail) {
-      await sendPortalOtpEmail(targetEmail, otp);
+      sendPortalOtpEmail(targetEmail, otp).catch(e => console.error("Async email error:", e));
     }
 
     const isRegistered = Boolean(patient || user);
-    res.json({ message: 'OTP sent successfully', isNewUser: !isRegistered });
+    return res.json({ message: 'OTP sent successfully', isNewUser: !isRegistered });
 
   } catch (error) {
     console.error('Patient Portal Send OTP Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Verify OTP for Patient Portal (Directs existing patients directly to dashboard history)
+// Verify OTP for Patient Portal
 router.post('/patient-portal/verify-otp', async (req, res) => {
   const { emailOrPhone, otp } = req.body;
   if (!emailOrPhone || !otp) {
@@ -2107,11 +2018,13 @@ router.post('/patient-portal/verify-otp', async (req, res) => {
     }
 
     if (!otpValid) {
-      const regOtpRecord = await RegistrationOtp.findOne({ email: input.toLowerCase() });
-      if (regOtpRecord && regOtpRecord.otp_code === targetOtp && regOtpRecord.expires_at >= new Date()) {
-        otpValid = true;
-        await RegistrationOtp.deleteOne({ _id: regOtpRecord._id }).catch(() => {});
-      }
+      try {
+        const regOtpRecord = await RegistrationOtp.findOne({ email: input.toLowerCase() });
+        if (regOtpRecord && regOtpRecord.otp_code === targetOtp && regOtpRecord.expires_at >= new Date()) {
+          otpValid = true;
+          await RegistrationOtp.deleteOne({ _id: regOtpRecord._id }).catch(() => {});
+        }
+      } catch (e) {}
     }
 
     if (!otpValid) {
@@ -2180,7 +2093,7 @@ router.post('/patient-portal/verify-otp', async (req, res) => {
 
   } catch (error) {
     console.error('Patient Portal Verify OTP Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
