@@ -132,28 +132,35 @@ const apiLimiter = rateLimit({
 
 // Middleware — compression first so all downstream JSON responses are gzipped
 app.use(compression());
-const allowedOrigins = process.env.CORS_ORIGIN?.split(",") || ["http://localhost:3000", "http://localhost:5173"];
+
 const corsOptions = {
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
-    if (
-      allowedOrigins.indexOf(origin) !== -1 || 
-      origin.startsWith("http://localhost:") || 
-      origin.endsWith(".vercel.app") ||
-      origin.endsWith(".onrender.com")
-    ) {
-      return callback(null, true);
-    }
-    console.warn(`[CORS] Request from origin ${origin} allowed via fallback.`);
-    callback(null, true);
-  },
-  credentials: true
+  origin: true, // Allow any requesting origin dynamically (reflects Origin header with credentials support)
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'x-tenant-id',
+    'x-bypass-consent-emergency',
+    'Cache-Control',
+    'Pragma',
+    'Expires',
+    'x-requested-with',
+    'Accept',
+    'Origin'
+  ],
+  exposedHeaders: ['Content-Disposition']
 };
 
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
-// Security middlewares
-app.use(helmet());
+// Security middlewares (allow cross-origin requests from Render frontend)
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+  crossOriginOpenerPolicy: false,
+  contentSecurityPolicy: false
+}));
 app.use(mongoSanitize());
 
 // Apply rate limits
