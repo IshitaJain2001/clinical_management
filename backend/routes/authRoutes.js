@@ -1803,7 +1803,7 @@ async function sendPortalOtpEmail(targetEmail, otp) {
         <div style="padding: 32px 24px; text-align: center;">
           <h2 style="color: #0f172a; margin-top: 0; margin-bottom: 8px; font-size: 18px; font-weight: 700;">Your Verification Code</h2>
           <p style="color: #475569; font-size: 14px; line-height: 1.5; margin-bottom: 24px;">
-            Use the 6-digit One-Time Password (OTP) below to log into your Curoxa Patient Portal. This code is valid for <strong>10 minutes</strong>.
+            Use the 6-digit One-Time Password (OTP) below to access your medical records and appointments. This code is valid for <strong>10 minutes</strong>.
           </p>
           <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px 24px; margin-bottom: 24px; display: inline-block;">
             <span style="font-size: 32px; font-weight: 800; color: #1e3a8a; letter-spacing: 6px; font-family: monospace;">${otp}</span>
@@ -1970,7 +1970,7 @@ async function sendPortalOtpEmail(targetEmail, otp) {
   return emailSent;
 }
 
-// Send OTP for Patient Portal (allows existing & new patients)
+// Send OTP for Patient Portal (detects existing patient or staff account)
 router.post('/patient-portal/send-otp', async (req, res) => {
   const { emailOrPhone } = req.body;
   if (!emailOrPhone) {
@@ -1982,7 +1982,7 @@ router.post('/patient-portal/send-otp', async (req, res) => {
     const Patient = require('../models/Patient');
     const RegistrationOtp = require('../models/RegistrationOtp');
     
-    // Check if patient exists
+    // 1. Check if patient record exists in Patient collection
     let patient = await Patient.findOne({
       $or: [
         { email: input.toLowerCase() },
@@ -1990,9 +1990,16 @@ router.post('/patient-portal/send-otp', async (req, res) => {
       ]
     });
 
+    // 2. Check if user account exists
     let user = null;
     if (patient) {
-      user = await User.findOne({ staff_id: patient.contact });
+      user = await User.findOne({
+        $or: [
+          { staff_id: patient.contact },
+          { email: patient.email ? patient.email.toLowerCase() : '' },
+          { phone: patient.contact }
+        ]
+      });
     } else {
       user = await User.findOne({
         $or: [
@@ -2027,7 +2034,8 @@ router.post('/patient-portal/send-otp', async (req, res) => {
       await sendPortalOtpEmail(targetEmail, otp);
     }
 
-    res.json({ message: 'OTP sent successfully', isNewUser: !user });
+    const isRegistered = Boolean(patient || user);
+    res.json({ message: 'OTP sent successfully', isNewUser: !isRegistered });
 
   } catch (error) {
     console.error('Patient Portal Send OTP Error:', error);
@@ -2035,7 +2043,7 @@ router.post('/patient-portal/send-otp', async (req, res) => {
   }
 });
 
-// Verify OTP for Patient Portal
+// Verify OTP for Patient Portal (Directs existing patients directly to dashboard history)
 router.post('/patient-portal/verify-otp', async (req, res) => {
   const { emailOrPhone, otp } = req.body;
   if (!emailOrPhone || !otp) {
@@ -2052,36 +2060,47 @@ router.post('/patient-portal/verify-otp', async (req, res) => {
     let secretKey;
     try { secretKey = getJwtSecret(); } catch(e) { secretKey = process.env.JWT_SECRET || 'secret_key'; }
 
-    // Check if user exists
-    let user = await User.findOne({
+    // 1. Search in Patient collection first
+    let patientDoc = await Patient.findOne({
       $or: [
-        { staff_id: input },
         { email: input.toLowerCase() },
-        { phone: input }
+        { contact: input }
       ]
-    }).select('+password_hash');
+    });
 
-    let patientDoc = null;
-    if (!user) {
-      patientDoc = await Patient.findOne({
+    // 2. Search linked or standalone User account
+    let user = null;
+    if (patientDoc) {
+      user = await User.findOne({
         $or: [
-          { email: input.toLowerCase() },
-          { contact: input }
+          { staff_id: patientDoc.contact },
+          { email: patientDoc.email ? patientDoc.email.toLowerCase() : '' },
+          { phone: patientDoc.contact }
         ]
-      });
-      if (patientDoc) {
-        user = await User.findOne({ staff_id: patientDoc.contact }).select('+password_hash');
-      }
-    } else if (user.role === 'patient') {
-      patientDoc = await Patient.findOne({
-        $or: [
-          { contact: user.staff_id },
-          { email: user.email }
-        ]
-      });
+      }).select('+password_hash');
     }
 
-    // Verify OTP against User model or RegistrationOtp model
+    if (!user) {
+      user = await User.findOne({
+        $or: [
+          { staff_id: input },
+          { email: input.toLowerCase() },
+          { phone: input }
+        ]
+      }).select('+password_hash');
+
+      if (user && !patientDoc) {
+        patientDoc = await Patient.findOne({
+          $or: [
+            { contact: user.staff_id },
+            { email: user.email ? user.email.toLowerCase() : '' },
+            { contact: user.phone || '' }
+          ]
+        });
+      }
+    }
+
+    // 3. Verify OTP code
     let otpValid = false;
     if (user && user.login_otp_code === targetOtp && user.login_otp_expires_at >= new Date()) {
       otpValid = true;
@@ -2099,32 +2118,55 @@ router.post('/patient-portal/verify-otp', async (req, res) => {
       return res.status(401).json({ error: 'Invalid or expired OTP' });
     }
 
-    if (user) {
-      user.login_otp_code = null;
-      user.login_otp_expires_at = null;
-      user.lastLogin = new Date();
-      await user.save();
+    // 4. Handle Existing Patient or User
+    if (patientDoc || user) {
+      // If patient exists but no User account was created yet, create a User record now
+      if (!user && patientDoc) {
+        user = await User.create({
+          name: patientDoc.name,
+          email: patientDoc.email || `${patientDoc.contact}@curoxa.patient`,
+          phone: patientDoc.contact,
+          staff_id: patientDoc.contact,
+          role: 'patient',
+          tenantId: patientDoc.tenantId || 'city_hospital',
+          password_hash: 'PATIENT_OTP_AUTH'
+        });
+      } else if (user) {
+        user.login_otp_code = null;
+        user.login_otp_expires_at = null;
+        user.lastLogin = new Date();
+        await user.save();
+      }
 
       const jwt = require('jsonwebtoken');
       const targetId = patientDoc ? patientDoc._id : user._id;
 
+      // Always grant role: 'patient' in the portal session token so they see patient dashboard history
       const tokenPayload = {
         id: targetId,
         userId: user._id,
-        staff_id: user.staff_id,
-        role: user.role,
-        tenantId: user.tenantId
+        staff_id: user.staff_id || (patientDoc ? patientDoc.contact : input),
+        role: 'patient',
+        actualStaffRole: user.role,
+        tenantId: user.tenantId || (patientDoc ? patientDoc.tenantId : 'city_hospital')
       };
       const token = jwt.sign(tokenPayload, secretKey, { expiresIn: '24h' });
 
       return res.json({ 
         message: 'Login successful', 
         token, 
-        user: { ...user.toObject(), id: targetId, password_hash: undefined },
+        user: { 
+          ...user.toObject(), 
+          id: targetId, 
+          role: 'patient', 
+          actualStaffRole: user.role,
+          name: patientDoc ? patientDoc.name : user.name,
+          password_hash: undefined 
+        },
         isNewUser: false
       });
     } else {
-      // New patient registration token
+      // Completely new patient -> forward to registration
       const jwt = require('jsonwebtoken');
       const tempToken = jwt.sign({ emailOrPhone: input, isNewPatient: true, role: 'patient' }, secretKey, { expiresIn: '1h' });
 
