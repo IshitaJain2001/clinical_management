@@ -1197,7 +1197,13 @@ const ReceptionistDashboard = () => {
   };
 
   const openOnlineRequestReviewModal = (app) => {
-    setSelectedOnlineRequest(app);
+    // Merge full patient object from patientsList if available
+    const pId = app.patientId?._id || app.patientId;
+    const fullPatient = patientsList.find(p => String(p._id) === String(pId)) || app.patientId;
+    setSelectedOnlineRequest({
+      ...app,
+      patientId: fullPatient
+    });
     setShowOnlineReviewModal(true);
   };
 
@@ -10330,7 +10336,8 @@ const ReceptionistDashboard = () => {
 
             <div style={{ padding: '24px' }}>
               {(() => {
-                const pat = selectedOnlineRequest.patientId || {};
+                const pId = selectedOnlineRequest.patientId?._id || selectedOnlineRequest.patientId;
+                const pat = (patientsList && patientsList.find(p => String(p._id) === String(pId))) || selectedOnlineRequest.patientId || {};
                 const doc = selectedOnlineRequest.doctorId || {};
                 const docFee = (doc.consultationFee !== undefined && doc.consultationFee !== null && !isNaN(doc.consultationFee)) ? Number(doc.consultationFee) : 0;
                 
