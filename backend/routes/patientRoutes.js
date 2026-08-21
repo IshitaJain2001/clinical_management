@@ -135,7 +135,33 @@ router.post('/', async (req, res) => {
     if (io && req.tenantId) {
       io.to(req.tenantId).emit("data_changed", { type: "patients" });
     }
-    res.status(201).json(patient);
+
+    const jwt = require('jsonwebtoken');
+    const { getJwtSecret } = require('../config/env');
+    let secretKey;
+    try { secretKey = getJwtSecret(); } catch(e) { secretKey = process.env.JWT_SECRET || 'secret_key'; }
+
+    const token = jwt.sign({
+      id: patient._id,
+      staff_id: patient.contact,
+      role: 'patient',
+      tenantId: patient.tenantId
+    }, secretKey, { expiresIn: '24h' });
+
+    res.status(201).json({
+      ...patient.toObject(),
+      token,
+      user: {
+        id: patient._id,
+        _id: patient._id,
+        name: patient.name,
+        contact: patient.contact,
+        email: patient.email,
+        role: 'patient',
+        isSetupComplete: true,
+        tenantId: patient.tenantId
+      }
+    });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

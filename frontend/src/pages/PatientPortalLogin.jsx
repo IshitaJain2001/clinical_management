@@ -52,7 +52,10 @@ const PatientPortalLogin = () => {
       });
       
       if (response.data.isNewUser) {
-        // Redirect to patient registration with the temporary token
+        // Store temp token so all API calls on /patient-register (doctors, slots, availability) are authorized
+        localStorage.setItem('token', response.data.tempToken);
+        localStorage.setItem('user', JSON.stringify({ role: 'patient', isNewPatient: true, emailOrPhone: response.data.emailOrPhone }));
+        localStorage.setItem('tenantId', 'city_hospital');
         navigate('/patient-register', { 
           state: { 
             tempToken: response.data.tempToken, 

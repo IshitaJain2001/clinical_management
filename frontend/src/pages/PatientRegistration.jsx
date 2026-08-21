@@ -218,10 +218,25 @@ const PatientRegistration = () => {
         }
       }
 
-      setSuccess("Registration completed successfully! Redirecting to login...");
+      const responseData = res.data || {};
+      const finalToken = responseData.token || tempToken;
+      const finalUser = responseData.user || { 
+        id: responseData._id || newPatient._id, 
+        _id: responseData._id || newPatient._id, 
+        name: responseData.name || newPatient.name, 
+        role: 'patient', 
+        isSetupComplete: true 
+      };
+
+      localStorage.setItem('token', finalToken);
+      localStorage.setItem('user', JSON.stringify(finalUser));
+      localStorage.setItem('tenantId', responseData.tenantId || 'city_hospital');
+      window.dispatchEvent(new CustomEvent('curoxa_login_success'));
+
+      setSuccess("Registration completed successfully! Opening your Patient Portal...");
       setTimeout(() => {
-        navigate('/patient/login');
-      }, 1500);
+        navigate('/patient');
+      }, 1000);
 
     } catch (err) {
       setError(err.response?.data?.error || 'Registration failed. Please try again.');

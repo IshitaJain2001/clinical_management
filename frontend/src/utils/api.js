@@ -91,8 +91,12 @@ api.interceptors.response.use(
          error.response.data.error.toLowerCase().includes('upgrade') ||
          error.response.data.error.toLowerCase().includes('subscription'));
 
+      const isPatientAuthRoute = window.location.pathname.startsWith('/patient-register') || 
+                                 window.location.pathname.startsWith('/patient/login') ||
+                                 window.location.pathname === '/login';
+
       // Only force redirect and logout if not on auth request/login page and not a subscription limit error
-      if (!isAuthRequest && window.location.pathname !== '/login' && !isSubscriptionError) {
+      if (!isAuthRequest && !isPatientAuthRoute && !isSubscriptionError) {
         const reason = (error.response.data && error.response.data.error === 'Password changed') 
           ? 'password_changed' 
           : 'session_expired';
