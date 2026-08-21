@@ -377,7 +377,7 @@ const PatientDashboard = () => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [patientProfile, setPatientProfile] = useState(null);
 
-  const [editProfileData, setEditProfileData] = useState({ name: '', age: '', gender: '', contact: '', address: '', bloodGroup: '', allergies: '', medicalHistory: '' });
+  const [editProfileData, setEditProfileData] = useState({ name: '', age: '', ageMonths: '', ageDays: '', gender: '', contact: '', address: '', bloodGroup: '', allergies: '', medicalHistory: '' });
   const [passwordData, setPasswordData] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [profileMsg, setProfileMsg] = useState({ type: '', text: '' });
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
@@ -1725,8 +1725,15 @@ const PatientDashboard = () => {
               
               <div className="onboarding-grid-3">
                 <div className="form-group" style={{ margin: 0 }}>
-                  <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>Age (Years) *</label>
-                  <input type="number" className="form-control" style={{ height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', paddingLeft: '12px', fontSize: '13px', fontWeight: 600 }} value={editProfileData.age} onChange={e => setEditProfileData({...editProfileData, age: e.target.value})} required min="1" max="120" />
+                  <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>Age (Years / Months / Days) *</label>
+                  <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                    <input type="number" className="form-control" style={{ height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 8px', fontSize: '13px', fontWeight: 600, textAlign: 'center', flex: 1 }} value={editProfileData.age} onChange={e => setEditProfileData({...editProfileData, age: e.target.value})} placeholder="Yrs" min="0" max="120" />
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748B' }}>Y</span>
+                    <input type="number" className="form-control" style={{ height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 8px', fontSize: '13px', fontWeight: 600, textAlign: 'center', flex: 1 }} value={editProfileData.ageMonths || ''} onChange={e => setEditProfileData({...editProfileData, ageMonths: e.target.value})} placeholder="M" min="0" max="11" />
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748B' }}>M</span>
+                    <input type="number" className="form-control" style={{ height: '42px', borderRadius: '8px', border: '1px solid #CBD5E1', padding: '0 8px', fontSize: '13px', fontWeight: 600, textAlign: 'center', flex: 1 }} value={editProfileData.ageDays || ''} onChange={e => setEditProfileData({...editProfileData, ageDays: e.target.value})} placeholder="D" min="0" max="30" />
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748B' }}>D</span>
+                  </div>
                 </div>
                 <div className="form-group" style={{ margin: 0 }}>
                   <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block' }}>Gender *</label>

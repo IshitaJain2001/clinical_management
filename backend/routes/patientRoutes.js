@@ -82,7 +82,9 @@ router.post('/', async (req, res) => {
       tenantId: req.tenantId,
       patientId: formattedId,
       name,
-      age: parseInt(age) || 30,
+      age: parseInt(age) || 0,
+      ageMonths: parseInt(ageMonths) || 0,
+      ageDays: parseInt(ageDays) || 0,
       gender,
       contact: cleanContact,
       email: cleanEmail,
@@ -199,7 +201,9 @@ router.get('/:id', async (req, res) => {
         patient = new Patient({
           patientId: formattedId,
           name: name || userObj.name || 'Patient',
-          age: parseInt(age) || 25,
+          age: parseInt(age) || 0,
+          ageMonths: parseInt(ageMonths) || 0,
+          ageDays: parseInt(ageDays) || 0,
           gender: gender || 'Male',
           contact: contact ? contact.trim() : (userObj.phone || userObj.staff_id),
           email: userObj.email || (contact && contact.includes('@') ? contact : ''),
@@ -236,7 +240,7 @@ router.get('/:id', async (req, res) => {
 
 // Update patient details (profile & settings, scoped to tenant)
 router.put('/:id', async (req, res) => {
-  const { name, age, gender, contact, address, bloodGroup, allergies, currentMedications, medicalHistory, avatar } = req.body;
+  const { name, age, ageMonths, ageDays, gender, contact, address, bloodGroup, allergies, currentMedications, medicalHistory, avatar } = req.body;
   try {
     let patient = null;
     try { patient = await Patient.findOne({ _id: req.params.id, tenantId: req.tenantId }); } catch(e) {}

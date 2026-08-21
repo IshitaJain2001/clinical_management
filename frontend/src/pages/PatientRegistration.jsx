@@ -51,6 +51,8 @@ const PatientRegistration = () => {
     title: '',
     name: '',
     age: '',
+    ageMonths: '',
+    ageDays: '',
     gender: '',
     contact: initialContact.includes('@') ? '' : initialContact,
     email: initialContact.includes('@') ? initialContact : '',
@@ -402,15 +404,44 @@ const PatientRegistration = () => {
                 </select>
               ), true)}
 
-              {renderField("Age (Yrs)", (
-                <input 
-                  type="number" 
-                  className="impressive-input" 
-                  style={inputStyle} 
-                  value={formData.age} 
-                  onChange={e => setFormData({...formData, age: e.target.value})} 
-                  placeholder="Age in years"
-                />
+              {renderField("Age", (
+                <div style={{ display: 'flex', gap: '4px', width: '100%', alignItems: 'center' }}>
+                  <input 
+                    type="number" 
+                    min="0" 
+                    max="120"
+                    placeholder="Yrs" 
+                    className="impressive-input" 
+                    style={{ ...inputStyle, flex: 1, minWidth: 0, padding: '0 4px', textAlign: 'center' }} 
+                    value={formData.age} 
+                    onChange={e => setFormData({...formData, age: e.target.value})} 
+                  />
+                  <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700 }}>Y</span>
+
+                  <input 
+                    type="number" 
+                    min="0" 
+                    max="11"
+                    placeholder="Mths" 
+                    className="impressive-input" 
+                    style={{ ...inputStyle, flex: 1, minWidth: 0, padding: '0 4px', textAlign: 'center' }} 
+                    value={formData.ageMonths} 
+                    onChange={e => setFormData({...formData, ageMonths: e.target.value})} 
+                  />
+                  <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700 }}>M</span>
+
+                  <input 
+                    type="number" 
+                    min="0" 
+                    max="30"
+                    placeholder="Days" 
+                    className="impressive-input" 
+                    style={{ ...inputStyle, flex: 1, minWidth: 0, padding: '0 4px', textAlign: 'center' }} 
+                    value={formData.ageDays} 
+                    onChange={e => setFormData({...formData, ageDays: e.target.value})} 
+                  />
+                  <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700 }}>D</span>
+                </div>
               ), true)}
 
               {renderField("Email", (

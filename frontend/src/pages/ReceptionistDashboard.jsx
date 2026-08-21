@@ -477,7 +477,7 @@ const ReceptionistDashboard = () => {
   
   const [patientPhoto, setPatientPhoto] = useState(null);
   const [formData, setFormData] = useState({
-    name: '', age: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '', referredBy: '', allergies: 'None', currentMedications: ''
+    name: '', age: '', ageMonths: '', ageDays: '', gender: '', contact: '', email: '', doctorId: '', bloodGroup: '', address: '', medicalHistory: '', referredBy: '', allergies: 'None', currentMedications: ''
   });
 
   const [dpdpConsent, setDpdpConsent] = useState({ emrCreation: true, dataSharing: false });
@@ -2381,7 +2381,9 @@ const ReceptionistDashboard = () => {
       if (!isExistingPatient) {
         const patientRes = await api.post('/patients', {
           name: formData.name,
-          age: parseInt(formData.age) || 30,
+          age: parseInt(formData.age) || 0,
+          ageMonths: parseInt(formData.ageMonths) || 0,
+          ageDays: parseInt(formData.ageDays) || 0,
           gender: formData.gender,
           contact: formData.contact,
           email: formData.email,
@@ -5856,7 +5858,48 @@ const ReceptionistDashboard = () => {
                               </select>, true
                             )}
 
-                            {renderField("Age (Yrs)", <input type="number" className={`impressive-input ${!formData.age && isFormStarted ? 'required-empty' : ''}`} style={inputStyle} value={formData.age} onChange={e => setFormData({...formData, age: e.target.value})} readOnly={isExistingPatient} />)}
+                            {renderField("Age", (
+                              <div style={{ display: 'flex', gap: '4px', width: '100%', alignItems: 'center' }}>
+                                <input 
+                                  type="number" 
+                                  min="0" 
+                                  max="120"
+                                  placeholder="Yrs" 
+                                  className={`impressive-input ${!formData.age && !formData.ageMonths && !formData.ageDays && isFormStarted ? 'required-empty' : ''}`} 
+                                  style={{ ...inputStyle, flex: 1, minWidth: 0, padding: '0 4px', textAlign: 'center' }} 
+                                  value={formData.age} 
+                                  onChange={e => setFormData({...formData, age: e.target.value})} 
+                                  readOnly={isExistingPatient} 
+                                />
+                                <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700 }}>Y</span>
+
+                                <input 
+                                  type="number" 
+                                  min="0" 
+                                  max="11"
+                                  placeholder="Mths" 
+                                  className="impressive-input" 
+                                  style={{ ...inputStyle, flex: 1, minWidth: 0, padding: '0 4px', textAlign: 'center' }} 
+                                  value={formData.ageMonths || ''} 
+                                  onChange={e => setFormData({...formData, ageMonths: e.target.value})} 
+                                  readOnly={isExistingPatient} 
+                                />
+                                <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700 }}>M</span>
+
+                                <input 
+                                  type="number" 
+                                  min="0" 
+                                  max="30"
+                                  placeholder="Days" 
+                                  className="impressive-input" 
+                                  style={{ ...inputStyle, flex: 1, minWidth: 0, padding: '0 4px', textAlign: 'center' }} 
+                                  value={formData.ageDays || ''} 
+                                  onChange={e => setFormData({...formData, ageDays: e.target.value})} 
+                                  readOnly={isExistingPatient} 
+                                />
+                                <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700 }}>D</span>
+                              </div>
+                            ))}
                             {renderField("Email", 
                               <>
                                 <input type="text" className="impressive-input" style={{...inputStyle, background: (isExistingPatient || otpVerified) ? '#F8FAFC' : 'white'}} value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} readOnly={isExistingPatient || otpVerified} />
