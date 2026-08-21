@@ -154,7 +154,53 @@ router.get('/:id', async (req, res) => {
         }
       } catch(e) {}
     }
-    if (!patient) return res.status(404).json({ error: 'Patient not found' });
+    if (!patient) {
+      // Auto-provision patient record if user exists and is completing onboarding
+      const userObj = await User.findOne({ _id: req.params.id, tenantId: req.tenantId }) ||
+                      await User.findOne({ _id: req.user.id, tenantId: req.tenantId }) ||
+                      await User.findOne({ staff_id: req.user.staff_id, tenantId: req.tenantId });
+      if (userObj) {
+        const count = await Patient.countDocuments({ tenantId: req.tenantId });
+        let nextSeq = count + 1;
+        let formattedId = `pat-${String(nextSeq).padStart(2, '0')}`;
+        let exists = await Patient.exists({ tenantId: req.tenantId, patientId: formattedId });
+        while (exists) {
+          nextSeq++;
+          formattedId = `pat-${String(nextSeq).padStart(2, '0')}`;
+          exists = await Patient.exists({ tenantId: req.tenantId, patientId: formattedId });
+        }
+
+        patient = new Patient({
+          patientId: formattedId,
+          name: name || userObj.name || 'Patient',
+          age: parseInt(age) || 25,
+          gender: gender || 'Male',
+          contact: contact ? contact.trim() : (userObj.phone || userObj.staff_id),
+          email: userObj.email || (contact && contact.includes('@') ? contact : ''),
+          address: address || '',
+          bloodGroup: bloodGroup || 'O+',
+          allergies: allergies || '',
+          currentMedications: currentMedications || '',
+          medicalHistory: medicalHistory || [],
+          avatar: avatar || userObj.avatar || '',
+          tenantId: req.tenantId
+        });
+        await patient.save();
+
+        userObj.staff_id = patient.contact;
+        userObj.name = patient.name;
+        userObj.isSetupComplete = true;
+        await userObj.save();
+
+        const io = req.app.get("io");
+        if (io && req.tenantId) {
+          io.to(req.tenantId).emit("data_changed", { type: "patients" });
+        }
+
+        return res.json(patient);
+      }
+      return res.status(404).json({ error: 'Patient not found' });
+    }
     res.json(patient);
   } catch (error) {
     console.error("Get patient error:", error);

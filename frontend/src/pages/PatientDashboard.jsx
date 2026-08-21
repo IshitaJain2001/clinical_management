@@ -479,24 +479,28 @@ const PatientDashboard = () => {
       setPatientProfile(profileRes.data);
       patientDbId = profileRes.data._id;
       const isOnboarding = !currentUser.isSetupComplete;
-      const cleanAddress = (isOnboarding && profileRes.data.address === 'Registered via Google Sign-In') ? '' : (profileRes.data.address || '');
-      const cleanContact = (isOnboarding && profileRes.data.contact && profileRes.data.contact.includes('@')) ? '' : (profileRes.data.contact || '');
-      const cleanAge = (isOnboarding && profileRes.data.age === 30) ? '' : (profileRes.data.age || '');
-      const cleanGender = (isOnboarding && profileRes.data.gender === 'Other') ? '' : (profileRes.data.gender || 'Male');
-      const cleanBloodGroup = isOnboarding ? '' : (profileRes.data.bloodGroup || 'O+');
-      const cleanAllergies = (isOnboarding && profileRes.data.allergies === 'None') ? '' : (profileRes.data.allergies || '');
+      
+      // Do NOT overwrite user typed fields during background polling if currently onboarding
+      if (!isOnboarding || !editProfileData.contact) {
+        const cleanAddress = (isOnboarding && profileRes.data.address === 'Registered via Google Sign-In') ? '' : (profileRes.data.address || '');
+        const cleanContact = (isOnboarding && profileRes.data.contact && profileRes.data.contact.includes('@')) ? '' : (profileRes.data.contact || '');
+        const cleanAge = (isOnboarding && profileRes.data.age === 30) ? '' : (profileRes.data.age || '');
+        const cleanGender = (isOnboarding && profileRes.data.gender === 'Other') ? '' : (profileRes.data.gender || 'Male');
+        const cleanBloodGroup = isOnboarding ? '' : (profileRes.data.bloodGroup || 'O+');
+        const cleanAllergies = (isOnboarding && profileRes.data.allergies === 'None') ? '' : (profileRes.data.allergies || '');
 
-      setEditProfileData({
-        name: profileRes.data.name || '',
-        age: cleanAge,
-        gender: cleanGender,
-        contact: cleanContact,
-        address: cleanAddress,
-        bloodGroup: cleanBloodGroup,
-        allergies: cleanAllergies,
-        medicalHistory: Array.isArray(profileRes.data.medicalHistory) ? profileRes.data.medicalHistory.join(', ') : '',
-        avatar: profileRes.data.avatar || ''
-      });
+        setEditProfileData(prev => ({
+          name: prev.name || profileRes.data.name || '',
+          age: prev.age || cleanAge,
+          gender: prev.gender || cleanGender,
+          contact: prev.contact || cleanContact,
+          address: prev.address || cleanAddress,
+          bloodGroup: prev.bloodGroup || cleanBloodGroup,
+          allergies: prev.allergies || cleanAllergies,
+          medicalHistory: prev.medicalHistory || (Array.isArray(profileRes.data.medicalHistory) ? profileRes.data.medicalHistory.join(', ') : ''),
+          avatar: prev.avatar || profileRes.data.avatar || ''
+        }));
+      }
     } catch (profileErr) {
       console.warn("Failed to load full patient profile details", profileErr);
     }
@@ -727,11 +731,11 @@ const PatientDashboard = () => {
     }
 
     try {
-      const formattedHistory = editProfileData.medicalHistory.split(',').map(item => item.trim()).filter(Boolean);
+      const formattedHistory = (editProfileData.medicalHistory || '').split(',').map(item => item.trim()).filter(Boolean);
       const res = await api.put(`/patients/${currentUser.id}`, { ...editProfileData, medicalHistory: formattedHistory });
       setPatientProfile(res.data);
       
-      const updatedUser = { ...currentUser, name: res.data.name, isSetupComplete: true, avatar: res.data.avatar || '' };
+      const updatedUser = { ...currentUser, id: res.data._id || currentUser.id, name: res.data.name, isSetupComplete: true, avatar: res.data.avatar || '' };
       localStorage.setItem('user', JSON.stringify(updatedUser));
       setCurrentUser(updatedUser);
       showToast("Profile completed successfully! Welcome to your dashboard.", "success");
