@@ -28,7 +28,7 @@ router.get('/', async (req, res) => {
 
 // Create a new patient (scoped to tenant)
 router.post('/', async (req, res) => {
-  const { name, age, gender, contact, email, address, bloodGroup, allergies, currentMedications, medicalHistory, avatar, otp } = req.body;
+  const { name, age, ageMonths, ageDays, gender, contact, email, address, bloodGroup, allergies, currentMedications, medicalHistory, avatar, otp } = req.body;
   try {
     if (!contact || contact.trim() === '') {
       return res.status(400).json({ error: "Contact/Phone number is mandatory for patient registration." });
@@ -202,8 +202,8 @@ router.get('/:id', async (req, res) => {
           patientId: formattedId,
           name: name || userObj.name || 'Patient',
           age: parseInt(age) || 0,
-          ageMonths: parseInt(ageMonths) || 0,
-          ageDays: parseInt(ageDays) || 0,
+          ageMonths: parseInt(req.body.ageMonths) || 0,
+          ageDays: parseInt(req.body.ageDays) || 0,
           gender: gender || 'Male',
           contact: contact ? contact.trim() : (userObj.phone || userObj.staff_id),
           email: userObj.email || (contact && contact.includes('@') ? contact : ''),

@@ -158,8 +158,14 @@ const PatientRegistration = () => {
     setError('');
     setSuccess('');
 
-    if (!formData.name || !formData.age || !formData.gender || !formData.contact) {
-      setError("Please fill in mandatory patient details (Full Name, Age, Gender, and Mobile Number).");
+    const hasAnyAge = Boolean(
+      (formData.age !== '' && !isNaN(formData.age) && Number(formData.age) >= 0) ||
+      (formData.ageMonths !== '' && !isNaN(formData.ageMonths) && Number(formData.ageMonths) >= 0) ||
+      (formData.ageDays !== '' && !isNaN(formData.ageDays) && Number(formData.ageDays) >= 0)
+    );
+
+    if (!formData.name || !hasAnyAge || !formData.gender || !formData.contact) {
+      setError("Please fill in mandatory patient details (Full Name, Age [Years, Months, or Days], Gender, and Mobile Number).");
       return;
     }
 
@@ -174,7 +180,9 @@ const PatientRegistration = () => {
       // 1. Create Patient Record in target tenant
       const patientPayload = {
         name: `${formData.title ? formData.title + ' ' : ''}${formData.name.trim()}`,
-        age: parseInt(formData.age, 10) || 30,
+        age: parseInt(formData.age, 10) || 0,
+        ageMonths: parseInt(formData.ageMonths, 10) || 0,
+        ageDays: parseInt(formData.ageDays, 10) || 0,
         gender: formData.gender,
         contact: formData.contact.trim(),
         email: formData.email ? formData.email.trim().toLowerCase() : '',
