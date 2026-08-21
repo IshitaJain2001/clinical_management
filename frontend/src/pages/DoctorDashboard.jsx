@@ -3602,23 +3602,8 @@ const DoctorDashboard = () => {
       });
     const validLabs = labs.filter(test => test && test.trim() !== '');
 
-    // Set target print items and show settings modal
-    setPrintSettingsTarget({
-      rx: null,
-      item: {
-        items: validMedicines,
-        tests: validLabs,
-        diagnosis: diagnosisText ? diagnosisText.trim() : '',
-        date: new Date().toLocaleDateString('en-IN'),
-        doctor: user.name,
-        originalApp: { regNo: activeAppointmentId ? activeAppointmentId.substring(0, 8).toUpperCase() : 'NEW' }
-      },
-      callback: (finalSettings) => {
-        executeSaveAndLockPrescription(finalSettings);
-      }
-    });
-    setTempPrintSettings(printSettings);
-    setShowPrintSettingsModal(true);
+    // Immediately execute save and lock without requiring print modal
+    executeSaveAndLockPrescription(printSettings);
   };
 
   const executeSaveAndLockPrescription = (finalSettings = printSettings) => {
@@ -3850,6 +3835,7 @@ const DoctorDashboard = () => {
           diagnosis: cleanDiagnosisText,
           notes: soap.plan || soap.assessment || ''
         });
+        window.dispatchEvent(new CustomEvent('curoxa_sync', { detail: { type: 'appointments' } }));
       }
     };
 
