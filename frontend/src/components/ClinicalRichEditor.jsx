@@ -29,18 +29,102 @@ export default function ClinicalRichEditor({
     }
   };
 
-  const applyFormat = (command, val = null) => {
-    if (editorRef.current) {
-      editorRef.current.focus();
-      document.execCommand(command, false, val);
+  // Smart formatter that formats ONLY the selected word/phrase and never spills over to subsequent typing
+  const applySmartFormat = (tag, customStyles = null) => {
+    if (!editorRef.current) return;
+    editorRef.current.focus();
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return;
+
+    let range = sel.getRangeAt(0);
+
+    // If no text is selected, auto-select the current word where cursor is resting
+    if (range.collapsed) {
+      const node = sel.anchorNode;
+      if (node && node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent;
+        const offset = sel.anchorOffset;
+        
+        let start = offset;
+        while (start > 0 && /\S/.test(text[start - 1])) {
+          start--;
+        }
+        let end = offset;
+        while (end < text.length && /\S/.test(text[end])) {
+          end++;
+        }
+
+        if (start < end) {
+          range = document.createRange();
+          range.setStart(node, start);
+          range.setEnd(node, end);
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+      }
+    }
+
+    if (!range.collapsed) {
+      // Check if already wrapped in this tag (to toggle off)
+      let parentEl = range.commonAncestorContainer;
+      if (parentEl.nodeType === Node.TEXT_NODE) parentEl = parentEl.parentElement;
+      
+      const existingTag = parentEl && (parentEl.closest ? parentEl.closest(tag) : null);
+      if (existingTag && editorRef.current.contains(existingTag)) {
+        // Unwrap
+        const parent = existingTag.parentNode;
+        while (existingTag.firstChild) {
+          parent.insertBefore(existingTag.firstChild, existingTag);
+        }
+        parent.removeChild(existingTag);
+        handleInput();
+        return;
+      }
+
+      const selectedContent = range.extractContents();
+      const wrapper = document.createElement(tag);
+      if (customStyles) {
+        Object.assign(wrapper.style, customStyles);
+      }
+      wrapper.appendChild(selectedContent);
+      range.insertNode(wrapper);
+
+      // Create a plain text space after the formatted element so subsequent typing is 100% normal/unbold
+      const afterSpace = document.createTextNode('\u00A0');
+      if (wrapper.nextSibling) {
+        wrapper.parentNode.insertBefore(afterSpace, wrapper.nextSibling);
+      } else {
+        wrapper.parentNode.appendChild(afterSpace);
+      }
+
+      // Position the cursor after the space in normal unstyled space
+      const newRange = document.createRange();
+      newRange.setStartAfter(afterSpace);
+      newRange.setEndAfter(afterSpace);
+      sel.removeAllRanges();
+      sel.addRange(newRange);
+
+      handleInput();
+    } else {
+      // Toggle standard execCommand fallback
+      const cmd = tag === 'strong' ? 'bold' : (tag === 'em' ? 'italic' : (tag === 'u' ? 'underline' : 'bold'));
+      document.execCommand(cmd, false, null);
       handleInput();
     }
   };
 
-  const applyHighlight = () => {
+  const applyBulletList = () => {
     if (editorRef.current) {
       editorRef.current.focus();
-      document.execCommand('hiliteColor', false, '#FEF08A');
+      document.execCommand('insertUnorderedList', false, null);
+      handleInput();
+    }
+  };
+
+  const clearFormatting = () => {
+    if (editorRef.current) {
+      editorRef.current.focus();
+      document.execCommand('removeFormat', false, null);
       handleInput();
     }
   };
@@ -68,6 +152,16 @@ export default function ClinicalRichEditor({
         .clinical-rich-content li {
           margin-bottom: 4px;
         }
+        .clinical-rich-content strong {
+          font-weight: 800;
+          color: #0F172A;
+        }
+        .clinical-rich-content mark {
+          background-color: #FEF08A;
+          padding: 1px 4px;
+          border-radius: 4px;
+          color: #854D0E;
+        }
       `}</style>
 
       {/* Formatting Toolbar */}
@@ -83,17 +177,17 @@ export default function ClinicalRichEditor({
       }}>
         <button
           type="button"
-          onMouseDown={(e) => { e.preventDefault(); applyFormat('bold'); }}
-          title="Bold (Ctrl+B)"
+          onMouseDown={(e) => { e.preventDefault(); applySmartFormat('strong'); }}
+          title="Bold Selection (Only selected word will be bold)"
           style={{
             width: '28px',
             height: '28px',
             borderRadius: '6px',
             border: '1px solid #CBD5E1',
             background: '#FFFFFF',
-            fontWeight: 800,
+            fontWeight: 900,
             fontSize: '13px',
-            color: '#1E293B',
+            color: '#0F172A',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -108,8 +202,8 @@ export default function ClinicalRichEditor({
 
         <button
           type="button"
-          onMouseDown={(e) => { e.preventDefault(); applyFormat('italic'); }}
-          title="Italic (Ctrl+I)"
+          onMouseDown={(e) => { e.preventDefault(); applySmartFormat('em'); }}
+          title="Italic Selection"
           style={{
             width: '28px',
             height: '28px',
@@ -134,8 +228,8 @@ export default function ClinicalRichEditor({
 
         <button
           type="button"
-          onMouseDown={(e) => { e.preventDefault(); applyFormat('underline'); }}
-          title="Underline (Ctrl+U)"
+          onMouseDown={(e) => { e.preventDefault(); applySmartFormat('u'); }}
+          title="Underline Selection"
           style={{
             width: '28px',
             height: '28px',
@@ -162,8 +256,11 @@ export default function ClinicalRichEditor({
 
         <button
           type="button"
-          onMouseDown={(e) => { e.preventDefault(); applyHighlight(); }}
-          title="Highlight Text"
+          onMouseDown={(e) => { 
+            e.preventDefault(); 
+            applySmartFormat('mark', { backgroundColor: '#FEF08A', padding: '1px 4px', borderRadius: '4px', color: '#854D0E' }); 
+          }}
+          title="Highlight Selection (Soft yellow)"
           style={{
             padding: '0 10px',
             height: '28px',
@@ -187,7 +284,7 @@ export default function ClinicalRichEditor({
 
         <button
           type="button"
-          onMouseDown={(e) => { e.preventDefault(); applyFormat('insertUnorderedList'); }}
+          onMouseDown={(e) => { e.preventDefault(); applyBulletList(); }}
           title="Bullet List"
           style={{
             padding: '0 10px',
@@ -214,7 +311,7 @@ export default function ClinicalRichEditor({
 
         <button
           type="button"
-          onMouseDown={(e) => { e.preventDefault(); applyFormat('removeFormat'); }}
+          onMouseDown={(e) => { e.preventDefault(); clearFormatting(); }}
           title="Clear Formatting"
           style={{
             padding: '0 8px',
