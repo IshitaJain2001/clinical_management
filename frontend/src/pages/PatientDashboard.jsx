@@ -348,7 +348,7 @@ const PatientDashboard = () => {
         setPaymentBillData(matchBill);
       } else {
         // Fallback default calculation
-        const docFee = Number(appt.doctorId?.consultationFee) || 500;
+        const docFee = (appt.doctorId && appt.doctorId.consultationFee !== undefined && appt.doctorId.consultationFee !== null && !isNaN(appt.doctorId.consultationFee)) ? Number(appt.doctorId.consultationFee) : 0;
         setPaymentBillData({
           items: [
             { description: 'One-Time OPD Registration Fee', amount: 50 },

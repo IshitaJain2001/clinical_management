@@ -417,7 +417,7 @@ router.put('/:id/approve', async (req, res) => {
       totalAmount += regFee;
     }
 
-    const consultFee = Number(doctorObj?.consultationFee) || 500;
+    const consultFee = (doctorObj && doctorObj.consultationFee !== undefined && doctorObj.consultationFee !== null && !isNaN(doctorObj.consultationFee)) ? Number(doctorObj.consultationFee) : 0;
     billItems.push({
       description: `Doctor Consultation Fee (${doctorObj?.name || 'Doctor'})`,
       amount: consultFee
