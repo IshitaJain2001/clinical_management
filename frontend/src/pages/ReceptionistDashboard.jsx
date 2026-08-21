@@ -6570,38 +6570,38 @@ const ReceptionistDashboard = () => {
                                   >
                                     View Details
                                   </button>
-                                  {primaryApp.type === 'Appointment' && primaryApp.status === 'Pending' && (
-                                    <div style={{ display: 'flex', gap: '4px' }}>
+                                  {primaryApp.type === 'Appointment' && (primaryApp.status === 'Pending' || primaryApp.status === 'Pending Approval') && (
+                                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                                       <button
                                         className="btn btn-success"
-                                        style={{ padding: '6px 12px', fontSize: '12px', background: '#10B981', borderColor: '#10B981', color: 'white', display: 'flex', alignItems: 'center', gap: '4px', borderRadius: '4px' }}
+                                        style={{ padding: '6px 12px', fontSize: '12px', background: '#10B981', borderColor: '#10B981', color: 'white', display: 'flex', alignItems: 'center', gap: '4px', borderRadius: '6px', fontWeight: 700, cursor: 'pointer' }}
                                         onClick={async () => {
                                           try {
-                                            await api.put('/appointments/' + primaryApp.rawItem._id, { status: 'Confirmed' });
-                                            // Quick local patch
-                                            primaryApp.rawItem.status = 'Confirmed';
-                                            primaryApp.status = 'Confirmed';
-                                            document.getElementById('refresh_appt_btn_' + primaryApp.rawItem._id)?.click();
-                                            alert('Appointment Approved!');
+                                            const res = await api.put('/appointments/' + primaryApp.rawItem._id + '/approve');
+                                            showToast('Appointment Approved! Payment request generated (with 1-time Reg Fee if applicable).', 'success');
+                                            fetchData();
                                           } catch(e) {
-                                            alert('Failed to approve');
+                                            showToast(e.response?.data?.error || 'Failed to approve', 'error');
                                           }
                                         }}
-                                      >Approve</button>
+                                      >
+                                        Approve & Request Payment
+                                      </button>
                                       <button
                                         className="btn btn-danger"
-                                        style={{ padding: '6px 12px', fontSize: '12px', background: '#EF4444', borderColor: '#EF4444', color: 'white', display: 'flex', alignItems: 'center', gap: '4px', borderRadius: '4px' }}
+                                        style={{ padding: '6px 12px', fontSize: '12px', background: '#EF4444', borderColor: '#EF4444', color: 'white', display: 'flex', alignItems: 'center', gap: '4px', borderRadius: '6px', fontWeight: 700, cursor: 'pointer' }}
                                         onClick={async () => {
                                           try {
-                                            await api.put('/appointments/' + primaryApp.rawItem._id, { status: 'Cancelled' });
-                                            primaryApp.rawItem.status = 'Cancelled';
-                                            primaryApp.status = 'Cancelled';
-                                            alert('Appointment Rejected');
+                                            await api.put('/appointments/' + primaryApp.rawItem._id + '/reject');
+                                            showToast('Appointment request rejected', 'info');
+                                            fetchData();
                                           } catch(e) {
-                                            alert('Failed to reject');
+                                            showToast(e.response?.data?.error || 'Failed to reject', 'error');
                                           }
                                         }}
-                                      >Reject</button>
+                                      >
+                                        Reject
+                                      </button>
                                     </div>
                                   )}
                                   {primaryApp.type === 'Appointment' && (primaryApp.status === 'Scheduled' || primaryApp.status === 'Paid' || primaryApp.status === 'Confirmed') && (

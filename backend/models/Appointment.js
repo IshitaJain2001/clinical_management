@@ -8,8 +8,13 @@ const appointmentSchema = new mongoose.Schema({
   time: { type: String, required: true },
   status: { 
     type: String, 
-    enum: ['Pending', 'In Progress', 'Completed', 'Cancelled', 'Paid', 'Confirmed'], 
+    enum: ['Pending', 'Pending Approval', 'Approved', 'In Progress', 'Completed', 'Cancelled', 'Paid', 'Confirmed'], 
     default: 'Pending' 
+  },
+  paymentStatus: {
+    type: String,
+    enum: ['Pending', 'Paid', 'Refunded'],
+    default: 'Pending'
   },
   source: {
     type: String,
@@ -20,7 +25,7 @@ const appointmentSchema = new mongoose.Schema({
   notes: { type: String },
   diagnosis: { type: String },
   regNo: { type: String },
-  createdAt: {type: Date, default: Date.now},
+  createdAt: { type: Date, default: Date.now },
 }, { timestamps: true });
 
 // Compound indexes for fast per-tenant date/status lookups (real-time polling)

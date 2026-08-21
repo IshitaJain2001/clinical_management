@@ -210,7 +210,7 @@ const PatientRegistration = () => {
             date: bookingDate,
             time: selectedSlot,
             reason: selectedSymptoms.length > 0 ? selectedSymptoms.join(', ') : 'General Consultation',
-            status: 'Pending',
+            status: 'Pending Approval',
             source: 'Online'
           }, {
             headers: { Authorization: `Bearer ${tempToken}` }
