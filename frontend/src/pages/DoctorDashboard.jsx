@@ -10963,12 +10963,16 @@ I have scanned the medical reference databases, but couldn't find a direct match
                       DIAGNOSIS (Doctor's Observation)
                     </div>
                     <div style={{ padding: '12px', fontSize: '13px', color: '#1E293B', lineHeight: '1.6', fontWeight: 500 }}>
-                      {appointment.diagnosis.split('\n').map((line, lidx) => (
-                        <div key={lidx} style={{ display: 'flex', gap: '8px', marginBottom: '6px', alignItems: 'flex-start' }}>
-                          <span style={{ color: '#800020', fontSize: '10px', marginTop: '4px' }}>•</span>
-                          <span>{line.trim()}</span>
-                        </div>
-                      ))}
+                      {appointment.diagnosis.includes('<') ? (
+                        <div dangerouslySetInnerHTML={{ __html: appointment.diagnosis }} />
+                      ) : (
+                        appointment.diagnosis.split('\n').map((line, lidx) => (
+                          <div key={lidx} style={{ display: 'flex', gap: '8px', marginBottom: '6px', alignItems: 'flex-start' }}>
+                            <span style={{ color: '#800020', fontSize: '10px', marginTop: '4px' }}>•</span>
+                            <span>{line.trim()}</span>
+                          </div>
+                        ))
+                      )}
                     </div>
                   </div>
                 )}
@@ -10980,7 +10984,11 @@ I have scanned the medical reference databases, but couldn't find a direct match
                       Clinical SOAP Notes
                     </div>
                     <div style={{ padding: '12px', fontSize: '13px', color: '#334155', lineHeight: '1.6', fontWeight: 500, whiteSpace: 'pre-wrap' }}>
-                      {appointment.notes}
+                      {appointment.notes.includes('<') ? (
+                        <div dangerouslySetInnerHTML={{ __html: appointment.notes }} />
+                      ) : (
+                        appointment.notes
+                      )}
                     </div>
                   </div>
                 )}
