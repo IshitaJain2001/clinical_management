@@ -34,11 +34,11 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: "Contact/Phone number is mandatory for patient registration." });
     }
 
-    const cleanEmail = email ? email.toLowerCase().trim() : 'n/a';
+    const cleanEmail = (email && email.trim() && email.trim().toLowerCase() !== 'n/a') ? email.toLowerCase().trim() : '';
     const cleanContact = contact.trim();
 
     // Check if email is already registered to another patient (case-insensitive)
-    if (cleanEmail && cleanEmail !== 'n/a') {
+    if (cleanEmail && cleanEmail !== '') {
       const existingEmailPatient = await Patient.findOne({
         tenantId: req.tenantId,
         email: { $regex: new RegExp(`^${cleanEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }

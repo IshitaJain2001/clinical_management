@@ -455,15 +455,23 @@ const PatientRegistration = () => {
               {renderField("Email", (
                 <div style={{ display: 'flex', width: '100%', gap: '6px', alignItems: 'center' }}>
                   <input 
-                    type="text" 
+                    type="email" 
                     className="impressive-input" 
-                    style={{ ...inputStyle, background: '#F8FAFC' }} 
+                    style={{ ...inputStyle, background: initialContact.includes('@') ? '#F8FAFC' : 'white' }} 
                     value={formData.email} 
-                    readOnly
+                    onChange={e => setFormData({...formData, email: e.target.value})}
+                    placeholder="patient@example.com"
+                    readOnly={initialContact.includes('@')}
                   />
-                  <span style={{ fontSize: '11px', background: '#DCFCE7', color: '#15803D', padding: '2px 6px', borderRadius: '4px', fontWeight: 700, whiteSpace: 'nowrap' }}>
-                    Verified
-                  </span>
+                  {initialContact.includes('@') ? (
+                    <span style={{ fontSize: '11px', background: '#DCFCE7', color: '#15803D', padding: '2px 6px', borderRadius: '4px', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                      Verified
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                      (Optional)
+                    </span>
+                  )}
                 </div>
               ))}
 

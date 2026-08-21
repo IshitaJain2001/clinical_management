@@ -10353,7 +10353,7 @@ const ReceptionistDashboard = () => {
                         <div style={{ fontSize: '18px', fontWeight: 900, color: '#0F172A' }}>{pat.name || 'N/A'}</div>
                         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '6px', fontSize: '13px', color: '#475569', fontWeight: 600 }}>
                           <div>📱 Contact: <b style={{ color: '#0F172A' }}>{pat.contact || 'N/A'}</b></div>
-                          <div>✉️ Email: <b style={{ color: '#0F172A' }}>{pat.email || 'N/A'}</b></div>
+                          <div>✉️ Email: <b style={{ color: (pat.email && pat.email !== 'n/a') ? '#0F172A' : '#94A3B8' }}>{(pat.email && pat.email !== 'n/a') ? pat.email : 'Not Provided'}</b></div>
                           <div>🩸 Blood: <b style={{ color: '#EF4444' }}>{pat.bloodGroup || 'O+'}</b></div>
                         </div>
                       </div>
