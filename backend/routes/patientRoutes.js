@@ -34,7 +34,8 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: "Contact/Phone number is mandatory for patient registration." });
     }
 
-    const cleanEmail = (email && email.trim() && email.trim().toLowerCase() !== 'n/a') ? email.toLowerCase().trim() : '';
+    const fallbackOtpEmail = (req.user && req.user.emailOrPhone && req.user.emailOrPhone.includes('@')) ? req.user.emailOrPhone.toLowerCase().trim() : '';
+    const cleanEmail = (email && email.trim() && email.trim().toLowerCase() !== 'n/a') ? email.toLowerCase().trim() : fallbackOtpEmail;
     const cleanContact = contact.trim();
 
     // Check if email is already registered to another patient (case-insensitive)

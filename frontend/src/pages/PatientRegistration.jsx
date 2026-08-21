@@ -35,8 +35,14 @@ const DEFAULT_SLOTS = [
 const PatientRegistration = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const tempToken = location.state?.tempToken;
-  const initialContact = location.state?.emailOrPhone || '';
+  let savedEmailOrPhone = '';
+  try {
+    const u = JSON.parse(localStorage.getItem('user') || '{}');
+    savedEmailOrPhone = u.emailOrPhone || u.email || '';
+  } catch(e) {}
+
+  const tempToken = location.state?.tempToken || localStorage.getItem('token');
+  const initialContact = location.state?.emailOrPhone || savedEmailOrPhone || '';
 
   const getLocalDateString = () => {
     const today = new Date();
@@ -185,7 +191,7 @@ const PatientRegistration = () => {
         ageDays: parseInt(formData.ageDays, 10) || 0,
         gender: formData.gender,
         contact: formData.contact.trim(),
-        email: formData.email ? formData.email.trim().toLowerCase() : '',
+        email: (formData.email || (initialContact.includes('@') ? initialContact : '')).trim().toLowerCase(),
         bloodGroup: formData.bloodGroup || 'O+',
         address: formData.address || '',
         medicalHistory: formData.medicalHistory ? formData.medicalHistory.split(',').map(s => s.trim()).filter(Boolean) : [],
