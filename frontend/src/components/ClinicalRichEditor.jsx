@@ -53,6 +53,23 @@ export default function ClinicalRichEditor({
       overflow: 'hidden',
       boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
     }}>
+      <style>{`
+        .clinical-rich-content[contenteditable]:empty:before {
+          content: attr(data-placeholder);
+          color: #94a3b8;
+          pointer-events: none;
+          display: block;
+          font-weight: 500;
+        }
+        .clinical-rich-content ul {
+          margin: 4px 0;
+          padding-left: 20px;
+        }
+        .clinical-rich-content li {
+          margin-bottom: 4px;
+        }
+      `}</style>
+
       {/* Formatting Toolbar */}
       <div style={{
         display: 'flex',
@@ -227,6 +244,7 @@ export default function ClinicalRichEditor({
         contentEditable
         onInput={handleInput}
         data-placeholder={placeholder}
+        className="clinical-rich-content"
         style={{
           minHeight,
           padding: '12px 16px',
