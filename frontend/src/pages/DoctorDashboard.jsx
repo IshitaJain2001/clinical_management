@@ -1766,6 +1766,12 @@ const DoctorDashboard = () => {
 
               function getDiagnosisHTML() {
                 if (!diagnosis || diagnosis === '\u2014') return '';
+                if (diagnosis.includes('<') && diagnosis.includes('>')) {
+                  return '<div style="margin-bottom: 12px; page-break-inside: avoid; break-inside: avoid;">' +
+                    '<div style="font-family: Outfit, sans-serif; font-size: 12px; font-weight: 900; color: #800020; border-bottom: 1.5px solid #800020; padding-bottom: 3px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Diagnosis</div>' +
+                    '<div style="font-size: 11px; color: #1E293B; padding-left: 2px; line-height: 1.5;">' + diagnosis + '</div>' +
+                  '</div>';
+                }
                 const lines = diagnosis.split('\\n').filter(l => l.trim() !== '');
                 if (lines.length === 1) {
                   return '<div style="margin-bottom: 12px; page-break-inside: avoid; break-inside: avoid;">' +
@@ -1787,9 +1793,10 @@ const DoctorDashboard = () => {
 
               function getSoapNotesHTML() {
                 if (!soapNotes || soapNotes === '\u2014') return '';
+                const renderedNotes = (soapNotes.includes('<') && soapNotes.includes('>')) ? soapNotes : soapNotes.replace(/\n/g, '<br/>');
                 return '<div style="margin-bottom: 12px; page-break-inside: avoid; break-inside: avoid;">' +
-                  '<div style="font-family: Outfit, sans-serif; font-size: 12px; font-weight: 900; color: #800020; border-bottom: 1.5px solid #800020; padding-bottom: 3px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Clinical SOAP Notes</div>' +
-                  '<div style="font-size: 10.5px; font-weight: 600; color: #475569; white-space: pre-wrap; padding-left: 2px; line-height: 1.4;">' + soapNotes + '</div>' +
+                  '<div style="font-family: Outfit, sans-serif; font-size: 12px; font-weight: 900; color: #800020; border-bottom: 1.5px solid #800020; padding-bottom: 3px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Clinical Notes / Advice</div>' +
+                  '<div style="font-size: 10.5px; color: #475569; padding-left: 2px; line-height: 1.4;">' + renderedNotes + '</div>' +
                 '</div>';
               }
 
@@ -9735,7 +9742,9 @@ I have scanned the medical reference databases, but couldn't find a direct match
                         {diagnosisVal && (
                           <div style={{ fontSize: '9.5px' }}>
                             <span style={{ color: '#64748B', fontWeight: 700, display: 'block', fontSize: '7.5px', textTransform: 'uppercase', marginBottom: '2px' }}>Diagnosis</span>
-                            {diagnosisVal.includes('\n') ? (
+                            {diagnosisVal.includes('<') && diagnosisVal.includes('>') ? (
+                              <div style={{ color: '#1E293B', fontWeight: 600, lineHeight: 1.4 }} dangerouslySetInnerHTML={{ __html: diagnosisVal }} />
+                            ) : diagnosisVal.includes('\n') ? (
                               <ul style={{ paddingLeft: '2px', margin: 0, listStyle: 'none' }}>
                                 {diagnosisVal.split('\n').filter(line => line.trim() !== '').map((line, i) => (
                                   <li key={i} style={{ marginBottom: '2px', display: 'flex', alignItems: 'flex-start', gap: '6px' }}>

@@ -1117,12 +1117,14 @@ const PatientDashboard = () => {
                 DIAGNOSIS (Doctor's Observation)
               </div>
               <div style="padding: 10px; font-size: 11.5px; color: #1E293B; line-height: 1.5; font-weight: 500;">
-                ${rx.diagnosis ? rx.diagnosis.split('\n').map(line => `
-                  <div style="display: flex; gap: 8px; margin-bottom: 4px; align-items: flex-start;">
-                    <span style="color: #800020; font-size: 8px; margin-top: 3px;">•</span>
-                    <span>${line.trim()}</span>
-                  </div>
-                `).join('') : `
+                ${rx.diagnosis ? (
+                  (rx.diagnosis.includes('<') && rx.diagnosis.includes('>')) ? rx.diagnosis : rx.diagnosis.split('\n').map(line => `
+                    <div style="display: flex; gap: 8px; margin-bottom: 4px; align-items: flex-start;">
+                      <span style="color: #800020; font-size: 8px; margin-top: 3px;">•</span>
+                      <span>${line.trim()}</span>
+                    </div>
+                  `).join('')
+                ) : `
                   <div style="display: flex; gap: 8px; align-items: flex-start;">
                     <span style="color: #800020; font-size: 8px; margin-top: 3px;">•</span>
                     <span>General clinical observation & routine consultation.</span>
