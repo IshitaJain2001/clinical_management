@@ -2188,6 +2188,7 @@ router.post('/patient-portal/verify-otp', async (req, res) => {
           role: 'patient', 
           actualStaffRole: user.role,
           name: patientDoc ? patientDoc.name : user.name,
+          avatar: (patientDoc && patientDoc.avatar) ? patientDoc.avatar : (user.avatar || ''),
           password_hash: undefined 
         },
         isNewUser: false

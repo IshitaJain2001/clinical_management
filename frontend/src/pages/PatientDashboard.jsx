@@ -547,6 +547,7 @@ const PatientDashboard = () => {
         const cleanBloodGroup = isOnboarding ? '' : (profileRes.data.bloodGroup || 'O+');
         const cleanAllergies = (isOnboarding && profileRes.data.allergies === 'None') ? '' : (profileRes.data.allergies || '');
 
+        const loadedAvatar = profileRes.data.avatar || '';
         setEditProfileData(prev => ({
           name: prev.name || profileRes.data.name || '',
           age: prev.age || cleanAge,
@@ -556,8 +557,18 @@ const PatientDashboard = () => {
           bloodGroup: prev.bloodGroup || cleanBloodGroup,
           allergies: prev.allergies || cleanAllergies,
           medicalHistory: prev.medicalHistory || (Array.isArray(profileRes.data.medicalHistory) ? profileRes.data.medicalHistory.join(', ') : ''),
-          avatar: prev.avatar || profileRes.data.avatar || ''
+          avatar: loadedAvatar || prev.avatar || ''
         }));
+
+        if (loadedAvatar) {
+          setCurrentUser(prev => ({ ...prev, avatar: loadedAvatar, name: profileRes.data.name || prev.name }));
+          try {
+            const stored = JSON.parse(localStorage.getItem('user') || '{}');
+            stored.avatar = loadedAvatar;
+            stored.name = profileRes.data.name || stored.name;
+            localStorage.setItem('user', JSON.stringify(stored));
+          } catch(e) {}
+        }
       }
     } catch (profileErr) {
       console.warn("Failed to load full patient profile details", profileErr);
@@ -2751,12 +2762,12 @@ const PatientDashboard = () => {
 
         {/* User Profile at bottom of Sidebar */}
         <div className="sidebar-user" onClick={(e) => { e.stopPropagation(); setShowProfileMenu(!showProfileMenu); }}>
-          {currentUser.avatar ? (
+          {(currentUser.avatar || editProfileData.avatar) ? (
             <img 
-              src={currentUser.avatar} 
+              src={currentUser.avatar || editProfileData.avatar} 
               alt="Avatar" 
               className="user-avatar" 
-              style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #BFDBFE' }}
+              style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #BFDBFE', flexShrink: 0, marginRight: '10px' }}
             />
           ) : (
             <div className="sidebar-user-avatar-initials" style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #3B71FE 0%, #2563EB 100%)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '14px', marginRight: '10px', flexShrink: 0 }}>

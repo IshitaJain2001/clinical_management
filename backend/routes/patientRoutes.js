@@ -124,10 +124,14 @@ router.post('/', async (req, res) => {
           name: name,
           email: cleanEmail !== 'n/a' ? cleanEmail : undefined,
           phone: cleanContact,
+          avatar: avatar || '',
           role: 'patient',
           password_hash: 'not-applicable', // Patient logs in via OTP
           status: 'Active'
         });
+      } else if (avatar && !existingUser.avatar) {
+        existingUser.avatar = avatar;
+        await existingUser.save();
       }
     } catch (userErr) {
       console.warn("Failed to create User record for patient:", userErr);
@@ -159,6 +163,7 @@ router.post('/', async (req, res) => {
         name: patient.name,
         contact: patient.contact,
         email: patient.email,
+        avatar: patient.avatar || avatar || '',
         role: 'patient',
         isSetupComplete: true,
         tenantId: patient.tenantId
